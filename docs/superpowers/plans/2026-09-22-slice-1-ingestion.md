@@ -1218,7 +1218,7 @@ def test_transaction_rows_carry_unique_keys_and_sign_based_type():
 # Real statements: exact row counts of the three sample files on Raul's machine.
 EXPECTED_ROWS = {
     "bbva_extracto_julio_01.pdf": 78,
-    "bbva_extracto_julio_02.pdf": 96,
+    "bbva_extracto_julio_02.pdf": 97,
     "caixa_extracto.pdf": 76,
 }
 
@@ -2098,7 +2098,7 @@ Expected: the CI workflow runs on GitHub and both jobs pass. Check with `gh run 
 
 ## Slice 1 done when
 
-- `uv run task test` passes with no database; `uv run task test-integration` passes on Raul's machine with the three sample statements (78, 96 and 76 rows; second import adds 0 rows).
+- `uv run task test` passes with no database; `uv run task test-integration` passes on Raul's machine with the three sample statements (78, 97 and 76 rows; second import adds 0 rows).
 - `/imports` uploads a PDF and shows new vs duplicate counts; `/transactions?month=2026-07` lists rows from all accounts.
 - CI is green on `main`.
 
