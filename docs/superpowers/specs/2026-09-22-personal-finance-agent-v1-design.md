@@ -1,7 +1,7 @@
 # personal-finance-agent — v1 design
 
 Date: 2026-09-22
-Status: draft for review
+Status: approved by Raul on 2026-09-22 (see section 16)
 Owner: Raul Vazquez
 
 ## 1. Purpose
@@ -34,6 +34,11 @@ Non-goals for v1 are listed in section 12.
   code: accounts, categories, rules, semantic descriptions, thresholds. A
   future onboarding wizard only has to write to those places.
 - Everything in English: code, comments, README, commits, UI copy.
+- Simplicity is a hard requirement, not taste. Prefer 15 readable lines over
+  30 clever ones. Use each library the way its documentation recommends
+  instead of wrapping it. Small files with one responsibility, plain
+  functions over classes unless state is real, no abstractions for a single
+  caller. A reviewer should understand any module in one read.
 - Privacy: bank data stays on the user's machine or their own Supabase
   project. Only transaction descriptions and aggregates are sent to jev, the
   LLM and Langfuse.
@@ -92,7 +97,7 @@ the agent's SQL tool). Migrations via the Supabase CLI in `supabase/migrations`.
 
 | Table | Purpose | Key columns |
 |---|---|---|
-| `accounts` | one row per bank account | `id`, `bank` (`bbva`, `caixabank`), `name`, `currency`, `iban_last4` |
+| `accounts` | one row per bank account, auto-created from the IBAN in a statement header | `id`, `bank` (`bbva`, `caixabank`), `iban` (unique), `name` (defaults to bank + last 4 digits, user-editable), `currency` |
 | `imports` | one row per uploaded file | `id`, `account_id`, `filename`, `file_sha256`, `imported_at`, `rows_total`, `rows_new`, `rows_duplicate` |
 | `transactions` | the normalized ledger | `id`, `account_id`, `import_id`, `booked_at`, `value_date`, `amount` (signed, numeric(12,2)), `currency`, `description_raw`, `merchant`, `balance_after`, `dedup_key` (unique), `tx_type` (`income`/`expense`/`transfer`), `category_slug`, `category_source` (`rule`/`jev`/`user`/`none`), `category_confidence`, `jev_suggestions` (jsonb top-3), `is_subscription`, `transfer_pair_id`, `needs_review` |
 | `categories` | two-level taxonomy | `slug` (pk), `tx_type`, `level1`, `level2`, `description` (also used as jev criteria) |
@@ -110,22 +115,50 @@ categories and accounts; the agent queries this, not the base table).
 
 ### 4.1 Adapters
 
-One adapter per bank implementing a small protocol:
+The sample files Raul has are PDF statements, not CSV exports, so v1 parses
+PDFs with `pdfplumber`. CSV or XLSX exports are a second adapter per bank
+when they become available; the protocol is format-agnostic.
+
+One adapter per bank and format:
 
 ```python
 class BankAdapter(Protocol):
     bank: str
-    def sniff(self, file: UploadedFile) -> bool: ...
-    def parse(self, file: UploadedFile) -> list[NormalizedTransaction]: ...
+    def sniff(self, text: str) -> bool: ...          # recognises the statement from its first page text
+    def parse(self, pdf_bytes: bytes) -> ParsedStatement: ...
 ```
 
-`NormalizedTransaction` is a Pydantic model: `booked_at`, `value_date | None`,
-`amount` (signed Decimal), `currency`, `description_raw`, `balance_after |
-None`, `raw_row` (dict, kept for debugging). v1 ships `bbva` and `caixabank`.
-Column mappings are finalized from the sample files in `data/raw/`
-(git-ignored); anonymized fixtures live in `apps/api/tests/fixtures/`.
+`ParsedStatement` carries a `StatementHeader` (`bank`, `iban`, `period_start`,
+`period_end`) and a list of `NormalizedTransaction` (`booked_at`,
+`value_date | None`, `amount` signed `Decimal`, `currency`, `description_raw`,
+`merchant`, `balance_after | None`). Both are Pydantic models.
 
-Adding a bank means adding one adapter module and one fixture test.
+Observed layouts (from the sample statements in `data/raw/`, git-ignored):
+
+- **CaixaBank** movements PDF: header with `Titular`, `IBAN` and `Periodo`;
+  then one line per movement `CONCEPT dd/mm/yyyy ±amount€ balance€`, newest
+  first, continuing across pages. Amount and balance are sometimes glued
+  (`+2326,31€38.066,79€`). No `pdfplumber` tables; a line regex covers every
+  row.
+- **BBVA** monthly statement PDF: header `EXTRACTO DE <MONTH> <YEAR>` and
+  `IBAN`; rows `dd/mm dd/mm CONCEPT ±amount balance` (operation date, value
+  date, no year) followed by one detail line with a reference number and the
+  merchant. Text must be extracted with `x_tolerance=1`, otherwise words are
+  glued. Each page ends at a footer starting with `Todos los importes`. The
+  year comes from the header; a December value date in a January statement
+  belongs to the previous year.
+
+Adapters are split in two layers so tests need no PDFs: a pure
+`parse_text(text) -> ParsedStatement` function tested with short synthetic
+text fixtures (fake IBANs and names), and a thin `parse(pdf_bytes)` that
+extracts text with `pdfplumber` and calls it. An integration test, run
+manually, checks the real files in `data/raw/`.
+
+Account resolution: the IBAN in the header selects the account; unknown IBANs
+create an account named `<bank> ····<last4>`. No manual account picker is
+needed on upload.
+
+Adding a bank means adding one adapter module and one text fixture test.
 
 ### 4.2 Merchant normalization
 
@@ -144,7 +177,8 @@ dedup_key = sha256(account_id | booked_at | amount | normalized(description_raw)
 ```
 
 `occurrence_index` is the position among identical tuples within the same
-file (two identical coffees the same day get 0 and 1). Loading is
+file (two identical coffees the same day get 0 and 1). Both sample banks print
+the balance after each movement, which makes the key unambiguous in practice. Loading is
 `INSERT ... ON CONFLICT (dedup_key) DO NOTHING`. Each import records
 `rows_new` and `rows_duplicate`, shown in the UI. Uploading the same file, or
 overlapping date ranges from the same account, is harmless by construction.
@@ -163,7 +197,7 @@ imported) are handled by rules or jev with a `transfer` category.
 
 ### 4.5 Entry points
 
-- Web: `/imports` page, choose account, upload file, see the summary.
+- Web: `/imports` page, upload one or more statements, see the summary per file.
 - CLI: `uv run finance import <file> --account <name>` for the daily habit.
 - Watched folder and open-banking sync are v2 (section 12).
 
@@ -344,7 +378,7 @@ block.
 |---|---|
 | `GET /health` | liveness |
 | `GET/POST /accounts` | list, create |
-| `POST /imports` | multipart upload + `account_id` → import summary |
+| `POST /imports` | multipart PDF upload → import summary (account resolved from the IBAN) |
 | `GET /imports` | history |
 | `GET /transactions` | filtered list (month, account, category, needs_review) |
 | `GET /review` | review queue with jev suggestions |
@@ -369,7 +403,7 @@ through route handlers. Pages:
 | `/subscriptions` | active subscriptions table and monthly total |
 | `/review` | inbox table: description, merchant, amount, jev top-3 as a select, "create rule" toggle, accept and bulk accept |
 | `/chat` | streaming chat with thread list and SQL disclosure |
-| `/imports` | account picker, upload, import history with new vs duplicate counts |
+| `/imports` | upload, import history with new vs duplicate counts per file |
 | `/settings` | accounts and thresholds (minimal in v1) |
 
 Frontend testing in v1: type-check, lint, build in CI. Playwright smoke tests
@@ -394,9 +428,11 @@ labelling from chat.
 - GitHub Actions: `api` job (uv sync, ruff check and format, pytest unit),
   `web` job (npm ci, lint, type-check, build). Dockerfiles for both apps and a
   `docker-compose.yml` for local runs against a Supabase project.
-- Settings via `pydantic-settings`; `.env.example` lists `SUPABASE_DB_URL`,
-  `SUPABASE_DB_URL_READONLY`, `TYPESAFE_API_KEY`, `XAI_API_KEY`,
-  `LANGFUSE_PUBLIC_KEY`, `LANGFUSE_SECRET_KEY`, `LANGFUSE_HOST`.
+- Settings via `pydantic-settings` reading the repo-root `.env`;
+  `.env.example` lists `SUPABASE_DB_URL`, `SUPABASE_DB_URL_READONLY`,
+  `TYPESAFE_API_KEY`, `XAI_API_KEY`, `LANGFUSE_PUBLIC_KEY`,
+  `LANGFUSE_SECRET_KEY`, `LANGFUSE_BASE_URL` (Langfuse Python SDK v4 names;
+  LangChain handler is `from langfuse.langchain import CallbackHandler`).
 
 ## 14. Delivery slices
 
@@ -423,9 +459,15 @@ Each slice ends usable and merged to `main`.
 | Supabase adds setup friction for open-source users | documented free-tier path and `supabase start` Docker path |
 | Duplicate rows from description changes | documented; manual merge is a v2 feature if it appears in practice |
 
-## 16. Open questions for review
+## 16. Review outcome (2026-09-22)
 
-1. Confirm Supabase over DuckDB given the analysis in 3.1.
-2. Confirm the v1 taxonomy in section 7 or edit it directly in this file.
-3. Confirm the account-selection approach on upload (user picks the account)
-   until adapters can sniff an IBAN from the sample files.
+Raul approved the spec. The three open questions closed as follows:
+
+1. Supabase over DuckDB: confirmed.
+2. v1 taxonomy: confirmed as the starting point; refine from real data.
+3. Account selection on upload: not needed. Both sample banks print the IBAN
+   in the statement header, so adapters resolve the account automatically
+   (section 4.1).
+
+Also added on approval: the input format for v1 is PDF statements (section
+4.1) and the simplicity principle in section 2.
