@@ -3,6 +3,7 @@
 import re
 
 from finance.ingestion.adapters.base import pdf_pages_text
+from finance.ingestion.balance_chain import check_balance_chain
 from finance.ingestion.normalize import normalize_merchant, parse_amount_es, parse_date_es
 from finance.models import NormalizedTransaction, ParsedStatement, StatementHeader
 
@@ -36,6 +37,7 @@ def parse_text(text: str) -> ParsedStatement:
         period_end=parse_date_es(period.group(2)),
     )
     transactions = [_row(match) for match in map(_ROW.match, text.splitlines()) if match]
+    check_balance_chain(transactions, bank="caixabank", order="descending")
     return ParsedStatement(header=header, transactions=transactions)
 
 

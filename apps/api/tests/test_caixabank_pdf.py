@@ -9,10 +9,10 @@ SAMPLE = """1/1
 Titular JANE DOE IBAN ES91 2100 0418 4502 0005 1332
 Periodo 01/06/2026 - 05/08/2026 Saldo disponible
 Concepto Fecha Importe Saldo
-AIRBNB * ABC123 05/08/2026 -292,77€ 1.774,02€
-NOMINA (TRF) 03/08/2026 +2326,31€2.066,79€
+AIRBNB * ABC123 05/08/2026 -292,77€ 3.167,01€
+NOMINA (TRF) 03/08/2026 +2326,31€3.459,78€
 MERCADONA 3087 L 28/07/2026 -76,59€ 1.133,47€
-0182-8582-97-0830 08/06/2026 -310,96€ 37.672,44€
+0182-8582-97-0830 08/06/2026 -310,96€ 1.210,06€
 """
 
 
@@ -29,10 +29,10 @@ def test_rows_are_parsed_including_glued_amount_and_balance():
     assert len(rows) == 4
     assert rows[0].booked_at == date(2026, 8, 5)
     assert rows[0].amount == Decimal("-292.77")
-    assert rows[0].balance_after == Decimal("1774.02")
+    assert rows[0].balance_after == Decimal("3167.01")
     assert rows[0].description_raw == "AIRBNB * ABC123"
     assert rows[1].amount == Decimal("2326.31")
-    assert rows[1].balance_after == Decimal("2066.79")
+    assert rows[1].balance_after == Decimal("3459.78")
     assert rows[2].merchant == "MERCADONA 3087 L"
     assert rows[3].merchant is None  # account reference, not a merchant
 

@@ -5,6 +5,7 @@ import re
 from datetime import date
 
 from finance.ingestion.adapters.base import pdf_pages_text
+from finance.ingestion.balance_chain import check_balance_chain
 from finance.ingestion.normalize import normalize_merchant, parse_amount_es, parse_date_es
 from finance.models import NormalizedTransaction, ParsedStatement, StatementHeader
 
@@ -56,6 +57,7 @@ def parse_pages(pages: list[str]) -> ParsedStatement:
         period_end=date(year, month, calendar.monthrange(year, month)[1]),
     )
     transactions = [tx for page in pages for tx in _parse_page(page, month, year)]
+    check_balance_chain(transactions, bank="bbva", order="ascending")
     return ParsedStatement(header=header, transactions=transactions)
 
 
