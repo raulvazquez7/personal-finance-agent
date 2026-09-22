@@ -10,7 +10,7 @@ _IBAN = re.compile(r"IBAN ((?:[A-Z]{2}\d{2})(?: ?[A-Z0-9]{4}){5})")
 _PERIOD = re.compile(r"Periodo (\d{2}/\d{2}/\d{4}) - (\d{2}/\d{2}/\d{4})")
 _ROW = re.compile(
     r"^(?P<concept>.+?) (?P<date>\d{2}/\d{2}/\d{4}) "
-    r"(?P<amount>[+-]?[\d.]*\d,\d{2})€ ?(?P<balance>[\d.]*\d,\d{2})€$"
+    r"(?P<amount>[+-]?[\d.]*\d,\d{2})€ ?(?P<balance>[+-]?[\d.]*\d,\d{2})€$"
 )
 
 

@@ -69,3 +69,17 @@ def test_sniff_recognises_first_page_regardless_of_spacing():
     assert adapter.sniff(PAGE_1)
     assert adapter.sniff(PAGE_1.replace(" ", ""))
     assert not adapter.sniff("Concepto Fecha Importe Saldo\nPeriodo 01/06/2026 - 05/08/2026")
+
+
+PAGE_OVERDRAWN = """EXTRACTO DE ENERO 2026 HOJA 001
+IBAN ES91 0182 0418 4502 0005 1332 BIC: HOJA 001
+F.Oper. F.Valor Concepto Importe Saldo
+02/01 02/01 COMISION DESCUBIERTO -50,00 -45,30
+"""
+
+
+def test_row_with_negative_balance_is_kept():
+    rows = parse_pages([PAGE_OVERDRAWN]).transactions
+    assert len(rows) == 1  # an overdrawn balance must not silently drop the row
+    assert rows[0].amount == Decimal("-50.00")
+    assert rows[0].balance_after == Decimal("-45.30")

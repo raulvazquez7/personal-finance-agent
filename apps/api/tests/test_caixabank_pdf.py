@@ -47,3 +47,18 @@ def test_sniff_recognises_first_page_regardless_of_spacing():
     assert adapter.sniff(SAMPLE)
     assert adapter.sniff(SAMPLE.replace(" ", ""))
     assert not adapter.sniff("EXTRACTO DE JULIO 2026\nF.Oper. F.Valor Concepto Importe Saldo")
+
+
+OVERDRAWN = """1/1
+Titular JANE DOE IBAN ES91 2100 0418 4502 0005 1332
+Periodo 01/06/2026 - 05/08/2026 Saldo disponible
+Concepto Fecha Importe Saldo
+COMISION DESCUBIERTO 04/08/2026 -50,00€ -45,30€
+"""
+
+
+def test_row_with_negative_balance_is_kept():
+    rows = parse_text(OVERDRAWN).transactions
+    assert len(rows) == 1  # an overdrawn balance must not silently drop the row
+    assert rows[0].amount == Decimal("-50.00")
+    assert rows[0].balance_after == Decimal("-45.30")

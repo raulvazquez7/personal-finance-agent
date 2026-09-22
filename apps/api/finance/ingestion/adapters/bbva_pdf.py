@@ -26,7 +26,7 @@ _HEADER = re.compile(r"EXTRACTO DE ([A-ZÑ]+) (\d{4})")
 _IBAN = re.compile(r"IBAN ((?:[A-Z]{2}\d{2})(?: ?[A-Z0-9]{4}){5})")
 _ROW = re.compile(
     r"^(?P<op>\d{2}/\d{2}) (?P<val>\d{2}/\d{2}) (?P<concept>.+?) "
-    r"(?P<amount>-?[\d.]*\d,\d{2}) (?P<balance>[\d.]*\d,\d{2})$"
+    r"(?P<amount>-?[\d.]*\d,\d{2}) (?P<balance>[+-]?[\d.]*\d,\d{2})$"
 )
 _FOOTER = "Todos los importes"
 
