@@ -2,6 +2,7 @@ import pytest
 
 from finance.ingestion import adapters
 from finance.ingestion.adapters import UnsupportedStatement, detect_adapter, pdf_pages_text
+from tests.malformed_pdfs import MALFORMED_PDFS, VALID_PAGE_PDF
 
 BBVA_PAGE = (
     "EXTRACTO DE JULIO 2026\n"
@@ -31,12 +32,9 @@ def test_unknown_statement_raises(monkeypatch):
         detect_adapter(b"%PDF")
 
 
-# Shapes a user can upload by accident: an empty file, a non-PDF, a half-written download.
-MALFORMED_PDFS = {
-    "empty": b"",
-    "garbage": b"not a pdf at all",
-    "truncated_header": b"%PDF-1.4\n1 0 obj",
-}
+def test_well_formed_page_reads():
+    # Control for the builder: the MediaBox cases below fail because of the MediaBox alone.
+    assert pdf_pages_text(VALID_PAGE_PDF) == [""]
 
 
 @pytest.mark.parametrize("shape", sorted(MALFORMED_PDFS))

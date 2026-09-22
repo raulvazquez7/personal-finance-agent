@@ -4,6 +4,7 @@ from fastapi.testclient import TestClient
 from finance.api.deps import db
 from finance.api.main import app
 from finance.ingestion import adapters
+from tests.malformed_pdfs import MALFORMED_PDFS
 
 app.dependency_overrides[db] = lambda: None  # routes under test never reach the database
 client = TestClient(app)
@@ -20,16 +21,10 @@ def test_import_rejects_pdf_without_pages(monkeypatch):
     assert response.status_code == 422
 
 
-@pytest.mark.parametrize(
-    "content",
-    [
-        pytest.param(b"", id="empty"),
-        pytest.param(b"not a pdf at all", id="garbage"),
-        pytest.param(b"%PDF-1.4\n1 0 obj", id="truncated_header"),
-    ],
-)
-def test_import_rejects_unreadable_pdf(content):
-    response = client.post("/imports", files={"file": ("broken.pdf", content, "application/pdf")})
+@pytest.mark.parametrize("shape", sorted(MALFORMED_PDFS))
+def test_import_rejects_unreadable_pdf(shape):
+    upload = ("broken.pdf", MALFORMED_PDFS[shape], "application/pdf")
+    response = client.post("/imports", files={"file": upload})
     assert response.status_code == 422
 
 

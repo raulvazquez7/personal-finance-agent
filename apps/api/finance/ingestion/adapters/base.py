@@ -4,9 +4,12 @@ import io
 from typing import Protocol
 
 import pdfplumber
-from pdfplumber.utils.exceptions import PdfminerException
+from pdfplumber.utils.exceptions import MalformedPDFException, PdfminerException
 
 from finance.models import ParsedStatement
+
+# pdfplumber raises the non-pdfminer types from page parsing on malformed input.
+_UNREADABLE_PDF_ERRORS = (PdfminerException, MalformedPDFException, IndexError, TypeError)
 
 
 class UnsupportedStatement(ValueError):
@@ -26,7 +29,7 @@ def pdf_pages_text(pdf_bytes: bytes, x_tolerance: float = 3) -> list[str]:
     try:
         with pdfplumber.open(io.BytesIO(pdf_bytes)) as pdf:
             return [page.extract_text(x_tolerance=x_tolerance) or "" for page in pdf.pages]
-    except PdfminerException as error:
+    except _UNREADABLE_PDF_ERRORS as error:
         raise UnsupportedStatement(
             "The file could not be read as a PDF; it may be empty, corrupt or truncated"
         ) from error
