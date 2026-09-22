@@ -12,7 +12,10 @@ class UnsupportedStatement(ValueError):
 
 
 def detect_adapter(pdf_bytes: bytes) -> BankAdapter:
-    first_page = pdf_pages_text(pdf_bytes, x_tolerance=1)[0]
+    pages = pdf_pages_text(pdf_bytes, x_tolerance=1)
+    if not pages:
+        raise UnsupportedStatement("The PDF has no pages to read")
+    first_page = pages[0]
     for adapter in ADAPTERS:
         if adapter.sniff(first_page):
             return adapter
