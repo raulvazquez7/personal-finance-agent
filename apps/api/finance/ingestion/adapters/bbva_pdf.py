@@ -86,5 +86,9 @@ def _parse_page(text: str, month: int, year: int) -> list[NormalizedTransaction]
 
 def _row_date(day_month: str, statement_month: int, statement_year: int) -> date:
     row_month = int(day_month[3:5])
-    year = statement_year - 1 if statement_month == 1 and row_month == 12 else statement_year
+    year = statement_year
+    if statement_month == 1 and row_month == 12:
+        year -= 1
+    elif statement_month == 12 and row_month == 1:
+        year += 1
     return parse_date_es(day_month, year=year)

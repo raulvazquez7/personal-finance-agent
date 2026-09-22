@@ -83,3 +83,21 @@ def test_row_with_negative_balance_is_kept():
     assert len(rows) == 1  # an overdrawn balance must not silently drop the row
     assert rows[0].amount == Decimal("-50.00")
     assert rows[0].balance_after == Decimal("-45.30")
+
+
+PAGE_DECEMBER = """EXTRACTO MENSUAL DE CUENTAS PERSONALES
+EXTRACTO DE DICIEMBRE 2025 Fecha de emisión: 01/01/2026
+IBAN ES91 0182 0418 4502 0005 1332 BIC: HOJA 001
+Titulares: JANE DOE
+F.Oper. F.Valor Concepto Importe Saldo
+31/12 02/01 COMPRA NAVIDAD -50,00 100,00
+4931000000000000 REGALOS JANE VILADECANS ES
+Todos los importes de este extracto se expresan en: SALDO A NUESTRO FAVOR SALDO A SU FAVOR
+EURO 100,00
+"""
+
+
+def test_january_value_date_in_a_december_statement_rolls_forward():
+    (row,) = parse_pages([PAGE_DECEMBER]).transactions
+    assert row.booked_at == date(2025, 12, 31)
+    assert row.value_date == date(2026, 1, 2)  # January value date in a December statement
