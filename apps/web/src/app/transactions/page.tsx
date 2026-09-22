@@ -6,19 +6,27 @@ import { apiGet, euro, type Schemas } from "@/lib/api";
 
 export const dynamic = "force-dynamic";
 
+// The API's documented maximum page size.
+const LIMIT = 1000;
+
 type Props = { searchParams: Promise<{ month?: string }> };
 
 export default async function TransactionsPage({ searchParams }: Props) {
   const { month } = await searchParams;
-  const query = month ? `?month=${month}` : "";
-  const transactions = await apiGet<Schemas["Transaction"][]>(`/transactions${query}`);
+  const query = new URLSearchParams({ limit: String(LIMIT), ...(month ? { month } : {}) });
+  const transactions = await apiGet<Schemas["Transaction"][]>(`/transactions?${query}`);
 
   return (
     <main className="mx-auto flex max-w-5xl flex-col gap-6 p-6">
       <form method="get" className="flex items-center gap-2">
-        <Input type="month" name="month" defaultValue={month} className="w-48" />
+        <Input type="month" name="month" aria-label="Month" defaultValue={month} className="w-48" />
         <Button type="submit" variant="secondary">Filter</Button>
       </form>
+      {transactions.length === LIMIT && (
+        <p className="text-sm text-muted-foreground">
+          Showing the latest {LIMIT} transactions. Narrow the month to see all.
+        </p>
+      )}
       <Table>
         <TableHeader>
           <TableRow>
