@@ -31,3 +31,6 @@ out/
 .idea/
 .vscode/
 .cursor/
+
+# Claude Code personal overrides
+.claude/settings.local.json

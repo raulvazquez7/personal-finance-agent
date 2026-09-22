@@ -15,6 +15,9 @@ agent over a semantic layer. Design: `docs/superpowers/specs/`. Plans:
 
 - Superpowers: brainstorm → spec → plan → subagent-driven-development, TDD,
   verification before claiming done. One plan per delivery slice.
+- Models: the session and every subagent run on Opus. `.claude/settings.json`
+  sets `model` and `CLAUDE_CODE_SUBAGENT_MODEL`; never pass a smaller model to
+  the Agent tool for implementation or review work.
 - Everything in English: code, comments, docs, commits, UI copy.
 - Simplicity is a requirement: 15 readable lines beat 30 clever ones, use
   libraries the way their docs recommend, one responsibility per file, no
