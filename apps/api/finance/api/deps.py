@@ -14,4 +14,4 @@ def db() -> Iterator[Connection]:
         yield conn
 
 
-Db = Annotated[Connection, Depends(db)]
+Db = Annotated[Connection, Depends(db, scope="function")]
