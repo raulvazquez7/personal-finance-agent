@@ -27,7 +27,16 @@ export function UploadForm() {
             const summary = (await response.json()) as Schemas["ImportSummary"];
             results.push(`${file.name}: ${summary.rows_new} new, ${summary.rows_duplicate} duplicate`);
           } else {
-            results.push(`${file.name}: ${response.status} ${await response.text()}`);
+            const text = await response.text();
+            let detail: unknown;
+            try {
+              detail = JSON.parse(text).detail;
+            } catch {
+              detail = undefined;
+            }
+            results.push(
+              typeof detail === "string" ? `${file.name}: ${detail}` : `${file.name}: ${response.status} ${text}`,
+            );
           }
         } catch (error) {
           results.push(`${file.name}: ${error instanceof Error ? error.message : String(error)}`);
