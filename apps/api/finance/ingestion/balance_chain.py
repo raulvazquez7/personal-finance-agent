@@ -34,5 +34,6 @@ def check_balance_chain(
                 f"{bank} statement balance chain breaks at row {index} "
                 f"({current.booked_at} {current.description_raw!r}): "
                 f"expected {expected}, statement prints {current.balance_after}; "
-                "a row was probably dropped while parsing"
+                "a row is missing or repeated, or the statement layout changed. "
+                "Nothing was imported."
             )

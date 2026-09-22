@@ -43,6 +43,7 @@ def test_error_names_the_row_and_both_balances():
     assert "row 1" in message
     assert "50.00" in message  # expected: 94.00 - 44.00
     assert "300.00" in message  # actual balance printed on the row
+    assert "a row is missing or repeated" in message  # also fires on a row captured twice
 
 
 def test_dropped_middle_row_fails_loudly_when_descending():
