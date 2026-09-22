@@ -1,0 +1,56 @@
+[project]
+name = "finance-api"
+version = "0.1.0"
+description = "personal-finance-agent API: ingestion, categorization, chat agent"
+requires-python = ">=3.12"
+dependencies = [
+    "fastapi>=0.115",
+    "uvicorn[standard]>=0.30",
+    "python-multipart>=0.0.9",
+    "pydantic>=2.7",
+    "pydantic-settings>=2.3",
+    "psycopg[binary,pool]>=3.2",
+    "pdfplumber>=0.11",
+    "typer>=0.12",
+]
+
+[project.scripts]
+finance = "finance.cli:app"
+
+[dependency-groups]
+dev = [
+    "pytest>=8",
+    "httpx>=0.27",
+    "ruff>=0.6",
+    "taskipy>=1.13",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["finance"]
+
+[tool.taskipy.tasks]
+test = "pytest -m \"not integration\""
+test-integration = "pytest -m integration"
+lint = "ruff check . && ruff format --check ."
+format = "ruff format . && ruff check --fix ."
+api = "uvicorn finance.api.main:app --reload --port 8000"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q --strict-markers"
+markers = ["integration: needs a local Supabase database and the repo-root .env"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B"]
+
+[tool.ruff.lint.flake8-bugbear]
+# FastAPI and typer declare parameters through calls in defaults; that is their documented style.
+extend-immutable-calls = ["fastapi.Query", "fastapi.Depends", "typer.Argument", "typer.Option"]
