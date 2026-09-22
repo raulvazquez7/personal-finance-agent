@@ -1,3 +1,4 @@
+import pytest
 from fastapi.testclient import TestClient
 
 from finance.api.deps import db
@@ -16,6 +17,19 @@ def test_import_rejects_non_pdf_uploads():
 def test_import_rejects_pdf_without_pages(monkeypatch):
     monkeypatch.setattr(adapters, "pdf_pages_text", lambda _pdf, x_tolerance=3: [])
     response = client.post("/imports", files={"file": ("empty.pdf", b"%PDF", "application/pdf")})
+    assert response.status_code == 422
+
+
+@pytest.mark.parametrize(
+    "content",
+    [
+        pytest.param(b"", id="empty"),
+        pytest.param(b"not a pdf at all", id="garbage"),
+        pytest.param(b"%PDF-1.4\n1 0 obj", id="truncated_header"),
+    ],
+)
+def test_import_rejects_unreadable_pdf(content):
+    response = client.post("/imports", files={"file": ("broken.pdf", content, "application/pdf")})
     assert response.status_code == 422
 
 
