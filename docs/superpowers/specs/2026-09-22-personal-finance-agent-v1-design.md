@@ -99,10 +99,11 @@ the agent's SQL tool). Migrations via the Supabase CLI in `supabase/migrations`.
 |---|---|---|
 | `accounts` | one row per bank account, auto-created from the IBAN in a statement header | `id`, `bank` (`bbva`, `caixabank`), `iban` (unique), `name` (defaults to bank + last 4 digits, user-editable), `currency` |
 | `imports` | one row per uploaded file | `id`, `account_id`, `filename`, `file_sha256`, `imported_at`, `rows_total`, `rows_new`, `rows_duplicate` |
-| `transactions` | the normalized ledger | `id`, `account_id`, `import_id`, `booked_at`, `value_date`, `amount` (signed, numeric(12,2)), `currency`, `description_raw`, `merchant`, `balance_after`, `dedup_key` (unique), `tx_type` (`income`/`expense`/`transfer`), `category_slug`, `category_source` (`rule`/`jev`/`user`/`none`), `category_confidence`, `jev_suggestions` (jsonb top-3), `is_subscription`, `transfer_pair_id`, `needs_review` |
+| `transactions` | the normalized ledger | `id`, `account_id`, `import_id`, `booked_at`, `value_date`, `amount` (signed, numeric(12,2)), `currency`, `description_raw`, `bank_concept`, `merchant` (cleaned text), `card_last4`, `balance_after`, `dedup_key` (unique), `tx_type` (`income`/`expense`/`transfer`), `merchant_id`, `merchant_source` and `category_source` (`rule`/`jev`/`user`/`none`), `merchant_confidence`, `category_slug`, `category_confidence`, `category_probabilities` (jsonb, full distribution), `is_subscription`, `subscription_score`, `transfer_pair_id`, `needs_review` |
+| `merchants` | canonical merchant names, grown automatically from jev picks and user merges | `id`, `name` (unique), `match_key` (unique: upper-case letters and digits only), `confirmed` |
 | `categories` | two-level taxonomy | `slug` (pk), `tx_type`, `level1`, `level2`, `description` (also used as jev criteria) |
-| `rules` | deterministic categorization | `id`, `match_type` (`merchant_exact`/`contains`/`regex`), `pattern`, `category_slug`, `is_subscription`, `created_from_transaction_id` |
-| `transaction_labels` | history of every label applied | `transaction_id`, `category_slug`, `source`, `confidence`, `labeled_at` (user labels become the golden set for Raul's own evals) |
+| `rules` | deterministic categorization | `id`, `match_type` (`merchant_exact`/`contains`/`regex`), `pattern`, `merchant_id` and/or `category_slug`, `is_subscription`, `created_from_transaction_id` |
+| `transaction_labels` | history of every label applied | `transaction_id`, `merchant_id`, `category_slug`, `source`, `confidence`, `model` (concrete jev version, e.g. `jev-1.13.0`), `labeled_at` (user labels become the golden set for Raul's own evals) |
 | `semantic_schema` | natural-language schema | `table_name`, `column_name` (null = table row), `description`, `examples` (jsonb), `synonyms` (text[]) |
 | `semantic_metrics` | named metrics | `name`, `description`, `sql_expression` |
 | LangGraph checkpoint tables | chat memory per thread | managed by `langgraph-checkpoint-postgres` |
@@ -162,11 +163,19 @@ Adding a bank means adding one adapter module and one text fixture test.
 
 ### 4.2 Merchant normalization
 
-Deterministic cleanup of `description_raw` into `merchant`: strip bank
-prefixes ("COMPRA TARJ", "PAGO EN", "RECIBO", card numbers, dates, city
-suffixes), collapse whitespace, upper-case. Bank-specific prefix lists live
-in each adapter. Rules match on `merchant`, so normalization quality directly
-reduces jev calls.
+Python only structures, it does not guess the merchant name:
+
+- `bank_concept`: the bank's own operation label when the format has one
+  (BBVA prints it before ` | `, e.g. `PAGO CON TARJETA EN SUPERMERCADOS`).
+  It is the strongest category signal jev gets. Null for CaixaBank.
+- `merchant`: the detail text, upper-case, whitespace collapsed, leading
+  references dropped, card number removed. Rules match on it.
+- `card_last4`: last four digits of the card when the line has one. The full
+  card number is never stored outside `description_raw` and never sent to jev.
+
+The canonical merchant name ("Mercadona" across every branch, city and
+truncation) is chosen by jev from fragments of `merchant` (section 5.1), so no
+per-bank city list or merchant list is maintained by hand.
 
 ### 4.3 Deduplication
 
@@ -222,46 +231,91 @@ new transaction
 
 ### 5.1 jev call shape
 
-One `system_one` call per transaction, sent concurrently with a bounded
-semaphore (default 8) and the SDK's retry policy. Questions are independent,
-so they travel together:
+Validated by the spike in `docs/superpowers/spikes/2026-09-23-jev-categorization/`
+(412 real transactions, four rounds). jev answers closed questions only
+(`Choice`, `Noul`, `Score`), so code generates the options and jev chooses.
+
+**Contracts**
+
+| Step | Owner | In | Out |
+|---|---|---|---|
+| 1. Prepare | Python | transaction row | `state`, merchant fragments, category options |
+| 2. First call | jev | `state` + three questions | probabilities per question |
+| 3. Resolve merchant | Python | chosen fragment | existing merchant (exact key), shortlist, or new |
+| 4. Same-merchant call | jev, only with a shortlist | `state` + `candidate_name` + shortlist | probabilities |
+| 5. Apply | Python | all probabilities | labels, confidences, `needs_review` |
+
+**Step 1.** Fragments are every run of one to four consecutive words of
+`merchant`, split on spaces and `* / ,`, dropping any token that contains a
+digit (reference codes, branch numbers). Category options are the level-2
+slugs for the direction (expense or income) plus the transfer slugs.
+
+**Step 2.** One call, questions evaluated independently (speculative fan-out):
 
 ```python
-state = {
-    "description": tx.description_raw,
-    "merchant": tx.merchant,
-    "amount": str(tx.amount),
-    "direction": "outgoing" if tx.amount < 0 else "incoming",
-    "bank": account.bank,
-}
+state = {"bank": "bbva", "bank_concept": "PAGO CON TARJETA EN SUPERMERCADOS",
+         "merchant_text": "SUPER ACME 0042 L", "amount": "-23.28", "direction": "outgoing"}
 questions = {
+    "merchant_name": Choice(
+        instructions={"question": "Which fragment of `merchant_text` is the business or brand name, as a person would say it?",
+                      "not_for": "city names, country codes, branch numbers, legal suffixes like SL or SA, card numbers"},
+        criteria={fragment: None for fragment in fragments} | {"none": {"what": "the text names no business: a person, a generic operation (BIZUM, TRANSFER) or a code"}},
+    ),
     "category": Choice(
         instructions="Which category best describes this bank transaction",
-        criteria={slug: description for slug, description in categories_for(direction)},
+        criteria={slug: {"group": level1, "what": description, "not_for": ...} for ...},
     ),
-    "is_subscription": Noul(
-        instructions="This is a recurring subscription charge, such as streaming, telecom, gym, insurance or software",
-    ),
+    "is_subscription": Noul(instructions="This is a recurring subscription charge, such as streaming, telecom, gym, insurance, apps or software"),
 }
 ```
 
-Only categories matching the transaction direction are offered, which keeps
-the option list small (about 25) and avoids literal-reading traps.
-Category descriptions in the `categories` table double as jev criteria, so
-improving one improves the other. `tx_type` is derived in code: `transfer`
-when paired or when the category is a transfer category, else by sign.
+**Step 3.** Brand confidence is the sum of the probabilities of the fragments
+nested with the chosen one (`ACME` and `ACME FOODS` are both right and split
+the mass). The chosen name's `match_key` (letters and digits only) is looked
+up in `merchants`; a hit is the same merchant. Otherwise the shortlist is
+every merchant that shares a word (longer than two letters, not a legal
+suffix) with the chosen name.
+
+**Step 4.** Only with a non-empty shortlist (about 3 percent of rows in the
+spike): `known_merchant` Choice over the shortlist names plus `none`, with
+`candidate_name` in the state and `not_for: "a different business that only
+shares the town, the street or the kind of shop"`. Never merge on doubt:
+a wrong merge corrupts analytics silently, a duplicate is one click in
+`/review`.
+
+**Step 5.** jev picks level 2; level 1 is the parent slug in `categories`,
+and its confidence is the sum of its leaves' probabilities
+([classification using confidence](https://docs.typesafe.ai/cookbooks/classification_using_confidence)).
+`tx_type` is derived in code: `transfer` when paired or when the category is
+a transfer category, else by sign.
+
+Calls run with a bounded semaphore (default 8) and the SDK retry policy; the
+same-merchant step serializes merchant creation so two concurrent rows cannot
+create the same merchant twice. Every call is wrapped in a Langfuse span with
+`model`, `request_id`, `usage` and the probabilities. Category descriptions in
+`categories` double as jev criteria. Cost in the spike: about 1,800 input
+tokens per transaction, $0.031 for 412 rows.
 
 ### 5.2 Confidence gate
 
-Threshold is a setting, default 0.85 for `category`; `is_subscription` uses
-`noul > 0.7`. Thresholds are per-decision because consequences differ. The
-review inbox is the safety net: nothing under the threshold is silently
-accepted.
+Thresholds are settings, per decision because consequences differ:
+
+| Decision | Accept | Otherwise |
+|---|---|---|
+| Category (level 2) | confidence >= 0.85 | `needs_review`; level 1 is still shown when its summed confidence is >= 0.85 |
+| Merchant name (new) | brand confidence >= 0.5 | merchant left empty, `needs_review` |
+| Merge into a known merchant | confidence >= 0.8 | new merchant; 0.5 to 0.8 appears in `/review` as a merge suggestion |
+| Subscription | noul > 0.7 | not flagged; 0.3 to 0.7 appears in `/review` |
+
+The category threshold is revisited against the golden set once the taxonomy
+is final. The review inbox is the safety net: nothing under a threshold is
+silently accepted.
 
 ### 5.3 Learning from corrections
 
 A user label writes `transaction_labels`, updates the transaction, and (when
-the checkbox is on) inserts a `merchant_exact` rule. Future transactions from
+the checkbox is on) inserts a `merchant_exact` rule. Merging two merchants in
+`/review` repoints their transactions and keeps the surviving name. Future transactions from
 that merchant never reach jev. A "recategorize all" action re-runs the cascade
 over every non-user-labelled transaction; with output tokens free and input at
 $0.042 per million tokens, re-labelling years of history costs cents.
@@ -484,3 +538,24 @@ Also added on approval: the input format for v1 is PDF statements (section
 - Section 4.5: the CLI takes one or more files and no `--account` flag.
 - Section 11: in v1 the browser posts uploads straight to the API.
 - Section 12: recording failed imports in the import history is out of scope.
+
+### Slice 2 amendments (2026-09-23)
+
+Decided with Raul after the jev spike
+(`docs/superpowers/spikes/2026-09-23-jev-categorization/README.md`):
+
+- Section 3.2: new `merchants` table; `transactions` gains `bank_concept`,
+  `card_last4`, `merchant_id`, `merchant_source`, `merchant_confidence`,
+  `category_probabilities` (replaces `jev_suggestions`) and
+  `subscription_score`; `transaction_labels` records the jev `model`; rules can
+  set a merchant, a category or both.
+- Section 4.2: Python structures (`bank_concept`, cleaned `merchant`,
+  `card_last4`) and never guesses the merchant name; the card number never
+  reaches jev.
+- Section 5.1: contracts between Python and jev; merchant chosen by jev from
+  code-generated fragments, then an exact key match, then a same-merchant
+  question over a shortlist; jev picks level 2, level 1 is derived.
+- Section 5.2: thresholds per decision, merge only at >= 0.8.
+- Two-level analytics (level 1 and level 2) is a requirement; the taxonomy
+  itself (section 7) is the next decision.
+
