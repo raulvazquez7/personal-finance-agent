@@ -49,3 +49,7 @@ never duplicates a transaction.
   file is saved.
 - Every upload is recorded in the import history, including re-uploads that
   add no new rows.
+
+## License
+
+MIT, see [LICENSE](LICENSE).
