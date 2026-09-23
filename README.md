@@ -38,6 +38,14 @@ never duplicates a transaction.
 
 - If a bank changes a settled transaction's description between two exports,
   that transaction appears twice.
-- Deduplication counts identical rows by their
-  position within one file. A re-cut statement that contains only one of two
-  identical same-day movements can suppress it.
+- Two movements are treated as the same transaction only when their date,
+  amount, description and printed balance all match. With a running balance
+  that requires the movements between them to net to zero (for example a
+  charge, its reversal, and the same charge again on one day). If two exports
+  cut in the middle of such a day each contain a different one of the matching
+  movements, the later import skips it.
+- A failed import (unsupported file, unreadable PDF, broken balance chain) is
+  reported to you but not recorded in the import history. Nothing from the
+  file is saved.
+- Every upload is recorded in the import history, including re-uploads that
+  add no new rows.
