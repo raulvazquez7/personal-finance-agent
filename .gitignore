@@ -8,6 +8,9 @@ data/raw/
 data/*.duckdb
 data/*.db
 
+# Browser QA captures (agent-browser) show real bank data
+dogfood-output/
+
 # Python
 __pycache__/
 *.py[cod]

@@ -41,6 +41,24 @@ supabase start && supabase db reset         # local Postgres with migrations
 cd apps/web && npm run dev                  # Next.js on :3000
 ```
 
+## Verifying the web app
+
+Use `agent-browser` (global CLI and skill; `brew install agent-browser`) to
+check the UI as a user would. Run the API and web first; pages live at
+`http://localhost:3000` (`/imports`, `/transactions`).
+
+- Before claiming a task or PR that touches `apps/web` is done: check the
+  affected flow with `agent-browser skills get core` (open, snapshot, act,
+  re-snapshot), e.g. upload a PDF on `/imports` and read the counts. Not on
+  every small edit.
+- Once per slice, before merge: one `agent-browser skills get dogfood` pass
+  over the whole app, report in `dogfood-output/`.
+- Pass absolute paths to `upload` and `screenshot`: the daemon does not share
+  your working directory, and a relative upload path hung the page.
+- Use a named session, stay on localhost, and `close` when done. Screenshots
+  show real bank data: `dogfood-output/` is git-ignored, never commit captures.
+- CI stays lint, type-check and build; Playwright smoke tests are v2.
+
 ## Boundaries
 
 - Secrets only in the repo-root `.env` (git-ignored). Never print, log or
