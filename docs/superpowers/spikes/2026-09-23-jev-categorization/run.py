@@ -1,11 +1,11 @@
 """Spike: merchant, category and subscription with jev over the local ledger (read-only).
 
-Runs the round-4 baseline described in README.md. It reads the local Supabase database, calls jev
+Runs the round-4 baseline described in README.md with the round-5 taxonomy. It reads the local Supabase database, calls jev
 for every transaction in booking order (sequentially, so the merchant roster grows as it would in
 production) and writes one JSON line per transaction to output/results_<run>.jsonl. It writes
 nothing to the database. output/ is git-ignored because it contains real bank data.
 
-    uv run --env-file ../../../../.env --with typesafe-sdk --with 'psycopg[binary]' python run.py v4
+    uv run --env-file ../../../../.env --with typesafe-sdk --with 'psycopg[binary]' python run.py v5
 """
 
 import asyncio
@@ -23,65 +23,89 @@ DB = os.environ.get("SPIKE_DB_URL", "postgresql://postgres:postgres@127.0.0.1:54
 OUT_DIR = Path(__file__).parent / "output"
 MERGE_THRESHOLD = 0.8  # below this, a candidate stays a new merchant: never merge on doubt
 
-# v1 seed taxonomy (spec section 7). Each description is the jev criterion for its slug.
+# Round-5 taxonomy (spec section 7). Each description is the jev criterion for its slug:
+# `what` belongs here, `not_for` names the neighbouring option that takes it instead.
 EXPENSE = {
-    "shopping": {
-        "groceries": {"what": "supermarkets, grocery stores, bakeries, butchers, food markets"},
-        "tobacco": {"what": "tobacco shops (estanco)"},
-        "home_goods": {"what": "furniture, decoration, household items, hardware, drugstore and cleaning products"},
-        "fashion": {"what": "clothing, shoes, accessories, sportswear shops"},
-        "electronics": {"what": "electronics, computers, phones, books, music, photo, video games"},
-        "other_shopping": {"what": "any other retail purchase, online marketplaces, department stores, gifts, toys"},
-    },
     "home": {
-        "rent_mortgage": {"what": "monthly rent or mortgage payment to a bank or landlord"},
-        "utilities": {"what": "electricity, gas, water bills"},
+        "rent_mortgage": {"what": "monthly rent to a landlord, or mortgage instalment to a bank or mortgage lender", "not_for": "personal loans or consumer credit"},
+        "utilities": {"what": "electricity, gas, water and heating bills"},
         "internet_phone": {"what": "internet, mobile and landline telecom bills"},
-        "home_insurance": {"what": "home insurance premiums"},
-        "maintenance": {"what": "repairs, plumbers, cleaning services, community fees"},
+        "home_insurance": {"what": "home and contents insurance premiums"},
+        "maintenance": {"what": "home repairs, plumbers, electricians, cleaning services, homeowners' community fees", "not_for": "buying furniture or household items"},
+    },
+    "shopping": {
+        "groceries": {"what": "supermarkets, grocery stores, bakeries, butchers, fruit shops, food markets"},
+        "fashion": {"what": "clothing, shoes, bags and accessories shops, sportswear"},
+        "electronics": {"what": "electronics, computers, phones, appliances, photo and video game shops"},
+        "home_goods": {"what": "furniture, decoration, household items, hardware and DIY stores, cleaning products"},
+        "beauty_perfumery": {"what": "perfumeries, cosmetics and make-up shops, drugstores", "not_for": "hairdressers and beauty services"},
+        "hobbies": {"what": "music instruments, sports equipment, crafts, books, stationery, toys and hobby shops", "not_for": "school textbooks and course materials"},
+        "tobacco": {"what": "tobacco shops (estanco), tobacco and vaping products"},
+        "other_shopping": {"what": "online marketplaces, department stores, bazaars and any other retail purchase that fits no specific shop"},
     },
     "leisure": {
         "restaurants_bars": {"what": "restaurants, bars, cafes, fast food, food delivery, ice cream shops"},
-        "entertainment": {"what": "streaming, apps and digital subscriptions, cinema, lottery, games"},
-        "sports_gym": {"what": "gym membership, sports clubs, sports activities"},
-        "culture_events": {"what": "museums, theme parks, concerts, theatre, events, tickets"},
+        "entertainment": {"what": "streaming services, apps, digital subscriptions, video games bought online"},
+        "culture_events": {"what": "cinema, concerts, theatre, museums, theme parks, event tickets"},
+        "sports_gym": {"what": "gym memberships, sports clubs, classes and sports activities", "not_for": "buying sports equipment"},
+        "gambling_lottery": {"what": "lottery, betting, casinos, lottery administrations"},
     },
     "transport": {
         "fuel": {"what": "petrol stations, fuel, EV charging"},
-        "public_transport": {"what": "metro, bus, train, tram tickets and passes"},
-        "taxi_rideshare": {"what": "taxi, Uber rides, Cabify, Bolt"},
+        "public_transport": {"what": "metro, bus, tram and commuter train tickets and passes, bike and scooter sharing", "not_for": "long-distance trains and trips away from home"},
+        "taxi_rideshare": {"what": "taxi, Uber, Cabify, Bolt rides"},
         "parking_tolls": {"what": "parking, motorway tolls"},
-        "car_costs": {"what": "car repairs, car wash, ITV, car insurance, car rental"},
-    },
-    "cash": {"atm_withdrawal": {"what": "cash withdrawal at an ATM"}},
-    "health": {
-        "pharmacy": {"what": "pharmacies"},
-        "medical": {"what": "doctors, dentists, clinics, opticians, hairdressers and personal care"},
-        "health_insurance": {"what": "health insurance premiums"},
+        "car_costs": {"what": "car repairs, garages, tyres, car wash, ITV inspection, car insurance, road tax"},
     },
     "travel": {
         "flights": {"what": "airlines and flight tickets"},
-        "lodging": {"what": "hotels, apartments, holiday rentals"},
-        "travel_other": {"what": "travel agencies, travel packages, foreign-purchase fees while travelling"},
+        "lodging": {"what": "hotels, hostels, holiday apartments and rentals"},
+        "travel_other": {"what": "travel agencies, packages, long-distance trains and buses, car rental, fees for purchases abroad"},
+    },
+    "health": {
+        "pharmacy": {"what": "pharmacies and parapharmacies"},
+        "medical": {"what": "doctors, dentists, clinics, hospitals, opticians, physiotherapy, psychologists", "not_for": "hairdressers, beauty treatments, veterinarians"},
+        "health_insurance": {"what": "private health insurance premiums"},
+        "personal_care": {"what": "hairdressers, barbers, beauty salons, nails, spa and massage", "not_for": "buying cosmetics or perfume in a shop"},
+    },
+    "education": {
+        "tuition": {"what": "school, university and nursery-school fees, parents' associations (AMPA), exam fees"},
+        "courses": {"what": "language schools, academies, tutoring, online courses and training", "not_for": "sports classes"},
+        "books_supplies": {"what": "school textbooks, course materials and school supplies", "not_for": "leisure books and toys"},
+    },
+    "family": {
+        "childcare_kids": {"what": "childcare, babysitters, summer camps, extracurricular activities and children's needs", "not_for": "school fees"},
+        "pets": {"what": "veterinarians, pet food, pet shops, pet grooming and insurance"},
+    },
+    "people": {
+        "payments_to_people": {"what": "money sent to a private person: Bizum sent, a transfer to an individual's name"},
+    },
+    "giving": {
+        "donations": {"what": "donations to charities, foundations, NGOs, churches and causes"},
     },
     "financial": {
-        "bank_fees": {"what": "bank commissions and fees"},
-        "loan_payment": {"what": "repayment of a personal loan or credit", "not_for": "mortgage"},
-        "taxes": {"what": "taxes, fines, public administration fees"},
+        "bank_fees": {"what": "bank commissions, account and card fees, overdraft interest"},
+        "loan_payment": {"what": "repayment of a personal loan, consumer credit or financing", "not_for": "mortgage"},
+        "taxes": {"what": "taxes, fines, social security payments and public administration fees"},
+        "other_insurance": {"what": "life insurance and any insurance that is not home, health or car"},
     },
-    "other": {"uncategorized_expense": {"what": "donations, payments to individuals, anything that fits no other category"}},
+    "cash": {"atm_withdrawal": {"what": "cash withdrawal at an ATM"}},
+    "other": {"uncategorized_expense": {"what": "an expense that fits no other category or whose text gives no clue"}},
 }
 INCOME = {
     "income": {
-        "salary": {"what": "payroll, salary (nomina)"},
-        "refunds": {"what": "refunds, cashback, bonuses returned by a merchant or bank"},
+        "salary": {"what": "payroll, salary (nomina) paid by an employer"},
+        "self_employment": {"what": "payments from clients for freelance or business work, invoices paid"},
+        "pension_benefits": {"what": "pension, unemployment benefit, public aid and subsidies, tax refunds from the administration"},
+        "refunds": {"what": "refunds, returns, cashback and bonuses paid back by a merchant or bank"},
         "investment_income": {"what": "interest, dividends, investment returns"},
-        "other_income": {"what": "money received from individuals or any other income"},
+        "payments_from_people": {"what": "money received from a private person: Bizum received, a transfer from an individual's name"},
+        "other_income": {"what": "any other income that fits no category above"},
     }
 }
 TRANSFER = {
     "transfer": {
-        "own_accounts": {"what": "moving money between accounts of the same person (traspaso)"},
+        "own_accounts": {"what": "moving money between accounts of the same person (traspaso propio)", "not_for": "money sent to or received from another person"},
         "savings_investment": {"what": "contributions to savings, brokers, investment or pension plans"},
         "credit_card_payment": {"what": "monthly settlement of a credit card (adeudo mensual de tarjeta)"},
     }

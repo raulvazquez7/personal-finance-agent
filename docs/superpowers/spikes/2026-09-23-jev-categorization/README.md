@@ -5,7 +5,8 @@ category and flag subscriptions for real Spanish bank transactions, cheaply
 and without a hand-maintained merchant list?
 
 Answer: yes. The round-4 baseline below is the design adopted for slice 2
-(spec, "Slice 2 amendments"). Four rounds ran over the local ledger (412
+(spec, "Slice 2 amendments"); round 5 kept it and validated the final
+taxonomy (spec section 7). Five rounds ran over the local ledger (412
 transactions, 3 accounts, BBVA and CaixaBank, June to August 2026) on
 `jev-1.13.0`.
 
@@ -17,8 +18,8 @@ git-ignored `output/` folder.
 ```bash
 supabase start                      # local ledger with imported statements
 cd docs/superpowers/spikes/2026-09-23-jev-categorization
-uv run --env-file ../../../../.env --with typesafe-sdk --with 'psycopg[binary]' python run.py v5
-python3 report.py v5                # prints the summary, writes output/review_v5.csv
+uv run --env-file ../../../../.env --with typesafe-sdk --with 'psycopg[binary]' python run.py v6
+python3 report.py v6                # prints the summary, writes output/review_v6.csv
 ```
 
 `run.py` is read-only against the database. Compare a new run with the
@@ -45,19 +46,45 @@ card number and `0042` never reach jev.
 
 ## Results by round
 
-| | v1 | v2 | v3 | v4 |
-|---|---|---|---|---|
-| Change | first design | clean fragments, names only, shortlist by shared word | two steps, exact key, brand confidence | name-to-name comparison, merge at 0.8 |
-| Cost for 412 rows | $0.085 | $0.033 | $0.031 | $0.031 |
-| Wrong merges | ~7, confidence up to 0.99 | 2 | 1 | 1 (generic word) |
-| Brand confidence >= 0.85 | n/a | n/a | 295 / 332 | 294 / 331 |
-| Level-2 confidence >= 0.85 | 310 | 307 | 304 | 306 |
-| Level-1 confidence >= 0.85 | 334 | 337 | 338 | 340 |
+| | v1 | v2 | v3 | v4 | v5 |
+|---|---|---|---|---|---|
+| Change | first design | clean fragments, names only, shortlist by shared word | two steps, exact key, brand confidence | name-to-name comparison, merge at 0.8 | final taxonomy with `what`/`not_for` criteria |
+| Cost for 412 rows | $0.085 | $0.033 | $0.031 | $0.031 | $0.043 |
+| Wrong merges | ~7, confidence up to 0.99 | 2 | 1 | 1 (generic word) | unchanged |
+| Brand confidence >= 0.85 | n/a | n/a | 295 / 332 | 294 / 331 | 298 / 328 |
+| Level-2 confidence >= 0.85 | 310 | 307 | 304 | 306 | 297 |
+| Level-1 confidence >= 0.85 | 334 | 337 | 338 | 340 | 323 |
+| Uncategorized expenses | | | | 33 (16 at >= 0.85) | 15 (none at >= 0.85) |
 
 About 8 duplicates stay unmerged in v4 (for example `ACME` and `ACME FOODS`), all with a
 merge confidence between 0.5 and 0.8. `/review` offers them as merge
 suggestions: a duplicate is one click to fix, a wrong merge silently corrupts
 the analytics.
+
+### Round 5: the taxonomy
+
+v5 changed only the categories (seed of spec section 7: new groups for
+education, family, people and giving; beauty, hobbies, personal care,
+gambling, self-employment and public benefits as level 2) and wrote every
+criterion as `what` plus, where a neighbour competes, `not_for`. Longer
+criteria cost about 40 percent more input tokens, still cents per run.
+
+- Transfers to and from people (about 30 rows) left `uncategorized_expense`
+  and `other_income`; those with BIZUM in the text scored 0.94 to 1.0.
+  Donations, a school and a hairdresser landed in their new categories.
+- The uncategorized bucket shrank from 33 to 15 rows, and none of them is
+  confident any more: in v4, 16 rows were confidently "uncategorized", which
+  counted as confident without saying anything.
+- Confidence counts fell (level 2: 306 to 297) because more options split the
+  mass and the new buckets compete with transfers. Counts across taxonomies
+  are not comparable; accuracy against labelled rows is (spec section 5.2).
+- No new mistake came with high confidence. Three kinds of rows stayed
+  doubtful, and all go to review or to a rule: a transfer to the account
+  holder's own name looks like a payment to a person (jev does not know the
+  holder); a mortgage lender's direct debit splits between mortgage and loan;
+  a short opaque card code flips between tobacco and transport under 0.4.
+  After the run, `rent_mortgage` was extended with "mortgage lender"; the next
+  run should confirm it.
 
 ## What we learned about jev
 
@@ -84,9 +111,9 @@ the analytics.
 
 ## Open items carried into the spec
 
-- Taxonomy gaps: transfers to people (Bizum), donations, education, personal
-  care (hairdresser was landing in `medical`).
 - CaixaBank Bizum lines with a concept (`ENVIADO: ...`) should be detected in
   Python as Bizum, not read as a merchant.
+- A transfer to the holder's own name needs own-account pairing (spec
+  section 4.4) or a rule; jev cannot know whose name it is.
 - Rosters above 254 shortlisted names need a trigram pre-filter; not needed at
   this volume.

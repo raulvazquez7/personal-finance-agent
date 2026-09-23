@@ -232,7 +232,7 @@ new transaction
 ### 5.1 jev call shape
 
 Validated by the spike in `docs/superpowers/spikes/2026-09-23-jev-categorization/`
-(412 real transactions, four rounds). jev answers closed questions only
+(412 real transactions, five rounds). jev answers closed questions only
 (`Choice`, `Noul`, `Score`), so code generates the options and jev chooses.
 
 **Contracts**
@@ -293,8 +293,8 @@ Calls run with a bounded semaphore (default 8) and the SDK retry policy; the
 same-merchant step serializes merchant creation so two concurrent rows cannot
 create the same merchant twice. Every call is wrapped in a Langfuse span with
 `model`, `request_id`, `usage` and the probabilities. Category descriptions in
-`categories` double as jev criteria. Cost in the spike: about 1,800 input
-tokens per transaction, $0.031 for 412 rows.
+`categories` double as jev criteria. Cost in the spike with the final taxonomy:
+about 2,500 input tokens per transaction, $0.043 for 412 rows.
 
 ### 5.2 Confidence gate
 
@@ -333,24 +333,49 @@ A deterministic recurrence detector (same merchant, amount within 10 percent,
 
 ## 7. Category taxonomy (v1 seed)
 
-Minimal, two levels, per transaction type. Slugs are English; the UI shows
-`level1 > level2`.
+Two levels, per transaction type, meant to fit any household rather than only
+the sample data (children, pets, education and public benefits are included
+even without spend yet), while staying small enough for review. Slugs are
+English and stable; the UI shows `level1 > level2`. Validated in spike
+round 5 (`docs/superpowers/spikes/2026-09-23-jev-categorization/`).
 
 | Type | Level 1 | Level 2 |
 |---|---|---|
-| expense | shopping | groceries, tobacco, home_goods, fashion, electronics, other_shopping |
 | expense | home | rent_mortgage, utilities, internet_phone, home_insurance, maintenance |
-| expense | leisure | restaurants_bars, entertainment, sports_gym, culture_events |
+| expense | shopping | groceries, fashion, electronics, home_goods, beauty_perfumery, hobbies, tobacco, other_shopping |
+| expense | leisure | restaurants_bars, entertainment, culture_events, sports_gym, gambling_lottery |
 | expense | transport | fuel, public_transport, taxi_rideshare, parking_tolls, car_costs |
-| expense | cash | atm_withdrawal |
-| expense | health | pharmacy, medical, health_insurance |
 | expense | travel | flights, lodging, travel_other |
-| expense | financial | bank_fees, loan_payment, taxes |
+| expense | health | pharmacy, medical, health_insurance, personal_care |
+| expense | education | tuition, courses, books_supplies |
+| expense | family | childcare_kids, pets |
+| expense | people | payments_to_people |
+| expense | giving | donations |
+| expense | financial | bank_fees, loan_payment, taxes, other_insurance |
+| expense | cash | atm_withdrawal |
 | expense | other | uncategorized_expense |
-| income | income | salary, refunds, investment_income, other_income |
+| income | income | salary, self_employment, pension_benefits, refunds, investment_income, payments_from_people, other_income |
 | transfer | transfer | own_accounts, savings_investment, credit_card_payment |
 
-Seeded from `supabase/seed/categories.yaml`; editable in the database.
+Each level-2 row carries its jev criterion as `what` (what belongs here) and,
+where a neighbour competes, `not_for` (what goes to the neighbour instead),
+following the [contrastive criteria pattern](https://docs.typesafe.ai/concepts/how-to-build-with-system-one).
+The validated texts live in the spike's `run.py` and move verbatim to
+`supabase/seed/categories.yaml`, the seed of the `categories` table.
+
+Choices worth knowing:
+
+- A subscription is a flag, not a category (section 6).
+- There is no gifts category: bank text cannot tell a gift from a purchase, so
+  it goes to the shop's category.
+- Bizum and transfers to or from individuals get their own buckets
+  (`people`, `payments_from_people`) because their purpose is not in the text;
+  the user relabels them in `/review` when it matters.
+- Rental income stays in `other_income` until someone needs it.
+
+Categories are data: adding one is inserting a row with its criterion, with no
+code or prompt change. Editing the taxonomy from the UI is v2 (section 12);
+v1 keeps slugs immutable so rules, labels and the golden set never break.
 
 ## 8. Semantic layer and router context
 
@@ -475,7 +500,8 @@ authentication and multi-user, open-banking sync, watched folder, deployment
 target (Docker images and CI are in; hosting decision is v2, Railway or Fly
 for the API, Vercel possible for the web app), jev-vs-LLM evaluation panel
 (Raul runs his own evals; `transaction_labels` preserves the data for it),
-labelling from chat, recording failed imports in the import history (useful
+labelling from chat, editing the category taxonomy from the UI (v1 edits
+`categories` in the database; slugs stay immutable), recording failed imports in the import history (useful
 once an unattended path such as the watched folder exists).
 
 ## 13. Observability, testing, CI
@@ -556,6 +582,14 @@ Decided with Raul after the jev spike
   code-generated fragments, then an exact key match, then a same-merchant
   question over a shortlist; jev picks level 2, level 1 is derived.
 - Section 5.2: thresholds per decision, merge only at >= 0.8.
-- Two-level analytics (level 1 and level 2) is a requirement; the taxonomy
-  itself (section 7) is the next decision.
+- Two-level analytics (level 1 and level 2) is a requirement.
+- Section 7: new taxonomy (13 expense groups, 53 level-2 slugs in total) with
+  `what`/`not_for` criteria, validated in spike round 5; UI editing of
+  categories is v2 (section 12).
+- Carried into the next decisions: a `TRASPASO` to the holder's own name
+  looks like a payment to a person to jev (own-account pairing, section 4.4);
+  a mortgage lender's direct debit is ambiguous between mortgage and loan
+  (a rule, or `/review`). `/review` must offer a category picker and a merchant
+  field that autocompletes known merchants or creates a new one, and a label
+  there becomes a rule so the same merchant is reviewed only once.
 
