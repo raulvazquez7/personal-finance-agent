@@ -47,7 +47,7 @@ def test_real_statements_import_once_and_never_twice(raw_pdfs):
     for path in raw_pdfs:
         if path.name not in EXPECTED_ROWS:
             continue
-        with connection() as conn:
+        with connection() as conn, conn.transaction(force_rollback=True):
             first = import_statement(path.read_bytes(), path.name, conn)
             second = import_statement(path.read_bytes(), path.name, conn)
         assert first.rows_total == EXPECTED_ROWS[path.name]
