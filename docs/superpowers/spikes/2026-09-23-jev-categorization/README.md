@@ -143,7 +143,9 @@ three months.
   merchant (one merged into a supermarket). Resolved in the spec by system
   rules before jev: 9 regex rules matched 32 rows of this ledger with no
   conflict (spec section 5).
-- A transfer to the holder's own name needs own-account pairing (spec
-  section 4.4) or a rule; jev cannot know whose name it is.
+- A transfer to the holder's own name is resolved by own-account pairing
+  before jev (spec section 4.4): 6 pairs in this ledger, all real, including
+  Bizum between partners' accounts. `golden.csv` labels paired rows
+  `own_accounts`.
 - Rosters above 254 shortlisted names need a trigram pre-filter; not needed at
   this volume.

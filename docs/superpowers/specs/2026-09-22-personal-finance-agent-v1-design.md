@@ -201,11 +201,27 @@ only; documented in the README.
 
 ### 4.4 Transfers between own accounts
 
-Deterministic pairing after each import: same absolute amount, opposite sign,
-different accounts, booking dates within 2 days, neither already paired. Both
-rows get `tx_type = transfer` and a shared `transfer_pair_id`, and are
-excluded from income and expense totals. One-sided transfers (to accounts not
-imported) are handled by rules or jev with a `transfer` category.
+The ledger is one household: every imported account belongs to it, whoever
+holds it. Money moving between two imported accounts, by bank transfer or by
+Bizum, is internal and is excluded from income and expense totals. Counting it
+would double count: a Bizum to a partner who then pays the supermarket would
+show up as both a payment to a person and groceries.
+
+Deterministic pairing after each import, before categorization: same absolute
+amount, opposite sign, different accounts, booking dates within 2 days,
+neither already paired, and both sides transfer operations (a case-insensitive
+regex on `description_raw`, default `TRASPASO|TRANSFER|BIZUM|TRF`, kept as a
+setting so two card purchases of the same amount never pair). Both rows get
+`tx_type = transfer`, category `own_accounts` with `category_source = rule`,
+and a shared `transfer_pair_id`; they skip jev. When the counterpart arrives in
+a later import, pairing relabels the earlier row unless the user labelled it.
+In the spike ledger the rule found 6 pairs, all real: 3 transfers between two
+accounts of the same holder (jev had read the holder's name as another person)
+and 3 Bizum payments between partners.
+
+One-sided transfers (the other account is not imported) keep their system
+rule or jev category: `TRASPASO PROPIO` stays `own_accounts`, and an unpaired
+Bizum goes to `payments_to_people` or `payments_from_people`.
 
 ### 4.5 Entry points
 
@@ -219,6 +235,8 @@ imported) are handled by rules or jev with a `transfer` category.
 
 ```
 new transaction
+   │
+   ├─ 0. own-account pairing (section 4.4)             source=rule, no jev call
    │
    ├─ 1. system rules (operations without a merchant)   source=rule, no jev call
    │
@@ -401,8 +419,9 @@ Choices worth knowing:
 - A subscription is a flag, not a category (section 6).
 - There is no gifts category: bank text cannot tell a gift from a purchase, so
   it goes to the shop's category.
-- Bizum and transfers to or from individuals get their own buckets
-  (`people`, `payments_from_people`) because their purpose is not in the text;
+- Bizum and transfers to or from individuals outside the ledger get their own
+  buckets (`people`, `payments_from_people`) because their purpose is not in
+  the text (between imported accounts they are internal, section 4.4);
   the user relabels them in `/review` when it matters.
 - Rental income stays in `other_income` until someone needs it.
 - Software, AI and productivity tools (`technology > software_ai`) are
@@ -630,9 +649,10 @@ Decided with Raul after the jev spike
 - Section 5.2: category threshold 0.95 for level 2 and level 1, chosen
   against 412 labelled transactions (the first golden set, kept outside git
   until `transaction_labels` holds it).
-- Carried into the next decisions: a `TRASPASO` to the holder's own name
-  looks like a payment to a person to jev (own-account pairing, section 4.4);
-  a mortgage lender's direct debit is ambiguous between mortgage and loan
+- Section 4.4: the ledger is one household; transfers and Bizum between any
+  two imported accounts pair deterministically before categorization (guarded
+  by a transfer-operation regex), become `own_accounts` and leave the totals.
+- Carried into the next decisions: a mortgage lender's direct debit is ambiguous between mortgage and loan
   (labelled once in `/review`, it becomes the merchant default). `/review` must offer a category picker and a merchant
   field that autocompletes known merchants or creates a new one, and a label
   there becomes the merchant default so the same merchant is reviewed only once.

@@ -109,7 +109,7 @@ INCOME = {
 }
 TRANSFER = {
     "transfer": {
-        "own_accounts": {"what": "moving money between accounts of the same person (traspaso propio)", "not_for": "money sent to or received from another person"},
+        "own_accounts": {"what": "moving money between accounts of the same household (traspaso propio)", "not_for": "money sent to or received from another person"},
         "savings_investment": {"what": "contributions to savings, brokers, investment or pension plans"},
         "credit_card_payment": {"what": "monthly settlement of a credit card (adeudo mensual de tarjeta)"},
     }
