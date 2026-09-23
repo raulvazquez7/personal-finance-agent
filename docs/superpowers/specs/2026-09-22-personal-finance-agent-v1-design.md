@@ -305,7 +305,10 @@ questions = {
         instructions="Which category best describes this bank transaction",
         criteria={slug: {"group": level1, "what": description, "not_for": ...} for ...},
     ),
-    "is_subscription": Noul(instructions="This is a recurring subscription charge, such as streaming, telecom, gym, insurance, apps or software"),
+    "is_subscription": Noul(instructions={
+        "question": "This is a recurring charge for a service the person can cancel",
+        "examples": "streaming, software and AI tools, telecom, gym, insurance, memberships",
+        "not_for": "electricity, gas or water bills, rent, mortgage, loan repayments, one-off purchases"}),
 }
 ```
 
@@ -345,7 +348,7 @@ Thresholds are settings, per decision because consequences differ:
 | Category (level 2) | confidence >= 0.95 | `needs_review`; level 1 is still shown when its summed confidence is >= 0.95 |
 | Merchant name (new) | brand confidence >= 0.5 | merchant left empty, `needs_review` |
 | Merge into a known merchant | confidence >= 0.8 | new merchant; 0.5 to 0.8 appears in `/review` as a merge suggestion |
-| Subscription | noul > 0.7 | not flagged; 0.3 to 0.7 appears in `/review` |
+| Subscription (expenses only) | noul > 0.7 | not flagged; never sends a row to `/review` on its own, but rows already in `/review` show a subscription toggle |
 
 The category threshold comes from 412 labelled transactions (spike round 6).
 jev is overconfident below 0.95: rows at 0.85 to 0.95 were right 76 percent
@@ -373,13 +376,29 @@ $0.042 per million tokens, re-labelling years of history costs cents.
 ## 6. Subscriptions
 
 A subscription is a flag, not a category: Netflix is `leisure > entertainment`
-with `is_subscription = true`. Sources of the flag: jev (`is_subscription`),
-merchant defaults, user. `v_subscriptions` groups flagged expenses by merchant and reports
-last charge, typical amount, inferred cadence (monthly or yearly from median
-gap) and monthly-equivalent cost. The `/subscriptions` page lists active ones
-(charged in the last 45 days for monthly, 400 for yearly) and the total.
-A deterministic recurrence detector (same merchant, amount within 10 percent,
-3 or more charges at a regular gap) is a stretch goal in slice 2.
+with `is_subscription = true`. It means a recurring charge for a service the
+person can cancel: streaming, software and AI tools, telecom, gym, insurance,
+memberships. Utility bills, rent, mortgage and loans are recurring too, but
+they are commitments rather than subscriptions and would only add noise to
+the subscriptions page.
+
+Sources of the flag, strongest last: jev (`is_subscription` > 0.7, expenses
+only), the merchant default (set with "apply to this merchant" in `/review`,
+together with the category), and the user on a single row. jev decides row by
+row, which handles mixed merchants: in the spike, Amazon Prime charges scored
+about 0.9 and marketplace orders about 0.2.
+
+Measured against the golden set (spike round 7): 26 rows flagged, all right,
+26 of 30 subscriptions found. The misses scored 0.35 to 0.63 (a new AI tool,
+an IPTV service, two Amazon video charges); a band that sent 0.3 to 0.7 to
+review would have added 13 rows to find those few, so instead `/review` shows a
+subscription toggle on rows that are there for their category, and the
+merchant default makes the fix permanent.
+
+`v_subscriptions` groups flagged expenses by merchant and reports last charge,
+typical amount, inferred cadence (monthly or yearly from median gap) and
+monthly-equivalent cost. The `/subscriptions` page lists active ones (charged
+in the last 45 days for monthly, 400 for yearly) and the total.
 
 ## 7. Category taxonomy (v1 seed)
 
@@ -556,7 +575,10 @@ target (Docker images and CI are in; hosting decision is v2, Railway or Fly
 for the API, Vercel possible for the web app), jev-vs-LLM evaluation panel
 (Raul runs his own evals; `transaction_labels` preserves the data for it),
 labelling from chat, editing the category taxonomy from the UI (v1 edits
-`categories` in the database; slugs stay immutable), recording failed imports in the import history (useful
+`categories` in the database; slugs stay immutable), a recurrence detector that flags subscriptions from charge history (same
+merchant, amount within 10 percent, 3 or more charges at a regular gap; the
+sample data has at most two or three months per account, too little to
+validate it), recording failed imports in the import history (useful
 once an unattended path such as the watched folder exists).
 
 ## 13. Observability, testing, CI
@@ -652,6 +674,9 @@ Decided with Raul after the jev spike
 - Section 4.4: the ledger is one household; transfers and Bizum between any
   two imported accounts pair deterministically before categorization (guarded
   by a transfer-operation regex), become `own_accounts` and leave the totals.
+- Section 6: a subscription is a cancellable recurring service (not utilities,
+  rent, mortgage or loans); jev flags at > 0.7 with no review band; the flag is
+  also a merchant default; the recurrence detector moves to v2 (section 12).
 - Carried into the next decisions: a mortgage lender's direct debit is ambiguous between mortgage and loan
   (labelled once in `/review`, it becomes the merchant default). `/review` must offer a category picker and a merchant
   field that autocompletes known merchants or creates a new one, and a label

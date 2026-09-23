@@ -7,7 +7,8 @@ and without a hand-maintained merchant list?
 Answer: yes. The round-4 baseline below is the design adopted for slice 2
 (spec, "Slice 2 amendments"); rounds 5 and 6 kept it, settled the taxonomy
 (spec section 7) and, against a first golden set, the category threshold
-(spec section 5.2). Six rounds ran over the local ledger (412
+(spec section 5.2); round 7 settled subscriptions (spec section 6). Seven
+rounds ran over the local ledger (412
 transactions, 3 accounts, BBVA and CaixaBank, June to August 2026) on
 `jev-1.13.0`.
 
@@ -19,8 +20,8 @@ git-ignored `output/` folder.
 ```bash
 supabase start                      # local ledger with imported statements
 cd docs/superpowers/spikes/2026-09-23-jev-categorization
-uv run --env-file ../../../../.env --with typesafe-sdk --with 'psycopg[binary]' python run.py v7
-uv run --with typesafe-sdk python report.py v7   # summary, output/review_v7.csv, and accuracy if output/golden.csv exists
+uv run --env-file ../../../../.env --with typesafe-sdk --with 'psycopg[binary]' python run.py v8
+uv run --with typesafe-sdk python report.py v8   # summary, output/review_v8.csv, and accuracy if output/golden.csv exists
 ```
 
 `run.py` is read-only against the database. Compare a new run with the
@@ -114,6 +115,16 @@ errors. Most high-confidence errors come from one misleading bank label
 in mind: most labels are Claude's with Raul's review, from one household over
 three months.
 
+### Round 7: subscriptions
+
+The golden set gained an `is_subscription` column (30 expense rows). The
+subscription question was rewritten as "a recurring charge for a service the
+person can cancel", with `not_for` utility bills, rent, mortgage, loans and
+one-off purchases. At noul > 0.7 on expenses: 26 flagged, 26 right, 26 of 30
+found, the same as with the old wording, and utility bills left the 0.3 to
+0.7 band. The four misses scored 0.35 to 0.63. Round 7 was run twice to
+measure run-to-run noise (lesson 6).
+
 ## What we learned about jev
 
 1. **It chooses, code owns the string.** jev has no free-text output
@@ -134,8 +145,13 @@ three months.
    transfers to people, bank codes and donations, which a person could not
    label from the text either. They belong in `/review`, or in new
    categories.
-6. **Deterministic and cheap.** About 1,800 input tokens per transaction at
-   $0.042 per million. The model version is recorded with every label.
+6. **Cheap, and close to deterministic but not exactly.** About 2,700 input
+   tokens per transaction at $0.042 per million. Running the same input twice
+   (round 7) flipped 10 near-tie categories (all under 0.55), moved
+   confidences by up to 0.14 and let 44 rows name their merchant with a
+   different nested fragment (`ACME` or `ACME FOODS`). Decisions above the
+   thresholds held. Treat eval differences of about ten rows as noise, and
+   record the model version with every label.
 
 ## Open items carried into the spec
 

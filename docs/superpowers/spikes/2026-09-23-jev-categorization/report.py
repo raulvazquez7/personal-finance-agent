@@ -83,6 +83,10 @@ def evaluate(rows: list[dict]) -> None:
             acc = [(r, g) for r, g in scored if r[conf] >= t]
             wrong = sum(pred(r) != true(g) for r, g in acc)
             print(f"  threshold {t:.2f}: accept {len(acc):3}, {wrong} wrong ({1 - wrong / len(acc):.1%} precision), review {len(scored) - len(acc)}")
+    if "is_subscription" in next(iter(golden.values())):
+        flagged = {r["id"] for r, _ in scored if r["sub"] > 0.7 and r["state"]["direction"] == "outgoing"}
+        true = {g["id"] for _, g in scored if g["is_subscription"] == "1"}
+        print(f"subscription (noul > 0.7, expenses): flagged {len(flagged)}, precision {len(flagged & true)}/{len(flagged)}, recall {len(flagged & true)}/{len(true)}")
 
 
 if __name__ == "__main__":

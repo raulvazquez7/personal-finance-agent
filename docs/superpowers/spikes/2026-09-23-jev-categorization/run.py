@@ -173,7 +173,11 @@ def first_call_questions(direction: str, candidates: list[str]) -> dict:
             criteria={slug: {"group": level1, **crit} for slug, (level1, crit) in leaves(direction).items()},
         ),
         "is_subscription": Noul(
-            instructions="This is a recurring subscription charge, such as streaming, telecom, gym, insurance, apps or software",
+            instructions={
+                "question": "This is a recurring charge for a service the person can cancel",
+                "examples": "streaming, software and AI tools, telecom, gym, insurance, memberships",
+                "not_for": "electricity, gas or water bills, rent, mortgage, loan repayments, one-off purchases",
+            },
         ),
     }
 
