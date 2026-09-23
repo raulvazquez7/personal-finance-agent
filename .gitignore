@@ -34,3 +34,7 @@ out/
 
 # Claude Code personal overrides
 .claude/settings.local.json
+
+# Supabase CLI
+supabase/.temp/
+supabase/.branches/

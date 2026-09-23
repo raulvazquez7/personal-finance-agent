@@ -173,9 +173,11 @@ reduces jev calls.
 Bank exports carry no stable transaction id, so we compute one:
 
 ```
-dedup_key = sha256(account_id | booked_at | amount | normalized(description_raw) | balance_after | occurrence_index)
+dedup_key = sha256(iban | booked_at | amount | normalized(description_raw) | balance_after | occurrence_index)
 ```
 
+The key hashes the account IBAN rather than `account_id`: the IBAN is known
+before the account row exists and stays stable if the database is rebuilt.
 `occurrence_index` is the position among identical tuples within the same
 file (two identical coffees the same day get 0 and 1). Both sample banks print
 the balance after each movement, which makes the key unambiguous in practice. Loading is
@@ -198,7 +200,9 @@ imported) are handled by rules or jev with a `transfer` category.
 ### 4.5 Entry points
 
 - Web: `/imports` page, upload one or more statements, see the summary per file.
-- CLI: `uv run finance import <file> --account <name>` for the daily habit.
+- CLI: `uv run finance import <file>...` for the daily habit. There is no
+  `--account` flag: the IBAN in the statement header resolves the account
+  (section 16, point 3).
 - Watched folder and open-banking sync are v2 (section 12).
 
 ## 5. Categorization cascade
@@ -394,8 +398,10 @@ web client.
 ## 11. Web application
 
 Next.js App Router, TypeScript, Tailwind, shadcn/ui components, Recharts
-through shadcn charts. Server components fetch from the API; mutations go
-through route handlers. Pages:
+through shadcn charts. Server components fetch from the API. In v1 the browser posts uploads
+straight to the API (no secrets in the browser, no auth yet, CORS limited to
+the configured web origin); mutations move behind route handlers or server
+actions when auth arrives in v2. Pages:
 
 | Route | Content |
 |---|---|
@@ -416,7 +422,8 @@ authentication and multi-user, open-banking sync, watched folder, deployment
 target (Docker images and CI are in; hosting decision is v2, Railway or Fly
 for the API, Vercel possible for the web app), jev-vs-LLM evaluation panel
 (Raul runs his own evals; `transaction_labels` preserves the data for it),
-labelling from chat.
+labelling from chat, recording failed imports in the import history (useful
+once an unattended path such as the watched folder exists).
 
 ## 13. Observability, testing, CI
 
@@ -471,3 +478,10 @@ Raul approved the spec. The three open questions closed as follows:
 
 Also added on approval: the input format for v1 is PDF statements (section
 4.1) and the simplicity principle in section 2.
+
+### Slice 1 amendments (2026-09-23)
+
+- Section 4.3: the dedup key hashes the account IBAN instead of `account_id`.
+- Section 4.5: the CLI takes one or more files and no `--account` flag.
+- Section 11: in v1 the browser posts uploads straight to the API.
+- Section 12: recording failed imports in the import history is out of scope.
