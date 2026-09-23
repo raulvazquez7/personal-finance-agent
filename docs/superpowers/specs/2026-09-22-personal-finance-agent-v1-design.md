@@ -309,9 +309,8 @@ Two consumers:
 - Router and agent system prompt receive a compact catalog: one line per
   table or view, its purpose, and key columns. With fewer than ten relations
   this fits in a few hundred tokens, so it is pre-loaded into the LangGraph
-  `config["configurable"]["semantic_catalog"]`, following the Simon-AI
-  pattern of nodes with no I/O and a process-level cache with a 5 minute TTL
-  (`_is_fresh(entry)` check on a monotonic timestamp).
+  `config["configurable"]["semantic_catalog"]`, so graph nodes do no I/O,
+  and is cached per process with a 5 minute TTL.
 - The agent's `describe_schema(table)` tool returns the full column
   descriptions, examples and synonyms on demand.
 
