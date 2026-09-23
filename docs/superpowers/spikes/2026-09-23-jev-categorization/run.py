@@ -1,6 +1,6 @@
 """Spike: merchant, category and subscription with jev over the local ledger (read-only).
 
-Runs the round-4 baseline described in README.md with the round-5 taxonomy. It reads the local Supabase database, calls jev
+Runs the round-4 baseline described in README.md with the final taxonomy (rounds 5 and 6). It reads the local Supabase database, calls jev
 for every transaction in booking order (sequentially, so the merchant roster grows as it would in
 production) and writes one JSON line per transaction to output/results_<run>.jsonl. It writes
 nothing to the database. output/ is git-ignored because it contains real bank data.
@@ -23,11 +23,12 @@ DB = os.environ.get("SPIKE_DB_URL", "postgresql://postgres:postgres@127.0.0.1:54
 OUT_DIR = Path(__file__).parent / "output"
 MERGE_THRESHOLD = 0.8  # below this, a candidate stays a new merchant: never merge on doubt
 
-# Round-5 taxonomy (spec section 7). Each description is the jev criterion for its slug:
+# Final taxonomy (spec section 7). Each description is the jev criterion for its slug:
 # `what` belongs here, `not_for` names the neighbouring option that takes it instead.
 EXPENSE = {
     "home": {
-        "rent_mortgage": {"what": "monthly rent to a landlord, or mortgage instalment to a bank or mortgage lender", "not_for": "personal loans or consumer credit"},
+        "rent": {"what": "monthly rent paid to a landlord or letting agency", "not_for": "mortgage instalments"},
+        "mortgage": {"what": "mortgage instalments and related charges from a bank or mortgage lender", "not_for": "rent, personal loans or consumer credit"},
         "utilities": {"what": "electricity, gas, water and heating bills"},
         "internet_phone": {"what": "internet, mobile and landline telecom bills"},
         "home_insurance": {"what": "home and contents insurance premiums"},
@@ -44,8 +45,8 @@ EXPENSE = {
         "other_shopping": {"what": "online marketplaces, department stores, bazaars and any other retail purchase that fits no specific shop"},
     },
     "leisure": {
-        "restaurants_bars": {"what": "restaurants, bars, cafes, fast food, food delivery, ice cream shops"},
-        "entertainment": {"what": "streaming services, apps, digital subscriptions, video games bought online"},
+        "restaurants_bars": {"what": "restaurants, bars, cafes, fast food, ice cream shops, food delivery and its memberships (Uber Eats, Uber One, Glovo Prime)"},
+        "entertainment": {"what": "streaming services, music and video apps, video games bought online", "not_for": "software, AI and productivity tools"},
         "culture_events": {"what": "cinema, concerts, theatre, museums, theme parks, event tickets"},
         "sports_gym": {"what": "gym memberships, sports clubs, classes and sports activities", "not_for": "buying sports equipment"},
         "gambling_lottery": {"what": "lottery, betting, casinos, lottery administrations"},
@@ -53,7 +54,7 @@ EXPENSE = {
     "transport": {
         "fuel": {"what": "petrol stations, fuel, EV charging"},
         "public_transport": {"what": "metro, bus, tram and commuter train tickets and passes, bike and scooter sharing", "not_for": "long-distance trains and trips away from home"},
-        "taxi_rideshare": {"what": "taxi, Uber, Cabify, Bolt rides"},
+        "taxi_rideshare": {"what": "taxi, Uber, Cabify, Bolt rides", "not_for": "Uber Eats and food delivery memberships"},
         "parking_tolls": {"what": "parking, motorway tolls"},
         "car_costs": {"what": "car repairs, garages, tyres, car wash, ITV inspection, car insurance, road tax"},
     },
@@ -67,6 +68,9 @@ EXPENSE = {
         "medical": {"what": "doctors, dentists, clinics, hospitals, opticians, physiotherapy, psychologists", "not_for": "hairdressers, beauty treatments, veterinarians"},
         "health_insurance": {"what": "private health insurance premiums"},
         "personal_care": {"what": "hairdressers, barbers, beauty salons, nails, spa and massage", "not_for": "buying cosmetics or perfume in a shop"},
+    },
+    "technology": {
+        "software_ai": {"what": "software, AI tools, productivity apps and cloud storage subscriptions (OpenAI, Anthropic, Cursor, Notion, Google One)", "not_for": "streaming and entertainment apps, buying devices"},
     },
     "education": {
         "tuition": {"what": "school, university and nursery-school fees, parents' associations (AMPA), exam fees"},

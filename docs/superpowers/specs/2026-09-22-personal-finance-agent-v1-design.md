@@ -316,7 +316,7 @@ same-merchant step serializes merchant creation so two concurrent rows cannot
 create the same merchant twice. Every call is wrapped in a Langfuse span with
 `model`, `request_id`, `usage` and the probabilities. Category descriptions in
 `categories` double as jev criteria. Cost in the spike with the final taxonomy:
-about 2,500 input tokens per transaction, $0.043 for 412 rows.
+about 2,700 input tokens per transaction, $0.046 for 412 rows.
 
 ### 5.2 Confidence gate
 
@@ -324,13 +324,19 @@ Thresholds are settings, per decision because consequences differ:
 
 | Decision | Accept | Otherwise |
 |---|---|---|
-| Category (level 2) | confidence >= 0.85 | `needs_review`; level 1 is still shown when its summed confidence is >= 0.85 |
+| Category (level 2) | confidence >= 0.95 | `needs_review`; level 1 is still shown when its summed confidence is >= 0.95 |
 | Merchant name (new) | brand confidence >= 0.5 | merchant left empty, `needs_review` |
 | Merge into a known merchant | confidence >= 0.8 | new merchant; 0.5 to 0.8 appears in `/review` as a merge suggestion |
 | Subscription | noul > 0.7 | not flagged; 0.3 to 0.7 appears in `/review` |
 
-The category threshold is revisited against the golden set once the taxonomy
-is final. The review inbox is the safety net: nothing under a threshold is
+The category threshold comes from 412 labelled transactions (spike round 6).
+jev is overconfident below 0.95: rows at 0.85 to 0.95 were right 76 percent
+of the time, rows at 0.95 or more 99 percent. With system rules first, 0.95
+accepts 232 of the 380 remaining rows with 2 errors (0.85 would accept 265
+with 10) and sends 72 distinct merchants to review. Review happens once per
+merchant (section 5), so the stricter threshold is a one-off cost on the
+first import. `finance eval-categorization` re-checks it as labels grow.
+The review inbox is the safety net: nothing under a threshold is
 silently accepted.
 
 ### 5.3 Learning from corrections
@@ -363,15 +369,16 @@ Two levels, per transaction type, meant to fit any household rather than only
 the sample data (children, pets, education and public benefits are included
 even without spend yet), while staying small enough for review. Slugs are
 English and stable; the UI shows `level1 > level2`. Validated in spike
-round 5 (`docs/superpowers/spikes/2026-09-23-jev-categorization/`).
+rounds 5 and 6 (`docs/superpowers/spikes/2026-09-23-jev-categorization/`).
 
 | Type | Level 1 | Level 2 |
 |---|---|---|
-| expense | home | rent_mortgage, utilities, internet_phone, home_insurance, maintenance |
+| expense | home | rent, mortgage, utilities, internet_phone, home_insurance, maintenance |
 | expense | shopping | groceries, fashion, electronics, home_goods, beauty_perfumery, hobbies, tobacco, other_shopping |
 | expense | leisure | restaurants_bars, entertainment, culture_events, sports_gym, gambling_lottery |
 | expense | transport | fuel, public_transport, taxi_rideshare, parking_tolls, car_costs |
 | expense | travel | flights, lodging, travel_other |
+| expense | technology | software_ai |
 | expense | health | pharmacy, medical, health_insurance, personal_care |
 | expense | education | tuition, courses, books_supplies |
 | expense | family | childcare_kids, pets |
@@ -398,6 +405,9 @@ Choices worth knowing:
   (`people`, `payments_from_people`) because their purpose is not in the text;
   the user relabels them in `/review` when it matters.
 - Rental income stays in `other_income` until someone needs it.
+- Software, AI and productivity tools (`technology > software_ai`) are
+  neither leisure nor goods; streaming stays in `entertainment`. Food
+  delivery memberships such as Uber One belong to `restaurants_bars`.
 
 Categories are data: adding one is inserting a row with its criterion, with no
 code or prompt change. Editing the taxonomy from the UI is v2 (section 12);
@@ -608,14 +618,18 @@ Decided with Raul after the jev spike
   question over a shortlist; jev picks level 2, level 1 is derived.
 - Section 5.2: thresholds per decision, merge only at >= 0.8.
 - Two-level analytics (level 1 and level 2) is a requirement.
-- Section 7: new taxonomy (13 expense groups, 53 level-2 slugs in total) with
-  `what`/`not_for` criteria, validated in spike round 5; UI editing of
+- Section 7: new taxonomy (14 expense groups, 55 level-2 slugs in total) with
+  `what`/`not_for` criteria, validated in spike rounds 5 and 6; `rent` and
+  `mortgage` are separate, `technology > software_ai` is new; UI editing of
   categories is v2 (section 12).
 - Sections 3.2, 5 and 5.3: system rules (regex on `bank_concept` or
   `merchant`, per bank and direction) resolve operations without a merchant
   before jev; the user's category for a merchant is stored on `merchants` and
   wins over jev, so each merchant is reviewed once. `merchant_exact` text rules
   are dropped.
+- Section 5.2: category threshold 0.95 for level 2 and level 1, chosen
+  against 412 labelled transactions (the first golden set, kept outside git
+  until `transaction_labels` holds it).
 - Carried into the next decisions: a `TRASPASO` to the holder's own name
   looks like a payment to a person to jev (own-account pairing, section 4.4);
   a mortgage lender's direct debit is ambiguous between mortgage and loan

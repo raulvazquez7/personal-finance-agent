@@ -5,8 +5,9 @@ category and flag subscriptions for real Spanish bank transactions, cheaply
 and without a hand-maintained merchant list?
 
 Answer: yes. The round-4 baseline below is the design adopted for slice 2
-(spec, "Slice 2 amendments"); round 5 kept it and validated the final
-taxonomy (spec section 7). Five rounds ran over the local ledger (412
+(spec, "Slice 2 amendments"); rounds 5 and 6 kept it, settled the taxonomy
+(spec section 7) and, against a first golden set, the category threshold
+(spec section 5.2). Six rounds ran over the local ledger (412
 transactions, 3 accounts, BBVA and CaixaBank, June to August 2026) on
 `jev-1.13.0`.
 
@@ -18,8 +19,8 @@ git-ignored `output/` folder.
 ```bash
 supabase start                      # local ledger with imported statements
 cd docs/superpowers/spikes/2026-09-23-jev-categorization
-uv run --env-file ../../../../.env --with typesafe-sdk --with 'psycopg[binary]' python run.py v6
-python3 report.py v6                # prints the summary, writes output/review_v6.csv
+uv run --env-file ../../../../.env --with typesafe-sdk --with 'psycopg[binary]' python run.py v7
+uv run --with typesafe-sdk python report.py v7   # summary, output/review_v7.csv, and accuracy if output/golden.csv exists
 ```
 
 `run.py` is read-only against the database. Compare a new run with the
@@ -46,15 +47,16 @@ card number and `0042` never reach jev.
 
 ## Results by round
 
-| | v1 | v2 | v3 | v4 | v5 |
-|---|---|---|---|---|---|
-| Change | first design | clean fragments, names only, shortlist by shared word | two steps, exact key, brand confidence | name-to-name comparison, merge at 0.8 | final taxonomy with `what`/`not_for` criteria |
-| Cost for 412 rows | $0.085 | $0.033 | $0.031 | $0.031 | $0.043 |
-| Wrong merges | ~7, confidence up to 0.99 | 2 | 1 | 1 (generic word) | unchanged |
-| Brand confidence >= 0.85 | n/a | n/a | 295 / 332 | 294 / 331 | 298 / 328 |
-| Level-2 confidence >= 0.85 | 310 | 307 | 304 | 306 | 297 |
-| Level-1 confidence >= 0.85 | 334 | 337 | 338 | 340 | 323 |
-| Uncategorized expenses | | | | 33 (16 at >= 0.85) | 15 (none at >= 0.85) |
+| | v1 | v2 | v3 | v4 | v5 | v6 |
+|---|---|---|---|---|---|---|
+| Change | first design | clean fragments, names only, shortlist by shared word | two steps, exact key, brand confidence | name-to-name comparison, merge at 0.8 | new taxonomy with `what`/`not_for` criteria | rent and mortgage split, `software_ai`, delivery memberships |
+| Cost for 412 rows | $0.085 | $0.033 | $0.031 | $0.031 | $0.043 | $0.046 |
+| Wrong merges | ~7, confidence up to 0.99 | 2 | 1 | 1 (generic word) | unchanged | unchanged |
+| Brand confidence >= 0.85 | n/a | n/a | 295 / 332 | 294 / 331 | 298 / 328 | 297 / 331 |
+| Level-2 confidence >= 0.85 | 310 | 307 | 304 | 306 | 297 | 292 |
+| Level-1 confidence >= 0.85 | 334 | 337 | 338 | 340 | 323 | 318 |
+| Uncategorized expenses | | | | 33 (16 at >= 0.85) | 15 (none at >= 0.85) | |
+| Level-2 accuracy vs golden set | | | | | | 85.4% (99% at >= 0.95) |
 
 About 8 duplicates stay unmerged in v4 (for example `ACME` and `ACME FOODS`), all with a
 merge confidence between 0.5 and 0.8. `/review` offers them as merge
@@ -83,8 +85,34 @@ criteria cost about 40 percent more input tokens, still cents per run.
   holder's own name looks like a payment to a person (jev does not know the
   holder); a mortgage lender's direct debit splits between mortgage and loan;
   a short opaque card code flips between tobacco and transport under 0.4.
-  After the run, `rent_mortgage` was extended with "mortgage lender"; the next
-  run should confirm it.
+  In v6 the mortgage lender lands in `mortgage` (0.72 to 0.81): reviewed
+  once, then the merchant default covers it.
+
+### Round 6: the golden set and the threshold
+
+The first golden set labels all 412 rows at level 2 (level 1 is derived).
+Claude labelled every merchant group blind to jev's answer, with notes on the
+doubtful ones; Raul reviewed the disagreements and doubts and fixed the
+taxonomy where the labels exposed a gap (`rent` vs `mortgage`, AI tools,
+delivery memberships). It lives in `output/golden.csv` (git-ignored, keyed by
+transaction id and `dedup_key`) until slice 2 loads it into
+`transaction_labels`. `report.py` scores any run against it.
+
+| Level-2 confidence | Rows | Right |
+|---|---|---|
+| < 0.5 | 43 | 44% |
+| 0.5 to 0.7 | 40 | 57% |
+| 0.7 to 0.85 | 37 | 78% |
+| 0.85 to 0.95 | 38 | 76% |
+| >= 0.95 | 254 | 99% |
+
+jev is well calibrated only at the top: a 0.88 is right about as often as a
+0.75. After the 32 rule rows (all right), 0.95 accepts 232 of 380 rows with 2
+errors and sends 72 merchants to review; 0.85 would accept 265 with 10
+errors. Most high-confidence errors come from one misleading bank label
+(an ice cream chain and a vending machine under "supermarkets"). Bias to keep
+in mind: most labels are Claude's with Raul's review, from one household over
+three months.
 
 ## What we learned about jev
 

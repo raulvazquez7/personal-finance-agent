@@ -1,6 +1,8 @@
-"""Summarize a spike run and write the review CSV next to it: python report.py v4
+"""Summarize a spike run and write the review CSV next to it: python report.py v6
 
 The CSV is sorted by merchant so wrong merges and missed duplicates sit next to each other.
+When output/golden.csv exists (Raul's labels, git-ignored), it also prints accuracy per
+confidence bucket and what each category threshold would accept.
 """
 
 import collections
@@ -53,6 +55,34 @@ def main(run: str) -> None:
         writer = csv.DictWriter(f, fieldnames=table[0].keys())
         writer.writeheader()
         writer.writerows(table)
+    evaluate(rows)
+
+
+def evaluate(rows: list[dict]) -> None:
+    """Level 1 is scored against the parent of the golden level 2, taken from the run's own taxonomy."""
+    golden_path = OUT_DIR / "golden.csv"
+    if not golden_path.exists():
+        return
+    import run  # the taxonomy lives in run.py
+
+    parent = {slug: l1 for tree in (run.EXPENSE, run.INCOME, run.TRANSFER) for l1, ch in tree.items() for slug in ch}
+    golden = {g["id"]: g for g in csv.DictReader(golden_path.open())}
+    scored = [(r, golden[r["id"]]) for r in rows if r["id"] in golden]
+    print(f"\n== against golden.csv ({len(scored)} rows)")
+    for level, conf, pred, true in (
+        ("level 2", "cat_conf", lambda r: r["category"], lambda g: g["level2"]),
+        ("level 1", "level1_conf", lambda r: r["level1"], lambda g: parent[g["level2"]]),
+    ):
+        right = sum(pred(r) == true(g) for r, g in scored)
+        print(f"{level}: accuracy {right}/{len(scored)} = {right / len(scored):.1%}")
+        for lo, hi in ((0, 0.5), (0.5, 0.7), (0.7, 0.85), (0.85, 0.95), (0.95, 1.01)):
+            b = [(r, g) for r, g in scored if lo <= r[conf] < hi]
+            if b:
+                print(f"  conf {lo:.2f}-{min(hi, 1):.2f}: {len(b):3} rows, {sum(pred(r) == true(g) for r, g in b) / len(b):.0%} right")
+        for t in (0.7, 0.8, 0.85, 0.9, 0.95):
+            acc = [(r, g) for r, g in scored if r[conf] >= t]
+            wrong = sum(pred(r) != true(g) for r, g in acc)
+            print(f"  threshold {t:.2f}: accept {len(acc):3}, {wrong} wrong ({1 - wrong / len(acc):.1%} precision), review {len(scored) - len(acc)}")
 
 
 if __name__ == "__main__":

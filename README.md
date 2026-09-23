@@ -61,11 +61,12 @@ How the design follows jev's documented patterns:
   rows to a human, and the same merchant is merged only at ≥ 0.8
   ([confidence](https://docs.typesafe.ai/confidence)).
 
-The spike on 412 real transactions (five rounds, `jev-1.13.0`) cost $0.04
-per run with the final taxonomy, about 2,500 input tokens per transaction. It
-unified every branch and truncation of the same supermarket under one
-merchant, and 72% of the transactions got a category confidence of 0.85 or
-more across 53 categories before any rule existed. Round-by-round results and lessons are in
+The spike on 412 real transactions (six rounds, `jev-1.13.0`) cost under
+$0.05 per run with the final taxonomy of 55 categories, about 2,700 input
+tokens per transaction. It unified every branch and truncation of the same
+supermarket under one merchant. Against 412 hand-checked labels, jev was
+right on 99% of the rows it scored at 0.95 or more, which set the acceptance
+threshold; the rest goes to review, once per merchant. Round-by-round results and lessons are in
 [the spike write-up](docs/superpowers/spikes/2026-09-23-jev-categorization/README.md).
 Full design: spec sections 4.2 and 5.
 
