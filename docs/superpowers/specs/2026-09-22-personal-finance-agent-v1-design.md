@@ -99,10 +99,10 @@ the agent's SQL tool). Migrations via the Supabase CLI in `supabase/migrations`.
 |---|---|---|
 | `accounts` | one row per bank account, auto-created from the IBAN in a statement header | `id`, `bank` (`bbva`, `caixabank`), `iban` (unique), `name` (defaults to bank + last 4 digits, user-editable), `currency` |
 | `imports` | one row per uploaded file | `id`, `account_id`, `filename`, `file_sha256`, `imported_at`, `rows_total`, `rows_new`, `rows_duplicate` |
-| `transactions` | the normalized ledger | `id`, `account_id`, `import_id`, `booked_at`, `value_date`, `amount` (signed, numeric(12,2)), `currency`, `description_raw`, `bank_concept`, `merchant` (cleaned text), `card_last4`, `balance_after`, `dedup_key` (unique), `tx_type` (`income`/`expense`/`transfer`), `merchant_id`, `merchant_source` and `category_source` (`rule`/`jev`/`user`/`none`), `merchant_confidence`, `category_slug`, `category_confidence`, `category_probabilities` (jsonb, full distribution), `is_subscription`, `subscription_score`, `transfer_pair_id`, `needs_review` |
-| `merchants` | canonical merchant names, grown automatically from jev picks and user merges | `id`, `name` (unique), `match_key` (unique: upper-case letters and digits only), `confirmed` |
+| `transactions` | the normalized ledger | `id`, `account_id`, `import_id`, `booked_at`, `value_date`, `amount` (signed, numeric(12,2)), `currency`, `description_raw`, `bank_concept`, `merchant` (cleaned text), `card_last4`, `balance_after`, `dedup_key` (unique), `tx_type` (`income`/`expense`/`transfer`), `merchant_id`, `merchant_source` (`jev`/`user`/`none`), `category_source` (`rule`/`merchant`/`jev`/`user`/`none`), `merchant_confidence`, `category_slug`, `category_confidence`, `category_probabilities` (jsonb, full distribution), `is_subscription`, `subscription_score`, `transfer_pair_id`, `needs_review` |
+| `merchants` | canonical merchant names, grown automatically from jev picks and user merges | `id`, `name` (unique), `match_key` (unique: upper-case letters and digits only), `confirmed`, `category_slug` and `is_subscription` (nullable: the user's default for every transaction of this merchant) |
 | `categories` | two-level taxonomy | `slug` (pk), `tx_type`, `level1`, `level2`, `description` (also used as jev criteria) |
-| `rules` | deterministic categorization | `id`, `match_type` (`merchant_exact`/`contains`/`regex`), `pattern`, `merchant_id` and/or `category_slug`, `is_subscription`, `created_from_transaction_id` |
+| `rules` | operations without a merchant, resolved before jev | `id`, `name`, `bank` (null = any), `match_field` (`bank_concept`/`merchant`), `pattern` (case-insensitive regex), `direction` (`outgoing`/`incoming`/`any`), `category_slug`, `enabled` |
 | `transaction_labels` | history of every label applied | `transaction_id`, `merchant_id`, `category_slug`, `source`, `confidence`, `model` (concrete jev version, e.g. `jev-1.13.0`), `labeled_at` (user labels become the golden set for Raul's own evals) |
 | `semantic_schema` | natural-language schema | `table_name`, `column_name` (null = table row), `description`, `examples` (jsonb), `synonyms` (text[]) |
 | `semantic_metrics` | named metrics | `name`, `description`, `sql_expression` |
@@ -169,7 +169,8 @@ Python only structures, it does not guess the merchant name:
   (BBVA prints it before ` | `, e.g. `PAGO CON TARJETA EN SUPERMERCADOS`).
   It is the strongest category signal jev gets. Null for CaixaBank.
 - `merchant`: the detail text, upper-case, whitespace collapsed, leading
-  references dropped, card number removed. Rules match on it.
+  references dropped, card number removed. System rules match on it or
+  on `bank_concept`.
 - `card_last4`: last four digits of the card when the line has one. The full
   card number is never stored outside `description_raw` and never sent to jev.
 
@@ -219,15 +220,36 @@ imported) are handled by rules or jev with a `transfer` category.
 ```
 new transaction
    │
-   ├─ 1. rules (merchant_exact → contains → regex)     confidence 1.0, source=rule
+   ├─ 1. system rules (operations without a merchant)   source=rule, no jev call
    │
-   ├─ 2. jev batch                                     source=jev
-   │       confidence ≥ threshold (default 0.85) ──▶ accept
-   │       confidence <  threshold ──▶ needs_review=true, keep top-3 suggestions
+   ├─ 2. jev: merchant name + category + subscription   (section 5.1)
    │
-   └─ 3. review inbox (human)                          source=user
-           label + optional "create rule for this merchant" (default on)
+   ├─ 3. merchant default set by the user?             source=merchant, jev's category kept for evals
+   │
+   ├─ 4. confidence gate (section 5.2)                  accept, or needs_review
+   │
+   └─ 5. /review (human)                                source=user; the label becomes the merchant default
 ```
+
+Two deterministic mechanisms, one job each:
+
+- **System rules** handle operations whose meaning the bank fixes and whose
+  text names no merchant: ATM withdrawals, credit card settlements, Bizum and
+  own-account transfers. A rule is a case-insensitive regex on `bank_concept`
+  or `merchant`, optionally limited to one bank and one direction; it sets the
+  category, leaves the merchant empty and skips jev. The Bizum rules also stop
+  the free text a person writes after `ENVIADO:` being read as a merchant.
+  Rules are seeded from `supabase/seed/rules.yaml` and must be disjoint (a
+  test checks that no seeded pattern pair matches the same fixture). In the
+  spike data, 9 seed rules matched 32 rows with no conflict and moved 9 of
+  them out of review. Adding a bank or an operation means adding a row; rules
+  are not a place for merchants.
+- **Merchant defaults** make "review a merchant once" true. jev still names
+  the merchant (every branch and truncation resolves to one `merchant_id`,
+  section 5.1), and when that merchant has a `category_slug` or
+  `is_subscription` set by the user, those win over jev. A text rule per
+  merchant would need one rule per spelling (`ACME 0042` and `ACME C.C.`);
+  the merchant id covers them all, and the extra jev call costs about $0.0001.
 
 ### 5.1 jev call shape
 
@@ -313,18 +335,22 @@ silently accepted.
 
 ### 5.3 Learning from corrections
 
-A user label writes `transaction_labels`, updates the transaction, and (when
-the checkbox is on) inserts a `merchant_exact` rule. Merging two merchants in
-`/review` repoints their transactions and keeps the surviving name. Future transactions from
-that merchant never reach jev. A "recategorize all" action re-runs the cascade
-over every non-user-labelled transaction; with output tokens free and input at
+A user label writes `transaction_labels` and updates the transaction. With
+"apply to every transaction of this merchant" checked (the default; unchecked
+for mixed merchants such as marketplaces), it also sets the merchant default
+and relabels that merchant's rows whose `category_source` is `jev` or
+`merchant`; rows labelled one by one stay as they are. Future transactions of
+that merchant take the default without review. Merging two merchants in
+`/review` repoints their transactions and keeps the surviving name and
+default. A "recategorize all" action re-runs the cascade over every
+non-user-labelled transaction; with output tokens free and input at
 $0.042 per million tokens, re-labelling years of history costs cents.
 
 ## 6. Subscriptions
 
 A subscription is a flag, not a category: Netflix is `leisure > entertainment`
 with `is_subscription = true`. Sources of the flag: jev (`is_subscription`),
-rules, user. `v_subscriptions` groups flagged expenses by merchant and reports
+merchant defaults, user. `v_subscriptions` groups flagged expenses by merchant and reports
 last charge, typical amount, inferred cadence (monthly or yearly from median
 gap) and monthly-equivalent cost. The `/subscriptions` page lists active ones
 (charged in the last 45 days for monthly, 400 for yearly) and the total.
@@ -464,7 +490,7 @@ block.
 | `GET /imports` | history |
 | `GET /transactions` | filtered list (month, account, category, needs_review) |
 | `GET /review` | review queue with jev suggestions |
-| `POST /transactions/{id}/label` | set category, optional rule creation |
+| `POST /transactions/{id}/label` | set category and merchant, optionally as the merchant default |
 | `POST /categorize/run` | re-run the cascade over uncategorized or all non-user rows |
 | `GET /dashboard/overview?month=` | KPIs, spend by category, monthly trend, top merchants |
 | `GET /dashboard/subscriptions` | subscriptions view |
@@ -485,7 +511,7 @@ actions when auth arrives in v2. Pages:
 |---|---|
 | `/` | month selector; KPI tiles (income, expenses, savings, savings rate); spend by level-1 donut; 12-month income vs expenses bars; top merchants; pending-review count |
 | `/subscriptions` | active subscriptions table and monthly total |
-| `/review` | inbox table: description, merchant, amount, jev top-3 as a select, "create rule" toggle, accept and bulk accept |
+| `/review` | inbox table: description, merchant, amount, jev top-3 as a select, "apply to this merchant" toggle, accept and bulk accept |
 | `/chat` | streaming chat with thread list and SQL disclosure |
 | `/imports` | upload, import history with new vs duplicate counts per file |
 | `/settings` | accounts and thresholds (minimal in v1) |
@@ -573,8 +599,7 @@ Decided with Raul after the jev spike
 - Section 3.2: new `merchants` table; `transactions` gains `bank_concept`,
   `card_last4`, `merchant_id`, `merchant_source`, `merchant_confidence`,
   `category_probabilities` (replaces `jev_suggestions`) and
-  `subscription_score`; `transaction_labels` records the jev `model`; rules can
-  set a merchant, a category or both.
+  `subscription_score`; `transaction_labels` records the jev `model`.
 - Section 4.2: Python structures (`bank_concept`, cleaned `merchant`,
   `card_last4`) and never guesses the merchant name; the card number never
   reaches jev.
@@ -586,10 +611,15 @@ Decided with Raul after the jev spike
 - Section 7: new taxonomy (13 expense groups, 53 level-2 slugs in total) with
   `what`/`not_for` criteria, validated in spike round 5; UI editing of
   categories is v2 (section 12).
+- Sections 3.2, 5 and 5.3: system rules (regex on `bank_concept` or
+  `merchant`, per bank and direction) resolve operations without a merchant
+  before jev; the user's category for a merchant is stored on `merchants` and
+  wins over jev, so each merchant is reviewed once. `merchant_exact` text rules
+  are dropped.
 - Carried into the next decisions: a `TRASPASO` to the holder's own name
   looks like a payment to a person to jev (own-account pairing, section 4.4);
   a mortgage lender's direct debit is ambiguous between mortgage and loan
-  (a rule, or `/review`). `/review` must offer a category picker and a merchant
+  (labelled once in `/review`, it becomes the merchant default). `/review` must offer a category picker and a merchant
   field that autocompletes known merchants or creates a new one, and a label
-  there becomes a rule so the same merchant is reviewed only once.
+  there becomes the merchant default so the same merchant is reviewed only once.
 

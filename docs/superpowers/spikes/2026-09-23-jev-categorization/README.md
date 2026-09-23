@@ -111,8 +111,10 @@ criteria cost about 40 percent more input tokens, still cents per run.
 
 ## Open items carried into the spec
 
-- CaixaBank Bizum lines with a concept (`ENVIADO: ...`) should be detected in
-  Python as Bizum, not read as a merchant.
+- CaixaBank Bizum lines with a concept (`ENVIADO: ...`) were read as a
+  merchant (one merged into a supermarket). Resolved in the spec by system
+  rules before jev: 9 regex rules matched 32 rows of this ledger with no
+  conflict (spec section 5).
 - A transfer to the holder's own name needs own-account pairing (spec
   section 4.4) or a rule; jev cannot know whose name it is.
 - Rosters above 254 shortlisted names need a trigram pre-filter; not needed at

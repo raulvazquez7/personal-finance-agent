@@ -21,21 +21,25 @@ jev does not generate text. It answers typed questions about a JSON state:
 a [`Choice`](https://docs.typesafe.ai/primitives/choice) returns a probability
 for every option, and a [`Noul`](https://docs.typesafe.ai/primitives/noul)
 returns the probability of yes. Each transaction becomes one call with three
-independent questions:
+independent questions. Operations without a merchant (ATM, card
+settlement, Bizum, own transfers) are resolved by deterministic rules before
+jev, and a merchant the user has already labelled keeps that label.
 
 ```mermaid
 flowchart LR
     A[PDF line] --> B["Python<br/>bank_concept, clean text,<br/>fragments, no card number"]
-    B --> C{"jev System One<br/>one call"}
+    B --> R{system rule?}
+    R -->|ATM, Bizum, card settlement| H
+    R -->|no| C{"jev System One<br/>one call"}
     C -->|Choice| D[merchant = which fragment]
     C -->|Choice| E[category = level-2 slug]
     C -->|Noul| F[is it a subscription?]
-    D --> G["Python<br/>exact match on known merchants,<br/>level 1 from level 2,<br/>thresholds"]
+    D --> G["Python<br/>exact match on known merchants,<br/>merchant default wins,<br/>level 1 from level 2, thresholds"]
     E --> G
     F --> G
     G -->|confident| H[(labelled transaction)]
     G -->|unsure| I["/review inbox"]
-    I -->|one click| J[rule + merchant merge]
+    I -->|one click| J[merchant default + merge]
 ```
 
 How the design follows jev's documented patterns:
