@@ -11,6 +11,9 @@ data/*.db
 # Browser QA captures (agent-browser) show real bank data
 dogfood-output/
 
+# jev spike outputs contain real bank data
+docs/superpowers/spikes/*/output/
+
 # Python
 __pycache__/
 *.py[cod]
@@ -41,3 +44,5 @@ out/
 # Supabase CLI
 supabase/.temp/
 supabase/.branches/
+eval-output/
+data/labels/
