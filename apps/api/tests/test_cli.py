@@ -1,13 +1,21 @@
 from contextlib import nullcontext
 from uuid import uuid4
 
+import pytest
 from typer.testing import CliRunner
 
 from finance import cli
+from finance.categorization.store import CategorizeSummary
 from finance.ingestion.adapters import UnsupportedStatement
 from finance.models import ImportSummary
 
 runner = CliRunner()
+
+
+@pytest.fixture(autouse=True)
+def no_real_categorization(monkeypatch):
+    """`finance import` categorizes afterwards: never against the real ledger from a unit test."""
+    monkeypatch.setattr(cli, "run_categorization", lambda include_all=False: CategorizeSummary())
 
 
 def test_import_prints_one_summary_line_per_file(tmp_path, monkeypatch):
@@ -79,3 +87,57 @@ def test_import_exits_zero_when_every_file_imports(tmp_path, monkeypatch):
 
     assert result.exit_code == 0
     assert result.stderr == ""
+
+
+def test_import_succeeds_even_when_categorization_fails(monkeypatch, tmp_path):
+    pdf = tmp_path / "statement.pdf"
+    pdf.write_bytes(b"%PDF")
+    summary = ImportSummary(
+        import_id="00000000-0000-0000-0000-000000000001",
+        account_id="00000000-0000-0000-0000-000000000002",
+        bank="bbva",
+        iban_last4="0001",
+        filename="statement.pdf",
+        rows_total=1,
+        rows_new=1,
+        rows_duplicate=0,
+    )
+
+    class _Conn:
+        def __enter__(self):
+            return self
+
+        def __exit__(self, *exc):
+            return False
+
+    def _fail(include_all=False):
+        raise RuntimeError("jev is down")
+
+    monkeypatch.setattr(cli, "connection", lambda: _Conn())
+    monkeypatch.setattr(cli, "import_statement", lambda *args: summary)
+    monkeypatch.setattr(cli, "run_categorization", _fail)
+    result = runner.invoke(cli.app, ["import", str(pdf)])
+    assert result.exit_code == 0
+    assert "new=1" in result.output and "categorization failed: jev is down" in result.output
+
+
+def test_categorize_all_reruns_everything_and_prints_the_counts(monkeypatch):
+    calls = []
+
+    def _run(include_all=False):
+        calls.append(include_all)
+        return CategorizeSummary(
+            paired=1, categorized=3, needs_review=1, by_source={"rule": 1, "jev": 2}
+        )
+
+    monkeypatch.setattr(cli, "run_categorization", _run)
+    result = runner.invoke(cli.app, ["categorize", "--all"])
+    assert result.exit_code == 0 and calls == [True]
+    assert "paired=1 categorized=3 jev=2 rule=1 needs_review=1" in result.stdout
+
+
+def test_categorize_says_why_it_skipped(monkeypatch):
+    skipped = CategorizeSummary(paired=2, skipped="TYPESAFE_API_KEY is not set")
+    monkeypatch.setattr(cli, "run_categorization", lambda include_all=False: skipped)
+    result = runner.invoke(cli.app, ["categorize"])
+    assert result.stdout.strip() == "categorization skipped: TYPESAFE_API_KEY is not set (paired=2)"

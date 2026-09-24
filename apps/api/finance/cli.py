@@ -5,6 +5,7 @@ from pathlib import Path
 import typer
 
 from finance.categorization.seed import seed as seed_database
+from finance.categorization.store import run_categorization
 from finance.db import connection
 from finance.ingestion.adapters import UnsupportedStatement
 from finance.ingestion.importer import import_statement
@@ -33,6 +34,10 @@ def import_statements(files: list[Path] = typer.Argument(..., exists=True, reada
             f"{summary.filename}: {summary.bank} ····{summary.iban_last4} "
             f"total={summary.rows_total} new={summary.rows_new} duplicate={summary.rows_duplicate}"
         )
+    try:
+        typer.echo(run_categorization().line())
+    except Exception as error:  # the import itself already succeeded
+        typer.echo(f"categorization failed: {error}", err=True)
     if failed:
         raise typer.Exit(code=1)
 
@@ -43,3 +48,13 @@ def seed_command() -> None:
     with connection() as conn:
         categories, rules = seed_database(conn)
     typer.echo(f"categories={categories} rules={rules}")
+
+
+@app.command("categorize")
+def categorize_command(
+    include_all: bool = typer.Option(
+        False, "--all", help="Re-run every transaction you have not labelled yourself."
+    ),
+) -> None:
+    """Categorize pending transactions (pairing, rules, jev)."""
+    typer.echo(run_categorization(include_all).line())
