@@ -45,19 +45,22 @@ def decide(
     slug, confidence, source = category.choice, category.confidence, "jev"
     level1_confidence = taxonomy.level1_sums(category.probabilities).get(taxonomy.get(slug).level1)
     score = first.answers["is_subscription"].noul
-    is_subscription = direction == "outgoing" and (score or 0) > settings.subscription_threshold
+    is_subscription = (score or 0) > settings.subscription_threshold
     merchant = resolution.merchant
     if use_merchant_defaults and merchant:
         # A default only applies in its own direction: an expense default never labels a refund.
         if merchant.category_slug and taxonomy.fits(merchant.category_slug, direction):
             slug, source = merchant.category_slug, "merchant"
             confidence = level1_confidence = None
-        if merchant.is_subscription is not None and direction == "outgoing":
+        if merchant.is_subscription is not None:
             is_subscription = merchant.is_subscription
+    tx_type = taxonomy.tx_type_of(slug, tx.amount)
+    # Only expenses are subscriptions: never a refund, never a transfer (spec 5.2, 6).
+    is_subscription = is_subscription and tx_type == "expense"
     below_threshold = source == "jev" and confidence < settings.category_threshold
     return Categorization(
         transaction_id=tx.id,
-        tx_type=taxonomy.tx_type_of(slug, tx.amount),
+        tx_type=tx_type,
         category_slug=slug,
         category_source=source,
         category_confidence=confidence,

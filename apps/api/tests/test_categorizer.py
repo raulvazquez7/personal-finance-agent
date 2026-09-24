@@ -3,6 +3,8 @@ from datetime import date
 from decimal import Decimal
 from uuid import uuid4
 
+import pytest
+
 from finance.categorization.categorizer import CategorizationContext, categorize
 from finance.categorization.merchants import MerchantRef, MerchantRoster
 from finance.categorization.models import TxInput
@@ -149,3 +151,61 @@ def test_subscription_flag_needs_an_expense_above_the_threshold():
     [refund] = _run([_tx("ACME TV", amount="9.99", concept="PAGO CON TARJETA")], jev)
     assert charge.is_subscription and charge.subscription_score == 0.9
     assert not refund.is_subscription
+
+
+def test_an_outgoing_transfer_is_never_a_subscription():
+    plan = jev_result(
+        merchant={"ACME INVEST": 0.99, "none": 0.01},
+        category={"savings_investment": 0.99, "own_accounts": 0.01},
+        subscription=0.9,
+    )
+    [result] = _run(
+        [_tx("ACME INVEST", concept="TRANSFERENCIA")], FakeJev(first={"ACME INVEST": plan})
+    )
+    assert (result.tx_type, result.is_subscription) == ("transfer", False)
+
+
+def test_merchant_default_skips_review_when_jev_is_unsure():
+    roster = MerchantRoster(
+        [MerchantRef(id=uuid4(), name="ACME", category_slug="restaurants_bars")]
+    )
+    unsure = jev_result(
+        merchant={"ACME": 0.97, "none": 0.03}, category={"groceries": 0.6, "restaurants_bars": 0.4}
+    )
+    [result] = _run([_tx("ACME")], FakeJev(first={"ACME": unsure}), roster)
+    assert (result.category_slug, result.category_source, result.needs_review) == (
+        "restaurants_bars",
+        "merchant",
+        False,
+    )
+
+
+@pytest.mark.parametrize(
+    ("default", "noul", "amount", "slug", "expected"),
+    [
+        (True, 0.05, "-9.99", "entertainment", True),
+        (False, 0.9, "-9.99", "entertainment", False),
+        (True, 0.9, "9.99", "refunds", False),
+    ],
+)
+def test_merchant_subscription_default_overrides_jev_on_expenses_only(
+    default, noul, amount, slug, expected
+):
+    roster = MerchantRoster([MerchantRef(id=uuid4(), name="ACME TV", is_subscription=default)])
+    answer = jev_result(
+        merchant={"ACME TV": 0.99, "none": 0.01}, category={slug: 1.0}, subscription=noul
+    )
+    [result] = _run([_tx("ACME TV", amount=amount)], FakeJev(first={"ACME TV": answer}), roster)
+    assert result.is_subscription is expected
+
+
+def test_the_category_edge_is_accepted_and_the_subscription_edge_is_not():
+    settings = CTX.settings
+    edge = jev_result(
+        merchant={"ACME TV": 0.99, "none": 0.01},
+        category={"entertainment": settings.category_threshold, "software_ai": 0.01},
+        subscription=settings.subscription_threshold,
+    )
+    [result] = _run([_tx("ACME TV")], FakeJev(first={"ACME TV": edge}))
+    assert result.category_confidence == settings.category_threshold
+    assert not result.needs_review and not result.is_subscription
