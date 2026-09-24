@@ -786,4 +786,6 @@ Decided with Raul during implementation (2026-09-24):
 - Section 10: the review API masks card numbers in descriptions.
 - Sections 4.2 and 5.1: no merchant aliases in v1; a renamed or merged
   merchant name relies on the shortlist and the same-merchant question.
+- Section 3.2: `v_review_queue` is deferred to slice 3; the slice-2 review
+  queue is built in Python (`finance/categorization/review_queue.py`).
 

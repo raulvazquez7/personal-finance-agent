@@ -46,9 +46,11 @@ cd apps/web && npm run dev                  # Next.js on :3000
 ```
 
 Never run `supabase db reset` without `uv run finance labels export` first: the
-reset wipes the labels, which are the golden set. To restore: `finance seed`,
-re-import the statements, then `finance labels import ../../data/labels/<file>.csv`
-(from `apps/api`).
+reset wipes the labels, which are the golden set, and the merchant defaults,
+which the CSV does not hold. To restore (from `apps/api`): `finance seed`,
+re-import the statements with `TYPESAFE_API_KEY=` (empty: no paid categorize
+run), `finance labels import ../../data/labels/<file>.csv`, then
+`finance categorize`.
 
 ## Verifying the web app
 

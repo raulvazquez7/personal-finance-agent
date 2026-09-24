@@ -112,9 +112,14 @@ http://localhost:3000/review for what jev was unsure about.
 ```bash
 cd apps/api
 uv run finance categorize         # categorize pending rows (--all re-runs every row you have not labelled)
-uv run finance labels export      # back up your labels to data/labels/ (git-ignored)
+uv run finance labels export      # back up your labels to data/labels/ (git-ignored; --force overwrites)
 uv run finance labels import ../../data/labels/<file>.csv   # restore them after a reset
 ```
+
+A reset also loses the merchant defaults: the labels CSV holds labels only. To
+restore, run `finance seed`, re-import the statements with `TYPESAFE_API_KEY=`
+(empty, so no paid categorize run happens), `finance labels import`, then
+`finance categorize`.
 
 Real statements go in `data/raw/` (git-ignored). Uploading the same file twice
 never duplicates a transaction.
