@@ -10,12 +10,19 @@ TAXONOMY = Taxonomy(read_categories_yaml(SEED_DIR / "categories.yaml"))
 ACME = uuid4()
 
 
-def _row(amount, merchant_id=None, probabilities=None, subscription=False, default=None):
+def _row(
+    amount,
+    merchant_id=None,
+    probabilities=None,
+    subscription=False,
+    default=None,
+    description="PAGO | ACME",
+):
     return ReviewRow(
         id=uuid4(),
         booked_at=date(2026, 7, 1),
         amount=Decimal(amount),
-        description_raw="PAGO | ACME",
+        description_raw=description,
         account_name="bbva ····0001",
         merchant_id=merchant_id,
         merchant_name="ACME" if merchant_id else None,
@@ -83,3 +90,12 @@ def test_a_merchant_without_a_default_groups_both_directions():
     ]
     [item] = build_review_items(rows, {}, TAXONOMY)
     assert (item.kind, item.count, item.total) == ("merchant", 2, Decimal("5"))
+
+
+def test_card_numbers_are_masked_and_long_references_kept():
+    card = _row("-9.90", description="PAGO CON TARJETA | 1234567812345678 SUPER ACME")
+    transfer = _row("-50", description="TRANSFERENCIA REF 12345678901234567890")
+    items = build_review_items([card, transfer], {}, TAXONOMY)
+    descriptions = {item.transactions[0].id: item.transactions[0].description_raw for item in items}
+    assert descriptions[card.id] == "PAGO CON TARJETA | •••• 5678 SUPER ACME"
+    assert descriptions[transfer.id] == "TRANSFERENCIA REF 12345678901234567890"

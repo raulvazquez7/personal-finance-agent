@@ -11,9 +11,11 @@ import { ReviewRow, type Decision } from "./review-row";
 
 type Item = Schemas["ReviewItem"];
 type Transaction = Schemas["ReviewTransaction"];
-type Pending = { timer: ReturnType<typeof setTimeout>; commit: (keepalive: boolean) => void };
+/** The change a row is waiting to send; `id` is also its toast's id. */
+type Pending = { id: string; timer: ReturnType<typeof setTimeout>; commit: (keepalive: boolean) => void };
 
 const UNDO_MS = 5000;
+let seq = 0;
 const byTotal = (a: Item, b: Item) => Math.abs(Number(b.total)) - Math.abs(Number(a.total));
 
 type Props = {
@@ -25,13 +27,17 @@ type Props = {
 export function ReviewList({ initialItems, categories, merchants }: Props) {
   const [items, setItems] = useState(initialItems);
   const [total] = useState(initialItems.length);
-  const pending = useRef(new Map<string, Pending>());
+  const pending = useRef(new Map<string, Pending>()); // by row key: at most one change per row
 
   useEffect(() => {
-    // Leaving the page sends what is still waiting for its undo window.
-    const flush = () => pending.current.forEach(({ timer, commit }) => { clearTimeout(timer); commit(true); });
+    // Leaving the page, or the route, sends what is still waiting for its undo window.
+    const waiting = pending.current;
+    const flush = () => waiting.forEach(({ timer, commit }) => { clearTimeout(timer); commit(true); });
     window.addEventListener("pagehide", flush);
-    return () => window.removeEventListener("pagehide", flush);
+    return () => {
+      window.removeEventListener("pagehide", flush);
+      flush();
+    };
   }, []);
 
   function replace(key: string, next: Item | null) {
@@ -41,11 +47,22 @@ export function ReviewList({ initialItems, categories, merchants }: Props) {
     });
   }
 
-  function schedule(original: Item, next: Item | null, send: (keepalive: boolean) => Promise<void>) {
+  function schedule(
+    original: Item,
+    next: Item | null,
+    message: string,
+    send: (keepalive: boolean) => Promise<void>,
+  ) {
+    // A new change on the same row sends the earlier one first, so Undo never restores a stale row.
+    const earlier = pending.current.get(original.key);
+    if (earlier) {
+      clearTimeout(earlier.timer);
+      earlier.commit(false);
+    }
     replace(original.key, next);
-    const id = `${original.key}:${crypto.randomUUID()}`;
+    const id = `${original.key}:${++seq}`;
     const commit = (keepalive: boolean) => {
-      pending.current.delete(id);
+      pending.current.delete(original.key);
       // The toast can outlive the timer (sonner pauses on hover): no Undo once the change is sent.
       toast.dismiss(id);
       send(keepalive).catch(() => {
@@ -54,15 +71,16 @@ export function ReviewList({ initialItems, categories, merchants }: Props) {
       });
     };
     const timer = setTimeout(() => commit(false), UNDO_MS);
-    pending.current.set(id, { timer, commit });
-    toast("Confirmed", {
+    pending.current.set(original.key, { id, timer, commit });
+    toast(message, {
       id,
       duration: UNDO_MS,
       action: {
         label: "Undo",
         onClick: () => {
-          if (!pending.current.delete(id)) return;
+          if (pending.current.get(original.key)?.id !== id) return;
           clearTimeout(timer);
+          pending.current.delete(original.key);
           replace(original.key, original);
         },
       },
@@ -78,13 +96,14 @@ export function ReviewList({ initialItems, categories, merchants }: Props) {
         name: d.merchant && d.merchant.id === null ? d.merchant.name : null,
         merge_into_id: d.merchant?.id && d.merchant.id !== merchantId ? d.merchant.id : null,
       };
-      schedule(item, null, (keepalive) => apiPost(`/merchants/${merchantId}/review`, body, { keepalive }));
+      schedule(item, null, "Confirmed", (keepalive) =>
+        apiPost(`/merchants/${merchantId}/review`, body, { keepalive }));
     } else {
-      labelOne(item, item.transactions[0], d);
+      labelOne(item, item.transactions[0], d, "Confirmed");
     }
   }
 
-  function labelOne(item: Item, tx: Transaction, d: Decision) {
+  function labelOne(item: Item, tx: Transaction, d: Decision, message: string) {
     const rest = item.transactions.filter((t) => t.id !== tx.id);
     const next = rest.length
       ? { ...item, transactions: rest, count: rest.length,
@@ -96,7 +115,8 @@ export function ReviewList({ initialItems, categories, merchants }: Props) {
       merchant_id: d.merchant?.id ?? null,
       new_merchant_name: d.merchant && d.merchant.id === null ? d.merchant.name : null,
     };
-    schedule(item, next, (keepalive) => apiPost(`/transactions/${tx.id}/label`, body, { keepalive }));
+    schedule(item, next, message, (keepalive) =>
+      apiPost(`/transactions/${tx.id}/label`, body, { keepalive }));
   }
 
   const done = Math.max(total - items.length, 0);
@@ -125,10 +145,10 @@ export function ReviewList({ initialItems, categories, merchants }: Props) {
               categories={categories}
               merchants={merchants}
               onConfirm={(d) => confirm(item, d)}
-              onLabelOne={(tx, d) => labelOne(item, tx, d)}
-              onMerge={() => item.merge && item.merchant && schedule(item, null, (keepalive) =>
+              onLabelOne={(tx, d) => labelOne(item, tx, d, "Labelled")}
+              onMerge={() => item.merge && item.merchant && schedule(item, null, "Merged", (keepalive) =>
                 apiPost(`/merchants/${item.merchant!.id}/merge`, { into_id: item.merge!.merchant_id }, { keepalive }))}
-              onDismissMerge={() => item.merchant && schedule(item, { ...item, merge: null }, (keepalive) =>
+              onDismissMerge={() => item.merchant && schedule(item, { ...item, merge: null }, "Dismissed", (keepalive) =>
                 apiPost(`/merchants/${item.merchant!.id}/dismiss-merge`, undefined, { keepalive }))}
             />
           ))}

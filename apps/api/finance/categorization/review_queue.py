@@ -9,6 +9,7 @@ from uuid import UUID
 from pydantic import BaseModel
 
 from finance.categorization.taxonomy import Taxonomy, direction_of
+from finance.ingestion.structure import mask_card_numbers
 
 
 class ReviewRow(BaseModel):
@@ -100,6 +101,12 @@ def _joins_its_merchant(row: ReviewRow, taxonomy: Taxonomy) -> bool:
     return default is None or taxonomy.fits(default, direction_of(row.amount))
 
 
+def _transaction(row: ReviewRow) -> ReviewTransaction:
+    """The full card number never leaves the API (spec 4.2)."""
+    masked = mask_card_numbers(row.description_raw)
+    return ReviewTransaction.model_validate(row.model_dump() | {"description_raw": masked})
+
+
 def build_review_items(
     rows: list[ReviewRow], merges: dict[UUID, MergeSuggestion], taxonomy: Taxonomy
 ) -> list[ReviewItem]:
@@ -121,7 +128,7 @@ def build_review_items(
                 key=key,
                 kind="merchant" if is_merchant else "transaction",
                 merchant=merchant,
-                transactions=[ReviewTransaction.model_validate(m.model_dump()) for m in members],
+                transactions=[_transaction(m) for m in members],
                 count=len(members),
                 total=sum((m.amount for m in members), Decimal(0)),
                 suggestion=suggestion_for(members, taxonomy),

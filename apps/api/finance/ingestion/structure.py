@@ -35,3 +35,8 @@ def _without_card_number(text: str | None) -> str | None:
     if text is None or not _CARD_NUMBER.search(text):
         return text
     return _SPACES.sub(" ", _CARD_NUMBER.sub("", text)).strip() or None
+
+
+def mask_card_numbers(text: str) -> str:
+    """Every card number as '•••• ' plus its last four digits, for text shown in the web app."""
+    return _CARD_NUMBER.sub(lambda card: f"•••• {card.group()[-4:]}", text)

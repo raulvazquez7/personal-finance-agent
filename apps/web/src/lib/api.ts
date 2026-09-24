@@ -3,8 +3,8 @@ import type { components } from "./api-types";
 export type Schemas = components["schemas"];
 export const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000";
 
-export async function apiGet<T>(path: string): Promise<T> {
-  const response = await fetch(`${API_URL}${path}`, { cache: "no-store" });
+export async function apiGet<T>(path: string, init: { signal?: AbortSignal } = {}): Promise<T> {
+  const response = await fetch(`${API_URL}${path}`, { cache: "no-store", signal: init.signal });
   if (!response.ok) {
     throw new Error(`GET ${path} failed with ${response.status}`);
   }
@@ -29,10 +29,14 @@ export async function apiPost(
   }
 }
 
-/** Pending review items for the navigation badge; null when the API is unreachable. */
+/** Pending review items for the navigation badge; null when the API is unreachable or slow. */
 export async function reviewCount(): Promise<number | null> {
   try {
-    return (await apiGet<Schemas["ReviewCount"]>("/review/count")).pending;
+    // The root layout awaits this: a hanging API must not hold every page.
+    const count = await apiGet<Schemas["ReviewCount"]>("/review/count", {
+      signal: AbortSignal.timeout(2000),
+    });
+    return count.pending;
   } catch {
     return null;
   }

@@ -82,6 +82,7 @@ export function ReviewRow({ item, categories, merchants, onConfirm, onLabelOne, 
         <ul className="flex flex-col divide-y border-t">
           {item.transactions.map((tx) => (
             <TransactionLine key={tx.id} tx={tx} categories={categories} initial={categorySlug}
+                             initialSubscription={isSubscription}
                              onLabel={(decision) => onLabelOne(tx, decision)} />
           ))}
         </ul>
@@ -90,14 +91,15 @@ export function ReviewRow({ item, categories, merchants, onConfirm, onLabelOne, 
   );
 }
 
-function TransactionLine({ tx, categories, initial, onLabel }: {
+function TransactionLine({ tx, categories, initial, initialSubscription, onLabel }: {
   tx: Transaction;
   categories: Schemas["CategoryOut"][];
   initial: string;
+  initialSubscription: boolean;
   onLabel: (decision: Decision) => void;
 }) {
   const [slug, setSlug] = useState(initial);
-  const [subscription, setSubscription] = useState(false);
+  const [subscription, setSubscription] = useState(initialSubscription);
   return (
     <li className="grid gap-2 py-2 text-sm md:grid-cols-[6rem_1fr_1fr_auto_auto] md:items-center">
       <span className="tabular-nums text-muted-foreground">{tx.booked_at}</span>
