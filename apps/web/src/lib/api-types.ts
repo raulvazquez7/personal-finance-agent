@@ -38,6 +38,40 @@ export interface paths {
         patch: operations["rename_account_accounts__account_id__patch"];
         trace?: never;
     };
+    "/categories": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Categories */
+        get: operations["list_categories_categories_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/categorize/run": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Run */
+        post: operations["run_categorize_run_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/imports": {
         parameters: {
             query?: never;
@@ -56,6 +90,108 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/merchants": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Merchants */
+        get: operations["list_merchants_merchants_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/merchants/{merchant_id}/review": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Review Merchant */
+        post: operations["review_merchant_merchants__merchant_id__review_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/merchants/{merchant_id}/merge": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Merge */
+        post: operations["merge_merchants__merchant_id__merge_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/merchants/{merchant_id}/dismiss-merge": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Dismiss */
+        post: operations["dismiss_merchants__merchant_id__dismiss_merge_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/review": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Review */
+        get: operations["get_review_review_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/review/count": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Review Count */
+        get: operations["get_review_count_review_count_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/transactions": {
         parameters: {
             query?: never;
@@ -67,6 +203,23 @@ export interface paths {
         get: operations["list_transactions_transactions_get"];
         put?: never;
         post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/transactions/{transaction_id}/label": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Label */
+        post: operations["label_transactions__transaction_id__label_post"];
         delete?: never;
         options?: never;
         head?: never;
@@ -119,6 +272,33 @@ export interface components {
         Body_create_import_imports_post: {
             /** File */
             file: string;
+        };
+        /** CategoryOut */
+        CategoryOut: {
+            /** Slug */
+            slug: string;
+            /** Tx Type */
+            tx_type: string;
+            /** Level1 */
+            level1: string;
+        };
+        /** CategoryScore */
+        CategoryScore: {
+            /** Slug */
+            slug: string;
+            /** Confidence */
+            confidence: number;
+        };
+        /** ConfirmMerchant */
+        ConfirmMerchant: {
+            /** Category Slug */
+            category_slug: string;
+            /** Is Subscription */
+            is_subscription: boolean;
+            /** Name */
+            name?: string | null;
+            /** Merge Into Id */
+            merge_into_id?: string | null;
         };
         /** HTTPValidationError */
         HTTPValidationError: {
@@ -184,6 +364,114 @@ export interface components {
             rows_new: number;
             /** Rows Duplicate */
             rows_duplicate: number;
+        };
+        /** LabelTransaction */
+        LabelTransaction: {
+            /** Category Slug */
+            category_slug: string;
+            /**
+             * Is Subscription
+             * @default false
+             */
+            is_subscription: boolean;
+            /** Merchant Id */
+            merchant_id?: string | null;
+            /** New Merchant Name */
+            new_merchant_name?: string | null;
+        };
+        /** MerchantOut */
+        MerchantOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Name */
+            name: string;
+        };
+        /** MergeRequest */
+        MergeRequest: {
+            /**
+             * Into Id
+             * Format: uuid
+             */
+            into_id: string;
+        };
+        /** MergeSuggestion */
+        MergeSuggestion: {
+            /**
+             * Merchant Id
+             * Format: uuid
+             */
+            merchant_id: string;
+            /** Name */
+            name: string;
+            /** Confidence */
+            confidence: number;
+        };
+        /** ReviewCount */
+        ReviewCount: {
+            /** Pending */
+            pending: number;
+        };
+        /** ReviewItem */
+        ReviewItem: {
+            /** Key */
+            key: string;
+            /**
+             * Kind
+             * @enum {string}
+             */
+            kind: "merchant" | "transaction";
+            merchant: components["schemas"]["MerchantOut"] | null;
+            /** Transactions */
+            transactions: components["schemas"]["ReviewTransaction"][];
+            /** Count */
+            count: number;
+            /** Total */
+            total: string;
+            suggestion: components["schemas"]["Suggestion"];
+            merge: components["schemas"]["MergeSuggestion"] | null;
+        };
+        /** ReviewTransaction */
+        ReviewTransaction: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /**
+             * Booked At
+             * Format: date
+             */
+            booked_at: string;
+            /** Amount */
+            amount: string;
+            /** Description Raw */
+            description_raw: string;
+            /** Account Name */
+            account_name: string;
+        };
+        /** RunQueued */
+        RunQueued: {
+            /**
+             * Status
+             * @constant
+             */
+            status: "queued";
+        };
+        /** Suggestion */
+        Suggestion: {
+            /** Category Slug */
+            category_slug: string | null;
+            /** Level1 */
+            level1: string | null;
+            /** Confidence */
+            confidence: number | null;
+            /** Is Subscription */
+            is_subscription: boolean;
+            /** Top */
+            top: components["schemas"]["CategoryScore"][];
         };
         /** Transaction */
         Transaction: {
@@ -287,6 +575,57 @@ export interface operations {
             };
         };
     };
+    list_categories_categories_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CategoryOut"][];
+                };
+            };
+        };
+    };
+    run_categorize_run_post: {
+        parameters: {
+            query?: {
+                all?: boolean;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            202: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RunQueued"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
     list_imports_imports_get: {
         parameters: {
             query?: never;
@@ -340,6 +679,173 @@ export interface operations {
             };
         };
     };
+    list_merchants_merchants_get: {
+        parameters: {
+            query?: {
+                q?: string | null;
+                limit?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MerchantOut"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    review_merchant_merchants__merchant_id__review_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                merchant_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ConfirmMerchant"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    merge_merchants__merchant_id__merge_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                merchant_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["MergeRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    dismiss_merchants__merchant_id__dismiss_merge_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                merchant_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_review_review_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ReviewItem"][];
+                };
+            };
+        };
+    };
+    get_review_count_review_count_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ReviewCount"];
+                };
+            };
+        };
+    };
     list_transactions_transactions_get: {
         parameters: {
             query?: {
@@ -361,6 +867,39 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["Transaction"][];
                 };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    label_transactions__transaction_id__label_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                transaction_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["LabelTransaction"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
             /** @description Validation Error */
             422: {
