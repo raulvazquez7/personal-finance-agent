@@ -34,6 +34,21 @@ def test_transaction_rows_carry_unique_keys_and_sign_based_type():
     assert types == ["expense", "expense", "income"]
 
 
+def test_transaction_rows_carry_concept_and_card_last4():
+    header = StatementHeader(bank="bbva", iban="ES9101820418450200051332")
+    card = NormalizedTransaction(
+        booked_at=date(2026, 7, 3),
+        amount=Decimal("-9.90"),
+        description_raw="PAGO CON TARJETA EN SUPERMERCADOS | 1234567812345678 SUPER ACME",
+        merchant="1234567812345678 SUPER ACME",
+        balance_after=Decimal("5"),
+    )
+    row = transaction_rows(ParsedStatement(header=header, transactions=[card]), uuid4(), uuid4())[0]
+    assert row[7] == "SUPER ACME"
+    assert row[11] == "PAGO CON TARJETA EN SUPERMERCADOS"
+    assert row[12] == "5678"
+
+
 # Real statements: exact row counts of the three sample files on Raul's machine.
 EXPECTED_ROWS = {
     "bbva_extracto_julio_01.pdf": 78,
