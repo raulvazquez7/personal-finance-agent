@@ -1,5 +1,6 @@
 """System rules: bank operations without a merchant, resolved before jev (spec 5)."""
 
+import re
 from pathlib import Path
 from typing import Literal
 
@@ -7,6 +8,7 @@ import yaml
 from psycopg import Connection
 from pydantic import BaseModel
 
+from finance.categorization.taxonomy import Direction
 from finance.models import Bank
 
 
@@ -29,3 +31,19 @@ def load_rules(conn: Connection) -> list[Rule]:
         " where enabled order by name"
     ).fetchall()
     return [Rule.model_validate(row) for row in rows]
+
+
+def match_rule(
+    rules: list[Rule],
+    bank: Bank,
+    bank_concept: str | None,
+    merchant: str | None,
+    direction: Direction,
+) -> Rule | None:
+    for rule in rules:
+        if rule.bank not in (None, bank) or rule.direction not in ("any", direction):
+            continue
+        text = bank_concept if rule.match_field == "bank_concept" else merchant
+        if text and re.search(rule.pattern, text, re.IGNORECASE):
+            return rule
+    return None
