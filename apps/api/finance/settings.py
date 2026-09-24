@@ -19,6 +19,8 @@ class Settings(BaseSettings):
     langfuse_secret_key: str | None = None
     langfuse_base_url: str = "https://cloud.langfuse.com"
     cors_origins: list[str] = ["http://localhost:3000"]
+    transfer_pattern: str = "TRASPASO|TRANSFER|BIZUM|TRF"
+    transfer_window_days: int = 2
 
 
 @lru_cache
