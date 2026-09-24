@@ -7,8 +7,10 @@ import typer
 from finance.categorization.seed import seed as seed_database
 from finance.categorization.store import run_categorization
 from finance.db import connection
+from finance.evals.run import run_eval
 from finance.ingestion.adapters import UnsupportedStatement
 from finance.ingestion.importer import import_statement
+from finance.settings import get_settings
 
 app = typer.Typer(help="personal-finance-agent command line", no_args_is_help=True)
 
@@ -58,3 +60,15 @@ def categorize_command(
 ) -> None:
     """Categorize pending transactions (pairing, rules, jev)."""
     typer.echo(run_categorization(include_all).line())
+
+
+@app.command("eval-categorization")
+def eval_command(
+    limit: int | None = typer.Option(None, help="Only the first N labelled transactions."),
+    note: str = typer.Option("", help="What changed, for docs/evals/HISTORY.md."),
+) -> None:
+    """Benchmark the categorizer against your labels (dry run, writes nothing to the database)."""
+    with connection() as conn:
+        out = run_eval(conn, get_settings(), limit=limit, note=note)
+    typer.echo((out / "report.md").read_text())
+    typer.echo(f"saved to {out}")

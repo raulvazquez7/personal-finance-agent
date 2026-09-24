@@ -149,3 +149,19 @@ def test_categorize_reports_rows_jev_could_not_answer(monkeypatch):
     monkeypatch.setattr(cli, "run_categorization", lambda include_all=False: partial)
     result = runner.invoke(cli.app, ["categorize"])
     assert result.stdout.strip() == "paired=0 categorized=2 jev=2 needs_review=0 failed=1"
+
+
+def test_eval_categorization_passes_its_options_and_prints_the_report(monkeypatch, tmp_path):
+    calls = []
+
+    def _run_eval(conn, settings, limit=None, note=""):
+        calls.append((limit, note))
+        (tmp_path / "report.md").write_text("# Categorization eval")
+        return tmp_path
+
+    monkeypatch.setattr(cli, "connection", lambda: nullcontext(None))
+    monkeypatch.setattr(cli, "run_eval", _run_eval)
+    result = runner.invoke(cli.app, ["eval-categorization", "--limit", "5", "--note", "wording"])
+    assert result.exit_code == 0 and calls == [(5, "wording")]
+    assert "# Categorization eval" in result.stdout
+    assert f"saved to {tmp_path}" in result.stdout
