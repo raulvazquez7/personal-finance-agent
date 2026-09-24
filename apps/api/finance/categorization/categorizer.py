@@ -1,6 +1,7 @@
 """The cascade without the database: pairing, system rules, jev, merchant defaults, gate."""
 
 import asyncio
+import logging
 from dataclasses import dataclass
 from uuid import UUID
 
@@ -11,6 +12,8 @@ from finance.categorization.models import Categorization, TxInput
 from finance.categorization.rules import Rule, match_rule
 from finance.categorization.taxonomy import Taxonomy, direction_of
 from finance.settings import Settings
+
+logger = logging.getLogger(__name__)
 
 
 @dataclass(frozen=True)
@@ -88,6 +91,9 @@ async def categorize(
     *,
     use_merchant_defaults: bool = True,
 ) -> list[Categorization]:
+    """Results in the order of `rows`. A row whose jev call fails (after the SDK's retries) is
+    left out and logged, so one bad row never costs the others; it stays pending for the next
+    run. Pairing and rule rows never call jev and always come back."""
     results: dict[UUID, Categorization] = {}
     pending: list[TxInput] = []
     for tx in rows:
@@ -110,7 +116,8 @@ async def categorize(
                 ),
             )
             for tx, state in zip(pending, states, strict=True)
-        )
+        ),
+        return_exceptions=True,
     )
     # Merchants are resolved one at a time in booking order, so each is created once.
     ordered = sorted(
@@ -118,8 +125,15 @@ async def categorize(
         key=lambda item: (item[0].booked_at, str(item[0].id)),
     )
     for tx, state, first in ordered:
-        resolution = await resolve_merchant(
-            first.answers["merchant_name"], state, roster, jev, ctx.settings
-        )
+        try:
+            if isinstance(first, BaseException):
+                raise first  # the first call failed; a cancellation is not caught below
+            resolution = await resolve_merchant(
+                first.answers["merchant_name"], state, roster, jev, ctx.settings
+            )
+        except Exception as error:
+            # The id and the error only: never the jev state or the description text.
+            logger.warning("jev failed for transaction %s: %r", tx.id, error)
+            continue
         results[tx.id] = decide(tx, first, resolution, ctx, use_merchant_defaults)
-    return [results[tx.id] for tx in rows]
+    return [results[tx.id] for tx in rows if tx.id in results]

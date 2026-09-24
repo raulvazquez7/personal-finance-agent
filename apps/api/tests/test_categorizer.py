@@ -209,3 +209,33 @@ def test_the_category_edge_is_accepted_and_the_subscription_edge_is_not():
     [result] = _run([_tx("ACME TV")], FakeJev(first={"ACME TV": edge}))
     assert result.category_confidence == settings.category_threshold
     assert not result.needs_review and not result.is_subscription
+
+
+def test_a_row_whose_jev_call_fails_is_left_out_and_the_others_are_returned(caplog):
+    bizum = _tx("ENVIADO: DINNER", concept="BIZUM")
+    first, down, second = _tx("ACME 0042"), _tx("ZZDOWN 7"), _tx("ACME C.C.", day=2)
+    jev = FakeJev(
+        first={
+            "ACME 0042": GROCERIES,
+            "ZZDOWN 7": RuntimeError("jev is down"),
+            "ACME C.C.": GROCERIES,
+        }
+    )
+    results = _run([bizum, first, down, second], jev)
+    assert [r.transaction_id for r in results] == [bizum.id, first.id, second.id]
+    [warning] = caplog.records
+    assert str(down.id) in warning.getMessage() and "RuntimeError" in warning.getMessage()
+    assert "ZZDOWN" not in warning.getMessage()  # never the row's text
+
+
+def test_a_failing_same_merchant_question_leaves_out_only_that_row():
+    roster = MerchantRoster([MerchantRef(id=uuid4(), name="ACME")])
+    foods = jev_result(merchant={"ACME FOODS": 0.97, "none": 0.03}, category={"groceries": 0.97})
+    known, asked = _tx("ACME 0042"), _tx("ACME FOODS 01", day=2)
+    jev = FakeJev(
+        first={"ACME 0042": GROCERIES, "ACME FOODS 01": foods},
+        same={"ACME FOODS": RuntimeError("jev is down")},
+    )
+    results = _run([known, asked], jev, roster)
+    assert [r.transaction_id for r in results] == [known.id]
+    assert [name for name, _ in jev.calls].count("same_merchant") == 1

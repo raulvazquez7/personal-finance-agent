@@ -29,11 +29,6 @@ def no_real_jev(monkeypatch):
     monkeypatch.setattr(store, "TypesafeJev", _refuse)
 
 
-class _DownJev:
-    async def ask(self, name, state, questions):
-        raise RuntimeError("jev is down")
-
-
 def _merchant_count(conn):
     return conn.execute(
         "select count(*) as n from merchants where match_key = 'ZZTESTACME'"
@@ -108,14 +103,21 @@ def test_without_a_jev_key_rows_stay_pending_until_a_later_run(db_conn, make_tx)
 
 
 @pytest.mark.integration
-def test_a_failing_jev_saves_nothing_and_a_later_run_picks_the_rows_up(db_conn, make_tx):
-    tx = make_tx("-9.90", "PAGO | ZZTEST ACME", merchant="ZZTEST ACME", booked_at=SYNTHETIC_DAY)
-    with pytest.raises(RuntimeError, match="jev is down"):
-        asyncio.run(categorize_pending(db_conn, Settings(), jev=_DownJev()))
-    assert _source(db_conn, tx) == "none" and _merchant_count(db_conn) == 0
-    jev = FakeJev(first={"ZZTEST ACME": ACME})
-    asyncio.run(categorize_pending(db_conn, Settings(), jev=jev))
-    assert _source(db_conn, tx) == "jev" and _merchant_count(db_conn) == 1
+def test_a_row_jev_fails_on_stays_pending_while_the_others_are_saved(db_conn, make_tx):
+    def tx(merchant, day):
+        return make_tx(
+            "-9.90", f"PAGO | {merchant}", merchant=merchant, booked_at=date(1999, 1, day)
+        )
+
+    ok, down, also_ok = tx("ZZTEST ACME", 1), tx("ZZTEST DOWN", 2), tx("ZZTEST ACME 2", 3)
+    answers = {"ZZTEST ACME": ACME, "ZZTEST ACME 2": ACME}
+    jev = FakeJev(first=answers | {"ZZTEST DOWN": RuntimeError("jev is down")})
+    summary = asyncio.run(categorize_pending(db_conn, Settings(), jev=jev))
+    assert summary.failed == 1
+    assert [_source(db_conn, t) for t in (ok, down, also_ok)] == ["jev", "none", "jev"]
+    later = FakeJev(first=answers | {"ZZTEST DOWN": ACME})
+    asyncio.run(categorize_pending(db_conn, Settings(), jev=later))
+    assert _source(db_conn, down) == "jev" and _merchant_count(db_conn) == 1
 
 
 @pytest.mark.integration

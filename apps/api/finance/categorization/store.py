@@ -58,6 +58,7 @@ class CategorizeSummary(BaseModel):
     categorized: int = 0
     needs_review: int = 0
     by_source: dict[str, int] = {}
+    failed: int = 0  # pending rows jev could not answer; they stay pending for the next run
     skipped: str | None = None
 
     def line(self) -> str:
@@ -66,6 +67,8 @@ class CategorizeSummary(BaseModel):
         parts = [f"paired={self.paired}", f"categorized={self.categorized}"]
         parts += [f"{source}={n}" for source, n in sorted(self.by_source.items())]
         parts.append(f"needs_review={self.needs_review}")
+        if self.failed:
+            parts.append(f"failed={self.failed}")
         return " ".join(parts)
 
 
@@ -162,6 +165,7 @@ async def categorize_pending(
             categorized=len(results),
             needs_review=sum(r.needs_review for r in results),
             by_source=dict(Counter(r.category_source for r in results)),
+            failed=len(rows) - len(results),
         )
         span.update(output=summary.model_dump())
     save(conn, results, roster)

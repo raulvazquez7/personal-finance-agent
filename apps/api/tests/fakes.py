@@ -32,7 +32,10 @@ DEFAULT_RESULT = jev_result(
 
 
 class FakeJev:
-    """First-call answers keyed by merchant_text, same-merchant answers by candidate_name."""
+    """First-call answers keyed by merchant_text, same-merchant answers by candidate_name.
+
+    A scripted exception is raised instead of answered: jev failing for that row.
+    """
 
     def __init__(self, first=None, same=None, default=DEFAULT_RESULT) -> None:
         self.first = first or {}
@@ -43,5 +46,9 @@ class FakeJev:
     async def ask(self, name: str, state: dict, questions: dict) -> JevResult:
         self.calls.append((name, dict(state)))
         if name == "categorize":
-            return self.first.get(state["merchant_text"], self.default)
-        return self.same[state["candidate_name"]]
+            answer = self.first.get(state["merchant_text"], self.default)
+        else:
+            answer = self.same[state["candidate_name"]]
+        if isinstance(answer, Exception):
+            raise answer
+        return answer

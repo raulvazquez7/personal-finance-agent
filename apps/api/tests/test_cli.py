@@ -142,3 +142,10 @@ def test_categorize_says_why_it_skipped(monkeypatch):
     monkeypatch.setattr(cli, "run_categorization", lambda include_all=False: skipped)
     result = runner.invoke(cli.app, ["categorize"])
     assert result.stdout.strip() == "categorization skipped: TYPESAFE_API_KEY is not set (paired=2)"
+
+
+def test_categorize_reports_rows_jev_could_not_answer(monkeypatch):
+    partial = CategorizeSummary(categorized=2, by_source={"jev": 2}, failed=1)
+    monkeypatch.setattr(cli, "run_categorization", lambda include_all=False: partial)
+    result = runner.invoke(cli.app, ["categorize"])
+    assert result.stdout.strip() == "paired=0 categorized=2 jev=2 needs_review=0 failed=1"
