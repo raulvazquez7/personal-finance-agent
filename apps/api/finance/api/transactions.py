@@ -10,6 +10,7 @@ from pydantic import BaseModel, Field
 from finance.api.categories import require_category
 from finance.api.deps import Db
 from finance.categorization.labels import NotFound, label_transaction
+from finance.ingestion.structure import mask_card_numbers
 
 router = APIRouter(prefix="/transactions", tags=["transactions"])
 
@@ -44,7 +45,12 @@ def list_transactions(
     limit: int = Query(default=200, ge=1, le=1000),
 ) -> list[Transaction]:
     params = {"account_id": account_id, "month": month, "limit": limit}
-    return [Transaction.model_validate(row) for row in conn.execute(_SELECT, params).fetchall()]
+    return [
+        Transaction.model_validate(
+            row | {"description_raw": mask_card_numbers(row["description_raw"])}
+        )
+        for row in conn.execute(_SELECT, params).fetchall()
+    ]
 
 
 class LabelTransaction(BaseModel):

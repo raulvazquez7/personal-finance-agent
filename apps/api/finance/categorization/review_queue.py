@@ -102,7 +102,8 @@ def _joins_its_merchant(row: ReviewRow, taxonomy: Taxonomy) -> bool:
 
 
 def _transaction(row: ReviewRow) -> ReviewTransaction:
-    """The full card number never leaves the API (spec 4.2)."""
+    """Card numbers in description_raw keep only their last four digits. The review and
+    transactions APIs mask them; the full number stays in the database (spec 4.2)."""
     masked = mask_card_numbers(row.description_raw)
     return ReviewTransaction.model_validate(row.model_dump() | {"description_raw": masked})
 
