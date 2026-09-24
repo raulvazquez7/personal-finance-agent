@@ -114,6 +114,8 @@ def run_eval(
         return rows, model, failed, jev.input_tokens
 
     rows, model, failed, tokens = asyncio.run(_run())
+    if not rows:  # no user labels, or jev failed on every row: nothing worth recording
+        raise RuntimeError(f"no golden rows scored ({failed} failed)")
     metrics = compute_metrics(rows)
     meta = EvalMeta(
         run_at=datetime.now(),

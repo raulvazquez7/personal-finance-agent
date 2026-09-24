@@ -64,11 +64,15 @@ def categorize_command(
 
 @app.command("eval-categorization")
 def eval_command(
-    limit: int | None = typer.Option(None, help="Only the first N labelled transactions."),
+    limit: int | None = typer.Option(None, min=1, help="Only the first N labelled transactions."),
     note: str = typer.Option("", help="What changed, for docs/evals/HISTORY.md."),
 ) -> None:
     """Benchmark the categorizer against your labels (dry run, writes nothing to the database)."""
-    with connection() as conn:
-        out = run_eval(conn, get_settings(), limit=limit, note=note)
+    try:
+        with connection() as conn:
+            out = run_eval(conn, get_settings(), limit=limit, note=note)
+    except RuntimeError as error:  # no jev key, or no golden row scored
+        typer.echo(f"eval-categorization: {error}", err=True)
+        raise typer.Exit(code=1) from error
     typer.echo((out / "report.md").read_text())
     typer.echo(f"saved to {out}")

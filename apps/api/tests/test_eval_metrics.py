@@ -73,3 +73,10 @@ def test_rows_jev_failed_on_are_reported_in_the_note_cell():
     line = history_line(meta, metrics)
     assert line.endswith("| synthetic · failed=2 |")
     assert line.count("|") == 11  # still the ten columns of docs/evals/HISTORY.md
+
+
+def test_a_note_cannot_break_the_history_table():
+    meta = META.model_copy(update={"note": "wording | criteria\nround 2"})
+    line = history_line(meta, compute_metrics(ROWS))
+    assert line.endswith("| wording / criteria round 2 |")
+    assert line.count("|") == 11 and "\n" not in line

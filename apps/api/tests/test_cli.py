@@ -165,3 +165,22 @@ def test_eval_categorization_passes_its_options_and_prints_the_report(monkeypatc
     assert result.exit_code == 0 and calls == [(5, "wording")]
     assert "# Categorization eval" in result.stdout
     assert f"saved to {tmp_path}" in result.stdout
+
+
+def test_eval_categorization_rejects_a_limit_below_one(monkeypatch):
+    calls = []
+    monkeypatch.setattr(cli, "connection", lambda: nullcontext(None))
+    monkeypatch.setattr(cli, "run_eval", lambda *args, **kwargs: calls.append(args))
+    result = runner.invoke(cli.app, ["eval-categorization", "--limit", "0"])
+    assert result.exit_code == 2 and calls == []
+
+
+def test_eval_categorization_shows_why_nothing_was_scored(monkeypatch):
+    def _run_eval(conn, settings, limit=None, note=""):
+        raise RuntimeError("no golden rows scored (3 failed)")
+
+    monkeypatch.setattr(cli, "connection", lambda: nullcontext(None))
+    monkeypatch.setattr(cli, "run_eval", _run_eval)
+    result = runner.invoke(cli.app, ["eval-categorization"])
+    assert result.exit_code == 1
+    assert "no golden rows scored (3 failed)" in result.stderr

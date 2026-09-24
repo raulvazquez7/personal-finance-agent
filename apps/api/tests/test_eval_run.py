@@ -140,3 +140,24 @@ def test_run_eval_writes_the_report_and_one_history_line_in_one_eval_trace(
     summary = json.loads((out / "summary.json").read_text())
     assert summary["meta"]["failed"] == 1
     assert _written(db_conn) == before
+
+
+@pytest.mark.parametrize("failed", [0, 3], ids=["no user labels", "jev failed on every row"])
+def test_run_eval_writes_nothing_when_no_golden_row_was_scored(
+    db_conn, tmp_path, monkeypatch, failed
+):
+    async def _nothing_scored(conn, ctx, jev, limit=None):
+        return [], "no jev call", failed
+
+    span = SpanRecorder()
+    monkeypatch.setattr(run, "TypesafeJev", lambda *args, **kwargs: TracedFakeJev(span))
+    monkeypatch.setattr(run, "langfuse", lambda: span)
+    monkeypatch.setattr(run, "evaluate", _nothing_scored)
+    history = tmp_path / "HISTORY.md"
+    history.write_text("| Date | Source |\n|---|---|\n")
+
+    settings = Settings(typesafe_api_key="sk-fake")
+    with pytest.raises(RuntimeError, match=rf"no golden rows scored \({failed} failed\)"):
+        run_eval(db_conn, settings, out_root=tmp_path / "out", history=history)
+    assert history.read_text() == "| Date | Source |\n|---|---|\n"
+    assert not (tmp_path / "out").exists()

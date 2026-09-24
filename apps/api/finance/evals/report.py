@@ -70,7 +70,9 @@ def history_line(meta: EvalMeta, metrics: Metrics) -> str:
     sp, sr = metrics.subscription_precision, metrics.subscription_recall
     # The failed count rides in the note cell, so the table keeps its ten columns.
     failed = f"failed={meta.failed}" if meta.failed else ""
-    note = " · ".join(part for part in (meta.note, failed) if part)
+    # A pipe or a line break in the note would break the Markdown table.
+    typed = " ".join(meta.note.replace("|", "/").split())
+    note = " · ".join(part for part in (typed, failed) if part)
     cells = [
         f"{meta.run_at:%Y-%m-%d}",
         "eval",
