@@ -83,7 +83,13 @@ def load_roster(conn: Connection) -> MerchantRoster:
 
 
 def _merchant_ids(conn: Connection, roster: MerchantRoster) -> dict[str, UUID]:
-    ids = {m.name: m.id for m in roster.all() if m.id}
+    """Roster merchants that still exist, and the new ones. A merchant merged or deleted in
+    /review while jev was answering is left out, so its id is never written."""
+    known = [m.id for m in roster.all() if m.id]
+    alive = {
+        row["id"] for row in conn.execute("select id from merchants where id = any(%s)", (known,))
+    }
+    ids = {m.name: m.id for m in roster.all() if m.id in alive}
     for merchant in roster.new_merchants():
         ids[merchant.name] = get_or_create_merchant(conn, merchant.name)
     return ids
@@ -93,7 +99,11 @@ def save(conn: Connection, results: list[Categorization], roster: MerchantRoster
     with conn.transaction():
         ids = _merchant_ids(conn, roster)
         for r in results:
-            merchant_id = ids.get(r.merchant_name) if r.merchant_name else None
+            merchant_id = None
+            if r.merchant_name:  # missing from ids when merged away: recreated by name
+                merchant_id = ids.get(r.merchant_name) or get_or_create_merchant(
+                    conn, r.merchant_name
+                )
             params = r.model_dump(
                 include={
                     "tx_type",
@@ -116,11 +126,13 @@ def save(conn: Connection, results: list[Categorization], roster: MerchantRoster
             }
             if not conn.execute(_UPDATE, params).rowcount:
                 continue  # the user labelled it while jev was answering: their label stands
-            if r.merge_candidate_name and merchant_id:
+            # A candidate merged away during the run is dropped.
+            candidate_id = ids.get(r.merge_candidate_name) if r.merge_candidate_name else None
+            if candidate_id and merchant_id:
                 conn.execute(
                     "update merchants set merge_candidate_id = %s, merge_confidence = %s"
                     " where id = %s and not confirmed",
-                    (ids[r.merge_candidate_name], r.merge_confidence, merchant_id),
+                    (candidate_id, r.merge_confidence, merchant_id),
                 )
             conn.execute(
                 _LABEL,

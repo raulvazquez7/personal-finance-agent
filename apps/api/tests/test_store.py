@@ -5,6 +5,7 @@ from datetime import date
 import pytest
 
 from finance.categorization import store
+from finance.categorization.labels import get_or_create_merchant
 from finance.categorization.merchants import MerchantRoster
 from finance.categorization.models import Categorization
 from finance.categorization.store import categorize_pending, run_categorization_logged, save
@@ -165,6 +166,48 @@ def test_save_records_no_label_for_a_row_the_user_labelled_during_the_run(db_con
         "select count(*) as n from transaction_labels where transaction_id = %s", (tx,)
     ).fetchone()["n"]
     assert labels == 0
+
+
+@pytest.mark.integration
+def test_save_survives_merchants_merged_away_while_jev_was_answering(db_conn, make_tx):
+    stale = get_or_create_merchant(db_conn, "ZZTEST STALE")
+    gone = get_or_create_merchant(db_conn, "ZZTEST GONE")
+    roster = store.load_roster(db_conn)
+    roster.add("ZZTEST NEWSHOP")
+    # The user merges both away in /review between the roster load and the save.
+    db_conn.execute("delete from merchants where id = any(%s)", ([stale, gone],))
+    known = make_tx("-9.90", "PAGO | ZZTEST STALE", booked_at=SYNTHETIC_DAY)
+    new = make_tx("-4.00", "PAGO | ZZTEST NEWSHOP", booked_at=SYNTHETIC_DAY)
+
+    def result(tx, merchant, **merge):
+        return Categorization(
+            transaction_id=tx,
+            tx_type="expense",
+            category_slug="groceries",
+            category_source="jev",
+            category_confidence=0.99,
+            merchant_name=merchant,
+            merchant_source="jev",
+            **merge,
+        )
+
+    save(
+        db_conn,
+        [
+            result(known, "ZZTEST STALE"),
+            result(new, "ZZTEST NEWSHOP", merge_candidate_name="ZZTEST GONE", merge_confidence=0.6),
+        ],
+        roster,
+    )
+    saved = db_conn.execute(
+        "select t.id, m.name, m.merge_candidate_id from transactions t"
+        " join merchants m on m.id = t.merchant_id where t.id = any(%s)",
+        ([known, new],),
+    ).fetchall()
+    by_tx = {row["id"]: row for row in saved}
+    assert by_tx[known]["name"] == "ZZTEST STALE"  # recreated by name for its row
+    assert (by_tx[new]["name"], by_tx[new]["merge_candidate_id"]) == ("ZZTEST NEWSHOP", None)
+    assert [_source(db_conn, tx) for tx in (known, new)] == ["jev", "jev"]
 
 
 def test_a_background_run_logs_a_failure_instead_of_raising(monkeypatch, caplog):
