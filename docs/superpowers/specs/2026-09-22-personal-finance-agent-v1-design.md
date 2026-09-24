@@ -101,7 +101,7 @@ the agent's SQL tool). Migrations via the Supabase CLI in `supabase/migrations`.
 | `imports` | one row per uploaded file | `id`, `account_id`, `filename`, `file_sha256`, `imported_at`, `rows_total`, `rows_new`, `rows_duplicate` |
 | `transactions` | the normalized ledger | `id`, `account_id`, `import_id`, `booked_at`, `value_date`, `amount` (signed, numeric(12,2)), `currency`, `description_raw`, `bank_concept`, `merchant` (cleaned text), `card_last4`, `balance_after`, `dedup_key` (unique), `tx_type` (`income`/`expense`/`transfer`), `merchant_id`, `merchant_source` (`jev`/`user`/`none`), `category_source` (`rule`/`merchant`/`jev`/`user`/`none`), `merchant_confidence`, `category_slug`, `category_confidence`, `category_probabilities` (jsonb, full distribution), `is_subscription`, `subscription_score`, `transfer_pair_id`, `needs_review` |
 | `merchants` | canonical merchant names, grown automatically from jev picks and user merges | `id`, `name` (unique), `match_key` (unique: upper-case letters and digits only), `confirmed` (the user checked it: no more merge suggestions), `category_slug` and `is_subscription` (nullable: the user's default for every transaction of this merchant), `merge_candidate_id` and `merge_confidence` (a pending merge suggestion) |
-| `categories` | two-level taxonomy | `slug` (pk, the level-2 name), `tx_type`, `level1`, `what` and `not_for` (the jev criteria) |
+| `categories` | two-level taxonomy | `slug` (pk, the level-2 name), `tx_type`, `level1`, `what` and `not_for` (the jev criteria), `position` (the seed order, which is the order jev sees the options) |
 | `rules` | operations without a merchant, resolved before jev | `id`, `name`, `bank` (null = any), `match_field` (`bank_concept`/`merchant`), `pattern` (case-insensitive regex), `direction` (`outgoing`/`incoming`/`any`), `category_slug`, `enabled` |
 | `transaction_labels` | history of every label applied | `transaction_id`, `merchant_id`, `category_slug`, `is_subscription`, `source`, `confidence`, `model` (concrete jev version, e.g. `jev-1.13.0`), `labeled_at` (user labels become the golden set for Raul's own evals) |
 | `semantic_schema` | natural-language schema | `table_name`, `column_name` (null = table row), `description`, `examples` (jsonb), `synonyms` (text[]) |
@@ -770,4 +770,20 @@ Decided with Raul after the jev spike
   `finance labels export/import` so the golden set survives database resets.
 - Known ambiguity left to review: a mortgage lender's direct debit can read
   as a loan; labelled once in `/review`, it becomes the merchant default.
+
+Decided with Raul during implementation (2026-09-24):
+
+- Section 3.2: `categories.position` keeps the seed order, so jev always sees
+  its options in the same order.
+- Section 13: one Langfuse trace per `finance categorize` or eval run, with
+  every jev generation nested under it.
+- Section 5: jev failures are isolated per row: a failed row stays
+  `category_source = none` for the next run, and the summary reports
+  `failed=N`.
+- Section 11.1: in `/review`, a row whose direction does not fit its
+  merchant's default (a refund from an expense merchant) is a one-off item;
+  refunds never flip a merchant default.
+- Section 10: the review API masks card numbers in descriptions.
+- Sections 4.2 and 5.1: no merchant aliases in v1; a renamed or merged
+  merchant name relies on the shortlist and the same-merchant question.
 

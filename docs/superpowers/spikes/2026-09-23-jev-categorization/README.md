@@ -17,6 +17,10 @@ git-ignored `output/` folder.
 
 ## How to rerun
 
+These scripts are history: measure changes to the production categorizer with
+`cd apps/api && uv run finance eval-categorization --note "..."` (results in
+[`docs/evals/HISTORY.md`](../../../evals/HISTORY.md)).
+
 ```bash
 supabase start                      # local ledger with imported statements
 cd docs/superpowers/spikes/2026-09-23-jev-categorization

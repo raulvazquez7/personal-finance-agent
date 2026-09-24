@@ -37,9 +37,18 @@ cd apps/api && uv run task test-integration # needs local Supabase + .env
 cd apps/api && uv run task lint             # ruff check + format check
 cd apps/api && uv run task api              # FastAPI on :8000
 cd apps/api && uv run finance import <pdf>  # CLI import
+cd apps/api && uv run finance seed          # taxonomy + system rules into the DB
+cd apps/api && uv run finance categorize [--all]              # pairing, rules, jev
+cd apps/api && uv run finance eval-categorization --note "..." # benchmark (jev spend)
+cd apps/api && uv run finance labels export|import            # golden set as CSV
 supabase start && supabase db reset         # local Postgres with migrations
 cd apps/web && npm run dev                  # Next.js on :3000
 ```
+
+Never run `supabase db reset` without `uv run finance labels export` first: the
+reset wipes the labels, which are the golden set. To restore: `finance seed`,
+re-import the statements, then `finance labels import ../../data/labels/<file>.csv`
+(from `apps/api`).
 
 ## Verifying the web app
 
