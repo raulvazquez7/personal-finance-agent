@@ -100,8 +100,8 @@ the agent's SQL tool). Migrations via the Supabase CLI in `supabase/migrations`.
 | `accounts` | one row per bank account, auto-created from the IBAN in a statement header | `id`, `bank` (`bbva`, `caixabank`), `iban` (unique), `name` (defaults to bank + last 4 digits, user-editable), `currency` |
 | `imports` | one row per uploaded file | `id`, `account_id`, `filename`, `file_sha256`, `imported_at`, `rows_total`, `rows_new`, `rows_duplicate` |
 | `transactions` | the normalized ledger | `id`, `account_id`, `import_id`, `booked_at`, `value_date`, `amount` (signed, numeric(12,2)), `currency`, `description_raw`, `bank_concept`, `merchant` (cleaned text), `card_last4`, `balance_after`, `dedup_key` (unique), `tx_type` (`income`/`expense`/`transfer`), `merchant_id`, `merchant_source` (`jev`/`user`/`none`), `category_source` (`rule`/`merchant`/`jev`/`user`/`none`), `merchant_confidence`, `category_slug`, `category_confidence`, `category_probabilities` (jsonb, full distribution), `is_subscription`, `subscription_score`, `transfer_pair_id`, `needs_review` |
-| `merchants` | canonical merchant names, grown automatically from jev picks and user merges | `id`, `name` (unique), `match_key` (unique: upper-case letters and digits only), `confirmed` (the user checked it: no more merge suggestions), `category_slug` and `is_subscription` (nullable: the user's default for every transaction of this merchant) |
-| `categories` | two-level taxonomy | `slug` (pk), `tx_type`, `level1`, `level2`, `description` (also used as jev criteria) |
+| `merchants` | canonical merchant names, grown automatically from jev picks and user merges | `id`, `name` (unique), `match_key` (unique: upper-case letters and digits only), `confirmed` (the user checked it: no more merge suggestions), `category_slug` and `is_subscription` (nullable: the user's default for every transaction of this merchant), `merge_candidate_id` and `merge_confidence` (a pending merge suggestion) |
+| `categories` | two-level taxonomy | `slug` (pk, the level-2 name), `tx_type`, `level1`, `what` and `not_for` (the jev criteria) |
 | `rules` | operations without a merchant, resolved before jev | `id`, `name`, `bank` (null = any), `match_field` (`bank_concept`/`merchant`), `pattern` (case-insensitive regex), `direction` (`outgoing`/`incoming`/`any`), `category_slug`, `enabled` |
 | `transaction_labels` | history of every label applied | `transaction_id`, `merchant_id`, `category_slug`, `is_subscription`, `source`, `confidence`, `model` (concrete jev version, e.g. `jev-1.13.0`), `labeled_at` (user labels become the golden set for Raul's own evals) |
 | `semantic_schema` | natural-language schema | `table_name`, `column_name` (null = table row), `description`, `examples` (jsonb), `synonyms` (text[]) |
@@ -257,8 +257,9 @@ Two deterministic mechanisms, one job each:
   or `merchant`, optionally limited to one bank and one direction; it sets the
   category, leaves the merchant empty and skips jev. The Bizum rules also stop
   the free text a person writes after `ENVIADO:` being read as a merchant.
-  Rules are seeded from `supabase/seed/rules.yaml` and must be disjoint (a
-  test checks that no seeded pattern pair matches the same fixture). In the
+  Rules are seeded from `supabase/seed/rules.yaml` and must not conflict (a
+  test checks that no fixture is matched by two rules with different
+  categories). In the
   spike data, 9 seed rules matched 32 rows with no conflict and moved 9 of
   them out of review. Adding a bank or an operation means adding a row; rules
   are not a place for merchants.
@@ -594,8 +595,9 @@ merchant (payments to people, opaque codes) appear one by one.
   first; confidence only as a small muted number beside it.
 - Level 1: read-only, follows the category.
 - Subscription: switch, on when jev scored > 0.7.
-- Confirm: the row fades out with a "Confirmed · Undo" toast; undo re-posts
-  the previous values.
+- Confirm: the row fades out with a "Confirmed · Undo" toast; the request is
+  sent when the toast closes (or when the page is left), so undo simply
+  cancels it.
 - Expanding a merchant row lists its transactions for one-off labels, which
   do not touch the merchant default.
 - A merge suggestion (0.5 to 0.8) is an inline line with Merge and No; No
