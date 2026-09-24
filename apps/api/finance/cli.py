@@ -1,5 +1,6 @@
 """Command line entry point: `finance import statement.pdf`."""
 
+from datetime import date
 from pathlib import Path
 
 import typer
@@ -7,12 +8,17 @@ import typer
 from finance.categorization.seed import seed as seed_database
 from finance.categorization.store import run_categorization
 from finance.db import connection
+from finance.evals.labels_io import export_labels, import_labels
 from finance.evals.run import run_eval
 from finance.ingestion.adapters import UnsupportedStatement
 from finance.ingestion.importer import import_statement
-from finance.settings import get_settings
+from finance.settings import REPO_ROOT, get_settings
 
 app = typer.Typer(help="personal-finance-agent command line", no_args_is_help=True)
+labels_app = typer.Typer(
+    help="Export or import your labels (the golden set).", no_args_is_help=True
+)
+app.add_typer(labels_app, name="labels")
 
 
 @app.callback()
@@ -76,3 +82,20 @@ def eval_command(
         raise typer.Exit(code=1) from error
     typer.echo((out / "report.md").read_text())
     typer.echo(f"saved to {out}")
+
+
+@labels_app.command("export")
+def labels_export(path: Path | None = typer.Argument(None)) -> None:
+    """Write your labels to CSV (default: data/labels/labels-YYYYMMDD.csv)."""
+    target = path or REPO_ROOT / "data" / "labels" / f"labels-{date.today():%Y%m%d}.csv"
+    with connection() as conn:
+        count = export_labels(conn, target)
+    typer.echo(f"exported={count} to {target}")
+
+
+@labels_app.command("import")
+def labels_import(path: Path = typer.Argument(..., exists=True, readable=True)) -> None:
+    """Load labels from CSV by dedup_key."""
+    with connection() as conn:
+        result = import_labels(conn, path)
+    typer.echo(f"imported={result.imported} missing={result.missing}")

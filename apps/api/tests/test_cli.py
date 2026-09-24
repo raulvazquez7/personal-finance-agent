@@ -1,4 +1,5 @@
 from contextlib import nullcontext
+from datetime import date
 from uuid import uuid4
 
 import pytest
@@ -6,6 +7,7 @@ from typer.testing import CliRunner
 
 from finance import cli
 from finance.categorization.store import CategorizeSummary
+from finance.evals.labels_io import LabelsImport
 from finance.ingestion.adapters import UnsupportedStatement
 from finance.models import ImportSummary
 
@@ -184,3 +186,26 @@ def test_eval_categorization_shows_why_nothing_was_scored(monkeypatch):
     result = runner.invoke(cli.app, ["eval-categorization"])
     assert result.exit_code == 1
     assert "no golden rows scored (3 failed)" in result.stderr
+
+
+def test_labels_export_defaults_to_a_dated_file_under_data_labels(monkeypatch, tmp_path):
+    targets = []
+    monkeypatch.setattr(cli, "REPO_ROOT", tmp_path)
+    monkeypatch.setattr(cli, "connection", lambda: nullcontext(None))
+    monkeypatch.setattr(cli, "export_labels", lambda conn, path: targets.append(path) or 3)
+    result = runner.invoke(cli.app, ["labels", "export"])
+    assert result.exit_code == 0
+    expected = tmp_path / "data" / "labels" / f"labels-{date.today():%Y%m%d}.csv"
+    assert targets == [expected]
+    assert result.stdout.strip() == f"exported=3 to {expected}"
+
+
+def test_labels_import_prints_the_counts(monkeypatch, tmp_path):
+    source = tmp_path / "labels.csv"
+    source.write_text("dedup_key,category_slug,is_subscription,merchant\n")
+    monkeypatch.setattr(cli, "connection", lambda: nullcontext(None))
+    monkeypatch.setattr(
+        cli, "import_labels", lambda conn, path: LabelsImport(imported=2, missing=1)
+    )
+    result = runner.invoke(cli.app, ["labels", "import", str(source)])
+    assert result.exit_code == 0 and result.stdout.strip() == "imported=2 missing=1"
