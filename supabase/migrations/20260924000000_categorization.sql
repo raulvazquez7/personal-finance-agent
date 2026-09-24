@@ -79,3 +79,9 @@ update transactions
 set merchant = nullif(btrim(regexp_replace(regexp_replace(merchant, '\m\d{12,19}\M', '', 'g'),
                                            '\s+', ' ', 'g')), '')
 where merchant ~ '\m\d{12,19}\M';
+
+-- A BBVA line without ' | ' copied its whole text, card number included, into bank_concept.
+update transactions
+set bank_concept = nullif(btrim(regexp_replace(regexp_replace(bank_concept, '\m\d{12,19}\M', '',
+                                                              'g'), '\s+', ' ', 'g')), '')
+where bank_concept ~ '\m\d{12,19}\M';

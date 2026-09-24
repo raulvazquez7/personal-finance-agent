@@ -32,6 +32,10 @@ BACKFILL_CASES = [
     ),
     (("bbva", "CUOTA MENSUAL", None), ("CUOTA MENSUAL", None, None)),
     (
+        ("bbva", "PAGO CON TARJETA 1111222233334444 ACME", None),
+        ("PAGO CON TARJETA ACME", None, "4444"),
+    ),
+    (
         ("bbva", "TRANSFERENCIA | REF 12345678901234567890", "REF 12345678901234567890"),
         ("TRANSFERENCIA", "REF 12345678901234567890", None),
     ),
@@ -86,10 +90,11 @@ def test_transactions_gain_categorization_columns():
     assert "jev_suggestions" not in columns
 
 
-def test_no_card_number_in_merchant():
+def test_no_card_number_in_merchant_or_bank_concept():
     with connection() as conn:
         row = conn.execute(
-            "select count(*) as n from transactions where merchant ~ '\\m\\d{12,19}\\M'"
+            r"select count(*) as n from transactions"
+            r" where merchant ~ '\m\d{12,19}\M' or bank_concept ~ '\m\d{12,19}\M'"
         ).fetchone()
     assert row["n"] == 0
 
