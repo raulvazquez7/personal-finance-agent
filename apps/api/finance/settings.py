@@ -24,6 +24,11 @@ class Settings(BaseSettings):
     transfer_pattern: str = "TRASPASO|TRANSFER|BIZUM|TRF"
     transfer_window_days: int = 2
     jev_concurrency: int = 8
+    category_threshold: float = 0.95
+    brand_threshold: float = 0.5
+    merge_threshold: float = 0.8
+    merge_suggestion_floor: float = 0.5
+    subscription_threshold: float = 0.7
 
 
 @lru_cache
