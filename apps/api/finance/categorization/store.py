@@ -12,7 +12,7 @@ from pydantic import BaseModel
 
 from finance.categorization.categorizer import CategorizationContext, categorize
 from finance.categorization.jev_client import Jev, TypesafeJev
-from finance.categorization.jev_questions import match_key
+from finance.categorization.labels import get_or_create_merchant
 from finance.categorization.merchants import MerchantRef, MerchantRoster
 from finance.categorization.models import Categorization, TxInput
 from finance.categorization.pairing import pair_transfers
@@ -85,11 +85,7 @@ def load_roster(conn: Connection) -> MerchantRoster:
 def _merchant_ids(conn: Connection, roster: MerchantRoster) -> dict[str, UUID]:
     ids = {m.name: m.id for m in roster.all() if m.id}
     for merchant in roster.new_merchants():
-        ids[merchant.name] = conn.execute(
-            "insert into merchants (name, match_key) values (%s, %s)"
-            " on conflict (match_key) do update set match_key = excluded.match_key returning id",
-            (merchant.name, match_key(merchant.name)),
-        ).fetchone()["id"]
+        ids[merchant.name] = get_or_create_merchant(conn, merchant.name)
     return ids
 
 
