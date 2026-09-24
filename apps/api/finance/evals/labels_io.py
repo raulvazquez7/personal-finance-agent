@@ -26,10 +26,12 @@ class LabelsImport(BaseModel):
     missing: int
 
 
-def export_labels(conn: Connection, path: Path) -> int:
+def export_labels(conn: Connection, path: Path, overwrite: bool = False) -> int:
+    """Raises FileExistsError for an existing file unless `overwrite`: it may be the only
+    backup of the golden set."""
     rows = conn.execute(_EXPORT).fetchall()
     path.parent.mkdir(parents=True, exist_ok=True)
-    with path.open("w", newline="") as handle:
+    with path.open("w" if overwrite else "x", newline="") as handle:
         writer = csv.DictWriter(handle, fieldnames=FIELDS)
         writer.writeheader()
         writer.writerows(rows)

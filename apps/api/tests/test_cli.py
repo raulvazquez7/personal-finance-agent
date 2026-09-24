@@ -192,12 +192,57 @@ def test_labels_export_defaults_to_a_dated_file_under_data_labels(monkeypatch, t
     targets = []
     monkeypatch.setattr(cli, "REPO_ROOT", tmp_path)
     monkeypatch.setattr(cli, "connection", lambda: nullcontext(None))
-    monkeypatch.setattr(cli, "export_labels", lambda conn, path: targets.append(path) or 3)
+    monkeypatch.setattr(
+        cli, "export_labels", lambda conn, path, overwrite=False: targets.append(path) or 3
+    )
     result = runner.invoke(cli.app, ["labels", "export"])
     assert result.exit_code == 0
     expected = tmp_path / "data" / "labels" / f"labels-{date.today():%Y%m%d}.csv"
     assert targets == [expected]
     assert result.stdout.strip() == f"exported=3 to {expected}"
+
+
+class _LabelRows:
+    """A connection whose one query returns these label rows."""
+
+    def __init__(self, rows):
+        self.rows = rows
+
+    def execute(self, _sql):
+        return self
+
+    def fetchall(self):
+        return self.rows
+
+
+LABEL = {
+    "dedup_key": "k1",
+    "category_slug": "groceries",
+    "is_subscription": False,
+    "merchant": "ZZTEST ACME",
+}
+
+
+def test_labels_export_never_overwrites_an_existing_backup(monkeypatch, tmp_path):
+    target = tmp_path / "labels.csv"
+    target.write_text("the good backup\n")
+    monkeypatch.setattr(cli, "connection", lambda: nullcontext(_LabelRows([])))
+    result = runner.invoke(cli.app, ["labels", "export", str(target)])
+    assert result.exit_code == 1
+    assert f"{target} already exists; pass --force to overwrite it" in result.stderr
+    assert target.read_text() == "the good backup\n"
+
+
+def test_labels_export_with_force_overwrites_the_file(monkeypatch, tmp_path):
+    target = tmp_path / "labels.csv"
+    target.write_text("the old backup\n")
+    monkeypatch.setattr(cli, "connection", lambda: nullcontext(_LabelRows([LABEL])))
+    result = runner.invoke(cli.app, ["labels", "export", str(target), "--force"])
+    assert result.exit_code == 0 and result.stdout.strip() == f"exported=1 to {target}"
+    assert target.read_text().splitlines() == [
+        "dedup_key,category_slug,is_subscription,merchant",
+        "k1,groceries,False,ZZTEST ACME",
+    ]
 
 
 def test_labels_import_prints_the_counts(monkeypatch, tmp_path):

@@ -85,11 +85,20 @@ def eval_command(
 
 
 @labels_app.command("export")
-def labels_export(path: Path | None = typer.Argument(None)) -> None:
+def labels_export(
+    path: Path | None = typer.Argument(None),
+    force: bool = typer.Option(False, "--force", help="Overwrite the file if it exists."),
+) -> None:
     """Write your labels to CSV (default: data/labels/labels-YYYYMMDD.csv)."""
     target = path or REPO_ROOT / "data" / "labels" / f"labels-{date.today():%Y%m%d}.csv"
-    with connection() as conn:
-        count = export_labels(conn, target)
+    try:
+        with connection() as conn:
+            count = export_labels(conn, target, overwrite=force)
+    except FileExistsError as error:  # never replace a backup by accident
+        typer.echo(
+            f"labels export: {target} already exists; pass --force to overwrite it", err=True
+        )
+        raise typer.Exit(code=1) from error
     typer.echo(f"exported={count} to {target}")
 
 
