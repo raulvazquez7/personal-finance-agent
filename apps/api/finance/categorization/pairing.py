@@ -22,28 +22,22 @@ class PairCandidate(BaseModel):
 def find_pairs(
     rows: list[PairCandidate], pattern: str, window_days: int
 ) -> list[tuple[UUID, UUID]]:
-    """One-to-one (outgoing, incoming) pairs; the nearest booking date wins."""
+    """One-to-one (outgoing, incoming) pairs, taken globally nearest booking dates first."""
     transfer = re.compile(pattern, re.IGNORECASE)
     eligible = [row for row in rows if transfer.search(row.description_raw)]
-    outgoing = sorted((r for r in eligible if r.amount < 0), key=lambda r: (r.booked_at, str(r.id)))
-    incoming = [r for r in eligible if r.amount > 0]
+    options = [
+        (abs((into.booked_at - out.booked_at).days), out, into)
+        for out in eligible
+        for into in eligible
+        if out.amount < 0 and into.amount == -out.amount and into.account_id != out.account_id
+    ]
+    options.sort(key=lambda o: (o[0], o[1].booked_at, str(o[1].id), str(o[2].id)))
     used: set[UUID] = set()
     pairs = []
-    for out in outgoing:
-        candidates = [
-            r
-            for r in incoming
-            if r.id not in used
-            and r.account_id != out.account_id
-            and r.amount == -out.amount
-            and abs((r.booked_at - out.booked_at).days) <= window_days
-        ]
-        if candidates:
-            best = min(
-                candidates, key=lambda r: (abs((r.booked_at - out.booked_at).days), str(r.id))
-            )
-            used.add(best.id)
-            pairs.append((out.id, best.id))
+    for days, out, into in options:
+        if days <= window_days and out.id not in used and into.id not in used:
+            used.update((out.id, into.id))
+            pairs.append((out.id, into.id))
     return pairs
 
 
@@ -56,7 +50,8 @@ _LABEL_PAIR = """
 update transactions set transfer_pair_id = %(pair)s, tx_type = 'transfer',
   category_slug = 'own_accounts', category_source = 'rule', category_confidence = 1,
   category_probabilities = null, merchant_id = null, merchant_source = 'none',
-  is_subscription = false, needs_review = false, updated_at = now()
+  merchant_confidence = null, is_subscription = false, subscription_score = null,
+  needs_review = false, updated_at = now()
 where id = any(%(ids)s)
 """
 
