@@ -44,3 +44,5 @@ out/
 # Supabase CLI
 supabase/.temp/
 supabase/.branches/
+eval-output/
+data/labels/

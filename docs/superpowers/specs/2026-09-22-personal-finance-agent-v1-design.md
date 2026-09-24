@@ -646,6 +646,35 @@ once an unattended path such as the watched folder exists).
   `LANGFUSE_SECRET_KEY`, `LANGFUSE_BASE_URL` (Langfuse Python SDK v4 names;
   LangChain handler is `from langfuse.langchain import CallbackHandler`).
 
+### 13.1 Categorization evals
+
+A benchmark to measure every change to criteria, thresholds, rules or the jev
+version against the user's own labels, with the production code.
+
+| | |
+|---|---|
+| Golden set | the latest `source = user` label per transaction in `transaction_labels`: the single source of truth, growing with every label made in `/review` or the UI |
+| Command | `uv run finance eval-categorization [--limit N] [--note "..."]` runs the production categorizer as a dry run (pairing, system rules, jev, thresholds) over the labelled transactions; it writes nothing to the database |
+| Per run | `eval-output/<timestamp>/` (git-ignored): `rows.csv` (id, golden, predicted, confidences), `summary.json` (date, jev version, hash of taxonomy and rules, metrics) and `report.md` (readable tables) |
+| History | one line appended to `docs/evals/HISTORY.md` (tracked; metrics only, no bank data) so the evolution is visible |
+| Metrics | level-2 and level-1 accuracy; accuracy per confidence bucket; accepted rows, errors and review load at 0.80 / 0.85 / 0.90 / 0.95; subscription precision and recall; merchant accuracy by `match_key` |
+
+The dry run ignores merchant defaults and builds its merchant roster within the
+run: defaults come from the same user labels, so using them would score the
+labels against themselves. The eval measures what the system decides without
+the user. jev varies by about ten rows between identical runs (spike round 7);
+the report says so. Each run costs about $0.05 per 400 labelled rows, so it
+stays out of CI; its jev calls are traced in Langfuse with an `eval` tag.
+Metrics are a pure function with unit tests on synthetic rows. Once the
+command exists, the spike's `run.py` and `report.py` are history, not a
+second implementation.
+
+`supabase db reset` wipes `transaction_labels`, so labels travel as CSV keyed
+by `dedup_key`: `finance labels export [file]` (default under the git-ignored
+`data/labels/`) and `finance labels import <file>`, which also loads the
+spike's 412-row golden set as the first user labels. Langfuse Datasets and
+Experiments are v2.
+
 ## 14. Delivery slices
 
 Each slice ends usable and merged to `main`.
@@ -731,6 +760,10 @@ Decided with Raul after the jev spike
   number), expand for one-off labels, inline merge suggestions, undo toast, no
   bulk accept; endpoints for categories, merchant autocomplete, merchant
   confirm, merge and dismiss; `transaction_labels` gains `is_subscription`.
+- Section 13.1: `finance eval-categorization` (dry run of the production
+  categorizer against `transaction_labels`), per-run `rows.csv`,
+  `summary.json` and `report.md`, a tracked `docs/evals/HISTORY.md`, and
+  `finance labels export/import` so the golden set survives database resets.
 - Known ambiguity left to review: a mortgage lender's direct debit can read
   as a loan; labelled once in `/review`, it becomes the merchant default.
 
