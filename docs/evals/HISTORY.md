@@ -11,6 +11,13 @@ review; subscription precision and recall at noul > 0.7 (expenses). Golden
 rows are the rows scored; `failed=N` in the Note means N rows were left out
 because jev failed on them.
 
+Golden set changes between runs, which make the next line not directly
+comparable with the previous one:
+
+- After the 2026-09-24 eval: the March statement's review labels joined the
+  set, and 6 Apple labels changed from `entertainment` to `other_insurance`
+  (AppleCare) or `software_ai` (iCloud+ storage).
+
 | Date | Source | jev | Golden rows | L2 acc | L1 acc | Precision @0.95 | Review @0.95 | Subs P / R | Note |
 |---|---|---|---|---|---|---|---|---|---|
 | 2026-09-23 | spike v6 | jev-1.13.0 | 412 | 84.2% | 86.4% | 97.2% | 158 | 26/26 · 26/30 | final taxonomy; jev only, no pairing or rules |
