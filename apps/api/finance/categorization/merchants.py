@@ -36,6 +36,9 @@ class MerchantRoster:
         return [m for m in self._by_key.values() if words & set(tokens_of(m.name))]
 
     def add(self, name: str) -> MerchantRef:
+        """The merchant already under this key, else a new one."""
+        if known := self.get(name):
+            return known
         merchant = MerchantRef(name=name)
         self._by_key[match_key(name)] = merchant
         self._new.append(merchant)
@@ -69,14 +72,16 @@ def brand_confidence(answer: JevAnswer) -> float:
 async def resolve_merchant(
     answer: JevAnswer, state: dict, roster: MerchantRoster, jev: Jev, settings: Settings
 ) -> MerchantResolution:
+    """Not safe for concurrent calls on one roster: the same-merchant question awaits between
+    the lookup and add(). The categorizer resolves rows one at a time, in booking order."""
     chosen = answer.choice
     if chosen in (None, "none"):
         return MerchantResolution()
     brand = brand_confidence(answer)
-    if brand < settings.brand_threshold:
-        return MerchantResolution(confidence=brand, dropped=True)
     if known := roster.get(chosen):
         return MerchantResolution(merchant=known, confidence=brand)
+    if brand < settings.brand_threshold:  # the brand gate is for new names only (spec 5.2)
+        return MerchantResolution(confidence=brand, dropped=True)
     shortlist = roster.shortlist(chosen)
     if shortlist:
         result = await jev.ask(
