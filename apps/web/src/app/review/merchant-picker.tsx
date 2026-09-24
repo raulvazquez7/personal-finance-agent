@@ -18,6 +18,12 @@ type Props = {
 
 export function MerchantPicker({ merchants, value, onChange }: Props) {
   const [query, setQuery] = useState(value?.name ?? "");
+  // The value can change from outside (Merge picks the suggested merchant): show its name.
+  const [shownName, setShownName] = useState(value?.name);
+  if (value?.name !== shownName) {
+    setShownName(value?.name);
+    setQuery(value?.name ?? "");
+  }
   const typed = query.trim();
   const exists = merchants.some((m) => m.name.toLowerCase() === typed.toLowerCase());
   const items: MerchantChoice[] = [
