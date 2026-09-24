@@ -92,3 +92,17 @@ def test_categorize_run_queues_a_background_run(scheduled):
 def test_categorize_run_defaults_to_pending_rows_only(scheduled):
     assert client.post("/categorize/run").status_code == 202
     assert scheduled == [False]
+
+
+def test_label_rejects_a_missing_category():
+    response = client.post(
+        "/transactions/00000000-0000-0000-0000-000000000001/label", json={"is_subscription": True}
+    )
+    assert response.status_code == 422
+
+
+def test_openapi_exposes_review_schemas():
+    schemas = client.get("/openapi.json").json()["components"]["schemas"]
+    assert {"ReviewItem", "ReviewCount", "CategoryOut", "MerchantOut", "ConfirmMerchant"} <= set(
+        schemas
+    )

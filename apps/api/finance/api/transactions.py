@@ -1,13 +1,15 @@
-"""Route for listing transactions, optionally filtered by account and month."""
+"""Routes for listing transactions and labelling one of them."""
 
 from datetime import date
 from decimal import Decimal
 from uuid import UUID
 
-from fastapi import APIRouter, Query
-from pydantic import BaseModel
+from fastapi import APIRouter, HTTPException, Query, Response
+from pydantic import BaseModel, Field
 
+from finance.api.categories import require_category
 from finance.api.deps import Db
+from finance.categorization.labels import NotFound, label_transaction
 
 router = APIRouter(prefix="/transactions", tags=["transactions"])
 
@@ -43,3 +45,29 @@ def list_transactions(
 ) -> list[Transaction]:
     params = {"account_id": account_id, "month": month, "limit": limit}
     return [Transaction.model_validate(row) for row in conn.execute(_SELECT, params).fetchall()]
+
+
+class LabelTransaction(BaseModel):
+    category_slug: str
+    is_subscription: bool = False
+    merchant_id: UUID | None = None
+    new_merchant_name: str | None = Field(default=None, min_length=1)
+
+
+@router.post("/{transaction_id}/label", status_code=204)
+def label(transaction_id: UUID, body: LabelTransaction, conn: Db) -> Response:
+    require_category(conn, body.category_slug)
+    try:
+        label_transaction(
+            conn,
+            transaction_id,
+            body.category_slug,
+            body.is_subscription,
+            body.merchant_id,
+            body.new_merchant_name,
+        )
+    except NotFound as error:
+        raise HTTPException(status_code=404, detail=str(error)) from error
+    except ValueError as error:  # a new merchant name with no letter or digit
+        raise HTTPException(status_code=422, detail=str(error)) from error
+    return Response(status_code=204)
