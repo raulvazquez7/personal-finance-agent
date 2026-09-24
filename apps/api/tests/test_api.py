@@ -9,6 +9,7 @@ from finance.api.main import app
 from finance.categorization import store
 from finance.ingestion import adapters
 from finance.models import ImportSummary
+from finance.settings import get_settings
 from tests.malformed_pdfs import MALFORMED_PDFS
 
 app.dependency_overrides[db] = lambda: None  # routes under test never reach the database
@@ -92,6 +93,41 @@ def test_categorize_run_queues_a_background_run(scheduled):
 def test_categorize_run_defaults_to_pending_rows_only(scheduled):
     assert client.post("/categorize/run").status_code == 202
     assert scheduled == [False]
+
+
+PDF = ("statement.pdf", b"%PDF", "application/pdf")
+
+
+def _summary():
+    return ImportSummary(
+        import_id=uuid4(),
+        account_id=uuid4(),
+        bank="bbva",
+        iban_last4="0001",
+        filename="statement.pdf",
+        rows_total=1,
+        rows_new=1,
+        rows_duplicate=0,
+    )
+
+
+def test_a_page_on_another_site_can_neither_import_nor_start_a_run(monkeypatch, scheduled):
+    imported = []
+    monkeypatch.setattr(imports, "import_statement", lambda *args: imported.append(args))
+    foreign = {"Origin": "https://attacker.example"}
+    run = client.post("/categorize/run", params={"all": "true"}, headers=foreign)
+    upload = client.post("/imports", files={"file": PDF}, headers=foreign)
+    assert (run.status_code, upload.status_code) == (403, 403)
+    assert scheduled == [] and imported == []
+
+
+def test_the_web_origin_and_requests_without_an_origin_are_accepted(monkeypatch, scheduled):
+    monkeypatch.setattr(imports, "import_statement", lambda *args: _summary())
+    web = {"Origin": get_settings().cors_origins[0]}
+    assert client.post("/categorize/run", headers=web).status_code == 202
+    assert client.post("/imports", files={"file": PDF}, headers=web).status_code == 201
+    assert client.post("/categorize/run").status_code == 202  # the CLI, curl and tests
+    assert scheduled == [False, False, False]
 
 
 def test_label_rejects_a_missing_category():

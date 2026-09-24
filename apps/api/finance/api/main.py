@@ -1,10 +1,13 @@
-from fastapi import FastAPI
+from fastapi import Depends, FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from finance.api import accounts, categories, categorize, imports, merchants, review, transactions
+from finance.api.deps import same_origin
 from finance.settings import get_settings
 
-app = FastAPI(title="personal-finance-agent API", version="0.1.0")
+app = FastAPI(
+    title="personal-finance-agent API", version="0.1.0", dependencies=[Depends(same_origin)]
+)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=get_settings().cors_origins,
