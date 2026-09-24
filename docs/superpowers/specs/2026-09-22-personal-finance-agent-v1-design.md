@@ -681,8 +681,10 @@ Each slice ends usable and merged to `main`.
 
 1. Foundation and ingestion: monorepo scaffold, Supabase migrations, accounts,
    BBVA and CaixaBank adapters, dedup, `/imports` page, transactions list.
-2. Categorization: taxonomy seed, rules engine, jev batch with confidence
-   gate, transfer pairing, subscription flag, `/review` inbox, recategorize.
+2. Categorization: taxonomy and system-rule seeds, `merchants`, own-account
+   pairing, jev categorizer (merchant, category, subscription) with the
+   confidence gate, merchant defaults, `/review` inbox, recategorize,
+   `finance eval-categorization` and `finance labels export/import`.
 3. Dashboards: views, `/` overview and `/subscriptions`.
 4. Chat: semantic layer, jev router, agent with SQL tools, SSE, `/chat`,
    Langfuse.
@@ -694,7 +696,7 @@ Each slice ends usable and merged to `main`.
 | Risk | Mitigation |
 |---|---|
 | jev misreads cryptic Spanish bank descriptions | merchant normalization, rules first, review inbox, direction-filtered options, descriptions written as jev criteria |
-| jev reads instructions literally | criteria name concrete situations, not adjectives; unit tests on wording changes via Raul's label history |
+| jev reads instructions literally | criteria name concrete situations, not adjectives; every wording change is measured with `finance eval-categorization` against the golden set |
 | LLM writes wrong SQL | semantic layer with examples, `describe_schema` tool, allow-listed views, read-only role, SQL shown to the user |
 | Raul has no JavaScript background | frontend kept thin and component-based; Claude Code drafts, Raul reviews; type generation from OpenAPI reduces hand-written glue |
 | Supabase adds setup friction for open-source users | documented free-tier path and `supabase start` Docker path |
