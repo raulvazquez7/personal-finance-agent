@@ -56,13 +56,20 @@ def test_a_labelled_transaction_leaves_the_review_queue(client, db_conn, make_tx
     _to_review(db_conn, tx, "uncategorized_expense")
     items = client.get("/review").json()
     assert f"t:{tx}" in {item["key"] for item in items}
-    assert client.get("/review/count").json() == {"pending": len(items)}
+    assert client.get("/review/count").json()["pending"] == len(items)
 
     response = client.post(
         f"/transactions/{tx}/label", json={"category_slug": "taxes", "is_subscription": False}
     )
     assert response.status_code == 204
     assert f"t:{tx}" not in _keys(client)
+
+
+def test_the_count_includes_rows_no_run_has_categorized_yet(client, db_conn, make_tx):
+    before = client.get("/review/count").json()
+    make_tx("-9.90", "PAGO | ZZTEST NOT YET", merchant="ZZTEST NOT YET", booked_at=SYNTHETIC_DAY)
+    after = client.get("/review/count").json()
+    assert after == before | {"uncategorized": before["uncategorized"] + 1}
 
 
 def test_a_refund_of_a_merchant_with_an_expense_default_is_its_own_item(client, db_conn, make_tx):

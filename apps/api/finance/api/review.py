@@ -36,6 +36,7 @@ where not m.confirmed
 
 class ReviewCount(BaseModel):
     pending: int
+    uncategorized: int  # rows no run has categorized yet: no jev key, or jev failed on them
 
 
 def review_items(conn: Connection) -> list[ReviewItem]:
@@ -51,4 +52,7 @@ def get_review(conn: Db) -> list[ReviewItem]:
 
 @router.get("/count")
 def get_review_count(conn: Db) -> ReviewCount:
-    return ReviewCount(pending=len(review_items(conn)))
+    uncategorized = conn.execute(
+        "select count(*) as n from transactions where category_source = 'none'"
+    ).fetchone()["n"]
+    return ReviewCount(pending=len(review_items(conn)), uncategorized=uncategorized)

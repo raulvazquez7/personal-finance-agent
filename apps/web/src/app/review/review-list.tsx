@@ -22,9 +22,11 @@ type Props = {
   initialItems: Item[];
   categories: Schemas["CategoryOut"][];
   merchants: Schemas["MerchantOut"][];
+  /** Transactions no categorization run has handled yet (no jev key, or jev failed on them). */
+  uncategorized: number;
 };
 
-export function ReviewList({ initialItems, categories, merchants }: Props) {
+export function ReviewList({ initialItems, categories, merchants, uncategorized }: Props) {
   const [items, setItems] = useState(initialItems);
   const [total] = useState(initialItems.length);
   const pending = useRef(new Map<string, Pending>()); // by row key: at most one change per row
@@ -128,14 +130,22 @@ export function ReviewList({ initialItems, categories, merchants }: Props) {
           {total > 0 && <span className="text-sm tabular-nums text-muted-foreground">{done} of {total}</span>}
         </div>
         <p className="text-sm text-muted-foreground">Confirm or fix. Your answer applies to every transaction of the merchant.</p>
+        {uncategorized > 0 && (
+          <p className="text-sm text-muted-foreground">
+            {uncategorized === 1 ? "1 transaction is" : `${uncategorized} transactions are`} not categorized
+            yet — run <code className="font-mono">finance categorize</code>.
+          </p>
+        )}
         {total > 0 && <Progress value={(done / total) * 100} />}
       </header>
 
       {items.length === 0 ? (
-        <div className="flex flex-col items-center gap-2 py-16 text-muted-foreground">
-          <CheckCircle2 className="size-8" />
-          <p>All caught up</p>
-        </div>
+        uncategorized === 0 && (
+          <div className="flex flex-col items-center gap-2 py-16 text-muted-foreground">
+            <CheckCircle2 className="size-8" />
+            <p>All caught up</p>
+          </div>
+        )
       ) : (
         <ul className="flex flex-col gap-3">
           {items.map((item) => (

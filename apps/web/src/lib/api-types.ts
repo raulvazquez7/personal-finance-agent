@@ -413,6 +413,8 @@ export interface components {
         ReviewCount: {
             /** Pending */
             pending: number;
+            /** Uncategorized */
+            uncategorized: number;
         };
         /** ReviewItem */
         ReviewItem: {
