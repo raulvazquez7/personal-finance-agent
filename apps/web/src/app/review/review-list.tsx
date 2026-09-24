@@ -1,6 +1,7 @@
 "use client";
 
 import { CheckCircle2 } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 
@@ -27,6 +28,7 @@ type Props = {
 };
 
 export function ReviewList({ initialItems, categories, merchants, uncategorized }: Props) {
+  const router = useRouter();
   const [items, setItems] = useState(initialItems);
   const [total] = useState(initialItems.length);
   const pending = useRef(new Map<string, Pending>()); // by row key: at most one change per row
@@ -67,10 +69,14 @@ export function ReviewList({ initialItems, categories, merchants, uncategorized 
       pending.current.delete(original.key);
       // The toast can outlive the timer (sonner pauses on hover): no Undo once the change is sent.
       toast.dismiss(id);
-      send(keepalive).catch(() => {
-        toast.error("Could not save that change.");
-        replace(original.key, original);
-      });
+      send(keepalive).then(
+        // The root layout does not re-render on client navigation: refresh its badge count.
+        () => router.refresh(),
+        () => {
+          toast.error("Could not save that change.");
+          replace(original.key, original);
+        },
+      );
     };
     const timer = setTimeout(() => commit(false), UNDO_MS);
     pending.current.set(original.key, { id, timer, commit });
