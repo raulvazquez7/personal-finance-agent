@@ -1,8 +1,14 @@
 from datetime import datetime
 from uuid import uuid4
 
+from finance.categorization.categorizer import CategorizationContext
+from finance.categorization.rules import read_rules_yaml
+from finance.categorization.seed import SEED_DIR
+from finance.categorization.taxonomy import Taxonomy, read_categories_yaml
 from finance.evals.metrics import EvalRow, compute_metrics
 from finance.evals.report import EvalMeta, history_line, render_markdown
+from finance.evals.run import fingerprint
+from finance.settings import Settings
 
 
 def _row(golden, predicted, confidence, *, sub=None, flagged=False, merchant=None, named=None):
@@ -80,3 +86,14 @@ def test_a_note_cannot_break_the_history_table():
     line = history_line(meta, compute_metrics(ROWS))
     assert line.endswith("| wording / criteria round 2 |")
     assert line.count("|") == 11 and "\n" not in line
+
+
+def test_the_fingerprint_follows_the_order_jev_sees_the_categories_in():
+    categories = read_categories_yaml(SEED_DIR / "categories.yaml")
+    rules = read_rules_yaml(SEED_DIR / "rules.yaml")
+
+    def of(ordered):
+        return fingerprint(CategorizationContext(Taxonomy(ordered), rules, Settings()))
+
+    assert of(categories) == of(list(categories))
+    assert of(categories) != of(categories[1:] + categories[:1])

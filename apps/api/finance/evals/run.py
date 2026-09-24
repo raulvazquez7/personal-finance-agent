@@ -37,9 +37,10 @@ order by l.transaction_id, l.labeled_at desc
 
 
 def fingerprint(ctx: CategorizationContext) -> str:
+    """Categories in position order: jev sees its options in that order, so it is part of what
+    a run measures."""
     payload = json.dumps(
-        [c.model_dump() for c in sorted(ctx.taxonomy.categories(), key=lambda c: c.slug)]
-        + [r.model_dump() for r in ctx.rules],
+        [c.model_dump() for c in ctx.taxonomy.categories()] + [r.model_dump() for r in ctx.rules],
         sort_keys=True,
     )
     return hashlib.sha256(payload.encode()).hexdigest()[:8]
