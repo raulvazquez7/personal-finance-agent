@@ -1,3 +1,4 @@
+import os
 from datetime import date
 from decimal import Decimal
 from pathlib import Path
@@ -6,6 +7,11 @@ from uuid import UUID, uuid4
 import pytest
 
 from finance.db import connection
+
+# The repo-root .env holds real Langfuse keys: tests export no traces, except the opt-in live
+# jev test (RUN_LIVE_JEV=1). The SDK reads this variable when the client is created.
+if os.environ.get("RUN_LIVE_JEV") != "1":
+    os.environ["LANGFUSE_TRACING_ENABLED"] = "false"
 
 RAW_DIR = Path(__file__).resolve().parents[3] / "data" / "raw"
 
