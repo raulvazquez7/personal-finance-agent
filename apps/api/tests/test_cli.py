@@ -118,7 +118,8 @@ def test_import_succeeds_even_when_categorization_fails(monkeypatch, tmp_path):
     monkeypatch.setattr(cli, "run_categorization", _fail)
     result = runner.invoke(cli.app, ["import", str(pdf)])
     assert result.exit_code == 0
-    assert "new=1" in result.output and "categorization failed: jev is down" in result.output
+    assert "new=1" in result.output
+    assert "categorization failed: RuntimeError('jev is down')" in result.output
 
 
 def test_categorize_all_reruns_everything_and_prints_the_counts(monkeypatch):

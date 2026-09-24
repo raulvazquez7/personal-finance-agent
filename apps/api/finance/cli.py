@@ -37,7 +37,7 @@ def import_statements(files: list[Path] = typer.Argument(..., exists=True, reada
     try:
         typer.echo(run_categorization().line())
     except Exception as error:  # the import itself already succeeded
-        typer.echo(f"categorization failed: {error}", err=True)
+        typer.echo(f"categorization failed: {error!r}", err=True)
     if failed:
         raise typer.Exit(code=1)
 

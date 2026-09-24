@@ -181,6 +181,9 @@ def run_categorization_logged(include_all: bool = False) -> None:
     """
     with _run_lock:
         try:
-            logger.info(run_categorization(include_all).line())
+            summary = run_categorization(include_all)
         except Exception:
             logger.exception("categorization failed")
+            return
+        # A skipped run (no jev key) is a warning, so the API console shows it.
+        logger.log(logging.WARNING if summary.skipped else logging.INFO, summary.line())

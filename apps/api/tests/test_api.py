@@ -15,15 +15,28 @@ app.dependency_overrides[db] = lambda: None  # routes under test never reach the
 client = TestClient(app)
 
 
-def test_import_rejects_non_pdf_uploads():
+@pytest.fixture(autouse=True)
+def scheduled(monkeypatch):
+    """Records the background runs the routes schedule instead of starting real, paid ones."""
+    runs = []
+
+    def _record(include_all=False):
+        runs.append(include_all)
+
+    monkeypatch.setattr(imports, "run_categorization_logged", _record)
+    monkeypatch.setattr(categorize, "run_categorization_logged", _record)
+    return runs
+
+
+def test_import_rejects_non_pdf_uploads(scheduled):
     response = client.post("/imports", files={"file": ("notes.txt", b"hello", "text/plain")})
-    assert response.status_code == 415
+    assert response.status_code == 415 and scheduled == []
 
 
-def test_import_rejects_pdf_without_pages(monkeypatch):
+def test_import_rejects_pdf_without_pages(monkeypatch, scheduled):
     monkeypatch.setattr(adapters, "pdf_pages_text", lambda _pdf, x_tolerance=3: [])
     response = client.post("/imports", files={"file": ("empty.pdf", b"%PDF", "application/pdf")})
-    assert response.status_code == 422
+    assert response.status_code == 422 and scheduled == []
 
 
 @pytest.mark.parametrize("shape", sorted(MALFORMED_PDFS))
@@ -40,7 +53,7 @@ def test_transactions_rejects_malformed_month():
 
 def test_openapi_exposes_web_schemas():
     schemas = client.get("/openapi.json").json()["components"]["schemas"]
-    assert {"Account", "ImportRecord", "ImportSummary", "Transaction"} <= set(schemas)
+    assert {"Account", "ImportRecord", "ImportSummary", "RunQueued", "Transaction"} <= set(schemas)
 
 
 def test_import_succeeds_and_reports_counts_even_when_categorization_fails(monkeypatch):
@@ -61,6 +74,8 @@ def test_import_succeeds_and_reports_counts_even_when_categorization_fails(monke
         raise RuntimeError("jev is down")
 
     monkeypatch.setattr(imports, "import_statement", lambda *args: summary)
+    # The real background runner this time, with the paid run inside it failing.
+    monkeypatch.setattr(imports, "run_categorization_logged", store.run_categorization_logged)
     monkeypatch.setattr(store, "run_categorization", _fail)
     upload = ("statement.pdf", b"%PDF", "application/pdf")
     response = client.post("/imports", files={"file": upload})
@@ -68,9 +83,12 @@ def test_import_succeeds_and_reports_counts_even_when_categorization_fails(monke
     assert attempts == [False]  # the background run happened after the response
 
 
-def test_categorize_run_queues_a_background_run(monkeypatch):
-    calls = []
-    monkeypatch.setattr(categorize, "run_categorization_logged", calls.append)
+def test_categorize_run_queues_a_background_run(scheduled):
     response = client.post("/categorize/run", params={"all": "true"})
     assert response.status_code == 202 and response.json() == {"status": "queued"}
-    assert calls == [True]
+    assert scheduled == [True]
+
+
+def test_categorize_run_defaults_to_pending_rows_only(scheduled):
+    assert client.post("/categorize/run").status_code == 202
+    assert scheduled == [False]

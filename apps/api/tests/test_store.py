@@ -1,4 +1,5 @@
 import asyncio
+import logging
 from datetime import date
 
 import pytest
@@ -171,6 +172,15 @@ def test_a_background_run_logs_a_failure_instead_of_raising(monkeypatch, caplog)
     monkeypatch.setattr(store, "run_categorization", _fail)
     run_categorization_logged()
     assert "categorization failed" in caplog.text
+
+
+def test_a_skipped_background_run_is_a_warning_so_the_api_console_shows_it(monkeypatch, caplog):
+    skipped = store.CategorizeSummary(skipped="TYPESAFE_API_KEY is not set")
+    monkeypatch.setattr(store, "run_categorization", lambda include_all=False: skipped)
+    run_categorization_logged()
+    assert [(r.levelno, r.getMessage()) for r in caplog.records] == [
+        (logging.WARNING, skipped.line())
+    ]
 
 
 def test_background_runs_hold_one_lock_so_they_never_overlap(monkeypatch):
