@@ -1,8 +1,16 @@
 from decimal import Decimal
 
+import pytest
+
 from finance.categorization.rules import read_rules_yaml
-from finance.categorization.seed import SEED_DIR
-from finance.categorization.taxonomy import Taxonomy, direction_of, read_categories_yaml
+from finance.categorization.seed import SEED_DIR, seed
+from finance.categorization.taxonomy import (
+    Taxonomy,
+    direction_of,
+    load_taxonomy,
+    read_categories_yaml,
+)
+from finance.db import connection
 
 CATEGORIES = read_categories_yaml(SEED_DIR / "categories.yaml")
 TAXONOMY = Taxonomy(CATEGORIES)
@@ -38,3 +46,13 @@ def test_tx_type_comes_from_the_category_or_the_sign():
 def test_every_rule_points_to_a_known_category():
     slugs = {c.slug for c in CATEGORIES}
     assert {rule.category_slug for rule in read_rules_yaml(SEED_DIR / "rules.yaml")} <= slugs
+
+
+@pytest.mark.integration
+def test_load_taxonomy_keeps_the_yaml_order():
+    """jev sees its options in the spike-validated order, whatever order the rows sit on disk."""
+    with connection() as conn, conn.transaction(force_rollback=True):
+        seed(conn)
+        for category in reversed(CATEGORIES):  # rewritten rows leave the heap out of YAML order
+            conn.execute("update categories set what = what where slug = %s", (category.slug,))
+        assert load_taxonomy(conn).categories() == CATEGORIES

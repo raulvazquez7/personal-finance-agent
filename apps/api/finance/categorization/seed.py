@@ -13,13 +13,13 @@ def seed(conn: Connection) -> tuple[int, int]:
     categories = read_categories_yaml(SEED_DIR / "categories.yaml")
     rules = read_rules_yaml(SEED_DIR / "rules.yaml")
     with conn.transaction():
-        for c in categories:
+        for position, c in enumerate(categories):
             conn.execute(
-                "insert into categories (slug, tx_type, level1, what, not_for)"
-                " values (%s, %s, %s, %s, %s) on conflict (slug) do update set"
+                "insert into categories (slug, tx_type, level1, what, not_for, position)"
+                " values (%s, %s, %s, %s, %s, %s) on conflict (slug) do update set"
                 " tx_type = excluded.tx_type, level1 = excluded.level1,"
-                " what = excluded.what, not_for = excluded.not_for",
-                (c.slug, c.tx_type, c.level1, c.what, c.not_for),
+                " what = excluded.what, not_for = excluded.not_for, position = excluded.position",
+                (c.slug, c.tx_type, c.level1, c.what, c.not_for, position),
             )
         for r in rules:
             conn.execute(

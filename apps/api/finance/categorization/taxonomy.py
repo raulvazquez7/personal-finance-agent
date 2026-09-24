@@ -66,5 +66,7 @@ def read_categories_yaml(path: Path) -> list[Category]:
 
 
 def load_taxonomy(conn: Connection) -> Taxonomy:
-    rows = conn.execute("select slug, tx_type, level1, what, not_for from categories").fetchall()
+    rows = conn.execute(
+        "select slug, tx_type, level1, what, not_for from categories order by position"
+    ).fetchall()
     return Taxonomy([Category.model_validate(row) for row in rows])

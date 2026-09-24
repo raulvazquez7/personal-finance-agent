@@ -5,7 +5,8 @@ create table categories (
   tx_type  text not null check (tx_type in ('income', 'expense', 'transfer')),
   level1   text not null,
   what     text not null,
-  not_for  text
+  not_for  text,
+  position int not null  -- YAML order: the order jev sees its options
 );
 
 create table merchants (

@@ -77,7 +77,8 @@ def _insert_slice_1_row(conn, bank: str, description_raw: str, merchant: str | N
 
 def test_categorization_tables_exist():
     with connection() as conn:
-        assert {"slug", "tx_type", "level1", "what", "not_for"} <= _columns(conn, "categories")
+        categories = {"slug", "tx_type", "level1", "what", "not_for", "position"}
+        assert categories <= _columns(conn, "categories")
         assert {"match_key", "confirmed", "merge_candidate_id"} <= _columns(conn, "merchants")
         assert {"match_field", "pattern", "direction"} <= _columns(conn, "rules")
         assert {"source", "model", "is_subscription"} <= _columns(conn, "transaction_labels")
