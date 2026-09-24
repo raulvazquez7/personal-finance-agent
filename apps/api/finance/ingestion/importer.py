@@ -7,12 +7,14 @@ from psycopg import Connection
 
 from finance.ingestion.adapters import detect_adapter
 from finance.ingestion.dedup import dedup_key, occurrence_indexes
+from finance.ingestion.structure import structure
 from finance.models import ImportSummary, ParsedStatement
 
 _INSERT_TRANSACTION = """
 insert into transactions (account_id, import_id, booked_at, value_date, amount, currency,
-                          description_raw, merchant, balance_after, dedup_key, tx_type)
-values (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                          description_raw, merchant, balance_after, dedup_key, tx_type,
+                          bank_concept, card_last4)
+values (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
 on conflict (dedup_key) do nothing
 """
 
@@ -55,6 +57,7 @@ def transaction_rows(parsed: ParsedStatement, account_id: UUID, import_id: UUID)
     """Insert tuples in _INSERT_TRANSACTION column order. Pure, so it is unit-tested."""
     rows = []
     for tx, index in zip(parsed.transactions, occurrence_indexes(parsed.transactions), strict=True):
+        parts = structure(parsed.header.bank, tx.description_raw, tx.merchant)
         rows.append(
             (
                 account_id,
@@ -64,10 +67,12 @@ def transaction_rows(parsed: ParsedStatement, account_id: UUID, import_id: UUID)
                 tx.amount,
                 tx.currency,
                 tx.description_raw,
-                tx.merchant,
+                parts.merchant,
                 tx.balance_after,
                 dedup_key(parsed.header.iban, tx, index),
                 "income" if tx.amount > 0 else "expense",
+                parts.bank_concept,
+                parts.card_last4,
             )
         )
     return rows

@@ -12,6 +12,9 @@ dependencies = [
     "psycopg[binary,pool]>=3.2",
     "pdfplumber>=0.11",
     "typer>=0.12",
+    "pyyaml>=6.0.3",
+    "typesafe-sdk>=0.7.1",
+    "langfuse>=4.15.4",
 ]
 
 [project.scripts]
