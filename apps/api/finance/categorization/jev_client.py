@@ -5,7 +5,7 @@ from typing import Any, Protocol
 
 from langfuse import propagate_attributes
 from pydantic import BaseModel
-from typesafe_sdk import AsyncTypeSafeClient, Choice, Noul
+from typesafe_sdk import AsyncTypeSafeClient, Choice, Noul, TypeSafeError
 
 from finance.tracing import langfuse
 
@@ -47,6 +47,14 @@ def _answer(raw: Any) -> JevAnswer:
     )
 
 
+def _request_id(response: Any) -> str | None:
+    """The SDK raises when the response has no request-id header; the paid answer is kept."""
+    try:
+        return response.request_id
+    except TypeSafeError:
+        return None
+
+
 class TypesafeJev:
     """Bounded concurrency, the SDK's default retry policy, one Langfuse generation per call.
 
@@ -81,7 +89,7 @@ class TypesafeJev:
                 result = JevResult(
                     answers={key: _answer(value) for key, value in response.answers.items()},
                     model=response.model,
-                    request_id=response.request_id,
+                    request_id=_request_id(response),
                     input_tokens=response.usage.input_tokens or 0,
                 )
                 observation.update(

@@ -239,3 +239,13 @@ def test_a_failing_same_merchant_question_leaves_out_only_that_row():
     results = _run([known, asked], jev, roster)
     assert [r.transaction_id for r in results] == [known.id]
     assert [name for name, _ in jev.calls].count("same_merchant") == 1
+
+
+def test_a_malformed_jev_answer_leaves_out_only_that_row(caplog):
+    unknown_slug = jev_result(merchant={"none": 1.0}, category={"zz_not_a_category": 0.99})
+    ok, malformed = _tx("ACME 0042"), _tx("ZZODD 9", day=2)
+    jev = FakeJev(first={"ACME 0042": GROCERIES, "ZZODD 9": unknown_slug})
+    results = _run([ok, malformed], jev)
+    assert [r.transaction_id for r in results] == [ok.id]
+    [warning] = caplog.records
+    assert str(malformed.id) in warning.getMessage()

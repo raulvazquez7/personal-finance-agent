@@ -1,3 +1,6 @@
+import pytest
+from pydantic import ValidationError
+
 from finance.settings import Settings
 
 SECRETS = (
@@ -15,3 +18,9 @@ def test_repr_never_shows_secrets():
     settings = Settings(_env_file=None, **{name: f"fake-{name}" for name in SECRETS})
     shown = repr(settings)
     assert [name for name in SECRETS if f"fake-{name}" in shown] == []
+
+
+def test_jev_concurrency_below_one_is_rejected():
+    # A semaphore of 0 would wait forever for the first jev call.
+    with pytest.raises(ValidationError, match="jev_concurrency"):
+        Settings(_env_file=None, jev_concurrency=0)

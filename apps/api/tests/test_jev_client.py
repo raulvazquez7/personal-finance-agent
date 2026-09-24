@@ -4,7 +4,7 @@ from decimal import Decimal
 from types import SimpleNamespace
 
 import pytest
-from typesafe_sdk import Choice, Noul
+from typesafe_sdk import Choice, Noul, TypeSafeError
 
 from finance.categorization import jev_client
 from finance.categorization.jev_client import TypesafeJev, _answer, to_sdk
@@ -82,6 +82,32 @@ def test_ask_maps_the_response_and_counts_tokens(monkeypatch):
         84,
     )
     assert isinstance(stub.questions[0]["known_merchant"], Choice)
+
+
+class _NoRequestId(SimpleNamespace):
+    """A response without the request-id header: the SDK's property raises."""
+
+    @property
+    def request_id(self) -> str:
+        raise TypeSafeError("The response did not include a request ID.")
+
+
+class NoRequestIdClient(StubClient):
+    async def system_one(self, state: dict, questions: dict) -> SimpleNamespace:
+        response = await super().system_one(state, questions)
+        return _NoRequestId(**{k: v for k, v in vars(response).items() if k != "request_id"})
+
+
+def test_a_paid_answer_without_a_request_id_is_kept(monkeypatch):
+    monkeypatch.setattr(jev_client, "AsyncTypeSafeClient", lambda api_key: NoRequestIdClient())
+
+    async def ask():
+        async with TypesafeJev("sk-fake") as jev:
+            state = {"merchant_text": "ACME FOODS"}
+            return await jev.ask("same_merchant", state, same_merchant_question(["ACME FOODS"]))
+
+    result = asyncio.run(ask())
+    assert (result.answers["known_merchant"].choice, result.request_id) == ("ACME FOODS", None)
 
 
 @pytest.mark.integration

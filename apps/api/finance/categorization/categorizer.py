@@ -91,9 +91,10 @@ async def categorize(
     *,
     use_merchant_defaults: bool = True,
 ) -> list[Categorization]:
-    """Results in the order of `rows`. A row whose jev call fails (after the SDK's retries) is
-    left out and logged, so one bad row never costs the others; it stays pending for the next
-    run. Pairing and rule rows never call jev and always come back."""
+    """Results in the order of `rows`. A row whose jev call fails (after the SDK's retries) or
+    whose answer cannot be used is left out and logged, so one bad row never costs the others;
+    it stays pending for the next run. Pairing and rule rows never call jev and always come
+    back."""
     results: dict[UUID, Categorization] = {}
     pending: list[TxInput] = []
     for tx in rows:
@@ -131,9 +132,9 @@ async def categorize(
             resolution = await resolve_merchant(
                 first.answers["merchant_name"], state, roster, jev, ctx.settings
             )
+            # A malformed answer (a slug outside the taxonomy, no confidence) fails this row only.
+            results[tx.id] = decide(tx, first, resolution, ctx, use_merchant_defaults)
         except Exception as error:
             # The id and the error only: never the jev state or the description text.
             logger.warning("jev failed for transaction %s: %r", tx.id, error)
-            continue
-        results[tx.id] = decide(tx, first, resolution, ctx, use_merchant_defaults)
     return [results[tx.id] for tx in rows if tx.id in results]

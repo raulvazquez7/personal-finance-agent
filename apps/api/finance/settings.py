@@ -23,7 +23,7 @@ class Settings(BaseSettings):
     cors_origins: list[str] = ["http://localhost:3000"]
     transfer_pattern: str = "TRASPASO|TRANSFER|BIZUM|TRF"
     transfer_window_days: int = 2
-    jev_concurrency: int = 8
+    jev_concurrency: int = Field(default=8, ge=1)
     category_threshold: float = 0.95
     brand_threshold: float = 0.5
     merge_threshold: float = 0.8
