@@ -4,6 +4,7 @@ from pathlib import Path
 
 import typer
 
+from finance.categorization.seed import seed as seed_database
 from finance.db import connection
 from finance.ingestion.adapters import UnsupportedStatement
 from finance.ingestion.importer import import_statement
@@ -34,3 +35,11 @@ def import_statements(files: list[Path] = typer.Argument(..., exists=True, reada
         )
     if failed:
         raise typer.Exit(code=1)
+
+
+@app.command("seed")
+def seed_command() -> None:
+    """Load the category taxonomy and system rules into the database."""
+    with connection() as conn:
+        categories, rules = seed_database(conn)
+    typer.echo(f"categories={categories} rules={rules}")

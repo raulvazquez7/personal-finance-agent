@@ -1,0 +1,40 @@
+from decimal import Decimal
+
+from finance.categorization.rules import read_rules_yaml
+from finance.categorization.seed import SEED_DIR
+from finance.categorization.taxonomy import Taxonomy, direction_of, read_categories_yaml
+
+CATEGORIES = read_categories_yaml(SEED_DIR / "categories.yaml")
+TAXONOMY = Taxonomy(CATEGORIES)
+
+
+def test_seed_has_the_spec_taxonomy():
+    assert len(CATEGORIES) == 55
+    assert len({c.slug for c in CATEGORIES}) == 55
+    assert len({c.level1 for c in CATEGORIES if c.tx_type == "expense"}) == 14
+    assert all(c.what for c in CATEGORIES)
+
+
+def test_leaves_follow_the_direction():
+    outgoing = {c.slug for c in TAXONOMY.leaves("outgoing")}
+    incoming = {c.slug for c in TAXONOMY.leaves("incoming")}
+    assert "groceries" in outgoing and "groceries" not in incoming
+    assert "salary" in incoming and "salary" not in outgoing
+    assert "own_accounts" in outgoing and "own_accounts" in incoming
+
+
+def test_level1_sums_add_leaf_probabilities():
+    sums = TAXONOMY.level1_sums({"groceries": 0.5, "fashion": 0.3, "restaurants_bars": 0.2})
+    assert sums == {"shopping": 0.8, "leisure": 0.2}
+
+
+def test_tx_type_comes_from_the_category_or_the_sign():
+    assert TAXONOMY.tx_type_of("own_accounts", Decimal("-5")) == "transfer"
+    assert TAXONOMY.tx_type_of("groceries", Decimal("-5")) == "expense"
+    assert TAXONOMY.tx_type_of("refunds", Decimal("5")) == "income"
+    assert direction_of(Decimal("-0.01")) == "outgoing"
+
+
+def test_every_rule_points_to_a_known_category():
+    slugs = {c.slug for c in CATEGORIES}
+    assert {rule.category_slug for rule in read_rules_yaml(SEED_DIR / "rules.yaml")} <= slugs

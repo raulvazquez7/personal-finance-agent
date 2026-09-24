@@ -1,0 +1,151 @@
+# Two-level taxonomy (spec section 7), generated from the spike's validated criteria.
+# tx_type -> level 1 -> level-2 slug -> jev criterion (what, optional not_for).
+expense:
+  home:
+    rent:
+      what: monthly rent paid to a landlord or letting agency
+      not_for: mortgage instalments
+    mortgage:
+      what: mortgage instalments and related charges from a bank or mortgage lender
+      not_for: rent, personal loans or consumer credit
+    utilities:
+      what: electricity, gas, water and heating bills
+    internet_phone:
+      what: internet, mobile and landline telecom bills
+    home_insurance:
+      what: home and contents insurance premiums
+    maintenance:
+      what: home repairs, plumbers, electricians, cleaning services, homeowners' community fees
+      not_for: buying furniture or household items
+  shopping:
+    groceries:
+      what: supermarkets, grocery stores, bakeries, butchers, fruit shops, food markets
+    fashion:
+      what: clothing, shoes, bags and accessories shops, sportswear
+    electronics:
+      what: electronics, computers, phones, appliances, photo and video game shops
+    home_goods:
+      what: furniture, decoration, household items, hardware and DIY stores, cleaning products
+    beauty_perfumery:
+      what: perfumeries, cosmetics and make-up shops, drugstores
+      not_for: hairdressers and beauty services
+    hobbies:
+      what: music instruments, sports equipment, crafts, books, stationery, toys and hobby shops
+      not_for: school textbooks and course materials
+    tobacco:
+      what: tobacco shops (estanco), tobacco and vaping products
+    other_shopping:
+      what: online marketplaces, department stores, bazaars and any other retail purchase that fits no specific
+        shop
+  leisure:
+    restaurants_bars:
+      what: restaurants, bars, cafes, fast food, ice cream shops, food delivery and its memberships (Uber Eats,
+        Uber One, Glovo Prime)
+    entertainment:
+      what: streaming services, music and video apps, video games bought online
+      not_for: software, AI and productivity tools
+    culture_events:
+      what: cinema, concerts, theatre, museums, theme parks, event tickets
+    sports_gym:
+      what: gym memberships, sports clubs, classes and sports activities
+      not_for: buying sports equipment
+    gambling_lottery:
+      what: lottery, betting, casinos, lottery administrations
+  transport:
+    fuel:
+      what: petrol stations, fuel, EV charging
+    public_transport:
+      what: metro, bus, tram and commuter train tickets and passes, bike and scooter sharing
+      not_for: long-distance trains and trips away from home
+    taxi_rideshare:
+      what: taxi, Uber, Cabify, Bolt rides
+      not_for: Uber Eats and food delivery memberships
+    parking_tolls:
+      what: parking, motorway tolls
+    car_costs:
+      what: car repairs, garages, tyres, car wash, ITV inspection, car insurance, road tax
+  travel:
+    flights:
+      what: airlines and flight tickets
+    lodging:
+      what: hotels, hostels, holiday apartments and rentals
+    travel_other:
+      what: travel agencies, packages, long-distance trains and buses, car rental, fees for purchases abroad
+  health:
+    pharmacy:
+      what: pharmacies and parapharmacies
+    medical:
+      what: doctors, dentists, clinics, hospitals, opticians, physiotherapy, psychologists
+      not_for: hairdressers, beauty treatments, veterinarians
+    health_insurance:
+      what: private health insurance premiums
+    personal_care:
+      what: hairdressers, barbers, beauty salons, nails, spa and massage
+      not_for: buying cosmetics or perfume in a shop
+  technology:
+    software_ai:
+      what: software, AI tools, productivity apps and cloud storage subscriptions (OpenAI, Anthropic, Cursor, Notion,
+        Google One)
+      not_for: streaming and entertainment apps, buying devices
+  education:
+    tuition:
+      what: school, university and nursery-school fees, parents' associations (AMPA), exam fees
+    courses:
+      what: language schools, academies, tutoring, online courses and training
+      not_for: sports classes
+    books_supplies:
+      what: school textbooks, course materials and school supplies
+      not_for: leisure books and toys
+  family:
+    childcare_kids:
+      what: childcare, babysitters, summer camps, extracurricular activities and children's needs
+      not_for: school fees
+    pets:
+      what: veterinarians, pet food, pet shops, pet grooming and insurance
+  people:
+    payments_to_people:
+      what: 'money sent to a private person: Bizum sent, a transfer to an individual''s name'
+  giving:
+    donations:
+      what: donations to charities, foundations, NGOs, churches and causes
+  financial:
+    bank_fees:
+      what: bank commissions, account and card fees, overdraft interest
+    loan_payment:
+      what: repayment of a personal loan, consumer credit or financing
+      not_for: mortgage
+    taxes:
+      what: taxes, fines, social security payments and public administration fees
+    other_insurance:
+      what: life insurance and any insurance that is not home, health or car
+  cash:
+    atm_withdrawal:
+      what: cash withdrawal at an ATM
+  other:
+    uncategorized_expense:
+      what: an expense that fits no other category or whose text gives no clue
+income:
+  income:
+    salary:
+      what: payroll, salary (nomina) paid by an employer
+    self_employment:
+      what: payments from clients for freelance or business work, invoices paid
+    pension_benefits:
+      what: pension, unemployment benefit, public aid and subsidies, tax refunds from the administration
+    refunds:
+      what: refunds, returns, cashback and bonuses paid back by a merchant or bank
+    investment_income:
+      what: interest, dividends, investment returns
+    payments_from_people:
+      what: 'money received from a private person: Bizum received, a transfer from an individual''s name'
+    other_income:
+      what: any other income that fits no category above
+transfer:
+  transfer:
+    own_accounts:
+      what: moving money between accounts of the same household (traspaso propio)
+      not_for: money sent to or received from another person
+    savings_investment:
+      what: contributions to savings, brokers, investment or pension plans
+    credit_card_payment:
+      what: monthly settlement of a credit card (adeudo mensual de tarjeta)
