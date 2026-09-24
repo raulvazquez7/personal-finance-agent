@@ -100,10 +100,10 @@ the agent's SQL tool). Migrations via the Supabase CLI in `supabase/migrations`.
 | `accounts` | one row per bank account, auto-created from the IBAN in a statement header | `id`, `bank` (`bbva`, `caixabank`), `iban` (unique), `name` (defaults to bank + last 4 digits, user-editable), `currency` |
 | `imports` | one row per uploaded file | `id`, `account_id`, `filename`, `file_sha256`, `imported_at`, `rows_total`, `rows_new`, `rows_duplicate` |
 | `transactions` | the normalized ledger | `id`, `account_id`, `import_id`, `booked_at`, `value_date`, `amount` (signed, numeric(12,2)), `currency`, `description_raw`, `bank_concept`, `merchant` (cleaned text), `card_last4`, `balance_after`, `dedup_key` (unique), `tx_type` (`income`/`expense`/`transfer`), `merchant_id`, `merchant_source` (`jev`/`user`/`none`), `category_source` (`rule`/`merchant`/`jev`/`user`/`none`), `merchant_confidence`, `category_slug`, `category_confidence`, `category_probabilities` (jsonb, full distribution), `is_subscription`, `subscription_score`, `transfer_pair_id`, `needs_review` |
-| `merchants` | canonical merchant names, grown automatically from jev picks and user merges | `id`, `name` (unique), `match_key` (unique: upper-case letters and digits only), `confirmed`, `category_slug` and `is_subscription` (nullable: the user's default for every transaction of this merchant) |
+| `merchants` | canonical merchant names, grown automatically from jev picks and user merges | `id`, `name` (unique), `match_key` (unique: upper-case letters and digits only), `confirmed` (the user checked it: no more merge suggestions), `category_slug` and `is_subscription` (nullable: the user's default for every transaction of this merchant) |
 | `categories` | two-level taxonomy | `slug` (pk), `tx_type`, `level1`, `level2`, `description` (also used as jev criteria) |
 | `rules` | operations without a merchant, resolved before jev | `id`, `name`, `bank` (null = any), `match_field` (`bank_concept`/`merchant`), `pattern` (case-insensitive regex), `direction` (`outgoing`/`incoming`/`any`), `category_slug`, `enabled` |
-| `transaction_labels` | history of every label applied | `transaction_id`, `merchant_id`, `category_slug`, `source`, `confidence`, `model` (concrete jev version, e.g. `jev-1.13.0`), `labeled_at` (user labels become the golden set for Raul's own evals) |
+| `transaction_labels` | history of every label applied | `transaction_id`, `merchant_id`, `category_slug`, `is_subscription`, `source`, `confidence`, `model` (concrete jev version, e.g. `jev-1.13.0`), `labeled_at` (user labels become the golden set for Raul's own evals) |
 | `semantic_schema` | natural-language schema | `table_name`, `column_name` (null = table row), `description`, `examples` (jsonb), `synonyms` (text[]) |
 | `semantic_metrics` | named metrics | `name`, `description`, `sql_expression` |
 | LangGraph checkpoint tables | chat memory per thread | managed by `langgraph-checkpoint-postgres` |
@@ -362,11 +362,11 @@ silently accepted.
 
 ### 5.3 Learning from corrections
 
-A user label writes `transaction_labels` and updates the transaction. With
-"apply to every transaction of this merchant" checked (the default; unchecked
-for mixed merchants such as marketplaces), it also sets the merchant default
-and relabels that merchant's rows whose `category_source` is `jev` or
-`merchant`; rows labelled one by one stay as they are. Future transactions of
+A user label writes `transaction_labels` and updates the transaction.
+Confirming a merchant row in `/review` (section 11.1) sets the merchant
+default and relabels that merchant's rows whose `category_source` is `jev` or
+`merchant`; rows labelled one by one (the expanded view, used for mixed
+merchants such as marketplaces) stay as they are. Future transactions of
 that merchant take the default without review. Merging two merchants in
 `/review` repoints their transactions and keeps the surviving name and
 default. A "recategorize all" action re-runs the cascade over every
@@ -537,8 +537,12 @@ block.
 | `POST /imports` | multipart PDF upload → import summary (account resolved from the IBAN) |
 | `GET /imports` | history |
 | `GET /transactions` | filtered list (month, account, category, needs_review) |
-| `GET /review` | review queue with jev suggestions |
-| `POST /transactions/{id}/label` | set category and merchant, optionally as the merchant default |
+| `GET /review` | review items (section 11.1) |
+| `GET /categories` | taxonomy tree for pickers |
+| `GET /merchants?q=` | merchant autocomplete |
+| `POST /merchants/{id}/review` | confirm a merchant: category, subscription, optional rename; sets the default and relabels its non-user rows |
+| `POST /merchants/{id}/merge`, `POST /merchants/{id}/dismiss-merge` | accept or reject a merge suggestion |
+| `POST /transactions/{id}/label` | label one transaction: existing or new merchant, category, subscription |
 | `POST /categorize/run` | re-run the cascade over uncategorized or all non-user rows |
 | `GET /dashboard/overview?month=` | KPIs, spend by category, monthly trend, top merchants |
 | `GET /dashboard/subscriptions` | subscriptions view |
@@ -559,10 +563,55 @@ actions when auth arrives in v2. Pages:
 |---|---|
 | `/` | month selector; KPI tiles (income, expenses, savings, savings rate); spend by level-1 donut; 12-month income vs expenses bars; top merchants; pending-review count |
 | `/subscriptions` | active subscriptions table and monthly total |
-| `/review` | inbox table: description, merchant, amount, jev top-3 as a select, "apply to this merchant" toggle, accept and bulk accept |
+| `/review` | review inbox, one row per merchant (section 11.1) |
 | `/chat` | streaming chat with thread list and SQL disclosure |
 | `/imports` | upload, import history with new vs duplicate counts per file |
 | `/settings` | accounts and thresholds (minimal in v1) |
+
+### 11.1 Review inbox
+
+Simple, minimal, clear; a base to extend later. One sentence of copy, a
+progress bar ("12 of 72") and one row per merchant, not per transaction,
+ordered by total spend so the largest merchants come first. Rows without a
+merchant (payments to people, opaque codes) appear one by one.
+
+```
+ Review                                                    12 of 72 ▓▓▓░░░░░░
+ Confirm or fix. Your answer applies to every transaction of the merchant.
+ ┌──────────────────────────────────────────────────────────────────────────┐
+ │ ▸ ACME FROZEN YOGURT 0042           ×5   −43.13 €                        │
+ │   Merchant [ Acme Frozen   ▾]   Category [ groceries  ▾] ·89   Shopping  │
+ │                                              Subscription ○   [ ✓ ]      │
+ ├──────────────────────────────────────────────────────────────────────────┤
+ │   Same merchant as ACME FOODS?                     [ Merge ]  [ No ]     │
+ └──────────────────────────────────────────────────────────────────────────┘
+```
+
+- Bank text (muted, truncated), a transaction count and the total amount.
+- Merchant: searchable combobox over known merchants with "Create '…'";
+  picking another merchant merges, typing a new name renames.
+- Category: searchable level-2 combobox grouped by level 1, jev's top three
+  first; confidence only as a small muted number beside it.
+- Level 1: read-only, follows the category.
+- Subscription: switch, on when jev scored > 0.7.
+- Confirm: the row fades out with a "Confirmed · Undo" toast; undo re-posts
+  the previous values.
+- Expanding a merchant row lists its transactions for one-off labels, which
+  do not touch the merchant default.
+- A merge suggestion (0.5 to 0.8) is an inline line with Merge and No; No
+  marks the merchant `confirmed` so it is not suggested again.
+- No bulk accept: with one row per merchant the first import is about 72
+  clicks, and accepting everything at once is what the 0.95 threshold exists
+  to prevent.
+- Responsive: a two-line grid row on desktop, stacked cards below `md`.
+  shadcn/ui `Command` + `Popover` (combobox), `Switch`, `Badge`, `Progress`,
+  `Button`, `Sonner` (toast). Empty state: "All caught up". The pending count
+  shows in the navigation and on the dashboard.
+
+`GET /review` returns items of kind `merchant` or `transaction`, each with its
+transactions, count, total, suggestion (category, confidence, level 1,
+subscription), jev's top three and any merge suggestion. Every action writes
+`transaction_labels`, the source of truth for evals (section 13).
 
 Frontend testing in v1: type-check, lint, build in CI. Playwright smoke tests
 are v2.
@@ -677,8 +726,11 @@ Decided with Raul after the jev spike
 - Section 6: a subscription is a cancellable recurring service (not utilities,
   rent, mortgage or loans); jev flags at > 0.7 with no review band; the flag is
   also a merchant default; the recurrence detector moves to v2 (section 12).
-- Carried into the next decisions: a mortgage lender's direct debit is ambiguous between mortgage and loan
-  (labelled once in `/review`, it becomes the merchant default). `/review` must offer a category picker and a merchant
-  field that autocompletes known merchants or creates a new one, and a label
-  there becomes the merchant default so the same merchant is reviewed only once.
+- Sections 10 and 11.1: `/review` has one row per merchant (merchant,
+  level-2 category, derived level 1, subscription; confidence as a small
+  number), expand for one-off labels, inline merge suggestions, undo toast, no
+  bulk accept; endpoints for categories, merchant autocomplete, merchant
+  confirm, merge and dismiss; `transaction_labels` gains `is_subscription`.
+- Known ambiguity left to review: a mortgage lender's direct debit can read
+  as a loan; labelled once in `/review`, it becomes the merchant default.
 
