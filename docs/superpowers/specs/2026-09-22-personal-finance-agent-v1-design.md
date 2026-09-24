@@ -788,4 +788,11 @@ Decided with Raul during implementation (2026-09-24):
   merchant name relies on the shortlist and the same-merchant question.
 - Section 3.2: `v_review_queue` is deferred to slice 3; the slice-2 review
   queue is built in Python (`finance/categorization/review_queue.py`).
+- Section 10: the `/transactions` API masks card numbers in descriptions as
+  well as the review API.
+- Section 11: requests with an unsafe method (POST, PUT, PATCH, DELETE) whose
+  `Origin` header is present and not in `cors_origins` get 403. CORS alone
+  does not stop cross-site simple requests (the multipart `POST /imports`,
+  the body-less `POST /categorize/run`) from triggering paid runs; requests
+  without an `Origin` (CLI, curl, tests) pass.
 
