@@ -238,3 +238,26 @@ def test_background_runs_hold_one_lock_so_they_never_overlap(monkeypatch):
     monkeypatch.setattr(store, "run_categorization", _run)
     run_categorization_logged()
     assert held == [True] and not store._run_lock.locked()
+
+
+@pytest.mark.integration
+def test_without_a_jev_key_rules_still_apply(db_conn, make_tx):
+    settlement = make_tx(
+        "-175.00",
+        "ADEUDO MENSUAL DE TARJETA | ZZTEST",
+        bank_concept="ADEUDO MENSUAL DE TARJETA",
+        booked_at=SYNTHETIC_DAY,
+    )
+    shop = make_tx("-9.90", "PAGO | ZZTEST ACME", merchant="ZZTEST ACME", booked_at=SYNTHETIC_DAY)
+    summary = asyncio.run(categorize_pending(db_conn, Settings(typesafe_api_key=None)))
+    assert summary.skipped and summary.by_source.get("rule", 0) >= 1
+    assert _source(db_conn, settlement) == "rule"
+    assert _source(db_conn, shop) == "none"
+
+
+@pytest.mark.integration
+def test_a_rules_only_run_never_calls_jev(db_conn, make_tx):
+    make_tx("-9.90", "PAGO | ZZTEST ACME", merchant="ZZTEST ACME", booked_at=SYNTHETIC_DAY)
+    jev = FakeJev()
+    asyncio.run(categorize_pending(db_conn, Settings(), jev=jev, rules_only=True))
+    assert jev.calls == []

@@ -63,9 +63,12 @@ def categorize_command(
     include_all: bool = typer.Option(
         False, "--all", help="Re-run every transaction you have not labelled yourself."
     ),
+    rules_only: bool = typer.Option(
+        False, "--rules-only", help="Pairing and system rules only: never calls jev."
+    ),
 ) -> None:
     """Categorize pending transactions (pairing, rules, jev)."""
-    typer.echo(run_categorization(include_all).line())
+    typer.echo(run_categorization(include_all, rules_only).line())
 
 
 @app.command("eval-categorization")
