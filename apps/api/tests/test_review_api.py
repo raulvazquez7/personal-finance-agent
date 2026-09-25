@@ -144,7 +144,7 @@ def test_note_and_default_endpoints(client, db_conn, make_tx):
     acme = _merchant(db_conn, "ZZTEST ACME", category_slug="groceries")
     assert client.delete(f"/merchants/{acme}/default").status_code == 204
     assert client.delete(f"/merchants/{MISSING}/default").status_code == 404
-    assert client.post(f"/merchants/{acme}/merge", json={"into_id": MISSING}).status_code in (
-        404,
-        405,
-    )
+    # A real target: the old merge route would answer 204; with no route the path is 404.
+    other = _merchant(db_conn, "ZZTEST OTHER")
+    merge = client.post(f"/merchants/{acme}/merge", json={"into_id": str(other)})
+    assert merge.status_code == 404
