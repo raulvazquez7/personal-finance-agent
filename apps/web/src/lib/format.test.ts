@@ -75,6 +75,9 @@ describe("period labels", () => {
     expect(periodLabel({ period: "custom", start: "2026-08-10", end: "2026-08-19", accounts: [] }, null)).toBe(
       "10 Aug – 19 Aug 2026",
     );
+    expect(periodLabel({ period: "custom", start: "2025-12-10", end: "2026-01-19", accounts: [] }, null)).toBe(
+      "10 Dec 2025 – 19 Jan 2026",
+    );
   });
 
   it("names the resolved range and what it is compared with", () => {
@@ -83,6 +86,7 @@ describe("period labels", () => {
     expect(previousLabel(august, "long")).toBe("vs July");
     expect(periodNames(august)).toEqual({ current: "August", previous: "July" });
     expect(rangeLabel({ ...august, name: "last_3_months", start: "2026-06-01" })).toBe("1 Jun – 31 Aug 2026");
+    expect(rangeLabel({ ...august, name: "last_12_months", start: "2025-09-01" })).toBe("1 Sept 2025 – 31 Aug 2026");
     expect(previousLabel({ ...august, name: "last_3_months" })).toBe("vs the 3 months before");
     expect(previousLabel({ ...august, name: "ytd" })).toBe("vs the same dates last year");
     expect(previousLabel({ ...august, name: "custom", previous_start: "2026-07-31", previous_end: "2026-08-09" })).toBe(

@@ -53,6 +53,10 @@ export const dayAt = (start: string, offset: number) =>
 export const daysIn = (start: string, end: string) =>
   Math.round((utc(end).getTime() - utc(start).getTime()) / DAY_MS) + 1;
 
+// The start's year only when the range spans two years: 10 Aug – 19 Aug 2026, 10 Dec 2025 – 19 Jan 2026.
+const span = (start: string, end: string) =>
+  `${start.slice(0, 4) === end.slice(0, 4) ? dayShort(start) : dayLong(start)} – ${dayLong(end)}`;
+
 /** The fields of Schemas["PeriodOut"] these labels need. */
 export type PeriodLike = { name: string; start: string; end: string; previous_start: string; previous_end: string };
 
@@ -70,15 +74,13 @@ export function periodLabel(filters: Filters, latestDay: string | null): string 
     case "ytd":
       return "Year to date";
     case "custom":
-      return `${dayShort(filters.start!)} – ${dayLong(filters.end!)}`;
+      return span(filters.start!, filters.end!);
   }
 }
 
 /** A page's resolved period: "August 2026" or "1 Jun – 31 Aug 2026". */
 export function rangeLabel(period: PeriodLike): string {
-  return period.name === "month"
-    ? monthLabel(period.start.slice(0, 7))
-    : `${dayShort(period.start)} – ${dayLong(period.end)}`;
+  return period.name === "month" ? monthLabel(period.start.slice(0, 7)) : span(period.start, period.end);
 }
 
 /** What a delta compares with (spec 2.6: the previous period of the same length). */
