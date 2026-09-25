@@ -984,7 +984,7 @@ git commit -m "feat: review and confirm a merchant's purchases and refunds toget
 
 **Interfaces:**
 - Produces:
-  - `class DirectionMismatch(ValueError)`: raised by `label_transaction` for money out labelled with an income category.
+  - `class DirectionMismatch(ValueError)`: raised by `label_transaction` for money out labelled with an income category, and by `confirm_merchant` for an income default on a merchant with money-out rows.
   - `clear_merchant_default(conn, merchant_id) -> None`.
   - `set_note(conn, transaction_id, note: str | None) -> None`.
   - `PATCH /transactions/{id}` with body `{"note": str | null}` → 204.
@@ -1036,6 +1036,14 @@ def test_a_note_is_trimmed_and_an_empty_one_is_cleared(db_conn, make_tx):
     assert _row(db_conn, tx)["note"] == "AirPods case"
     set_note(db_conn, tx, "   ")
     assert _row(db_conn, tx)["note"] is None
+
+
+def test_a_merchant_with_money_out_cannot_take_an_income_default(db_conn, make_tx):
+    acme = _merchant(db_conn, "ZZTEST ACME")
+    charge = _tx(make_tx, "-9.90", "PAGO | ZZTEST ACME")
+    _set(db_conn, charge, merchant_id=acme, category_source="jev", category_slug="groceries")
+    with pytest.raises(DirectionMismatch):
+        confirm_merchant(db_conn, acme, "salary", False)
 
 
 def test_confirming_with_another_merchant_sets_the_survivor_default(db_conn, make_tx):
@@ -1102,7 +1110,22 @@ In `label_transaction`, inside the transaction and before `_LABEL_ONE`:
             conn.execute(_UNPAIR, {"id": transaction_id})
 ```
 
-`_LABEL_ONE` sets `needs_review = false` on the labelled row, so only the other side stays in review. Add:
+`_LABEL_ONE` sets `needs_review = false` on the labelled row, so only the other side stays in review.
+
+In `confirm_merchant`, after the `if merge_into_id is not None:` block and right before `updated = conn.execute(` (so every confirm runs it, on the survivor's rows after a merge), add:
+
+```python
+        income = conn.execute(
+            "select 1 from categories c where c.slug = %s and c.tx_type = 'income'"
+            " and exists (select 1 from transactions t where t.merchant_id = %s and t.amount < 0"
+            " and t.category_source <> 'user')",
+            (category_slug, merchant_id),
+        ).fetchone()
+        if income:
+            raise DirectionMismatch(f"{category_slug} is income; this merchant has money out")
+```
+
+`review_merchant` already maps `ValueError` to 422. Then add:
 
 ```python
 def clear_merchant_default(conn: Connection, merchant_id: UUID) -> None:

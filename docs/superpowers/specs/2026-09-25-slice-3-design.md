@@ -268,9 +268,9 @@ contract, and the pixel values are indicative.
 - **Surfaces and type.** Pure white page; soft grey surfaces (`#F7F7F9`)
   without borders; radius 16 for cards and 999 for pills. Geist with tabular
   numbers; big headline numbers; small uppercase grey labels.
-- **Accent.** One accent, indigo `#4F46E5`: the active nav item, links, the
-  current series and the logo dot. The logo is lower-case "tally ai", in one
-  colour and one weight.
+- **Accent.** One accent, indigo `#4F46E5`: links, the current series and the logo dot.
+  The active nav item is a near-black pill, as in the mockup. The logo is lower-case "tally ai",
+  in one colour and one weight.
 - **Money colours.** Income is green with a "+"; expenses are neutral near
   black. Green and red are reserved for deltas and never used for a series.
 - **Group palette** (validated with the dataviz validator, light surface):
