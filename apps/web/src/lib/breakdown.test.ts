@@ -29,7 +29,7 @@ describe("breakdownItems", () => {
     const [groceries, other] = breakdownItems(
       [
         row({ key: "groceries", level1: "shopping", category_slug: "groceries", amount: "268.40", share: 0.56, previous: "280.00" }),
-        row({ key: "_other", amount: "10.00", previous: "12.00", folded: 2 }),
+        row({ key: "_other", amount: "10.00", previous: "20.00", folded: 2 }),
       ],
       "category",
       { categories, slots: { shopping: 2 }, filters: august, good: "down", type: "expense" },
