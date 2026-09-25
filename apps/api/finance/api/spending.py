@@ -60,6 +60,7 @@ def detail(
     if any("_other" in m.by_child for m in months):  # every stacked-bar bucket is a series
         keys.append("_other")
     listing = page(conn, TransactionFilters(scope=scope), resolved, limit=5)
+    latest = resolved.out.latest_day
     name = None
     if merchant_id:
         row = conn.execute("select name from merchants where id = %s", (merchant_id,)).fetchone()
@@ -81,7 +82,10 @@ def detail(
         if child == "category"
         else [],
         cumulative=Cumulative(
-            current=cumulative(conn, scope, resolved.current, value, until=resolved.out.latest_day),
+            # No data at all: no line, never a line of zeros (spec 2.6).
+            current=cumulative(conn, scope, resolved.current, value, until=latest)
+            if latest
+            else [],
             previous=cumulative(conn, scope, before, value) if before else None,
         ),
         latest=listing.items,

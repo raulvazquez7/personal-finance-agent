@@ -65,6 +65,7 @@ def test_an_account_without_rows_returns_an_empty_overview(client):
     assert body["kpis"]["expenses"] == "0" and body["period"]["has_previous"] is False
     assert all(not m["has_data"] for m in body["months"])
     assert body["by_group"] == []
+    assert body["cumulative"] == {"current": [], "previous": None}  # no data, never a 0 line
 
 
 def test_a_bad_custom_range_is_422(client):

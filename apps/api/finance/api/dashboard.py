@@ -21,14 +21,16 @@ def overview(conn: Db, query: PeriodQuery) -> Overview:
     scope = Scope(accounts=query.accounts)
     spend = replace(scope, tx_type="expense")
     before = resolved.comparable
+    latest = resolved.out.latest_day
     return Overview(
         period=resolved.out,
         kpis=totals(conn, scope, resolved.current),
         previous_kpis=totals(conn, scope, before) if before else None,
         cumulative=Cumulative(
-            current=cumulative(
-                conn, spend, resolved.current, "spend", until=resolved.out.latest_day
-            ),
+            # No data at all: no line, never a line of zeros (spec 2.6).
+            current=cumulative(conn, spend, resolved.current, "spend", until=latest)
+            if latest
+            else [],
             previous=cumulative(conn, spend, before, "spend") if before else None,
         ),
         months=month_series(conn, scope, resolved.current.end),

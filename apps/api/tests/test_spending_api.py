@@ -1,3 +1,5 @@
+from uuid import uuid4
+
 import pytest
 from fastapi.testclient import TestClient
 
@@ -71,6 +73,12 @@ def test_a_child_seen_only_in_earlier_months_folds_into_a_listed_other(client, d
     body = _detail(client, account, month="1999-02")  # February: only the fashion refund
     assert body["child_keys"] == ["fashion", "_other"]
     assert _buckets_are_keys(body)
+
+
+def test_an_account_without_rows_has_no_cumulative_line(client):
+    body = _detail(client, uuid4(), level1="shopping")
+    assert body["total"] == "0" and body["period"]["latest_day"] is None
+    assert body["cumulative"] == {"current": [], "previous": None}  # no data, never a 0 line
 
 
 def test_a_merchant_page_has_no_children(client, db_conn, make_tx):
