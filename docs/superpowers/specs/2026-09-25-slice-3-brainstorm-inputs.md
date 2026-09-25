@@ -11,9 +11,12 @@ brainstorm, ideally one topic per session, before the slice 3 spec amendment
 and plan. Each topic says what exists today, what was asked, the open
 questions and, where there is one, a recommendation to start from.
 
-Suggested order: topic 2 (refunds) before topic 4 (dashboards), because the
-dashboards count income and expenses and refunds change both. Topic 1 can go
-in parallel, but its "type" filter depends on the tx_type rule topic 2 picks.
+Suggested order: topics 2 (refunds), 8 (loans) and 9 (credit card
+settlements) answer one question, what counts as income and as spending, so
+brainstorm them first, perhaps together; they decide how the dashboards
+(topic 4) add up. Topic 7 follows topic 2. Topic 1 can go in parallel, but its
+"type" filter depends on the tx_type rule topic 2 picks. Topic 10 is probably
+v2.
 
 ## 1. Transactions list with categorization and filters
 
@@ -121,8 +124,8 @@ relate to the recurrence detector left for v2 (spec 12) and to
 Views (`v_monthly_summary`, `v_spend_by_category`, `v_subscriptions`,
 `v_transactions_enriched`, and `v_review_queue`, deferred from slice 2), the
 `/` overview, `/subscriptions` and a minimal `/settings` (spec 11, 14).
-Decide with topic 2 how refunds and transfers enter income, expenses and the
-savings rate. Transfers the user marked `own_accounts` but that never paired
+Decide with topics 2, 8 and 9 how refunds, loans, credit card settlements and
+transfers enter income, expenses and the savings rate. Transfers the user marked `own_accounts` but that never paired
 still count as transfers, so they stay out of both totals.
 
 ## 5. Follow-ups from PR #5 (slice 2 final review)
@@ -177,3 +180,91 @@ Hardening and tests:
   (dogfood issue 002); it matters most for mixed merchants.
 - On phones, a single-transaction review row hides its account to keep the
   amount visible.
+
+## 7. Category options follow the direction (UI)
+
+**Today.** The taxonomy already keeps income and expense categories apart
+(spec section 7): 45 expense slugs, 7 income slugs and 3 transfer slugs, and
+jev only sees the slugs of the row's direction plus the transfers. The
+category pickers in `/review` (merchant row and expanded lines) list all 55,
+and the API accepts any category for any row (follow-up M14).
+
+**Asked.** A money-in row should offer income categories, not expense ones.
+
+**Open questions.**
+
+- Filter strictly (money in: income and transfer slugs; money out: expense
+  and transfer slugs), or list the row's direction first and the rest under
+  an "Other" group?
+- It depends on topic 2: with model B a refund (money in) takes an expense
+  category, so a strict filter would hide the right answer; with model A a
+  strict filter plus a server-side check (closing M14) is consistent.
+- Whatever is chosen applies to every picker, including `/transactions` if
+  topic 1 makes rows editable there.
+
+## 8. Loans received and repaid
+
+**Today.** `financial > loan_payment` (expense) covers repayments; nothing
+covers money received from a loan. Observed in BBVA statements:
+
+| Bank concept | Direction | What the categorizer did |
+|---|---|---|
+| `ABONO POR DISPOSICION DE PRESTAMO/CREDITO` (disbursement) | money in | jev: `other_income` at 0.83, sent to review |
+| `CARGO POR OPERACION FINANCIADA CON TARJETA` (same day, a different amount) | money out | jev: `credit_card_payment` at 0.43, sent to review |
+| `CARGO POR AMORTIZACION DE PRESTAMO/CREDITO` (monthly repayment) | money out | labelled `loan_payment` by the user |
+
+The two review rows stay pending until this topic is decided.
+
+**Open questions.**
+
+- A slug for the disbursement. It is not income (it is paid back), so a
+  transfer-type slug that stays out of both totals (for example
+  `transfer > loan_received`) is the likely fit. Categories are data: a seed
+  row with its `what` / `not_for` criterion, measured with
+  `finance eval-categorization`.
+- How repayments count: all of it as spending (the cash-flow view, today's
+  behaviour and the simplest), or the principal as a transfer and only the
+  interest as spending (the bank line does not split them). If what the loan
+  paid for is also recorded as an expense, counting both it and the
+  repayments counts the principal twice; decide which one the dashboards
+  show.
+- All three concepts are fixed by the bank and name no merchant, so system
+  rules (spec 5) can label them deterministically once the slugs exist.
+- The financed card operation depends on topic 9.
+
+## 9. Credit card settlements when card statements are not imported
+
+**Today.** The monthly settlement of a credit card (`ADEUDO MENSUAL DE
+TARJETA`, `T. VISA ...`) is labelled `transfer > credit_card_payment` by a
+system rule, so it stays out of income and spending. That is right when the
+card's own statement is imported too: its purchases are the expenses and the
+settlement only moves money between two accounts. But card statements are
+not imported, so everything paid with the card would vanish from the
+dashboards.
+
+**Options.**
+
+- **A. Import card statements.** One adapter per card statement format;
+  purchases are categorized one by one, and the settlement pairs with the
+  card account as a transfer. The complete fix, and the most work (slice 5 or
+  v2).
+- **B. Until then, a settlement is spending.** A new expense slug for card
+  spending that is not itemized (for example
+  `financial > credit_card_spending`), and the system rules point to it. When
+  card statements arrive, the rules switch back to `credit_card_payment` and
+  pairing takes over.
+- **C. A setting per card** ("statements imported: yes or no") that decides
+  the slug. More flexible, more configuration.
+
+Recommendation to start from: B now, A later. The settlements already labelled
+`credit_card_payment` move to the new slug.
+
+## 10. User notes on a transaction (probably v2)
+
+The bank text names the shop, not what was bought: a phone bought at an
+electronics retailer shows only the retailer. Candidate: a free-text note (or
+tags) per transaction, editable wherever rows are edited (topic 1), shown in
+the list and searchable by the chat agent ("how much did the phone cost?").
+Related v2 ideas: splitting one charge into several categories, and receipts
+(spec section 12). Notes would reach the LLM through the semantic layer, as
+descriptions already do.
