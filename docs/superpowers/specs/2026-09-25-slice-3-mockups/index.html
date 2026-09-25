@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>tally ai — slice 3 reference mockups</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@300..700&display=swap">
+<style>
+/* Design tokens approved in the slice 3 brainstorm (direction "Mono"). Fake data only. */
+:root{--page:#fff;--surface:#F7F7F9;--border:#EFEFF1;--text:#0B0B0F;--muted:#8A8A94;--accent:#4F46E5;--accent-soft:#EEF0FF;--income:#16A34A;--good:#16A34A;--bad:#E11D48;
+ --g1:#4F46E5;--g2:#EB6834;--g3:#1BAF7A;--g4:#EDA100;--g5:#E87BA4;--g-other:#D4D4DC;
+ --r1:#4F46E5;--r2:#6D66EE;--r3:#8C86F2;--r4:#AAA6F5;--r5:#C4C0F8;--r6:#DAD8FB}
+*{box-sizing:border-box}
+body{margin:0;background:#E9E9EE;font-family:'Geist',system-ui,sans-serif;color:var(--text);font-variant-numeric:tabular-nums;font-size:13px}
+.doc{max-width:1180px;margin:0 auto;padding:32px 24px 64px}
+.doc>h1{font-size:22px;letter-spacing:-.02em;margin:0 0 4px}
+.doc>p,.note{color:#55555E;font-size:13px;line-height:1.5;margin:0 0 14px}
+.doc>h2{font-size:17px;margin:36px 0 6px;letter-spacing:-.01em}
+.app{background:var(--page);border-radius:14px;overflow:hidden;border:1px solid rgba(0,0,0,.08)}
+.bar{display:flex;align-items:center;gap:6px;padding:12px 22px;border-bottom:1px solid var(--border)}
+.logo{font-weight:650;letter-spacing:-.02em;padding-right:14px;display:flex;align-items:center;gap:7px;font-size:14px}
+.logo i{width:10px;height:10px;border-radius:50%;background:var(--accent);display:inline-block}
+.nav{padding:6px 12px;color:var(--muted);border-radius:999px}
+.nav.on{background:var(--text);color:#fff;font-weight:550}
+.pill{background:var(--surface);padding:6px 11px;border-radius:999px;font-size:12px}
+.filters{display:flex;gap:8px;align-items:center}
+.main{padding:20px 24px;display:flex;flex-direction:column;gap:14px}
+.card{background:var(--surface);border-radius:16px;padding:18px}
+.ct{font-weight:600;font-size:14px;letter-spacing:-.01em}
+.cs{font-size:11.5px;color:var(--muted);margin-top:2px}
+.good{color:var(--good)} .bad{color:var(--bad)} .flat{color:var(--muted)}
+.ax{font-size:9px;fill:#8A8A94}
+.link{color:var(--accent);font-size:12px;font-weight:550}
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.kl{font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);display:flex;justify-content:space-between}
+.kv{font-size:24px;font-weight:600;letter-spacing:-.02em;margin-top:4px}
+.kd{font-size:11.5px;margin-top:3px;color:var(--muted)}
+.info{width:14px;height:14px;border-radius:50%;border:1px solid #C9C9D1;color:#8A8A94;font-size:9px;display:inline-flex;align-items:center;justify-content:center;text-transform:none}
+.tb{width:100%;border-collapse:collapse}
+.tb th{font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:500;text-align:right;padding:0 8px 8px;border-bottom:1px solid #E6E6EB}
+.tb th:first-child{text-align:left;padding-left:0}
+.tb td{padding:9px 8px;text-align:right;border-bottom:1px solid #EDEDF1}
+.tb td:first-child{text-align:left;padding-left:0}
+.tb tr:last-child td{border-bottom:0}
+.tb .nm{display:flex;align-items:center;gap:9px;font-weight:550}
+.tb .nm small{display:block;font-weight:400;color:var(--muted);font-size:11px}
+.tb .dot{width:10px;height:10px;border-radius:3px;flex:none}
+.tb .amt{font-weight:600} .tb .mut{color:var(--muted)}
+.seg{display:inline-flex;background:#ECECF1;border-radius:999px;padding:2px}
+.seg span{padding:4px 11px;border-radius:999px;font-size:11.5px;color:var(--muted)}
+.seg span.on{background:#fff;color:var(--text);font-weight:550;box-shadow:0 1px 2px rgba(0,0,0,.06)}
+.lg{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:11.5px;color:#44444C;margin-top:10px}
+.lg span{display:inline-flex;align-items:center;gap:6px}
+.lg i{width:9px;height:9px;border-radius:2px;display:inline-block}
+.tm{display:flex;gap:3px;height:190px;border-radius:12px;overflow:hidden}
+.tm .col,.tm .rw{display:flex;gap:3px;min-width:0;min-height:0}
+.tm .col{flex-direction:column}
+.tm .cell{padding:8px 9px;font-size:11.5px;color:#fff;display:flex;flex-direction:column;overflow:hidden;min-width:0;min-height:0;line-height:1.35}
+.tm .cell b{font-weight:600} .tm .dk{color:#1E1B4B}
+.day{display:flex;justify-content:space-between;font-size:11.5px;color:var(--muted);padding:8px 0 4px;border-bottom:1px solid #E6E6EB}
+.tx{display:grid;grid-template-columns:28px 1.4fr 1fr 110px 90px;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid #EDEDF1}
+.tx .av{width:26px;height:26px;border-radius:50%;background:#E6E6EE;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;color:#55555E}
+.tx .mn{font-weight:550} .tx .mn small{display:block;font-weight:400;color:var(--muted);font-size:11px}
+.tx .cat{color:#44444C} .tx .acc{color:var(--muted);font-size:12px} .tx .am{text-align:right;font-weight:550}
+.map{display:flex;align-items:stretch;gap:8px;flex-wrap:wrap}
+.pg{flex:1;min-width:170px;background:#fff;border-radius:12px;padding:12px 14px;font-size:12px;line-height:1.45}
+.pg b{display:block;font-size:13.5px;margin-bottom:2px}
+.pg code{font-size:11px;color:var(--accent);background:var(--accent-soft);border-radius:4px;padding:0 4px}
+.pg ul{margin:6px 0 0;padding-left:16px;color:#55555E}
+.arr{display:flex;align-items:center;color:#8A8A94;font-size:12px;flex:none;text-align:center;width:54px;line-height:1.2}
+.side{display:flex;gap:8px;margin-top:8px;flex-wrap:wrap}
+.side .pg{background:#F4F4F8}
+.tok{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px}
+.tok div{background:#fff;border-radius:10px;padding:10px;font-size:11.5px}
+.tok i{display:block;height:26px;border-radius:6px;margin-bottom:6px;border:1px solid rgba(0,0,0,.06)}
+</style>
+</head>
+<body><div class="doc">
+<h1>tally ai — slice 3 reference mockups</h1>
+<p>Approved with Raul on 2026-09-25 in the slice 3 brainstorm (spec: <code>2026-09-25-slice-3-design.md</code>). Fake data. Layout, hierarchy, tokens and chart forms are the contract; pixel values are indicative. Build with shadcn/ui components and the chart library chosen in the spec.</p>
+
+<h2>1 · Page map</h2>
+<p class="note">Every click goes one level deeper; every level uses one template: header total + delta, a chart, the next level as chart + table, then the transactions (“See all” opens /transactions with the filters set).</p>
+<div class="map" id="page-map">
+ <div class="pg"><b>Overview</b><code>/</code><ul><li>Filters: period, account</li><li>4 KPIs vs previous period</li><li>Spent this period vs previous (cumulative)</li><li>12 months: income vs expenses, savings line</li><li>Where your money went: Groups | Categories | Merchants</li><li>Subscriptions line</li></ul></div>
+ <div class="arr">click a group →</div>
+ <div class="pg"><b>Group</b><code>/spending/shopping</code><ul><li>Total + delta</li><li>Per month: Total | By category · Monthly | Cumulative</li><li>Categories: treemap + table</li><li>Top merchants · transactions</li></ul></div>
+ <div class="arr">click a category →</div>
+ <div class="pg"><b>Category</b><code>/spending/shopping/groceries</code><ul><li>Total + delta</li><li>Per month · Monthly | Cumulative</li><li>Merchants table</li><li>Transactions</li></ul></div>
+ <div class="arr">click a merchant →</div>
+ <div class="pg"><b>Merchant</b><code>/merchants/:id</code><ul><li>Total + delta</li><li>Cumulative vs previous period (default)</li><li>Transactions</li></ul></div>
+</div>
+<div class="side">
+ <div class="pg"><b>Transactions</b><code>/transactions</code> Explorer: search (merchant, description, note), filters, rows grouped by day, side panel to edit category, merchant, subscription and note.</div>
+ <div class="pg"><b>Income</b><code>/income</code> Same template as a group page, over income categories.</div>
+ <div class="pg"><b>Subscriptions</b><code>/subscriptions</code> Amount, cadence, monthly equivalent, last charge; monthly and yearly totals.</div>
+ <div class="pg"><b>Review · Imports · Settings</b> Existing pages restyled; settings = rename accounts, categories read-only.</div>
+</div>
+
+<h2>2 · Overview</h2>
+<div class="app" id="overview">
+ <div class="bar"><div class="logo"><i></i>tally ai</div><div class="nav on">Overview</div><div class="nav">Transactions</div><div class="nav">Subscriptions</div><div class="nav">Review <span style="color:var(--accent)">12</span></div><div class="nav">Imports</div><div style="flex:1"></div><div class="filters"><span class="pill">All accounts ▾</span><span class="pill">August 2026 ▾</span></div></div>
+ <div class="main">
+  <div class="kpis">
+   <div class="card"><div class="kl">Income <span class="info">i</span></div><div class="kv" style="color:var(--income)">+€3,250</div><div class="kd"><span class="good">↗ 2%</span> vs Jul</div></div>
+   <div class="card"><div class="kl">Expenses <span class="info">i</span></div><div class="kv">€2,184</div><div class="kd"><span class="good">↘ 8%</span> vs Jul</div></div>
+   <div class="card"><div class="kl">Savings <span class="info">i</span></div><div class="kv">€1,066</div><div class="kd"><span class="good">↗ €255</span> vs Jul</div></div>
+   <div class="card"><div class="kl">Savings rate <span class="info">i</span></div><div class="kv">32.8%</div><div class="kd"><span class="good">↗ 7 pts</span> vs Jul</div></div>
+  </div>
+  <p class="note" style="margin:-6px 0 0">ⓘ tooltips carry the definitions from docs/money-rules.md, e.g. Savings: “Income − expenses. Transfers between your accounts do not count.”</p>
+  <div class="card"><div class="ct">€2,184 spent in August</div><div class="cs"><span class="good">↘ €190 (−8%)</span> vs July at the same day · <span style="color:var(--accent)">━</span> August <span style="color:#C9C9D1">━</span> July</div>
+   <svg viewBox="0 0 640 170" width="100%" style="margin-top:10px;display:block">
+    <g stroke="#E6E6EB"><line x1="40" y1="20" x2="640" y2="20"/><line x1="40" y1="57" x2="640" y2="57"/><line x1="40" y1="94" x2="640" y2="94"/><line x1="40" y1="131" x2="640" y2="131"/></g>
+    <text class="ax" x="0" y="23">€2.4k</text><text class="ax" x="0" y="60">€1.6k</text><text class="ax" x="0" y="97">€0.8k</text><text class="ax" x="12" y="134">€0</text>
+    <path d="M40,131 L100,112 L160,104 L220,93 L280,85 L340,70 L400,63 L460,50 L520,40 L580,33 L640,22" fill="none" stroke="#C9C9D1" stroke-width="2.2"/>
+    <path d="M40,131 L100,118 L160,110 L220,104 L280,93 L340,84 L400,76 L460,64 L520,57 L580,49 L640,37 L640,131 L40,131Z" fill="#4F46E5" opacity=".07"/>
+    <path d="M40,131 L100,118 L160,110 L220,104 L280,93 L340,84 L400,76 L460,64 L520,57 L580,49 L640,37" fill="none" stroke="#4F46E5" stroke-width="2.8" stroke-linecap="round"/>
+    <circle cx="640" cy="37" r="4" fill="#4F46E5"/>
+    <text class="ax" x="40" y="152">Aug 1</text><text class="ax" x="330" y="152">Aug 15</text><text class="ax" x="608" y="152">Aug 31</text>
+   </svg></div>
+  <div class="card"><div style="display:flex;justify-content:space-between;align-items:center"><div><div class="ct">Last 12 months</div><div class="cs">Income, expenses and savings per month · months without imported data are marked</div></div><div class="seg"><span class="on">12 months</span><span>Year to date</span><span>All</span></div></div>
+   <div class="lg"><span><i style="background:#4F46E5"></i>Income</span><span><i style="background:#AAA6F5"></i>Expenses</span><span><i style="background:#0B0B0F;height:2px;width:14px"></i>Savings</span></div>
+   <svg viewBox="0 0 640 170" width="100%" style="margin-top:8px;display:block">
+    <g stroke="#E6E6EB"><line x1="40" y1="20" x2="640" y2="20"/><line x1="40" y1="60" x2="640" y2="60"/><line x1="40" y1="100" x2="640" y2="100"/><line x1="40" y1="140" x2="640" y2="140"/></g>
+    <text class="ax" x="6" y="23">€4k</text><text class="ax" x="6" y="63">€2.7k</text><text class="ax" x="6" y="103">€1.3k</text><text class="ax" x="18" y="143">€0</text>
+    <rect x="52" y="47.0" width="16" height="93.0" rx="3" fill="#4F46E5" opacity=".55"/>
+<rect x="70" y="69.5" width="16" height="70.5" rx="3" fill="#AAA6F5" opacity=".55"/>
+<text class="ax" x="69" y="158" text-anchor="middle">Sep</text>
+<rect x="102" y="45.5" width="16" height="94.5" rx="3" fill="#4F46E5" opacity=".55"/>
+<rect x="120" y="67.4" width="16" height="72.6" rx="3" fill="#AAA6F5" opacity=".55"/>
+<text class="ax" x="119" y="158" text-anchor="middle">Oct</text>
+<rect x="152" y="45.5" width="16" height="94.5" rx="3" fill="#4F46E5" opacity=".55"/>
+<rect x="170" y="61.7" width="16" height="78.3" rx="3" fill="#AAA6F5" opacity=".55"/>
+<text class="ax" x="169" y="158" text-anchor="middle">Nov</text>
+<rect x="202" y="23.0" width="16" height="117.0" rx="3" fill="#4F46E5" opacity=".55"/>
+<rect x="220" y="39.5" width="16" height="100.5" rx="3" fill="#AAA6F5" opacity=".55"/>
+<text class="ax" x="219" y="158" text-anchor="middle">Dec</text>
+<rect x="252" y="44.6" width="16" height="95.4" rx="3" fill="#4F46E5" opacity=".55"/>
+<rect x="270" y="71.6" width="16" height="68.4" rx="3" fill="#AAA6F5" opacity=".55"/>
+<text class="ax" x="269" y="158" text-anchor="middle">Jan</text>
+<rect x="302" y="108" width="34" height="32" rx="4" fill="none" stroke="#C9C9D1" stroke-dasharray="3 3"/><text class="ax" x="319" y="104" text-anchor="middle">no data</text>
+<text class="ax" x="319" y="158" text-anchor="middle">Feb</text>
+<rect x="352" y="44.0" width="16" height="96.0" rx="3" fill="#4F46E5" opacity=".55"/>
+<rect x="370" y="70.1" width="16" height="69.9" rx="3" fill="#AAA6F5" opacity=".55"/>
+<text class="ax" x="369" y="158" text-anchor="middle">Mar</text>
+<rect x="402" y="108" width="34" height="32" rx="4" fill="none" stroke="#C9C9D1" stroke-dasharray="3 3"/><text class="ax" x="419" y="104" text-anchor="middle">no data</text>
+<text class="ax" x="419" y="158" text-anchor="middle">Apr</text>
+<rect x="452" y="108" width="34" height="32" rx="4" fill="none" stroke="#C9C9D1" stroke-dasharray="3 3"/><text class="ax" x="469" y="104" text-anchor="middle">no data</text>
+<text class="ax" x="469" y="158" text-anchor="middle">May</text>
+<rect x="502" y="44.5" width="16" height="95.5" rx="3" fill="#4F46E5" opacity=".55"/>
+<rect x="520" y="67.7" width="16" height="72.3" rx="3" fill="#AAA6F5" opacity=".55"/>
+<text class="ax" x="519" y="158" text-anchor="middle">Jun</text>
+<rect x="552" y="44.5" width="16" height="95.5" rx="3" fill="#4F46E5" opacity=".55"/>
+<rect x="570" y="68.8" width="16" height="71.2" rx="3" fill="#AAA6F5" opacity=".55"/>
+<text class="ax" x="569" y="158" text-anchor="middle">Jul</text>
+<rect x="602" y="42.5" width="16" height="97.5" rx="3" fill="#4F46E5"/>
+<rect x="620" y="74.5" width="16" height="65.5" rx="3" fill="#AAA6F5"/>
+<text class="ax" x="619" y="158" text-anchor="middle" style="fill:#0B0B0F;font-weight:600">Aug</text>
+<polyline fill="none" stroke="#0B0B0F" stroke-width="2" points="69,118 119,118 169,124 219,124 269,113"/>
+<circle cx="69" cy="118" r="3" fill="#0B0B0F"/>
+<circle cx="119" cy="118" r="3" fill="#0B0B0F"/>
+<circle cx="169" cy="124" r="3" fill="#0B0B0F"/>
+<circle cx="219" cy="124" r="3" fill="#0B0B0F"/>
+<circle cx="269" cy="113" r="3" fill="#0B0B0F"/>
+<polyline fill="none" stroke="#0B0B0F" stroke-width="2" points="369,114"/>
+<circle cx="369" cy="114" r="3" fill="#0B0B0F"/>
+<polyline fill="none" stroke="#0B0B0F" stroke-width="2" points="519,117 569,116 619,108"/>
+<circle cx="519" cy="117" r="3" fill="#0B0B0F"/>
+<circle cx="569" cy="116" r="3" fill="#0B0B0F"/>
+<circle cx="619" cy="108" r="3" fill="#0B0B0F"/>
+   </svg></div>
+  <div class="card">
+   <div style="display:flex;justify-content:space-between;align-items:center"><div><div class="ct">Where your money went</div><div class="cs">August 2026 · compared with July · colour = group</div></div><div class="seg"><span class="on">Groups</span><span>Categories</span><span>Merchants</span></div></div>
+   <div style="display:grid;grid-template-columns:230px 1fr;gap:28px;align-items:center;margin-top:12px">
+    <div style="position:relative;width:210px;height:210px">
+     <svg viewBox="0 0 120 120" width="210" height="210" style="transform:rotate(-90deg)"><g fill="none" stroke-width="15">
+      <circle r="44" cx="60" cy="60" pathLength="100" stroke="var(--g1)" stroke-dasharray="37.2 62.8"/>
+      <circle r="44" cx="60" cy="60" pathLength="100" stroke="var(--g2)" stroke-dasharray="21.3 78.7" stroke-dashoffset="-38"/>
+      <circle r="44" cx="60" cy="60" pathLength="100" stroke="var(--g3)" stroke-dasharray="13.2 86.8" stroke-dashoffset="-60"/>
+      <circle r="44" cx="60" cy="60" pathLength="100" stroke="var(--g4)" stroke-dasharray="8.2 91.8" stroke-dashoffset="-74"/>
+      <circle r="44" cx="60" cy="60" pathLength="100" stroke="var(--g5)" stroke-dasharray="7.2 92.8" stroke-dashoffset="-83"/>
+      <circle r="44" cx="60" cy="60" pathLength="100" stroke="var(--g-other)" stroke-dasharray="8.2 91.8" stroke-dashoffset="-91"/></g></svg>
+     <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center"><div style="font-size:11px;color:var(--muted)">Spent</div><div style="font-size:22px;font-weight:650;letter-spacing:-.02em">€2,184</div><div style="font-size:11px" class="good">↘ 8% vs Jul</div></div>
+    </div>
+    <table class="tb">
+     <tr><th>Group</th><th>Share</th><th>Amount</th><th>vs July</th></tr>
+     <tr><td><span class="nm"><span class="dot" style="background:var(--g1)"></span><span>Home<small>Rent, utilities, internet</small></span></span></td><td class="mut">38%</td><td class="amt">€830.00</td><td class="flat">— 0%</td></tr>
+     <tr><td><span class="nm"><span class="dot" style="background:var(--g2)"></span><span>Shopping<small>Groceries, fashion, electronics…</small></span></span></td><td class="mut">22%</td><td class="amt">€481.20</td><td class="good">↘ 7%</td></tr>
+     <tr><td><span class="nm"><span class="dot" style="background:var(--g3)"></span><span>Leisure<small>Restaurants, entertainment, sports</small></span></span></td><td class="mut">14%</td><td class="amt">€306.40</td><td class="bad">↗ 12%</td></tr>
+     <tr><td><span class="nm"><span class="dot" style="background:var(--g4)"></span><span>Transport<small>Fuel, public transport, parking</small></span></span></td><td class="mut">9%</td><td class="amt">€197.10</td><td class="good">↘ 18%</td></tr>
+     <tr><td><span class="nm"><span class="dot" style="background:var(--g5)"></span><span>Credit card<small>Not itemized: card statements are not imported</small></span></span></td><td class="mut">8%</td><td class="amt">€175.00</td><td class="bad">↗ 5%</td></tr>
+     <tr><td><span class="nm"><span class="dot" style="background:var(--g-other)"></span><span>Other<small>Health, technology, financial</small></span></span></td><td class="mut">9%</td><td class="amt">€194.80</td><td class="good">↘ 9%</td></tr>
+    </table>
+   </div>
+   <p class="note" style="margin:12px 0 0">Categories and Merchants views: same donut + table; each slice and row takes its group’s colour. Merchants view ends with “Other N merchants”.</p>
+  </div>
+  <div class="card" style="display:flex;justify-content:space-between;align-items:center;padding:14px 18px"><div><span class="ct">12 subscriptions</span> <span class="cs" style="display:inline">· €85.40 per month · €1,024.80 per year</span></div><span class="link">Subscriptions →</span></div>
+ </div>
+</div>
+
+<h2>3 · Group page (Shopping), “By category” switched on</h2>
+<p class="note">Default is “Total” (one bar per month, selected month in the accent). “By category” stacks each month in one-hue shades (darkest = largest category); hover shows the category and amount; clicking a legend item isolates it and dims the rest. The treemap uses the same shades.</p>
+<div class="app" id="group-page">
+ <div class="bar"><div class="logo"><i></i>tally ai</div><div class="nav on">Overview</div><div class="nav">Transactions</div><div class="nav">Subscriptions</div><div class="nav">Review <span style="color:var(--accent)">12</span></div><div class="nav">Imports</div><div style="flex:1"></div><div class="filters"><span class="pill">All accounts ▾</span><span class="pill">August 2026 ▾</span></div></div>
+ <div class="main">
+  <div style="font-size:12px;color:var(--muted)">Overview <span style="margin:0 6px">›</span> <span style="color:var(--text)">Shopping</span></div>
+  <div><div style="font-size:13px;color:var(--muted)">Shopping · August 2026</div><div style="font-size:34px;font-weight:650;letter-spacing:-.03em;line-height:1.15">€481.20</div><div style="font-size:12.5px"><span class="good">↘ €38 (−7%)</span> <span class="flat">vs July · 31 transactions</span></div></div>
+  <div class="card">
+   <div style="display:flex;justify-content:space-between;align-items:center"><div class="ct">Shopping per month</div><div style="display:flex;gap:8px"><div class="seg"><span>Total</span><span class="on">By category</span></div><div class="seg"><span class="on">Monthly</span><span>Cumulative</span></div></div></div>
+   <div class="lg"><span><i style="background:var(--r1)"></i>Groceries</span><span><i style="background:var(--r2)"></i>Fashion</span><span><i style="background:var(--r3)"></i>Electronics</span><span><i style="background:var(--r4)"></i>Home goods</span><span><i style="background:var(--r5)"></i>Beauty</span><span><i style="background:var(--r6)"></i>Other</span></div>
+   <svg viewBox="0 0 640 170" width="100%" style="margin-top:8px;display:block">
+    <g stroke="#E6E6EB"><line x1="40" y1="20" x2="640" y2="20"/><line x1="40" y1="60" x2="640" y2="60"/><line x1="40" y1="100" x2="640" y2="100"/><line x1="40" y1="140" x2="640" y2="140"/></g>
+    <text class="ax" x="6" y="23">€600</text><text class="ax" x="6" y="63">€400</text><text class="ax" x="6" y="103">€200</text><text class="ax" x="18" y="143">€0</text>
+    <rect x="52" y="97.0" width="34" height="43.0" fill="#4F46E5" opacity=".5"/>
+<rect x="52" y="84.1" width="34" height="10.9" fill="#6D66EE" opacity=".5"/>
+<rect x="52" y="76.9" width="34" height="5.2" fill="#8C86F2" opacity=".5"/>
+<rect x="52" y="68.8" width="34" height="6.0" fill="#AAA6F5" opacity=".5"/>
+<rect x="52" y="64.8" width="34" height="2.0" fill="#C4C0F8" opacity=".5"/>
+<rect x="52" y="59.6" width="34" height="3.2" fill="#DAD8FB" opacity=".5"/>
+<text class="ax" x="69" y="158" text-anchor="middle">Sep</text>
+<rect x="102" y="92.9" width="34" height="47.1" fill="#4F46E5" opacity=".5"/>
+<rect x="102" y="75.6" width="34" height="15.3" fill="#6D66EE" opacity=".5"/>
+<rect x="102" y="68.3" width="34" height="5.3" fill="#8C86F2" opacity=".5"/>
+<rect x="102" y="60.1" width="34" height="6.2" fill="#AAA6F5" opacity=".5"/>
+<rect x="102" y="54.6" width="34" height="3.5" fill="#C4C0F8" opacity=".5"/>
+<rect x="102" y="49.0" width="34" height="3.6" fill="#DAD8FB" opacity=".5"/>
+<text class="ax" x="119" y="158" text-anchor="middle">Oct</text>
+<rect x="152" y="89.0" width="34" height="51.0" fill="#4F46E5" opacity=".5"/>
+<rect x="152" y="65.7" width="34" height="21.3" fill="#6D66EE" opacity=".5"/>
+<rect x="152" y="50.8" width="34" height="12.8" fill="#8C86F2" opacity=".5"/>
+<rect x="152" y="43.4" width="34" height="5.4" fill="#AAA6F5" opacity=".5"/>
+<rect x="152" y="39.2" width="34" height="2.2" fill="#C4C0F8" opacity=".5"/>
+<rect x="152" y="34.0" width="34" height="3.2" fill="#DAD8FB" opacity=".5"/>
+<text class="ax" x="169" y="158" text-anchor="middle">Nov</text>
+<rect x="202" y="87.1" width="34" height="52.9" fill="#4F46E5" opacity=".5"/>
+<rect x="202" y="57.8" width="34" height="27.3" fill="#6D66EE" opacity=".5"/>
+<rect x="202" y="34.6" width="34" height="21.2" fill="#8C86F2" opacity=".5"/>
+<rect x="202" y="27.3" width="34" height="5.3" fill="#AAA6F5" opacity=".5"/>
+<rect x="202" y="23.7" width="34" height="1.7" fill="#C4C0F8" opacity=".5"/>
+<rect x="202" y="18.0" width="34" height="3.7" fill="#DAD8FB" opacity=".5"/>
+<text class="ax" x="219" y="158" text-anchor="middle">Dec</text>
+<rect x="252" y="87.5" width="34" height="52.5" fill="#4F46E5" opacity=".5"/>
+<rect x="252" y="71.5" width="34" height="14.0" fill="#6D66EE" opacity=".5"/>
+<rect x="252" y="64.0" width="34" height="5.5" fill="#8C86F2" opacity=".5"/>
+<rect x="252" y="55.5" width="34" height="6.5" fill="#AAA6F5" opacity=".5"/>
+<rect x="252" y="50.8" width="34" height="2.7" fill="#C4C0F8" opacity=".5"/>
+<rect x="252" y="46.0" width="34" height="2.8" fill="#DAD8FB" opacity=".5"/>
+<text class="ax" x="269" y="158" text-anchor="middle">Jan</text>
+<rect x="302" y="108" width="34" height="32" rx="4" fill="none" stroke="#C9C9D1" stroke-dasharray="3 3"/><text class="ax" x="319" y="104" text-anchor="middle">no data</text>
+<text class="ax" x="319" y="158" text-anchor="middle">Feb</text>
+<rect x="352" y="92.1" width="34" height="47.9" fill="#4F46E5" opacity=".5"/>
+<rect x="352" y="78.9" width="34" height="11.1" fill="#6D66EE" opacity=".5"/>
+<rect x="352" y="70.2" width="34" height="6.8" fill="#8C86F2" opacity=".5"/>
+<rect x="352" y="61.4" width="34" height="6.8" fill="#AAA6F5" opacity=".5"/>
+<rect x="352" y="57.0" width="34" height="2.4" fill="#C4C0F8" opacity=".5"/>
+<rect x="352" y="52.4" width="34" height="2.6" fill="#DAD8FB" opacity=".5"/>
+<text class="ax" x="369" y="158" text-anchor="middle">Mar</text>
+<rect x="402" y="108" width="34" height="32" rx="4" fill="none" stroke="#C9C9D1" stroke-dasharray="3 3"/><text class="ax" x="419" y="104" text-anchor="middle">no data</text>
+<text class="ax" x="419" y="158" text-anchor="middle">Apr</text>
+<rect x="452" y="108" width="34" height="32" rx="4" fill="none" stroke="#C9C9D1" stroke-dasharray="3 3"/><text class="ax" x="469" y="104" text-anchor="middle">no data</text>
+<text class="ax" x="469" y="158" text-anchor="middle">May</text>
+<rect x="502" y="86.4" width="34" height="53.6" fill="#4F46E5" opacity=".5"/>
+<rect x="502" y="66.2" width="34" height="18.2" fill="#6D66EE" opacity=".5"/>
+<rect x="502" y="57.2" width="34" height="7.1" fill="#8C86F2" opacity=".5"/>
+<rect x="502" y="49.1" width="34" height="6.1" fill="#AAA6F5" opacity=".5"/>
+<rect x="502" y="44.0" width="34" height="3.1" fill="#C4C0F8" opacity=".5"/>
+<rect x="502" y="39.0" width="34" height="3.0" fill="#DAD8FB" opacity=".5"/>
+<text class="ax" x="519" y="158" text-anchor="middle">Jun</text>
+<rect x="552" y="83.9" width="34" height="56.1" fill="#4F46E5" opacity=".5"/>
+<rect x="552" y="69.3" width="34" height="12.5" fill="#6D66EE" opacity=".5"/>
+<rect x="552" y="55.8" width="34" height="11.5" fill="#8C86F2" opacity=".5"/>
+<rect x="552" y="46.5" width="34" height="7.3" fill="#AAA6F5" opacity=".5"/>
+<rect x="552" y="41.3" width="34" height="3.2" fill="#C4C0F8" opacity=".5"/>
+<rect x="552" y="36.2" width="34" height="3.1" fill="#DAD8FB" opacity=".5"/>
+<text class="ax" x="569" y="158" text-anchor="middle">Jul</text>
+<rect x="602" y="88.4" width="34" height="51.6" fill="#4F46E5"/>
+<rect x="602" y="69.9" width="34" height="16.5" fill="#6D66EE"/>
+<rect x="602" y="59.7" width="34" height="8.2" fill="#8C86F2"/>
+<rect x="602" y="52.1" width="34" height="5.6" fill="#AAA6F5"/>
+<rect x="602" y="47.8" width="34" height="2.3" fill="#C4C0F8"/>
+<rect x="602" y="43.8" width="34" height="2.0" fill="#DAD8FB"/>
+<text class="ax" x="619" y="158" text-anchor="middle" style="fill:#0B0B0F;font-weight:600">Aug</text>
+   </svg></div>
+  <div class="card">
+   <div class="ct">Categories in Shopping</div><div class="cs">Area = money spent · click a category to open it</div>
+   <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-top:12px;align-items:start">
+    <div class="tm">
+     <div class="cell" style="flex:55.7;background:var(--r1)"><b>Groceries</b>€268 · 56%</div>
+     <div class="col" style="flex:44.3">
+      <div class="cell" style="flex:19.1;background:var(--r2)"><b>Fashion</b>€92 · 19%</div>
+      <div class="rw" style="flex:25.2">
+       <div class="cell" style="flex:10.6;background:var(--r3)"><b>Electronics</b>€51</div>
+       <div class="col" style="flex:14.6">
+        <div class="cell" style="flex:7.9;background:var(--r4)"><b>Home goods</b>€38</div>
+        <div class="cell dk" style="flex:4.6;background:var(--r5);padding:4px 8px"><b>Beauty</b></div>
+        <div class="cell dk" style="flex:2.1;background:var(--r6);padding:2px 8px;font-size:10px">Other</div>
+       </div></div></div>
+    </div>
+    <table class="tb">
+     <tr><th>Category</th><th>Share</th><th>Amount</th><th>vs July</th></tr>
+     <tr><td><span class="nm">Groceries</span></td><td class="mut">56%</td><td class="amt">€268.40</td><td class="good">↘ 4%</td></tr>
+     <tr><td><span class="nm">Fashion</span></td><td class="mut">19%</td><td class="amt">€92.30</td><td class="bad">↗ 35%</td></tr>
+     <tr><td><span class="nm">Electronics</span></td><td class="mut">11%</td><td class="amt">€51.00</td><td class="flat">new</td></tr>
+     <tr><td><span class="nm">Home goods</span></td><td class="mut">8%</td><td class="amt">€37.90</td><td class="good">↘ 10%</td></tr>
+     <tr><td><span class="nm">Beauty</span></td><td class="mut">5%</td><td class="amt">€21.60</td><td class="bad">↗ 5%</td></tr>
+     <tr><td><span class="nm">Hobbies</span></td><td class="mut">2%</td><td class="amt">€10.00</td><td class="flat">— 0%</td></tr>
+    </table>
+   </div>
+  </div>
+  <div style="display:grid;grid-template-columns:1fr 1.25fr;gap:14px;align-items:start">
+   <div class="card"><div style="display:flex;justify-content:space-between"><div class="ct">Top merchants</div><span class="link">All →</span></div>
+    <table class="tb" style="margin-top:10px">
+     <tr><th>Merchant</th><th>Amount</th><th>vs July</th></tr>
+     <tr><td><span class="nm"><span>Mercadona<small>Groceries · 12 transactions</small></span></span></td><td class="amt">€184.20</td><td class="good">↘ 6%</td></tr>
+     <tr><td><span class="nm"><span>Zara<small>Fashion · 2 transactions</small></span></span></td><td class="amt">€75.00</td><td class="bad">↗ 40%</td></tr>
+     <tr><td><span class="nm"><span>Lidl<small>Groceries · 5 transactions</small></span></span></td><td class="amt">€62.10</td><td class="good">↘ 3%</td></tr>
+     <tr><td><span class="nm"><span>Amazon<small>Electronics · 1 transaction</small></span></span></td><td class="amt">€51.00</td><td class="flat">new</td></tr>
+    </table></div>
+   <div class="card"><div style="display:flex;justify-content:space-between"><div class="ct">Transactions</div><span class="link">See all 31 in Transactions →</span></div>
+    <div class="day"><span>Tue 26 Aug</span><span>−€58.40</span></div>
+    <div class="tx"><span class="av">M</span><span class="mn">Mercadona</span><span class="cat">Groceries</span><span class="acc">BBVA ··12</span><span class="am">−€42.10</span></div>
+    <div class="tx"><span class="av">Z</span><span class="mn">Zara</span><span class="cat">Fashion</span><span class="acc">BBVA ··12</span><span class="am">−€16.30</span></div>
+    <div class="day"><span>Mon 25 Aug</span><span>−€51.00</span></div>
+    <div class="tx" style="border-bottom:0"><span class="av">A</span><span class="mn">Amazon<small>📝 AirPods case</small></span><span class="cat">Electronics</span><span class="acc">Caixa ··88</span><span class="am">−€51.00</span></div>
+   </div>
+  </div>
+ </div>
+</div>
+
+<h2>4 · Tokens</h2>
+<p class="note">Light mode only in slice 3. Group palette validated with the dataviz validator (light surface); assign by group, never by rank. The one-hue ramp is for categories inside a group page. Status colours (good / bad) are for deltas only, never for a series.</p>
+<div class="tok" id="tokens">
+ <div><i style="background:#fff"></i>page #FFFFFF</div><div><i style="background:#F7F7F9"></i>surface #F7F7F9</div><div><i style="background:#0B0B0F"></i>text #0B0B0F</div><div><i style="background:#8A8A94"></i>muted #8A8A94</div><div><i style="background:#4F46E5"></i>accent #4F46E5</div><div><i style="background:#16A34A"></i>income / good #16A34A</div><div><i style="background:#E11D48"></i>bad #E11D48</div>
+ <div><i style="background:#4F46E5"></i>group 1 #4F46E5</div><div><i style="background:#EB6834"></i>group 2 #EB6834</div><div><i style="background:#1BAF7A"></i>group 3 #1BAF7A</div><div><i style="background:#EDA100"></i>group 4 #EDA100</div><div><i style="background:#E87BA4"></i>group 5 #E87BA4</div><div><i style="background:#D4D4DC"></i>other #D4D4DC</div>
+ <div><i style="background:linear-gradient(90deg,#4F46E5,#6D66EE,#8C86F2,#AAA6F5,#C4C0F8,#DAD8FB)"></i>ramp #4F46E5 → #DAD8FB</div><div><i style="background:#fff;border-radius:16px"></i>radius 16 cards · 999 pills</div><div><i style="background:#fff"></i>font Geist · tabular numbers</div>
+</div>
+</div></body></html>
