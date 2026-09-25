@@ -62,9 +62,8 @@ def _like(text: str) -> str:
     return f"%{escaped}%"
 
 
-def _cursor(value: str | None) -> tuple[date | None, UUID | None]:
-    if not value:
-        return None, None
+def parse_cursor(value: str) -> tuple[date, UUID]:
+    """The `next_cursor` a page returns; a ValueError when it does not parse."""
     day, _, row_id = value.partition("_")
     return date.fromisoformat(day), UUID(row_id)
 
@@ -73,11 +72,11 @@ def page(
     conn: Connection,
     filters: TransactionFilters,
     resolved,
-    cursor: str | None = None,
+    cursor: tuple[date, UUID] | None = None,
     limit: int = 100,
 ) -> TransactionPage:
     q = (filters.q or "").strip() or None
-    cursor_day, cursor_id = _cursor(cursor)
+    cursor_day, cursor_id = cursor or (None, None)
     params = filters.scope.params(resolved.current) | {
         "q": q,
         "pattern": _like(q) if q else None,

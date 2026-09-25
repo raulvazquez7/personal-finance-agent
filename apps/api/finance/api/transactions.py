@@ -12,8 +12,8 @@ from finance.api.periods import PeriodQuery, resolve_request
 from finance.categorization.labels import NotFound, label_transaction, set_note
 from finance.categorization.models import CategorySource
 from finance.dashboard.filters import Scope
-from finance.dashboard.models import Transaction, TransactionPage  # noqa: F401  (schema name)
-from finance.dashboard.transactions import Saved, TransactionFilters, page
+from finance.dashboard.models import TransactionPage
+from finance.dashboard.transactions import Saved, TransactionFilters, page, parse_cursor
 
 router = APIRouter(prefix="/transactions", tags=["transactions"])
 
@@ -34,6 +34,10 @@ def list_transactions(
     cursor: str | None = Query(default=None, pattern=r"^\d{4}-\d{2}-\d{2}_[0-9a-f-]{36}$"),
     limit: int = Query(default=100, ge=1, le=100),
 ) -> TransactionPage:
+    try:
+        after = parse_cursor(cursor) if cursor else None
+    except ValueError as error:  # the pattern passes, the date or id does not parse
+        raise HTTPException(status_code=422, detail=f"invalid cursor: {error}") from error
     resolved = resolve_request(conn, query)
     scope = Scope(
         accounts=query.accounts,
@@ -43,7 +47,7 @@ def list_transactions(
         merchant_id=merchant_id,
     )
     filters = TransactionFilters(scope, q, is_subscription, category_source, needs_review, saved)
-    return page(conn, filters, resolved, cursor, limit)
+    return page(conn, filters, resolved, after, limit)
 
 
 class LabelTransaction(BaseModel):
@@ -73,7 +77,7 @@ def label(transaction_id: UUID, body: LabelTransaction, conn: Db) -> Response:
 
 
 class NoteUpdate(BaseModel):
-    note: str | None = Field(default=None, max_length=500)
+    note: str | None = Field(max_length=500)  # required: {} must not clear the note; null does
 
 
 @router.patch("/{transaction_id}", status_code=204)

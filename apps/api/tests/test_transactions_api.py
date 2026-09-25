@@ -63,6 +63,15 @@ def test_cursor_paging_never_skips_rows_on_the_same_day(client, db_conn, make_tx
     assert cursor is None and len(seen) == len(set(seen)) == 5
 
 
+@pytest.mark.parametrize(
+    "cursor",
+    ["2026-13-45_00000000-0000-0000-0000-000000000001", "2026-01-01_" + "-" * 36],
+)
+def test_a_cursor_that_does_not_parse_is_422(client, cursor):
+    response = client.get("/transactions", params={"month": "1999-01", "cursor": cursor})
+    assert response.status_code == 422
+
+
 def test_card_numbers_are_masked(client, db_conn, make_tx):
     make_tx(
         "-9.90",

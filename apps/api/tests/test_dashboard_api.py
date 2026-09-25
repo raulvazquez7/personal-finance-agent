@@ -79,6 +79,19 @@ def test_a_month_13_is_422(client):
     assert client.get("/dashboard/overview", params={"month": "1999-13"}).status_code == 422
 
 
+@pytest.mark.parametrize(
+    "params",
+    [
+        {"month": "0000-01"},
+        {"month": "\u0661\u0669\u0669\u0669-01"},  # 1999 in Arabic-Indic digits
+        {"month": "0001-01"},  # its previous month would be in year 0
+        {"period": "custom", "start": "0001-01-01", "end": "0001-01-31"},
+    ],
+)
+def test_a_period_outside_the_supported_years_is_422(client, params):
+    assert client.get("/dashboard/overview", params=params).status_code == 422
+
+
 def test_subscriptions_endpoint_returns_totals(client):
     body = client.get("/dashboard/subscriptions").json()
     assert Decimal(body["yearly_total"]) == Decimal(body["monthly_total"]) * 12

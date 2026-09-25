@@ -22,11 +22,15 @@ class PeriodRequest:
     accounts: tuple[UUID, ...]
 
 
+# Bounded years: ASCII digits only, and no period whose previous one falls before year 1.
+_FIRST_DAY, _LAST_DAY = date(1900, 1, 1), date(2100, 12, 31)
+
+
 def period_request(
     period: PeriodName = "month",
-    month: str | None = Query(default=None, pattern=r"^\d{4}-(0[1-9]|1[0-2])$"),
-    start: date | None = None,
-    end: date | None = None,
+    month: str | None = Query(default=None, pattern=r"^(19|20)[0-9]{2}-(0[1-9]|1[0-2])$"),
+    start: date | None = Query(default=None, ge=_FIRST_DAY, le=_LAST_DAY),
+    end: date | None = Query(default=None, ge=_FIRST_DAY, le=_LAST_DAY),
     account_id: list[UUID] = Query(default=[]),
 ) -> PeriodRequest:
     first = date.fromisoformat(f"{month}-01") if month else None

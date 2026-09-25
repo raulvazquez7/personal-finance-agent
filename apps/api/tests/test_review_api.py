@@ -49,6 +49,10 @@ def _keys(client):
     return {item["key"] for item in client.get("/review").json()}
 
 
+def _note(conn, tx):
+    return conn.execute("select note from transactions where id = %s", (tx,)).fetchone()["note"]
+
+
 def test_a_labelled_transaction_leaves_the_review_queue(client, db_conn, make_tx):
     tx = make_tx(
         "-4321.07", "ZZTEST UNKNOWN CODE", merchant="ZZTEST UNKNOWN CODE", booked_at=SYNTHETIC_DAY
@@ -141,6 +145,11 @@ def test_note_and_default_endpoints(client, db_conn, make_tx):
     assert client.patch(f"/transactions/{tx}", json={"note": "gift"}).status_code == 204
     assert client.patch(f"/transactions/{tx}", json={"note": "x" * 501}).status_code == 422
     assert client.patch(f"/transactions/{MISSING}", json={"note": "x"}).status_code == 404
+    # The note field is required: an empty body is a 422 and leaves the note alone.
+    assert client.patch(f"/transactions/{tx}", json={}).status_code == 422
+    assert _note(db_conn, tx) == "gift"
+    assert client.patch(f"/transactions/{tx}", json={"note": None}).status_code == 204
+    assert _note(db_conn, tx) is None
     acme = _merchant(db_conn, "ZZTEST ACME", category_slug="groceries")
     assert client.delete(f"/merchants/{acme}/default").status_code == 204
     assert client.delete(f"/merchants/{MISSING}/default").status_code == 404
