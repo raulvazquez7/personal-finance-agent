@@ -19,6 +19,7 @@ KEYS: dict[str, str] = {
         "coalesce(merchant_id::text, 'category:' || coalesce(category_slug, 'uncategorized'))"
     ),
 }
+VALUES: dict[str, str] = {"spend": "spend", "income": "income"}
 
 
 def _query(dimension: Dimension, value: Value) -> str:
@@ -26,7 +27,7 @@ def _query(dimension: Dimension, value: Value) -> str:
     return f"""
 select {KEYS[dimension]} as key, max(merchant_name) as label, max(level1) as level1,
        max(category_slug) as category_slug, max(merchant_id::text) as merchant_id,
-       sum({value}) as amount, count(*) as n
+       sum({VALUES[value]}) as amount, count(*) as n
 from v_transactions_enriched where {WHERE}
 group by 1
 """

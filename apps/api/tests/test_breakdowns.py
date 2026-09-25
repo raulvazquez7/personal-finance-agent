@@ -62,6 +62,15 @@ def test_merchants_without_a_merchant_fall_back_to_their_category(db_conn, make_
     assert "category:credit_card_spending" in {r.key for r in rows}
 
 
-def test_group_slots_rank_all_time_spend(db_conn):
+def test_group_slots_rank_all_time_spend(db_conn, make_tx):
+    # Two synthetic rows whose spend dwarfs any real ledger take the first two slots.
+    for amount, slug in (("-9000000000.00", "fashion"), ("-5000000000.00", "restaurants_bars")):
+        tx = make_tx(amount, "ZZTEST BIG SPEND", iban=IBAN, booked_at=date(1999, 3, 1))
+        db_conn.execute(
+            "update transactions t set category_slug = c.slug, tx_type = c.tx_type,"
+            " category_source = 'user' from categories c where c.slug = %s and t.id = %s",
+            (slug, tx),
+        )
     slots = group_slots(db_conn)
     assert sorted(slots.values()) == list(range(1, len(slots) + 1)) and len(slots) <= 5
+    assert slots["shopping"] == 1 and slots["leisure"] == 2
