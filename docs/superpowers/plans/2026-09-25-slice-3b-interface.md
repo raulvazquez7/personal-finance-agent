@@ -10,15 +10,19 @@
 
 **Spec:** `docs/superpowers/specs/2026-09-25-slice-3-design.md`, sections 2.6, 7, 8, 9, 11 and 14. The mockups are in `docs/superpowers/specs/2026-09-25-slice-3-mockups/`: `index.html` holds the exact tokens and copy, and `01-page-map.png`, `02-overview.png`, `03-group-page.png` and `04-tokens.png` are the visual contract (layout, hierarchy, tokens and chart forms; pixel values are indicative). The API contract is plan 3a, `docs/superpowers/plans/2026-09-25-slice-3a-money-rules-and-data.md`: Task 7 (note, clear default, label 422), Task 10 (`finance/dashboard/models.py`), Task 11 (`GET /dashboard/overview`, `GET /dashboard/subscriptions`), Task 12 (`GET /transactions`) and Task 13 (`GET /spending/detail`). Where plan 3a's code blocks and the shipped code differ, the code and the regenerated `apps/web/src/lib/api-types.ts` are the contract (plan 3a, "In-flight decisions").
 
-## Decisions for Raul before Task 1
+## Decisions (taken by Raul on 2026-09-25)
 
-Each has a default; the plan is written for the default.
+The tasks below are written for these decisions.
 
-- **A. Vitest for pure helpers (default: yes).** Add `vitest` and `vite-tsconfig-paths` as dev dependencies, configured as the Next.js Vitest guide recommends, minus `jsdom` and React Testing Library, which only component tests need. Only `src/lib/*.test.ts` exists; CI does not run it. **If Raul declines:** skip Task 1 Steps 1-3, create no `*.test.ts` file in any task, replace every "Run `npm test`" step with `npx tsc --noEmit`, and let the agent-browser checks carry the verification.
-- **B. Text contrast (default: the approved tokens).** Muted `#8A8A94` is 3.4:1 on white and 3.2:1 on `#F7F7F9`; income/good `#16A34A` is 3.3:1 and 3.1:1. Both are below WCAG AA (4.5:1) for small text. Alternative: text-only values `--muted-foreground: #6b6b75` (4.9:1) and `--good`/`--income: #15803d` (4.7:1), keeping the mockup values for chart marks. Task 3 Step 3 has the line to change.
-- **C. Active nav item: the mockup (resolved; spec 7.2 corrected).** `index.html:24` draws the active pill near-black (`.nav.on{background:var(--text)}`), while spec 7.2 (lines 270-271) names the accent for "the active nav item". Default: a near-black pill, with the accent for links, the current series and the logo dot.
-- **D. Settings in the navigation (default: last nav item).** The mockup nav has no Settings entry, and `/settings` needs a way in.
+- **A. Vitest for pure helpers: yes.** Add `vitest` and `vite-tsconfig-paths` as dev dependencies, configured as the Next.js Vitest guide recommends, minus `jsdom` and React Testing Library, which only component tests need. Only `src/lib/*.test.ts` exists; CI does not run it.
+- **B. Text contrast: darker text tokens for WCAG AA.** The mockup's muted `#8A8A94` is 3.4:1 on white and 3.2:1 on `#F7F7F9`, and its income/good `#16A34A` is 3.3:1 and 3.1:1, below AA (4.5:1) for small text. The text tokens are `--muted-foreground: #6b6b75` (4.9:1) and `--good`/`--income: #15803d` (4.7:1). Chart marks keep the mockup colours: the palette, ramp and chart chrome tokens are unchanged (Task 3 Step 2).
+- **C. Active nav item: the mockup (resolved; spec 7.2 corrected).** `index.html:24` draws the active pill near-black (`.nav.on{background:var(--text)}`), while spec 7.2 (lines 270-271) names the accent for "the active nav item". A near-black pill, with the accent for links, the current series and the logo dot.
+- **D. Settings in the navigation: the last nav item.** The mockup nav has no Settings entry, and `/settings` needs a way in.
 - **E. Resolved in plan 3a Task 7:** confirming a merchant never writes an income category on its money-out rows (they keep their labels), so "Apply to all" cannot turn money out into income. The API returns no 422 for it; only labelling one money-out row with an income category is a 422.
+- **F. The period pill follows the account filter.** `period.latest_day` is the latest day of the selected accounts, and the root layout does not re-render on client navigation, so the server's `latestDay` is right only without an account filter. With one, `FilterBar` fetches `/transactions?limit=1&account_id=…` in the browser and passes that `latest_day` to the pill label and the presets, so the pill and the page always show the same month (Task 3 Step 7).
+- **G. No data in the period: KPI tiles read "—".** When no month of the period has data (`MonthPoint.has_data` false, `periodHasData`), the four tiles show "—" and hide their deltas (spec 2.6: "no data, never 0"). The donut centre repeats the Expenses number, so it follows the same rule (Tasks 2, 4 and 5).
+- **H. /review drops a jev suggestion that does not fit the item's direction** (an income suggestion on a money-out or mixed item). The category field then starts empty (`fitsDirection`, Task 8).
+- **I. Copy.** The uncategorized group's hint reads "Not categorized yet", because those rows never reach /review (Task 2). The overview's subscriptions line says that "active" is measured from the latest import (Task 5). The /review "jev skipped" hint, the "Apply to all" income note and the "No data in <month>" title stay as written.
 
 ## Before Task 1
 
@@ -62,7 +66,7 @@ Expected: no errors.
 - The URL is the state. The period (`period`, `month`, `start`, `end`), `account_id` (repeatable) and the explorer filters live in `searchParams`, and they are parsed and written only through `src/lib/params.ts`. Every link carries them (`withFilters`).
 - Server components fetch through `apiGet`. Client components exist only for charts and interactive controls. The browser fetches only "Load more" pages and writes.
 - The API answers only the hosts in its `TRUSTED_HOSTS` setting (default `localhost`, `127.0.0.1`, `testserver`; plan 3a Task 14) and returns 400 for any other `Host`, so `NEXT_PUBLIC_API_URL` stays on `localhost` (`:8000`, and `:8001` in R2).
-- Visual system (spec 7.2, mockup tokens): white page `#FFFFFF`; surfaces `#F7F7F9` without borders; text `#0B0B0F`; muted `#8A8A94`; one accent, indigo `#4F46E5`; income/good `#16A34A`; bad `#E11D48`; radius 16 for cards and 999 for pills; Geist with tabular numbers; the logo is lower-case "tally ai", in one colour and one weight, with the accent dot; a top navigation bar with a pill for the active item and the filters on the right.
+- Visual system (spec 7.2, mockup tokens): white page `#FFFFFF`; surfaces `#F7F7F9` without borders; text `#0B0B0F`; muted text `#6b6b75` (Decision B; the mockup's `#8A8A94` fails AA); one accent, indigo `#4F46E5`; income/good text `#15803d` (Decision B; the mockup's `#16A34A`); bad `#E11D48`; radius 16 for cards and 999 for pills; Geist with tabular numbers; the logo is lower-case "tally ai", in one colour and one weight, with the accent dot; a top navigation bar with a pill for the active item and the filters on the right.
 - Group palette `#4F46E5 #EB6834 #1BAF7A #EDA100 #E87BA4`, other `#D4D4DC`, assigned by `Overview.group_slots`: colour follows the group, never its rank. One-hue ramp `#4F46E5 #6D66EE #8C86F2 #AAA6F5 #C4C0F8 #DAD8FB` (darkest = largest) for categories inside a group page. Green and red only for deltas, always with an arrow and a sign. Light mode only.
 - The UI explains itself. Every edit field has a one-line `FieldDescription`, and every KPI has an ⓘ tooltip that quotes `docs/money-rules.md`. UI copy is in English, in sentence case.
 - Direction-aware category pickers everywhere: money out offers expense and transfer categories; money in offers income first, then a "Refund of a purchase" group with the expense categories, then transfers.
@@ -766,7 +770,7 @@ git commit -m "feat: add URL state and formatting helpers for the web app"
 **Interfaces:**
 - Consumes: `Filters`, `TxType`, `withFilters` (Task 1).
 - Produces:
-  - `delta.ts`: `Good = "up" | "down"`, `Unit = "percent" | "euro" | "points"`, `Tone = "good" | "bad" | "neutral"`, `Delta = { kind: "hidden" } | { kind: "new" } | { kind: "change"; direction: "up" | "down" | "flat"; tone: Tone; text: string }`, `delta(current: number | null, previous: number | null | undefined, good: Good, unit: Unit): Delta`, `atSameDay(cumulative): { current: number | null; previous: number | null }` (`current` is null when the current series is empty).
+  - `delta.ts`: `Good = "up" | "down"`, `Unit = "percent" | "euro" | "points"`, `Tone = "good" | "bad" | "neutral"`, `Delta = { kind: "hidden" } | { kind: "new" } | { kind: "change"; direction: "up" | "down" | "flat"; tone: Tone; text: string }`, `delta(current: number | null, previous: number | null | undefined, good: Good, unit: Unit): Delta`, `atSameDay(cumulative): { current: number | null; previous: number | null }` (`current` is null when the current series is empty), `periodHasData(months: { month: string; has_data: boolean }[], period: { start: string; end: string }): boolean` (Decision G).
   - `colors.ts`: `OTHER_COLOR`, `groupColor(level1: string | null | undefined, slots: Record<string, number>): string`, `rampColor(index: number): string`, `foldBySlot(rows: BreakdownRow[], slots): BreakdownRow[]`.
   - `labels.ts`: `Dimension = "group" | "category" | "merchant"`, `label(slug)`, `plural(count, one, many)`, `groupHint(level1, categories)`, `rowName(row, dimension)`, `rowHint(row, dimension, categories)`, `sourceLabel(source)`, `accountsLabel(ids, accounts)`, `knownGroup(level1, categories)`, `knownCategory(slug, categories, where: { type: TxType; level1?: string })`.
   - `definitions.ts`: `DEFINITIONS = { income, expenses, savings, savingsRate }`.
@@ -779,7 +783,7 @@ Create `apps/web/src/lib/delta.test.ts`:
 ```ts
 import { describe, expect, it } from "vitest";
 
-import { atSameDay, delta } from "./delta";
+import { atSameDay, delta, periodHasData } from "./delta";
 
 describe("delta", () => {
   it("reads spending that went down as good", () => {
@@ -824,6 +828,25 @@ describe("atSameDay", () => {
   it("reads no data, never 0, when the current series is empty", () => {
     // The API sends [] when the period starts after the latest imported day, or there is no data.
     expect(atSameDay({ current: [], previous: points("5", "20") })).toEqual({ current: null, previous: null });
+  });
+});
+
+describe("periodHasData", () => {
+  const months = [
+    { month: "2026-06", has_data: true },
+    { month: "2026-07", has_data: false },
+    { month: "2026-08", has_data: false },
+  ];
+
+  it("reads only the months of the period (Decision G: no data, never 0)", () => {
+    expect(periodHasData(months, { start: "2026-08-01", end: "2026-08-31" })).toBe(false);
+    expect(periodHasData(months, { start: "2026-07-10", end: "2026-08-19" })).toBe(false);
+    expect(periodHasData(months, { start: "2026-06-01", end: "2026-08-31" })).toBe(true);
+  });
+
+  it("trusts the API's numbers for a range that starts before the 12-month series", () => {
+    expect(periodHasData(months, { start: "2025-01-01", end: "2026-08-31" })).toBe(true);
+    expect(periodHasData([], { start: "2026-08-01", end: "2026-08-31" })).toBe(true);
   });
 });
 ```
@@ -936,6 +959,8 @@ describe("labels", () => {
   it("describes a group by its first categories", () => {
     expect(groupHint("shopping", categories)).toBe("Groceries, fashion, electronics…");
     expect(groupHint("credit_card", categories)).toBe("Not itemized: card statements are not imported");
+    // Decision I: uncategorized rows never reach /review, so the hint does not send the user there.
+    expect(groupHint("uncategorized", categories)).toBe("Not categorized yet");
     expect(groupHint("unknown", categories)).toBe("");
   });
 
@@ -1133,6 +1158,19 @@ export function atSameDay(cumulative: Cumulative): { current: number | null; pre
   if (!before || before.length === 0) return { current, previous: null };
   return { current, previous: Number(before[Math.min(index, before.length - 1)].total) };
 }
+
+type MonthFlag = { month: string; has_data: boolean };
+
+/** Whether any month of the period has data (spec 2.6: a month has data when at least one
+ * transaction of the selected accounts is booked in it). Without data, the KPI tiles read "—",
+ * never 0 (Decision G). The series holds the 12 months that end with the period, so a longer
+ * custom range cannot be judged from it: the API's numbers stand. */
+export function periodHasData(months: MonthFlag[], period: { start: string; end: string }): boolean {
+  const from = period.start.slice(0, 7);
+  const to = period.end.slice(0, 7);
+  if (months.length === 0 || from < months[0].month) return true;
+  return months.some((point) => point.has_data && point.month >= from && point.month <= to);
+}
 ```
 
 - [ ] **Step 4: Implement `colors.ts`**
@@ -1210,7 +1248,7 @@ export const plural = (count: number, one: string, many: string) => `${count} ${
 /** The line under a group's name: its first categories (mockup: "Rent, utilities, internet"). */
 export function groupHint(level1: string, categories: Category[]): string {
   if (level1 === "credit_card") return "Not itemized: card statements are not imported";
-  if (level1 === "uncategorized") return "Waiting for a category in Review";
+  if (level1 === "uncategorized") return "Not categorized yet"; // these rows never reach /review
   const names = categories.filter((c) => c.level1 === level1).map((c) => c.slug.replaceAll("_", " "));
   if (names.length === 0) return "";
   const text = capitalize(names.slice(0, 3).join(", "));
@@ -1372,7 +1410,7 @@ git commit -m "feat: add delta, colour and label helpers for the dashboards"
   - Tailwind utilities from the tokens: `bg-card` (surface), `rounded-card` (16 px), `text-income`, `text-good`, `text-bad`, `bg-chart-other`, `bg-ramp-1` … `bg-ramp-6`, `stroke`/`fill` equivalents, and CSS variables `--chart-1..5`, `--chart-other`, `--ramp-1..6`, `--chart-previous`, `--chart-grid`.
   - The root layout renders `<TopBar />` and wraps pages in `<main className="… flex flex-col gap-4 …">`: pages return fragments or plain elements, never their own `<main>`.
   - `filterContext(): Promise<{ accounts: Schemas["Account"][]; latestDay: string | null }>` in `lib/api.ts`.
-  - `TopBar` (server), `NavLinks({ pending })`, `FilterBar({ accounts, latestDay })`, `PeriodPicker({ latestDay })`, `AccountPicker({ accounts })` (client).
+  - `TopBar` (server), `NavLinks({ pending })`, `FilterBar({ accounts, latestDay })` (with an account filter it fetches that selection's `latest_day` itself, Decision F), `PeriodPicker({ latestDay })`, `AccountPicker({ accounts })` (client).
 
 - [ ] **Step 1: Add the shadcn components**
 
@@ -1401,7 +1439,7 @@ In `apps/web/src/app/globals.css`, replace the whole `:root { … }` block with:
   --secondary: #f7f7f9; /* pills on the white page */
   --secondary-foreground: #0b0b0f;
   --muted: #ececf1; /* segmented-control track, avatars, hovers */
-  --muted-foreground: #8a8a94;
+  --muted-foreground: #6b6b75; /* Decision B: the mockup's #8a8a94 fails WCAG AA for small text */
   --accent: #eef0ff;
   --accent-foreground: #0b0b0f;
   --destructive: #e11d48;
@@ -1426,9 +1464,10 @@ In `apps/web/src/app/globals.css`, replace the whole `:root { … }` block with:
   /* Chart chrome: the previous period's line, the dashed no-data boxes, the hairline grid. */
   --chart-previous: #c9c9d1;
   --chart-grid: #e6e6eb;
-  /* Money: income is green with a "+"; otherwise green and red are only for deltas. */
-  --income: #16a34a;
-  --good: #16a34a;
+  /* Money: income is green with a "+"; otherwise green and red are only for deltas. Text colours:
+     Decision B darkens the mockup's #16a34a for WCAG AA. */
+  --income: #15803d;
+  --good: #15803d;
   --bad: #e11d48;
   --sidebar: oklch(0.985 0 0);
   --sidebar-foreground: oklch(0.145 0 0);
@@ -1441,7 +1480,7 @@ In `apps/web/src/app/globals.css`, replace the whole `:root { … }` block with:
 }
 ```
 
-If Raul chose the Decision B alternative, set `--muted-foreground: #6b6b75;`, `--income: #15803d;` and `--good: #15803d;` instead. Leave the `.dark` block as it is: dark mode is v2, with its own validated steps.
+The palette, ramp and chart chrome values are the mockup's; only the text tokens `--muted-foreground`, `--income` and `--good` are darker (Decision B). Leave the `.dark` block as it is: dark mode is v2, with its own validated steps.
 
 - [ ] **Step 3: Register the new tokens with Tailwind and apply tabular numbers**
 
@@ -1736,27 +1775,54 @@ Create `apps/web/src/components/shell/filter-bar.tsx`:
 ```tsx
 "use client";
 
-import { usePathname } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
+import { useEffect, useState } from "react";
 
-import type { Schemas } from "@/lib/api";
+import { apiGet, type Schemas } from "@/lib/api";
+import { filterParams, parseFilters, toSearchParams } from "@/lib/params";
 
 import { AccountPicker } from "./account-picker";
 import { PeriodPicker } from "./period-picker";
 
 const FILTERED = ["/transactions", "/spending", "/income", "/merchants"];
 
-/** The filters on the right of the top bar (spec 7.2), only on the pages they scope. */
-export function FilterBar({ accounts, latestDay }: { accounts: Schemas["Account"][]; latestDay: string | null }) {
+type Props = { accounts: Schemas["Account"][]; latestDay: string | null };
+
+/** The filters on the right of the top bar (spec 7.2), only on the pages they scope. The default
+ * month is the latest one with data for the selected accounts (spec 2.6). `latestDay` comes from
+ * the root layout, which does not re-render on client navigation, so it is right only without an
+ * account filter; with one, the latest day of those accounts is fetched here (Decision F), and the
+ * pill and the page always show the same month. */
+export function FilterBar({ accounts, latestDay }: Props) {
   const pathname = usePathname();
-  if (pathname !== "/" && !FILTERED.some((path) => pathname.startsWith(path))) return null;
+  const search = useSearchParams();
+  const shown = pathname === "/" || FILTERED.some((path) => pathname.startsWith(path));
+  // Only the account_id params: the period does not change the latest day.
+  const accountQuery = filterParams({ period: "month", accounts: parseFilters(toSearchParams(search)).accounts }).toString();
+  const [filtered, setFiltered] = useState<{ query: string; latestDay: string | null } | null>(null);
+
+  useEffect(() => {
+    if (!shown || !accountQuery) return;
+    const controller = new AbortController();
+    apiGet<Schemas["TransactionPage"]>(`/transactions?limit=1&${accountQuery}`, { signal: controller.signal }).then(
+      (page) => setFiltered({ query: accountQuery, latestDay: page.period.latest_day }),
+      () => {}, // aborted by a newer selection, or the API is down: the pill reads "Latest month"
+    );
+    return () => controller.abort();
+  }, [shown, accountQuery]);
+
+  if (!shown) return null;
+  const day = !accountQuery ? latestDay : filtered?.query === accountQuery ? filtered.latestDay : null;
   return (
     <div className="ml-auto flex items-center gap-2">
       <AccountPicker accounts={accounts} />
-      <PeriodPicker latestDay={latestDay} />
+      <PeriodPicker latestDay={day} />
     </div>
   );
 }
 ```
+
+While the fetch runs, the pill reads "Latest month" for a moment (a null `latestDay`): it never shows another account's month.
 
 - [ ] **Step 8: The top bar and the layout**
 
@@ -1877,7 +1943,7 @@ Expected: no errors. A build error "useSearchParams() should be wrapped in a sus
 `/` still redirects to `/imports` until Task 4, so check on `/transactions`, which already has the filters.
 1. `open "http://localhost:3000/transactions"`, `snapshot -i`. Expect: the link "tally ai"; the nav links Overview, Transactions (with `aria-current="page"`), Subscriptions, Review (with a number when items are pending), Imports, Settings; on the right, the buttons "Accounts: All accounts" and "Period: <latest imported month>", for example "Period: August 2026".
 2. Click the period button, `snapshot -i`. Expect the rows "Latest month" (with a check), "Previous month", "Last 3 months", "Year to date", "Last 12 months", the field "One month", the fields "From" and "To", and "Apply range" (disabled). Click "Previous month": `agent-browser --session slice3b get url` ends with `month=<one month before the latest>`, and the button reads that month.
-3. Click the accounts button, then one account: the URL gains `account_id=`, and the button shows that account's name. Click "All accounts": `account_id` is gone.
+3. Click the accounts button, then one account: the URL gains `account_id=`, and the button shows that account's name. The period pill reads that account's latest month (Decision F): it matches the month of `period.latest_day` in `curl -s "http://localhost:8000/transactions?limit=1&account_id=<id>"`; if the accounts end in different months, pick the one that ends earlier and check that the pill moves to its month. Click "All accounts": `account_id` is gone, and the pill returns to the latest month of all accounts.
 4. With a month selected, `snapshot -i -u`: the "Overview" and "Transactions" links carry `month=…`; "Review" does not.
 5. `open "http://localhost:3000/review"`: no filter buttons. `open "http://localhost:3000/does-not-exist"`: the 404 page renders inside the layout, with the navigation.
 6. `set viewport 390 844`, `open "http://localhost:3000/transactions"`, screenshot `task03-phone.png`. The nav is on its own row and scrolls sideways; the page itself does not scroll sideways: `agent-browser --session slice3b eval "document.documentElement.scrollWidth <= window.innerWidth"` prints `true`. Set the viewport back with `set viewport 1280 900`.
@@ -1902,14 +1968,14 @@ git commit -m "feat: add the tally ai design tokens, top bar and period and acco
 - Add (shadcn): `chart` (brings `recharts@3.8.0`); npm: `react-is@19.2.8`
 
 **Interfaces:**
-- Consumes: `delta`, `atSameDay`, `Delta` (Task 2); `DEFINITIONS` (Task 2); `money`, `moneyWhole`, `signedMoneyWhole`, `compactMoney`, `rate`, `monthLabel`, `monthShort`, `dayShort`, `dayAt`, `daysIn`, `periodNames`, `previousLabel`, `rangeLabel` (Task 1); `parseFilters`, `filterParams`, `withFilters` (Task 1).
+- Consumes: `delta`, `atSameDay`, `periodHasData`, `Delta` (Task 2); `DEFINITIONS` (Task 2); `money`, `moneyWhole`, `signedMoneyWhole`, `compactMoney`, `rate`, `monthLabel`, `monthShort`, `dayShort`, `dayAt`, `daysIn`, `periodNames`, `previousLabel`, `rangeLabel` (Task 1); `parseFilters`, `filterParams`, `withFilters` (Task 1).
 - Produces:
   - `moneyRow(config: ChartConfig)`: a `ChartTooltipContent` formatter (line key, series name, value in euros, "no data" for `null`); `monthTooltipLabel(label, payload)`; `dayTooltipLabel(start)`.
   - `LegendItem = { key; label; color; shape?: "box" | "line" }`; `LegendButtons({ items, isolated: string | null, onIsolate: (key: string | null) => void })`.
   - `MonthRange = [string, string]` (first and last `YYYY-MM` of the period); `MonthTick` (an XAxis `tick` element); `monthBarShape(range)` (a Bar `shape`).
   - `CumulativeChart({ cumulative: Schemas["Cumulative"], period: Schemas["PeriodOut"] })`.
   - `MonthsChart({ months: Schemas["MonthPoint"][], range: MonthRange })`.
-  - `DeltaText({ value: Delta, arrow?: boolean, parens?: boolean })`, `InfoTip({ label, text })`, `KpiTile({ label, definition, value, delta, versus, href?, income? })`.
+  - `DeltaText({ value: Delta, arrow?: boolean, parens?: boolean })`, `InfoTip({ label, text })`, `KpiTile({ label, definition, value, delta, versus, href?, income?, hasData? })` (`hasData` false: "—" and no delta, Decision G).
 
 - [ ] **Step 1: Add the chart component and pin `react-is`**
 
@@ -2326,11 +2392,13 @@ type Props = {
   versus: string;
   href?: string;
   income?: boolean;
+  hasData?: boolean;
 };
 
 /** One of the four overview numbers (spec 7.1): the value, its change against the previous period
- * and an ⓘ with its definition. Income is green with a "+" (spec 7.2). */
-export function KpiTile({ label, definition, value, delta, versus, href, income = false }: Props) {
+ * and an ⓘ with its definition. Income is green with a "+" (spec 7.2). A period without data
+ * reads "—" with no delta, never 0 (spec 2.6, Decision G). */
+export function KpiTile({ label, definition, value, delta, versus, href, income = false, hasData = true }: Props) {
   return (
     <Card size="sm">
       <CardHeader>
@@ -2348,9 +2416,11 @@ export function KpiTile({ label, definition, value, delta, versus, href, income 
         </CardAction>
       </CardHeader>
       <CardContent className="flex flex-col gap-1">
-        <p className={cn("text-2xl font-semibold tracking-tight", income && "text-income")}>{value}</p>
+        <p className={cn("text-2xl font-semibold tracking-tight", income && hasData && "text-income")}>
+          {hasData ? value : "—"}
+        </p>
         <p className="min-h-4 text-xs text-muted-foreground">
-          {delta.kind !== "hidden" && (
+          {hasData && delta.kind !== "hidden" && (
             <>
               <DeltaText value={delta} /> {versus}
             </>
@@ -2379,7 +2449,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Empty, EmptyContent, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from "@/components/ui/empty";
 import { apiGet, type Schemas } from "@/lib/api";
 import { DEFINITIONS } from "@/lib/definitions";
-import { atSameDay, delta } from "@/lib/delta";
+import { atSameDay, delta, periodHasData } from "@/lib/delta";
 import { moneyWhole, periodNames, previousLabel, rangeLabel, rate, signedMoneyWhole } from "@/lib/format";
 import { filterParams, parseFilters, withFilters } from "@/lib/params";
 
@@ -2396,6 +2466,8 @@ export default async function OverviewPage({ searchParams }: PageProps<"/">) {
   const { period, kpis, previous_kpis: before } = overview;
   const versus = previousLabel(period);
   const spent = atSameDay(overview.cumulative);
+  // Decision G: a period without data shows "—" in the tiles, never €0.
+  const hasData = periodHasData(overview.months, period);
   return (
     <>
       <h1 className="sr-only">Overview, {rangeLabel(period)}</h1>
@@ -2405,6 +2477,7 @@ export default async function OverviewPage({ searchParams }: PageProps<"/">) {
           definition={DEFINITIONS.income}
           value={signedMoneyWhole(kpis.income)}
           income
+          hasData={hasData}
           delta={delta(amount(kpis.income), amount(before?.income), "up", "percent")}
           versus={versus}
           href={withFilters("/income", filters)}
@@ -2413,6 +2486,7 @@ export default async function OverviewPage({ searchParams }: PageProps<"/">) {
           label="Expenses"
           definition={DEFINITIONS.expenses}
           value={moneyWhole(kpis.expenses)}
+          hasData={hasData}
           delta={delta(amount(kpis.expenses), amount(before?.expenses), "down", "percent")}
           versus={versus}
         />
@@ -2420,6 +2494,7 @@ export default async function OverviewPage({ searchParams }: PageProps<"/">) {
           label="Savings"
           definition={DEFINITIONS.savings}
           value={moneyWhole(kpis.savings)}
+          hasData={hasData}
           delta={delta(amount(kpis.savings), amount(before?.savings), "up", "euro")}
           versus={versus}
         />
@@ -2427,6 +2502,7 @@ export default async function OverviewPage({ searchParams }: PageProps<"/">) {
           label="Savings rate"
           definition={DEFINITIONS.savingsRate}
           value={rate(kpis.savings_rate)}
+          hasData={hasData}
           delta={delta(kpis.savings_rate, before?.savings_rate, "up", "points")}
           versus={versus}
         />
@@ -2497,7 +2573,7 @@ Expected: no errors. Fix prop-type mismatches against the generated `chart.tsx` 
 4. The 12-month chart: 12 month labels. For a month without data, "no data" appears above a dashed box that sits on the €0 line (adjust `BOX.lift` if not). `find nth 1 ".recharts-bar-rectangle" hover`, `snapshot`: a tooltip "<Month YYYY>" with Income, Expenses and Savings in euros (or "no data").
 5. Legend isolation: `eval "document.querySelectorAll('.recharts-bar-rectangle').length"`; click the "Expenses" legend button: it has `aria-pressed="true"`, the others are dimmed, and the count halves; click it again: the count returns.
 6. Choose "Last 3 months" in the period picker: the URL has `period=last_3_months`, the deltas read "vs the 3 months before", the cumulative title reads "spent in this period", and `eval "document.querySelectorAll('[data-slot=chart] text.font-semibold').length"` prints `3`.
-7. `open "http://localhost:3000/?account_id=00000000-0000-4000-8000-000000000000"`: "No transactions in these accounts" and an "Import statements" link to `/imports`. `open "http://localhost:3000/?month=2099-12"` (after the latest imported day): the cumulative title reads "No data in December", no current line is drawn (never a line at €0), and `errors` is empty.
+7. `open "http://localhost:3000/?account_id=00000000-0000-4000-8000-000000000000"`: "No transactions in these accounts" and an "Import statements" link to `/imports`. `open "http://localhost:3000/?month=2099-12"` (after the latest imported day): the four tiles read "—" with empty delta lines, and the Income "—" is not green (Decision G); the cumulative title reads "No data in December", no current line is drawn (never a line at €0), and `errors` is empty.
 8. Screenshot `task04-overview.png` at 1280 px and compare with the top half of `02-overview.png`: four tiles in a row, the cumulative line in the accent with a soft fill over the grey previous line, the 12-month bars with the savings line and the dashed boxes. `errors`, `close`.
 
 - [ ] **Step 9: Commit**
@@ -2521,8 +2597,8 @@ git commit -m "feat: add the overview KPIs, the cumulative spend chart and the 1
 - Produces:
   - `ToggleGroup variant="segment"`: the mockup's segmented control (grey track, white pill on the pressed item).
   - `BreakdownTable({ items: BreakdownItem[], nameHeader: string, versus: string, showShare?: boolean })`.
-  - `Slice = { name: string; value: number; fill: string }`; `BreakdownDonut({ slices, total: string, change: Delta, versus: string })`.
-  - `WhereMoneyWent({ views: Record<Dimension, BreakdownItem[]>, total: string, change: Delta, versus: string, subtitle: string })`.
+  - `Slice = { name: string; value: number; fill: string }`; `BreakdownDonut({ slices, total: string | null, change: Delta, versus: string })` (`total` null: no data, "—", Decision G).
+  - `WhereMoneyWent({ views: Record<Dimension, BreakdownItem[]>, total: string | null, change: Delta, versus: string, subtitle: string })`.
 
 - [ ] **Step 1: Add the toggle group and its segment variant**
 
@@ -2637,10 +2713,11 @@ import { moneyRow } from "./money-tooltip";
 
 export type Slice = { name: string; value: number; fill: string };
 
-type Props = { slices: Slice[]; total: string; change: Delta; versus: string };
+type Props = { slices: Slice[]; total: string | null; change: Delta; versus: string };
 
 /** Part-to-whole at a glance, with the total in the centre (mockup 02). Only positive amounts
- * draw a slice (spec 2.1); the table next to it lists every row. */
+ * draw a slice (spec 2.1); the table next to it lists every row. A period without data (`total`
+ * null) reads "—" with no change, like the Expenses tile (Decision G). */
 export function BreakdownDonut({ slices, total, change, versus }: Props) {
   return (
     <div className="relative mx-auto size-52">
@@ -2663,10 +2740,12 @@ export function BreakdownDonut({ slices, total, change, versus }: Props) {
       </ChartContainer>
       <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center text-center">
         <span className="text-xs text-muted-foreground">Spent</span>
-        <span className="text-2xl font-semibold tracking-tight">{moneyWhole(total)}</span>
-        <span className="text-xs">
-          <DeltaText value={change} /> {change.kind === "change" && <span className="text-muted-foreground">{versus}</span>}
-        </span>
+        <span className="text-2xl font-semibold tracking-tight">{total === null ? "—" : moneyWhole(total)}</span>
+        {total !== null && (
+          <span className="text-xs">
+            <DeltaText value={change} /> {change.kind === "change" && <span className="text-muted-foreground">{versus}</span>}
+          </span>
+        )}
       </div>
     </div>
   );
@@ -2693,7 +2772,7 @@ import type { Dimension } from "@/lib/labels";
 
 const HEADERS: Record<Dimension, string> = { group: "Group", category: "Category", merchant: "Merchant" };
 
-type Props = { views: Record<Dimension, BreakdownItem[]>; total: string; change: Delta; versus: string; subtitle: string };
+type Props = { views: Record<Dimension, BreakdownItem[]>; total: string | null; change: Delta; versus: string; subtitle: string };
 
 /** "Where your money went" (spec 7.1): donut + table, Groups by default. The Categories and
  * Merchants views paint each slice and row with its group's colour (spec 7.2). */
@@ -2772,7 +2851,7 @@ After the "Last 12 months" card, before the closing `</>`, add:
 ```tsx
       <WhereMoneyWent
         views={views}
-        total={kpis.expenses}
+        total={hasData ? kpis.expenses : null}
         change={delta(amount(kpis.expenses), amount(before?.expenses), "down", "percent")}
         versus={versus}
         subtitle={`${rangeLabel(period)} · ${previousLabel(period, "long")} · colour = group`}
@@ -2780,7 +2859,7 @@ After the "Last 12 months" card, before the closing `</>`, add:
       <Card size="sm">
         <CardHeader>
           <CardTitle>
-            {plural(subscriptions.count, "subscription", "subscriptions")}
+            {plural(subscriptions.count, "active subscription", "active subscriptions")}
             {/* v_subscriptions is per merchant: the account filter does not apply, so say so. */}
             <span className="font-normal text-muted-foreground">
               {" "}
@@ -2788,6 +2867,11 @@ After the "Last 12 months" card, before the closing `</>`, add:
               accounts
             </span>
           </CardTitle>
+          {/* Decision I: "active" is relative to the latest import (spec 5, v_subscriptions). */}
+          <CardDescription>
+            Active means charged within 45 days (monthly) or 400 days (yearly) of your latest imported transaction, not
+            of today.
+          </CardDescription>
           <CardAction>
             <Link href="/subscriptions" className="text-sm font-medium text-primary">
               Subscriptions →
@@ -2809,7 +2893,7 @@ Expected: no errors.
 3. Click "Categories": category rows with their group's name as the hint, dots in their group's colour. Click "Merchants": the last row reads "Other N merchants" when merchants were folded.
 4. Hover a donut slice (`find first ".recharts-pie-sector" hover`), `snapshot`: the tooltip shows its name and an amount in euros.
 5. `snapshot -i -u`: a group's link is `/spending/<group>?<the same period params>`; a category's link is `/spending/<group>/<category>?…`; a merchant's link is `/merchants/<id>?…`. (These pages come in Tasks 6 and 7.)
-6. The subscriptions line reads "N subscriptions · €… per month · €… per year · all accounts" with a link to `/subscriptions`; picking one account in the top bar leaves it unchanged (`/dashboard/overview` ignores `account_id` for subscriptions).
+6. The subscriptions line reads "N active subscriptions · €… per month · €… per year · all accounts", with the line "Active means charged within 45 days (monthly) or 400 days (yearly) of your latest imported transaction, not of today." under it (Decision I) and a link to `/subscriptions`; picking one account in the top bar leaves it unchanged (`/dashboard/overview` ignores `account_id` for subscriptions). `open "http://localhost:3000/?month=2099-12"`: the donut centre reads "Spent —" with no delta (Decision G).
 7. Screenshot `task05-overview.png` and compare with the bottom half of `02-overview.png`: donut left, table right, the segmented control at the top right, the subscriptions line as its own low card. `errors`, `close`.
 
 - [ ] **Step 8: Commit**
@@ -3725,7 +3809,7 @@ git commit -m "feat: add the category, merchant and income detail pages"
 **Interfaces:**
 - Consumes: `label`, `plural` (Task 2); `dayLong`, `signedMoney` (Task 1); `TxType` (Task 1).
 - Produces:
-  - `pickers.ts`: `Direction = "in" | "out"`; `PickerGroup = { value: string; label: string; items: CategoryOut[] }`; `directionOf(amounts: (string | number)[]): Direction`; `byLevel1(categories): PickerGroup[]`; `pickerGroups(categories, direction, suggested?: string[]): PickerGroup[]`; `FilterOption = { kind: "group" | "category"; value: string; label: string }`; `FilterGroup = { value; label; items: FilterOption[] }`; `filterGroups(categories, txType?: TxType): FilterGroup[]`.
+  - `pickers.ts`: `Direction = "in" | "out"`; `PickerGroup = { value: string; label: string; items: CategoryOut[] }`; `directionOf(amounts: (string | number)[]): Direction`; `fitsDirection(slug, categories, direction): boolean` (Decision H); `byLevel1(categories): PickerGroup[]`; `pickerGroups(categories, direction, suggested?: string[]): PickerGroup[]`; `FilterOption = { kind: "group" | "category"; value: string; label: string }`; `FilterGroup = { value; label; items: FilterOption[] }`; `filterGroups(categories, txType?: TxType): FilterGroup[]`.
   - `CategoryPicker({ categories, direction, suggested?, value, onChange, id?, ariaLabel? })`.
   - `MerchantChoice = { id: string | null; name: string }`; `MerchantPicker({ merchants, value, onChange, allowCreate? = true, showClear? = false, id?, ariaLabel? = "Merchant" })`.
 
@@ -3737,7 +3821,7 @@ Create `apps/web/src/lib/pickers.test.ts`:
 import { describe, expect, it } from "vitest";
 
 import type { Schemas } from "./api";
-import { directionOf, filterGroups, pickerGroups } from "./pickers";
+import { directionOf, filterGroups, fitsDirection, pickerGroups } from "./pickers";
 
 const categories: Schemas["CategoryOut"][] = [
   { slug: "groceries", tx_type: "expense", level1: "shopping" },
@@ -3772,6 +3856,16 @@ describe("pickerGroups", () => {
   it("reads a merchant with purchases and refunds as money out", () => {
     expect(directionOf(["15.00", "-20.00"])).toBe("out");
     expect(directionOf(["2000.00"])).toBe("in");
+  });
+});
+
+describe("fitsDirection", () => {
+  it("tells whether a category fits the direction (Decision H)", () => {
+    expect(fitsDirection("salary", categories, "out")).toBe(false);
+    expect(fitsDirection("fashion", categories, "out")).toBe(true);
+    // A refund keeps its purchase's category, so money in takes any category.
+    expect(fitsDirection("fashion", categories, "in")).toBe(true);
+    expect(fitsDirection("unknown", categories, "in")).toBe(false);
   });
 });
 
@@ -3817,6 +3911,13 @@ export type PickerGroup = { value: string; label: string; items: Category[] };
  * purchase, and its refunds take the same category. */
 export const directionOf = (amounts: (string | number)[]): Direction =>
   amounts.some((amount) => Number(amount) < 0) ? "out" : "in";
+
+/** Money out never takes an income category (the API answers 422); money in takes any, because
+ * a refund keeps its purchase's category. /review drops a jev suggestion that does not fit. */
+export function fitsDirection(slug: string, categories: Category[], direction: Direction): boolean {
+  const category = categories.find((c) => c.slug === slug);
+  return category !== undefined && (direction === "in" || category.tx_type !== "income");
+}
 
 export function byLevel1(categories: Category[]): PickerGroup[] {
   const groups = new Map<string, Category[]>();
@@ -4035,7 +4136,7 @@ import { Switch } from "@/components/ui/switch";
 import type { Schemas } from "@/lib/api";
 import { dayLong, signedMoney } from "@/lib/format";
 import { label } from "@/lib/labels";
-import { directionOf } from "@/lib/pickers";
+import { directionOf, fitsDirection } from "@/lib/pickers";
 import { cn } from "@/lib/utils";
 
 type Item = Schemas["ReviewItem"];
@@ -4054,7 +4155,10 @@ type Props = {
 
 export function ReviewRow({ item, categories, merchants, onConfirm, onLabelOne, onDismissMerge }: Props) {
   const { suggestion, merge } = item;
-  const [categorySlug, setCategorySlug] = useState(suggestion.category_slug ?? "");
+  const direction = directionOf(item.transactions.map((t) => t.amount));
+  // Decision H: a jev suggestion that does not fit the direction (income on money out) is dropped.
+  const suggested = suggestion.category_slug ?? "";
+  const [categorySlug, setCategorySlug] = useState(fitsDirection(suggested, categories, direction) ? suggested : "");
   const [isSubscription, setIsSubscription] = useState(suggestion.is_subscription);
   const [merchant, setMerchant] = useState<MerchantChoice | null>(item.merchant ?? null);
   const [open, setOpen] = useState(false);
@@ -4097,7 +4201,7 @@ export function ReviewRow({ item, categories, merchants, onConfirm, onLabelOne, 
         <div className="flex items-center gap-2">
           <CategoryPicker
             categories={categories}
-            direction={directionOf(item.transactions.map((t) => t.amount))}
+            direction={direction}
             suggested={suggestion.top.map((score) => score.slug)}
             value={categorySlug}
             onChange={setCategorySlug}
@@ -4339,7 +4443,7 @@ Expected: no errors, and `grep -rn "review/category-picker\|review/merchant-pick
 - [ ] **Step 7: Check /review in the browser (R2, scratch database: confirming writes)**
 
 1. `open "http://localhost:3001/review"`, `snapshot -i`. Expect: rows as grey cards without borders; each row's header shows the direction badge, the date for a single row, the bank text (two lines at most) and the amount, green with "+" for money in.
-2. On a "Money out" row, and on a "Money in and out" merchant row (its answer covers every row), open the category picker: groups of expense categories, then "Transfer"; no "Income" group. On a "Money in" row: "Income" first, then "Refund of a purchase" (the expense categories), then "Transfer". A "Suggested" group comes first when jev scored the row.
+2. On a "Money out" row, and on a "Money in and out" merchant row (its answer covers every row), open the category picker: groups of expense categories, then "Transfer"; no "Income" group. On a "Money in" row: "Income" first, then "Refund of a purchase" (the expense categories), then "Transfer". A "Suggested" group comes first when jev scored the row. Decision H: find an item whose jev suggestion is an income category on money out or on a mixed merchant (`curl -s http://localhost:8001/review` lists each item's `suggestion.category_slug` and amounts; slugs with `tx_type` "income" come from `curl -s http://localhost:8001/categories`): its category field starts empty and its Confirm button is disabled. If the data has no such item, write "Decision H case not exercised: no such item in the data" in the task report.
 3. Expand a merchant with ×2 or more: each line shows its own bank text, its amount and account, and a category picker for its own direction.
 4. If a row shows "Same merchant as X?" and X also has its own row on the page: click "Merge", then confirm. Both rows leave the page; click "Undo" in the toast: both come back. Confirm again, wait 6 s, reload: both stay gone. If the data has no such pair, write "survivor case not exercised: no pair in the data" in the task report.
 5. Confirm any other row: it leaves the page, the nav's Review count drops after the toast closes, and after a reload it stays gone.
