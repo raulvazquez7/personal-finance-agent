@@ -111,3 +111,41 @@ def test_pair_transfers_labels_both_sides_and_skips_user_labels(db_conn, make_tx
     # Bound to a name so a failure shows the count, never the Settings repr with its keys.
     paired_again = pair_transfers(db_conn, Settings())
     assert paired_again == 0
+
+
+@pytest.mark.integration
+def test_a_row_the_user_marked_own_accounts_pairs_and_keeps_its_label(db_conn, make_tx):
+    mine = make_tx(
+        "4321.07",
+        "TRASPASO | ANA EXAMPLE",
+        iban="ES0000000000000000000011",
+        booked_at=SYNTHETIC_DAY,
+    )
+    other = make_tx(
+        "-4321.07",
+        "TRANSFERENCIA A ANA EXAMPLE",
+        iban="ES0000000000000000000012",
+        booked_at=SYNTHETIC_DAY,
+    )
+    db_conn.execute(
+        "update transactions set category_source = 'user', category_slug = 'own_accounts',"
+        " tx_type = 'transfer' where id = %s",
+        (mine,),
+    )
+    pair_transfers(db_conn, Settings())
+    rows = db_conn.execute(
+        "select id, tx_type, category_slug, category_source, transfer_pair_id from transactions"
+        " where id = any(%s)",
+        ([mine, other],),
+    ).fetchall()
+    by_id = {row["id"]: row for row in rows}
+    assert by_id[mine]["transfer_pair_id"] == by_id[other]["transfer_pair_id"] is not None
+    assert by_id[mine]["category_source"] == "user"
+    assert by_id[other]["category_source"] == "rule"
+    assert by_id[other]["category_slug"] == "own_accounts" and by_id[other]["tx_type"] == "transfer"
+    labels = db_conn.execute(
+        "select transaction_id from transaction_labels where transaction_id = any(%s)"
+        " and source = 'rule'",
+        ([mine, other],),
+    ).fetchall()
+    assert [row["transaction_id"] for row in labels] == [other]

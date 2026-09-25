@@ -214,7 +214,10 @@ regex on `description_raw`, default `TRASPASO|TRANSFER|BIZUM|TRF`, kept as a
 setting so two card purchases of the same amount never pair). Both rows get
 `tx_type = transfer`, category `own_accounts` with `category_source = rule`,
 and a shared `transfer_pair_id`; they skip jev. When the counterpart arrives in
-a later import, pairing relabels the earlier row unless the user labelled it.
+a later import, pairing relabels the earlier row unless the user labelled it
+with another category. A row the user labelled `own_accounts` pairs too and
+keeps its label, so a transfer can be marked in `/review` before the other
+account's statement is imported; its counterpart is relabelled on arrival.
 In the spike ledger the rule found 6 pairs, all real: 3 transfers between two
 accounts of the same holder (jev had read the holder's name as another person)
 and 3 Bizum payments between partners.
@@ -369,8 +372,11 @@ default and relabels that merchant's rows whose `category_source` is `jev` or
 `merchant`; rows labelled one by one (the expanded view, used for mixed
 merchants such as marketplaces) stay as they are. Future transactions of
 that merchant take the default without review. Merging two merchants in
-`/review` repoints their transactions and keeps the surviving name and
-default. A "recategorize all" action re-runs the cascade over every
+`/review` happens on confirm: it repoints their transactions, keeps the
+surviving name and sets the confirmed category as the survivor's default. A
+merchant whose charges differ in category only by price (a device insurance
+plan and a storage plan billed under the same bank text) keeps no default and
+is labelled line by line. A "recategorize all" action re-runs the cascade over every
 non-user-labelled transaction; with output tokens free and input at
 $0.042 per million tokens, re-labelling years of history costs cents.
 
@@ -542,7 +548,7 @@ block.
 | `GET /categories` | taxonomy tree for pickers |
 | `GET /merchants?q=` | merchant autocomplete |
 | `POST /merchants/{id}/review` | confirm a merchant: category, subscription, optional rename; sets the default and relabels its non-user rows |
-| `POST /merchants/{id}/merge`, `POST /merchants/{id}/dismiss-merge` | accept or reject a merge suggestion |
+| `POST /merchants/{id}/merge`, `POST /merchants/{id}/dismiss-merge` | accept or reject a merge suggestion (the web app merges through `review` with `merge_into_id`, so the category is confirmed in the same request) |
 | `POST /transactions/{id}/label` | label one transaction: existing or new merchant, category, subscription |
 | `POST /categorize/run` | re-run the cascade over uncategorized or all non-user rows |
 | `GET /dashboard/overview?month=` | KPIs, spend by category, monthly trend, top merchants |
@@ -588,7 +594,13 @@ merchant (payments to people, opaque codes) appear one by one.
  └──────────────────────────────────────────────────────────────────────────┘
 ```
 
-- Bank text (muted, truncated), a transaction count and the total amount.
+- Bank text (muted, truncated), a transaction count and the total amount. A
+  row with a single transaction also shows its date and account (the account
+  is hidden on phones).
+- Direction at a glance: a "Money in" (green) or "Money out" badge, "Money
+  in and out" when a merchant row mixes both, and amounts with an explicit
+  sign, green for money in; a money-in row also gets a green left edge. A
+  refund must never read as a purchase.
 - Merchant: searchable combobox over known merchants with "Create '…'";
   picking another merchant merges, typing a new name renames.
 - Category: searchable level-2 combobox grouped by level 1, jev's top three
@@ -597,11 +609,14 @@ merchant (payments to people, opaque codes) appear one by one.
 - Subscription: switch, on when jev scored > 0.7.
 - Confirm: the row fades out with a "Confirmed · Undo" toast; the request is
   sent when the toast closes (or when the page is left), so undo simply
-  cancels it.
+  cancels it. On a row with several transactions the button reads "Apply to
+  all N", so it is never mistaken for the first line's button.
 - Expanding a merchant row lists its transactions for one-off labels, which
-  do not touch the merchant default.
-- A merge suggestion (0.5 to 0.8) is an inline line with Merge and No; No
-  marks the merchant `confirmed` so it is not suggested again.
+  do not touch the merchant default; each line's button reads "Only this one".
+- A merge suggestion (0.5 to 0.8) is an inline line with Merge and No. Merge
+  picks the suggested merchant in the merchant field and the row stays, so
+  the category is still decided; confirming merges and labels in one request.
+  No marks the merchant `confirmed` so it is not suggested again.
 - No bulk accept: with one row per merchant the first import is about 72
   clicks, and accepting everything at once is what the 0.95 threshold exists
   to prevent.
@@ -796,3 +811,30 @@ Decided with Raul during implementation (2026-09-24):
   the body-less `POST /categorize/run`) from triggering paid runs; requests
   without an `Origin` (CLI, curl, tests) pass.
 
+
+### Review fixes before slice 3 (2026-09-24)
+
+Decided with Raul after he reviewed the March statement in `/review`:
+
+- Section 4.4: a row the user labelled `own_accounts` is a pairing candidate;
+  pairing links it and keeps its label, and relabels only the counterpart.
+  Rows the user labelled with any other category are still never paired.
+- Section 11.1: a single-transaction row shows its date and account; the
+  merchant-level button reads "Apply to all N" and each expanded line's
+  button "Only this one". Before, the icon-only merchant button sat right
+  above the first line's button, and pressing it overwrote the categories
+  picked on the lines.
+- Section 11.1: every review row says whether money comes in or goes out
+  (badge, signed amount, green for money in). A refund from a clothes shop
+  was labelled as a clothing purchase because only the sign told them apart.
+  How refunds are categorized and counted is open for slice 3
+  (`docs/superpowers/specs/2026-09-25-slice-3-brainstorm-inputs.md`).
+- Sections 5.3 and 11.1: Merge no longer saves on its own and hides the row
+  (which left the moved transactions' category undecided until a reload); it
+  picks the suggested merchant, and the confirm merges and labels in one
+  request through `POST /merchants/{id}/review` with `merge_into_id`.
+- Section 5.3: mixed merchants whose category depends on the price keep no
+  default. The bank text cannot tell their charges apart, so jev usually
+  scores them below the 0.95 gate and each new one reaches `/review`; a
+  confident wrong guess is the residual risk. Remembering a label by merchant
+  and amount is a candidate for slice 3.

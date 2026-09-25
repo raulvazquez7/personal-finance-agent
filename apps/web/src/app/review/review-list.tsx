@@ -162,8 +162,6 @@ export function ReviewList({ initialItems, categories, merchants, uncategorized 
               merchants={merchants}
               onConfirm={(d) => confirm(item, d)}
               onLabelOne={(tx, d) => labelOne(item, tx, d, "Labelled")}
-              onMerge={() => item.merge && item.merchant && schedule(item, null, "Merged", (keepalive) =>
-                apiPost(`/merchants/${item.merchant!.id}/merge`, { into_id: item.merge!.merchant_id }, { keepalive }))}
               onDismissMerge={() => item.merchant && schedule(item, { ...item, merge: null }, "Dismissed", (keepalive) =>
                 apiPost(`/merchants/${item.merchant!.id}/dismiss-merge`, undefined, { keepalive }))}
             />
