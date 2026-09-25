@@ -147,7 +147,9 @@ def test_categorize_says_why_it_skipped(monkeypatch):
         cli, "run_categorization", lambda include_all=False, rules_only=False: skipped
     )
     result = runner.invoke(cli.app, ["categorize"])
-    assert result.stdout.strip() == "categorization skipped: TYPESAFE_API_KEY is not set (paired=2)"
+    assert result.stdout.strip() == (
+        "jev skipped: TYPESAFE_API_KEY is not set (paired=2 categorized=0 needs_review=0)"
+    )
 
 
 def test_categorize_reports_rows_jev_could_not_answer(monkeypatch):

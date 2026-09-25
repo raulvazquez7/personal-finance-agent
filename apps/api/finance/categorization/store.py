@@ -68,16 +68,14 @@ class CategorizeSummary(BaseModel):
     skipped: str | None = None
 
     def line(self) -> str:
-        counts = [f"paired={self.paired}"] + [
-            f"{source}={n}" for source, n in sorted(self.by_source.items())
-        ]
-        if self.skipped:
-            return f"categorization skipped: {self.skipped} ({' '.join(counts)})"
-        parts = [counts[0], f"categorized={self.categorized}", *counts[1:]]
+        parts = [f"paired={self.paired}", f"categorized={self.categorized}"]
+        parts += [f"{source}={n}" for source, n in sorted(self.by_source.items())]
         parts.append(f"needs_review={self.needs_review}")
         if self.failed:
             parts.append(f"failed={self.failed}")
-        return " ".join(parts)
+        counts = " ".join(parts)
+        # Skipped means jev only: pairing and the rules still ran.
+        return f"jev skipped: {self.skipped} ({counts})" if self.skipped else counts
 
 
 def load_pending(conn: Connection, include_all: bool) -> list[TxInput]:
@@ -187,8 +185,8 @@ async def categorize_pending(
                     results = await categorize(rows, ctx, client, roster)
             else:
                 results = await categorize(rows, ctx, jev, roster)
-            span.update(output={"categorized": len(results)})
-        failed = len(rows) - len(results)
+            failed = len(rows) - len(results)
+            span.update(output={"categorized": len(results), "failed": failed})
     summary = CategorizeSummary(
         paired=paired,
         categorized=len(results),
