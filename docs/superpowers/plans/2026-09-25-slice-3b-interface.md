@@ -8,7 +8,7 @@
 
 **Tech Stack:** Next.js 16.3 App Router, React 19.2, TypeScript, Tailwind v4, shadcn/ui `base-nova` (Base UI primitives), Recharts 3.8 through the shadcn `chart` component, `openapi-typescript` types, Vitest for pure helpers (Decision A), `agent-browser` for UI checks.
 
-**Spec:** `docs/superpowers/specs/2026-09-25-slice-3-design.md`, sections 2.6, 7, 8, 9, 11 and 14. The mockups are in `docs/superpowers/specs/2026-09-25-slice-3-mockups/`: `index.html` holds the exact tokens and copy, and `01-page-map.png`, `02-overview.png`, `03-group-page.png` and `04-tokens.png` are the visual contract (layout, hierarchy, tokens and chart forms; pixel values are indicative). The API contract is plan 3a, `docs/superpowers/plans/2026-09-25-slice-3a-money-rules-and-data.md`: Task 7 (note, clear default, label 422), Task 10 (`finance/dashboard/models.py`), Task 11 (`GET /dashboard/overview`, `GET /dashboard/subscriptions`), Task 12 (`GET /transactions`) and Task 13 (`GET /spending/detail`).
+**Spec:** `docs/superpowers/specs/2026-09-25-slice-3-design.md`, sections 2.6, 7, 8, 9, 11 and 14. The mockups are in `docs/superpowers/specs/2026-09-25-slice-3-mockups/`: `index.html` holds the exact tokens and copy, and `01-page-map.png`, `02-overview.png`, `03-group-page.png` and `04-tokens.png` are the visual contract (layout, hierarchy, tokens and chart forms; pixel values are indicative). The API contract is plan 3a, `docs/superpowers/plans/2026-09-25-slice-3a-money-rules-and-data.md`: Task 7 (note, clear default, label 422), Task 10 (`finance/dashboard/models.py`), Task 11 (`GET /dashboard/overview`, `GET /dashboard/subscriptions`), Task 12 (`GET /transactions`) and Task 13 (`GET /spending/detail`). Where plan 3a's code blocks and the shipped code differ, the code and the regenerated `apps/web/src/lib/api-types.ts` are the contract (plan 3a, "In-flight decisions").
 
 ## Decisions for Raul before Task 1
 
@@ -18,7 +18,7 @@ Each has a default; the plan is written for the default.
 - **B. Text contrast (default: the approved tokens).** Muted `#8A8A94` is 3.4:1 on white and 3.2:1 on `#F7F7F9`; income/good `#16A34A` is 3.3:1 and 3.1:1. Both are below WCAG AA (4.5:1) for small text. Alternative: text-only values `--muted-foreground: #6b6b75` (4.9:1) and `--good`/`--income: #15803d` (4.7:1), keeping the mockup values for chart marks. Task 3 Step 3 has the line to change.
 - **C. Active nav item: the mockup (resolved; spec 7.2 corrected).** `index.html:24` draws the active pill near-black (`.nav.on{background:var(--text)}`), while spec 7.2 (lines 270-271) names the accent for "the active nav item". Default: a near-black pill, with the accent for links, the current series and the logo dot.
 - **D. Settings in the navigation (default: last nav item).** The mockup nav has no Settings entry, and `/settings` needs a way in.
-- **E. Resolved in plan 3a Task 7:** `confirm_merchant` rejects an income default for a merchant with money-out rows (422), so "Apply to all" cannot turn money out into income.
+- **E. Resolved in plan 3a Task 7:** confirming a merchant never writes an income category on its money-out rows (they keep their labels), so "Apply to all" cannot turn money out into income. The API returns no 422 for it; only labelling one money-out row with an income category is a 422.
 
 ## Before Task 1
 
@@ -53,6 +53,7 @@ Expected: no errors.
 ## Global Constraints
 
 - 3b starts after 3a is merged. Web types come from `npm run gen:api` (API on :8000) into `apps/web/src/lib/api-types.ts`, and code uses them as `Schemas["<Name>"]` from `@/lib/api`. The names used are: `Overview`, `PeriodOut`, `Totals`, `Cumulative`, `CumulativePoint`, `MonthPoint`, `BreakdownRow`, `SubscriptionsSummary`, `Subscriptions`, `SubscriptionOut`, `SpendingDetail`, `ScopeMonth`, `Transaction`, `TransactionPage`, `Account`, `CategoryOut`, `MerchantOut`, `ReviewItem`, `ReviewTransaction`, `ReviewCount`, `ImportRecord`, `ImportSummary`. Decimals arrive as strings.
+- The folded row's key is "_other" (never a slug); plan 3a Task 10.
 - This is Next.js 16.3.6, not the Next.js of training data. Read the guide in `apps/web/node_modules/next/dist/docs/` before using any API (`apps/web/AGENTS.md`). `params` and `searchParams` are Promises. `PageProps<"/route">` and `LayoutProps<"/route">` are global types. `error.tsx` receives `retry` (stable since 16.3). A client component that calls `useSearchParams` inside the root layout needs a `<Suspense>` boundary, or `next build` fails on the prerendered 404 page.
 - Every page that fetches exports `export const dynamic = "force-dynamic"` (the existing convention), so `next build` in CI never calls the API.
 - shadcn `base-nova` runs on Base UI, not Radix. Use `render={<Button />}`, never `asChild`. Add `nativeButton={false}` when `render` is a `Link`. `ToggleGroup` values are arrays. `Select` takes an `items` prop. Follow `.claude/skills/shadcn/rules/*.md`. Add components with `npx shadcn@latest add <name> --dry-run`, then without `--dry-run`, and read every added file. Icons come from `lucide-react`, and `cn` from `@/lib/utils`.
@@ -60,6 +61,7 @@ Expected: no errors.
 - No other libraries: no nuqs, no TanStack Table, no date library. `Intl` formats money and dates, and period maths stays in the API; the web only shifts a month for the "Previous month" preset.
 - The URL is the state. The period (`period`, `month`, `start`, `end`), `account_id` (repeatable) and the explorer filters live in `searchParams`, and they are parsed and written only through `src/lib/params.ts`. Every link carries them (`withFilters`).
 - Server components fetch through `apiGet`. Client components exist only for charts and interactive controls. The browser fetches only "Load more" pages and writes.
+- The API answers only the hosts in its `TRUSTED_HOSTS` setting (default `localhost`, `127.0.0.1`, `testserver`; plan 3a Task 14) and returns 400 for any other `Host`, so `NEXT_PUBLIC_API_URL` stays on `localhost` (`:8000`, and `:8001` in R2).
 - Visual system (spec 7.2, mockup tokens): white page `#FFFFFF`; surfaces `#F7F7F9` without borders; text `#0B0B0F`; muted `#8A8A94`; one accent, indigo `#4F46E5`; income/good `#16A34A`; bad `#E11D48`; radius 16 for cards and 999 for pills; Geist with tabular numbers; the logo is lower-case "tally ai", in one colour and one weight, with the accent dot; a top navigation bar with a pill for the active item and the filters on the right.
 - Group palette `#4F46E5 #EB6834 #1BAF7A #EDA100 #E87BA4`, other `#D4D4DC`, assigned by `Overview.group_slots`: colour follows the group, never its rank. One-hue ramp `#4F46E5 #6D66EE #8C86F2 #AAA6F5 #C4C0F8 #DAD8FB` (darkest = largest) for categories inside a group page. Green and red only for deltas, always with an arrow and a sign. Light mode only.
 - The UI explains itself. Every edit field has a one-line `FieldDescription`, and every KPI has an ⓘ tooltip that quotes `docs/money-rules.md`. UI copy is in English, in sentence case.
@@ -73,7 +75,7 @@ Expected: no errors.
 
 ## Review Focus
 
-1. **A hand-edited or stale URL** (`period=week`, `month=2026-13`, a custom range that ends before it starts or on 30 February, a non-UUID `account_id`, a 150-character `q`): the page falls back to the defaults and renders; it never shows a 422 or a 500. Tests: Task 1 (`params.test.ts`).
+1. **A hand-edited or stale URL** (`period=week`, `month=2026-13` or `month=2100-01`, a custom range that ends before it starts or on 30 February, a non-UUID `account_id`, a 150-character `q`): the page falls back to the defaults and renders; it never shows a 422 or a 500. Tests: Task 1 (`params.test.ts`).
 2. **A browser west of UTC**: `2026-08-01` must read "Sat, 1 Aug", never 31 July. Day headers, axis labels and the period pill all format through `format.ts` in UTC. Tests: Task 1 (`format.test.ts`, run with `TZ=America/Los_Angeles`).
 3. **A period whose previous period has no data, was zero, or was negative (refunds only), and a month without income**: the delta is hidden, reads "new", or keeps its real direction; the savings rate reads "—" and its delta is hidden. Tests: Task 2 (`delta.test.ts`).
 4. **A day split across two "Load more" pages**: one header for the day, with the net of all its loaded rows. Tests: Task 6 (`transactions.test.ts`, `groupByDay`).
@@ -255,6 +257,8 @@ describe("parseFilters", () => {
       period: "month",
       accounts: [A],
     });
+    // GET /dashboard/overview and friends take months 1900-01..2099-12 only.
+    expect(parseFilters({ month: "2100-01" })).toEqual({ period: "month", accounts: [] });
   });
 
   it("keeps a custom range only when it is two real days in order", () => {
@@ -266,6 +270,7 @@ describe("parseFilters", () => {
     });
     expect(parseFilters({ period: "custom", start: "2026-08-19", end: "2026-08-10" }).period).toBe("month");
     expect(parseFilters({ period: "custom", start: "2026-02-01", end: "2026-02-30" }).period).toBe("month");
+    expect(parseFilters({ period: "custom", start: "1899-12-31", end: "2026-08-10" }).period).toBe("month");
   });
 });
 
@@ -335,6 +340,7 @@ describe("query helpers", () => {
   it("knows a real day and the detail page type", () => {
     expect(isDay("2028-02-29")).toBe(true);
     expect(isDay("2026-02-29")).toBe(false);
+    expect(isDay("2101-01-01")).toBe(false);
     expect(detailType({ type: "income" })).toBe("income");
     expect(detailType({ type: "loan" })).toBe("expense");
   });
@@ -383,6 +389,9 @@ describe("money", () => {
 
   it("formats shares and rates", () => {
     expect(percent(0.3799)).toBe("38%");
+    // A refund after its purchase month makes an entry's net negative: shares leave 0-100%.
+    expect(percent(1.25)).toBe("125%");
+    expect(percent(-0.1)).toBe("-10%");
     expect(rate(0.328)).toBe("32.8%");
     expect(rate(null)).toBe("—");
   });
@@ -493,7 +502,10 @@ export type ExplorerFilters = {
   saved?: Saved;
 };
 
-const MONTH = /^\d{4}-(0[1-9]|1[0-2])$/;
+// The API's bounds: `month` is 1900-01..2099-12, `start` and `end` are 1900-01-01..2100-12-31.
+const MONTH = /^(19|20)\d{2}-(0[1-9]|1[0-2])$/;
+const FIRST_DAY = "1900-01-01";
+const LAST_DAY = "2100-12-31";
 const SLUG = /^[a-z0-9_]{1,64}$/;
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const BOOLEANS = ["true", "false"] as const;
@@ -509,9 +521,10 @@ function oneOf<T extends string>(values: readonly T[], value: string | undefined
 export const isUuid = (value: string | undefined): value is string => value !== undefined && UUID.test(value);
 export const isSlug = (value: string | undefined): value is string => value !== undefined && SLUG.test(value);
 
-/** A real calendar day as YYYY-MM-DD: the API refuses 2026-02-30 with a 422. */
+/** A real calendar day as YYYY-MM-DD within the API's bounds: it refuses 2026-02-30 and 2101-01-01
+ * with a 422. */
 export function isDay(value: string | undefined): value is string {
-  if (value === undefined || !/^\d{4}-\d{2}-\d{2}$/.test(value)) return false;
+  if (value === undefined || !/^\d{4}-\d{2}-\d{2}$/.test(value) || value < FIRST_DAY || value > LAST_DAY) return false;
   const date = new Date(`${value}T00:00:00Z`);
   return !Number.isNaN(date.getTime()) && date.toISOString().startsWith(value);
 }
@@ -753,7 +766,7 @@ git commit -m "feat: add URL state and formatting helpers for the web app"
 **Interfaces:**
 - Consumes: `Filters`, `TxType`, `withFilters` (Task 1).
 - Produces:
-  - `delta.ts`: `Good = "up" | "down"`, `Unit = "percent" | "euro" | "points"`, `Tone = "good" | "bad" | "neutral"`, `Delta = { kind: "hidden" } | { kind: "new" } | { kind: "change"; direction: "up" | "down" | "flat"; tone: Tone; text: string }`, `delta(current: number | null, previous: number | null | undefined, good: Good, unit: Unit): Delta`, `atSameDay(cumulative): { current: number; previous: number | null }`.
+  - `delta.ts`: `Good = "up" | "down"`, `Unit = "percent" | "euro" | "points"`, `Tone = "good" | "bad" | "neutral"`, `Delta = { kind: "hidden" } | { kind: "new" } | { kind: "change"; direction: "up" | "down" | "flat"; tone: Tone; text: string }`, `delta(current: number | null, previous: number | null | undefined, good: Good, unit: Unit): Delta`, `atSameDay(cumulative): { current: number | null; previous: number | null }` (`current` is null when the current series is empty).
   - `colors.ts`: `OTHER_COLOR`, `groupColor(level1: string | null | undefined, slots: Record<string, number>): string`, `rampColor(index: number): string`, `foldBySlot(rows: BreakdownRow[], slots): BreakdownRow[]`.
   - `labels.ts`: `Dimension = "group" | "category" | "merchant"`, `label(slug)`, `plural(count, one, many)`, `groupHint(level1, categories)`, `rowName(row, dimension)`, `rowHint(row, dimension, categories)`, `sourceLabel(source)`, `accountsLabel(ids, accounts)`, `knownGroup(level1, categories)`, `knownCategory(slug, categories, where: { type: TxType; level1?: string })`.
   - `definitions.ts`: `DEFINITIONS = { income, expenses, savings, savingsRate }`.
@@ -807,6 +820,11 @@ describe("atSameDay", () => {
     expect(atSameDay({ current: points("1", "2", "3"), previous: points("7", "9") })).toEqual({ current: 3, previous: 9 });
     expect(atSameDay({ current: points("4"), previous: null })).toEqual({ current: 4, previous: null });
   });
+
+  it("reads no data, never 0, when the current series is empty", () => {
+    // The API sends [] when the period starts after the latest imported day, or there is no data.
+    expect(atSameDay({ current: [], previous: points("5", "20") })).toEqual({ current: null, previous: null });
+  });
 });
 ```
 
@@ -824,7 +842,7 @@ const slots = { home: 1, shopping: 2, leisure: 3, transport: 4, credit_card: 5 }
 const row = (key: string, amount: string, share: number, previous: string | null, folded = 0): Row => ({
   key,
   label: null,
-  level1: key === "other" ? null : key,
+  level1: key === "_other" ? null : key,
   category_slug: null,
   merchant_id: null,
   amount,
@@ -851,11 +869,11 @@ describe("colours", () => {
         row("home", "830.00", 0.38, "800.00"),
         row("health", "100.00", 0.05, "90.00"),
         row("shopping", "481.20", 0.22, "500.00"),
-        row("other", "94.80", 0.04, "100.00", 3),
+        row("_other", "94.80", 0.04, "100.00", 3),
       ],
       slots,
     );
-    expect(folded.map((r) => r.key)).toEqual(["home", "shopping", "other"]);
+    expect(folded.map((r) => r.key)).toEqual(["home", "shopping", "_other"]);
     expect(folded[2]).toMatchObject({ amount: "194.80", share: 0.09, previous: "190.00", folded: 4, count: 2 });
   });
 
@@ -922,12 +940,12 @@ describe("labels", () => {
   });
 
   it("names rows, including the folded ones and merchants without a merchant", () => {
-    expect(rowName(row({ key: "other", folded: 12 }), "merchant")).toBe("Other 12 merchants");
-    expect(rowName(row({ key: "other", folded: 3 }), "group")).toBe("Other");
+    expect(rowName(row({ key: "_other", folded: 12 }), "merchant")).toBe("Other 12 merchants");
+    expect(rowName(row({ key: "_other", folded: 3 }), "group")).toBe("Other");
     expect(rowName(row({ key: "category:credit_card_spending", category_slug: "credit_card_spending" }), "merchant")).toBe(
       "Credit card spending",
     );
-    expect(rowHint(row({ key: "other", folded: 3 }), "group", categories)).toBe("3 groups");
+    expect(rowHint(row({ key: "_other", folded: 3 }), "group", categories)).toBe("3 groups");
     expect(rowHint(row({ key: "fashion", level1: "shopping" }), "category", categories)).toBe("Shopping");
     expect(rowHint(row({ key: "m", category_slug: "groceries", count: 12 }), "merchant", categories)).toBe(
       "Groceries · 12 transactions",
@@ -950,6 +968,8 @@ describe("labels", () => {
     expect(knownCategory("fashion", categories, { type: "expense", level1: "shopping" })).toBe(true);
     expect(knownCategory("fashion", categories, { type: "expense", level1: "home" })).toBe(false);
     expect(knownCategory("uncategorized", categories, { type: "expense", level1: "uncategorized" })).toBe(true);
+    // Uncategorized money in counts as income: /income lists it under the key "uncategorized".
+    expect(knownCategory("uncategorized", categories, { type: "income" })).toBe(true);
     expect(knownCategory("salary", categories, { type: "income" })).toBe(true);
   });
 });
@@ -989,7 +1009,7 @@ describe("breakdownItems", () => {
     const [groceries, other] = breakdownItems(
       [
         row({ key: "groceries", level1: "shopping", category_slug: "groceries", amount: "268.40", share: 0.56, previous: "280.00" }),
-        row({ key: "other", amount: "10.00", previous: "12.00", folded: 2 }),
+        row({ key: "_other", amount: "10.00", previous: "12.00", folded: 2 }),
       ],
       "category",
       { categories, slots: { shopping: 2 }, filters: august, good: "down", type: "expense" },
@@ -1102,11 +1122,13 @@ export function delta(current: number | null, previous: number | null | undefine
 type Cumulative = { current: { total: string }[]; previous: { total: string }[] | null };
 
 /** "Spent so far against the previous period at the same day" (spec 7.1). The current series
- * stops at the latest imported day; the previous one is read at the same day, or at its end
- * when it is shorter (February against January). */
-export function atSameDay(cumulative: Cumulative): { current: number; previous: number | null } {
+ * stops at the latest imported day, and is empty when the period has no data yet: that reads as
+ * no data, never 0 (spec 2.6). The previous one is read at the same day, or at its end when it
+ * is shorter (February against January). */
+export function atSameDay(cumulative: Cumulative): { current: number | null; previous: number | null } {
   const index = cumulative.current.length - 1;
-  const current = Number(cumulative.current[index]?.total ?? 0);
+  if (index < 0) return { current: null, previous: null };
+  const current = Number(cumulative.current[index].total);
   const before = cumulative.previous;
   if (!before || before.length === 0) return { current, previous: null };
   return { current, previous: Number(before[Math.min(index, before.length - 1)].total) };
@@ -1132,20 +1154,20 @@ export function groupColor(level1: string | null | undefined, slots: Record<stri
   return slot ? `var(--chart-${slot})` : OTHER_COLOR;
 }
 
-/** The one-hue ramp inside a group page, darkest = largest; the 6th step also paints "other". */
+/** The one-hue ramp inside a group page, darkest = largest; the 6th step also paints "_other". */
 export const rampColor = (index: number) => `var(--ramp-${Math.min(index, 5) + 1})`;
 
 const sum = (values: number[]) => values.reduce((total, value) => total + value, 0);
 
 /** The Groups view shows the five coloured groups and folds the rest into one "Other" row
  * (spec 7.2). The API ranks its top five by the period's spend, so a group without a slot can
- * be among them: it is folded here, with the API's own "other" row. */
+ * be among them: it is folded here, with the API's own "_other" row. */
 export function foldBySlot(rows: Row[], slots: Record<string, number>): Row[] {
-  const kept = rows.filter((row) => row.key !== "other" && slots[row.key] !== undefined);
+  const kept = rows.filter((row) => row.key !== "_other" && slots[row.key] !== undefined);
   const rest = rows.filter((row) => !kept.includes(row));
   if (rest.length === 0) return rows;
   const other: Row = {
-    key: "other",
+    key: "_other",
     label: null,
     level1: null,
     category_slug: null,
@@ -1154,7 +1176,7 @@ export function foldBySlot(rows: Row[], slots: Record<string, number>): Row[] {
     share: Math.round(sum(rest.map((row) => row.share)) * 10_000) / 10_000,
     previous: rest.every((row) => row.previous !== null) ? sum(rest.map((row) => Number(row.previous))).toFixed(2) : null,
     count: sum(rest.map((row) => row.count)),
-    folded: sum(rest.map((row) => (row.key === "other" ? (row.folded ?? 0) : 1))),
+    folded: sum(rest.map((row) => (row.key === "_other" ? (row.folded ?? 0) : 1))),
   };
   return [...kept, other];
 }
@@ -1196,7 +1218,7 @@ export function groupHint(level1: string, categories: Category[]): string {
 }
 
 export function rowName(row: Row, dimension: Dimension): string {
-  if (row.key === "other") {
+  if (row.key === "_other") {
     return dimension === "merchant" ? `Other ${plural(row.folded ?? 0, "merchant", "merchants")}` : "Other";
   }
   // A merchant row without a merchant is keyed "category:<slug>" and reads as its category.
@@ -1204,7 +1226,7 @@ export function rowName(row: Row, dimension: Dimension): string {
 }
 
 export function rowHint(row: Row, dimension: Dimension, categories: Category[]): string {
-  if (row.key === "other") {
+  if (row.key === "_other") {
     if (dimension === "merchant") return "";
     const folded = row.folded ?? 0;
     return dimension === "group" ? plural(folded, "group", "groups") : plural(folded, "category", "categories");
@@ -1231,7 +1253,8 @@ export function knownGroup(level1: string, categories: Category[]): boolean {
 }
 
 export function knownCategory(slug: string, categories: Category[], where: { type: TxType; level1?: string }): boolean {
-  if (slug === "uncategorized" && where.level1 === "uncategorized") return true;
+  // Rows without a category: money out sits in the "uncategorized" group, money in in Income.
+  if (slug === "uncategorized" && (where.level1 === "uncategorized" || where.type === "income")) return true;
   return categories.some(
     (c) => c.slug === slug && c.tx_type === where.type && (where.level1 === undefined || c.level1 === where.level1),
   );
@@ -1244,15 +1267,16 @@ Create `apps/web/src/lib/definitions.ts` (the texts are the "The numbers" table 
 /** The ⓘ texts on the KPI tiles, quoted from docs/money-rules.md ("The numbers"). Change them
  * there first: the dashboards and the slice 4 agent must never disagree. */
 export const DEFINITIONS = {
-  income: "The sum of rows whose category is an income category.",
-  expenses: "The sum of rows whose category is an expense category. A refund subtracts.",
+  income: "The sum of income-type rows: rows with an income category, and uncategorized money in.",
+  expenses:
+    "Minus the sum of expense-type rows: rows with an expense category, and uncategorized money out. A refund (money in with an expense category) subtracts.",
   savings: "Income − expenses. Money you move to your own savings or investment accounts counts as saved.",
   savingsRate:
     "Savings ÷ income. It can be negative (you spent more than you earned). It is empty when there is no income.",
 } as const;
 ```
 
-If `docs/money-rules.md` on `main` words these differently from plan 3a, copy the merged file's words.
+These are the words of the file shipped by 3a (its Income and Expenses rows were reworded in flight). If `docs/money-rules.md` on `main` words them differently, copy the merged file's words.
 
 - [ ] **Step 6: Implement `breakdown.ts`**
 
@@ -1290,7 +1314,7 @@ export type BreakdownContext = {
 };
 
 function hrefOf(row: Row, dimension: Dimension, { filters, type }: BreakdownContext): string | null {
-  if (row.key === "other") return null;
+  if (row.key === "_other") return null;
   if (dimension === "group") return withFilters(`/spending/${row.key}`, filters);
   if (dimension === "category") {
     return withFilters(type === "income" ? `/income/${row.key}` : `/spending/${row.level1 ?? "uncategorized"}/${row.key}`, filters);
@@ -1306,7 +1330,7 @@ export function breakdownItems(rows: Row[], dimension: Dimension, context: Break
     hint: rowHint(row, dimension, context.categories),
     href: hrefOf(row, dimension, context),
     color: context.slots
-      ? groupColor(dimension === "group" && row.key !== "other" ? row.key : row.level1, context.slots)
+      ? groupColor(dimension === "group" && row.key !== "_other" ? row.key : row.level1, context.slots)
       : undefined,
     share: row.share,
     amount: row.amount,
@@ -2410,7 +2434,9 @@ export default async function OverviewPage({ searchParams }: PageProps<"/">) {
       <Card>
         <CardHeader>
           <CardTitle>
-            {moneyWhole(spent.current)} spent {period.name === "month" ? `in ${periodNames(period).current}` : "in this period"}
+            {/* An empty current series (the period starts after the latest imported day) is no data, never €0. */}
+            {spent.current === null ? "No data" : `${moneyWhole(spent.current)} spent`}{" "}
+            {period.name === "month" ? `in ${periodNames(period).current}` : "in this period"}
           </CardTitle>
           <CardDescription>
             <DeltaText value={delta(spent.current, spent.previous, "down", "euro")} />{" "}
@@ -2471,7 +2497,7 @@ Expected: no errors. Fix prop-type mismatches against the generated `chart.tsx` 
 4. The 12-month chart: 12 month labels. For a month without data, "no data" appears above a dashed box that sits on the €0 line (adjust `BOX.lift` if not). `find nth 1 ".recharts-bar-rectangle" hover`, `snapshot`: a tooltip "<Month YYYY>" with Income, Expenses and Savings in euros (or "no data").
 5. Legend isolation: `eval "document.querySelectorAll('.recharts-bar-rectangle').length"`; click the "Expenses" legend button: it has `aria-pressed="true"`, the others are dimmed, and the count halves; click it again: the count returns.
 6. Choose "Last 3 months" in the period picker: the URL has `period=last_3_months`, the deltas read "vs the 3 months before", the cumulative title reads "spent in this period", and `eval "document.querySelectorAll('[data-slot=chart] text.font-semibold').length"` prints `3`.
-7. `open "http://localhost:3000/?account_id=00000000-0000-4000-8000-000000000000"`: "No transactions in these accounts" and an "Import statements" link to `/imports`.
+7. `open "http://localhost:3000/?account_id=00000000-0000-4000-8000-000000000000"`: "No transactions in these accounts" and an "Import statements" link to `/imports`. `open "http://localhost:3000/?month=2099-12"` (after the latest imported day): the cumulative title reads "No data in December", no current line is drawn (never a line at €0), and `errors` is empty.
 8. Screenshot `task04-overview.png` at 1280 px and compare with the top half of `02-overview.png`: four tiles in a row, the cumulative line in the accent with a soft fill over the grey previous line, the 12-month bars with the savings line and the dashed boxes. `errors`, `close`.
 
 - [ ] **Step 9: Commit**
@@ -2755,9 +2781,11 @@ After the "Last 12 months" card, before the closing `</>`, add:
         <CardHeader>
           <CardTitle>
             {plural(subscriptions.count, "subscription", "subscriptions")}
+            {/* v_subscriptions is per merchant: the account filter does not apply, so say so. */}
             <span className="font-normal text-muted-foreground">
               {" "}
-              · {money(subscriptions.monthly_total)} per month · {money(subscriptions.yearly_total)} per year
+              · {money(subscriptions.monthly_total)} per month · {money(subscriptions.yearly_total)} per year · all
+              accounts
             </span>
           </CardTitle>
           <CardAction>
@@ -2781,7 +2809,7 @@ Expected: no errors.
 3. Click "Categories": category rows with their group's name as the hint, dots in their group's colour. Click "Merchants": the last row reads "Other N merchants" when merchants were folded.
 4. Hover a donut slice (`find first ".recharts-pie-sector" hover`), `snapshot`: the tooltip shows its name and an amount in euros.
 5. `snapshot -i -u`: a group's link is `/spending/<group>?<the same period params>`; a category's link is `/spending/<group>/<category>?…`; a merchant's link is `/merchants/<id>?…`. (These pages come in Tasks 6 and 7.)
-6. The subscriptions line reads "N subscriptions · €… per month · €… per year" with a link to `/subscriptions`.
+6. The subscriptions line reads "N subscriptions · €… per month · €… per year · all accounts" with a link to `/subscriptions`; picking one account in the top bar leaves it unchanged (`/dashboard/overview` ignores `account_id` for subscriptions).
 7. Screenshot `task05-overview.png` and compare with the bottom half of `02-overview.png`: donut left, table right, the segmented control at the top right, the subscriptions line as its own low card. `errors`, `close`.
 
 - [ ] **Step 8: Commit**
@@ -3060,7 +3088,7 @@ import { LegendButtons } from "./legend-buttons";
 import { MonthTick, monthBarShape, type MonthRange } from "./month-axis";
 import { moneyRow, monthTooltipLabel } from "./money-tooltip";
 
-/** One stacked series: a child of the scope (a category, or "other"), in a ramp shade. */
+/** One stacked series: a child of the scope (a category, or "_other"), in a ramp shade. */
 export type Series = { key: string; label: string; color: string };
 
 type Props = { months: Schemas["ScopeMonth"][]; series: Series[]; range: MonthRange };
@@ -3332,8 +3360,8 @@ export function DetailPage({ detail, categories, filters, title, crumbs, childDi
   const names = new Map(children.map((item) => [item.key, item.name]));
   const series = detail.child_keys.map((key, index) => ({
     key,
-    label: key === "other" ? "Other" : (names.get(key) ?? key),
-    color: rampColor(key === "other" ? 5 : index),
+    label: key === "_other" ? "Other" : (names.get(key) ?? key),
+    color: rampColor(key === "_other" ? 5 : index),
   }));
   const tiles = children
     .filter((item) => Number(item.amount) > 0)
@@ -4298,6 +4326,7 @@ Replace the `uncategorized > 0` paragraph with (it must not invite a second, par
           <p className="text-sm text-muted-foreground">
             {plural(uncategorized, "transaction is", "transactions are")} not categorized yet. Each import starts a
             categorization run in the background: give it a minute and reload this page before starting another run.
+            If they stay, the API console says why (&quot;jev skipped&quot; when no jev key is set).
           </p>
         )}
 ```
@@ -4310,11 +4339,11 @@ Expected: no errors, and `grep -rn "review/category-picker\|review/merchant-pick
 - [ ] **Step 7: Check /review in the browser (R2, scratch database: confirming writes)**
 
 1. `open "http://localhost:3001/review"`, `snapshot -i`. Expect: rows as grey cards without borders; each row's header shows the direction badge, the date for a single row, the bank text (two lines at most) and the amount, green with "+" for money in.
-2. On a "Money out" row, open the category picker: groups of expense categories, then "Transfer"; no "Income" group. On a "Money in" row: "Income" first, then "Refund of a purchase" (the expense categories), then "Transfer". A "Suggested" group comes first when jev scored the row.
+2. On a "Money out" row, and on a "Money in and out" merchant row (its answer covers every row), open the category picker: groups of expense categories, then "Transfer"; no "Income" group. On a "Money in" row: "Income" first, then "Refund of a purchase" (the expense categories), then "Transfer". A "Suggested" group comes first when jev scored the row.
 3. Expand a merchant with ×2 or more: each line shows its own bank text, its amount and account, and a category picker for its own direction.
 4. If a row shows "Same merchant as X?" and X also has its own row on the page: click "Merge", then confirm. Both rows leave the page; click "Undo" in the toast: both come back. Confirm again, wait 6 s, reload: both stay gone. If the data has no such pair, write "survivor case not exercised: no pair in the data" in the task report.
 5. Confirm any other row: it leaves the page, the nav's Review count drops after the toast closes, and after a reload it stays gone.
-6. If the page says "N transactions are not categorized yet", the text reads "Each import starts a categorization run in the background: give it a minute and reload this page before starting another run." and names no CLI command.
+6. If the page says "N transactions are not categorized yet", the text reads "Each import starts a categorization run in the background: give it a minute and reload this page before starting another run. If they stay, the API console says why ("jev skipped" when no jev key is set)." and names no CLI command.
 7. `set viewport 390 844`, screenshot `task08-review-phone.png`: the bank text wraps to two lines; `get attr` of that span's `title` is the full text.
 8. Screenshot `task08-review.png` at 1280 px; the surfaces and type match `04-tokens.png`. `errors`, `close`, then drop the scratch database (R2 step 5).
 
@@ -4772,7 +4801,7 @@ git commit -m "feat: add the transactions explorer with search, filters, saved f
 - Test: `apps/web/src/lib/transactions.test.ts`
 
 **Interfaces:**
-- Consumes: `CategoryPicker`, `MerchantPicker`, `MerchantChoice`, `Direction` (Task 8); `TransactionTable` (Task 6); `dayLong`, `signedMoney` (Task 1); `label` (Task 2); the 3a endpoints `PATCH /transactions/{id}` (`{ note }`, 204), `POST /transactions/{id}/label` (`LabelTransaction`, 204; 422 when money out gets an income category), `POST /merchants/{id}/review` (`ConfirmMerchant`, 204) and `DELETE /merchants/{id}/default` (204).
+- Consumes: `CategoryPicker`, `MerchantPicker`, `MerchantChoice`, `Direction` (Task 8); `TransactionTable` (Task 6); `dayLong`, `signedMoney` (Task 1); `label` (Task 2); the 3a endpoints `PATCH /transactions/{id}` (`{ note }`, 204; `note` is required, a string or null, and `{}` is a 422), `POST /transactions/{id}/label` (`LabelTransaction`, 204; 422 when money out gets an income category), `POST /merchants/{id}/review` (`ConfirmMerchant`, 204; an income category relabels only the money-in rows, and the money-out rows keep theirs) and `DELETE /merchants/{id}/default` (204).
 - Produces:
   - `api.ts`: `ApiError` (`status`, `detail: string | null`); `apiPost(path, body?, { keepalive? })` (unchanged signature); `apiPatch<T = void>(path, body): Promise<T>`; `apiDelete(path): Promise<void>`.
   - `transactions.ts`: `LabelChange = { id: string; categorySlug: string | null; isSubscription: boolean; merchant: MerchantChoice | null; note: string | null; defaultFor: string | null }`; `applyChange(rows, change, categories): Transaction[]`.
@@ -4830,6 +4859,24 @@ describe("applyChange", () => {
     ]);
   });
 
+  it("leaves the merchant's money out alone when its new default is income", () => {
+    const rows = [
+      tx("1", "2026-08-26", "100.00", { merchant_id: "m" }),
+      tx("2", "2026-08-26", "100.00", { merchant_id: "m", category_source: "jev" }),
+      tx("3", "2026-08-26", "-10.00", { merchant_id: "m", category_source: "jev" }),
+    ];
+    const out = applyChange(
+      rows,
+      { id: "1", categorySlug: "salary", isSubscription: false, merchant: null, note: null, defaultFor: "m" },
+      categories,
+    );
+    expect(out.map((row) => [row.id, row.category_source, row.category_slug])).toEqual([
+      ["1", "user", "salary"],
+      ["2", "merchant", "salary"],
+      ["3", "jev", null],
+    ]);
+  });
+
   it("never makes money in a subscription, and a note-only change keeps the label", () => {
     const [refund] = applyChange(
       [tx("1", "2026-08-26", "80.00")],
@@ -4877,19 +4924,21 @@ export type LabelChange = {
 };
 
 // labels._RELABEL_MERCHANT in the API: a merchant default relabels these sources only, so the
-// user's own labels and the system rules keep theirs.
+// user's own labels and the system rules keep theirs, and it never gives money going out an
+// income category (those rows keep theirs too).
 const FOLLOW_THE_MERCHANT = ["jev", "merchant", "none"];
 
 /** The loaded rows after a save, patched in place so "Load more" pages are not lost. */
 export function applyChange(rows: Tx[], change: LabelChange, categories: Category[]): Tx[] {
   const category = categories.find((c) => c.slug === change.categorySlug);
-  const labelled = (row: Tx, source: string): Tx =>
+  const labelled = (row: Tx, source: Tx["category_source"]): Tx =>
     category
       ? {
           ...row,
           category_slug: category.slug,
           level1: category.level1,
-          tx_type: category.tx_type,
+          // CategoryOut.tx_type is a plain string; Transaction.tx_type is typed.
+          tx_type: category.tx_type as Tx["tx_type"],
           category_source: source,
           needs_review: false,
           // Only money going out is a subscription (spec 6).
@@ -4902,7 +4951,8 @@ export function applyChange(rows: Tx[], change: LabelChange, categories: Categor
       const merchant = change.merchant ? { merchant_id: change.merchant.id, merchant_name: change.merchant.name } : {};
       return { ...labelled(row, "user"), ...merchant, note: change.note };
     }
-    if (change.defaultFor && row.merchant_id === change.defaultFor && FOLLOW_THE_MERCHANT.includes(row.category_source)) {
+    const fits = !(Number(row.amount) < 0 && category?.tx_type === "income");
+    if (change.defaultFor && row.merchant_id === change.defaultFor && FOLLOW_THE_MERCHANT.includes(row.category_source) && fits) {
       return labelled(row, "merchant");
     }
     return row;
@@ -5173,6 +5223,7 @@ function PanelForm({ tx, categories, merchants, onClose, onSaved }: Omit<Props, 
             <AlertDialogDescription>
               {merchant?.name} then uses {label(categorySlug)} for its other transactions and for new imports. Transactions you
               labelled yourself keep their category.
+              {category?.tx_type === "income" && " Money going out keeps its category too: it is never income."}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
@@ -5351,8 +5402,8 @@ export default async function SubscriptionsPage() {
         <h1 className="text-xl font-semibold tracking-tight">Subscriptions</h1>
         <p className="max-w-prose text-sm text-muted-foreground">
           Charges you marked as subscriptions that are still running: charged within 45 days (monthly) or 400 days
-          (yearly) of your latest imported transaction. Subscriptions paid by credit card do not appear, because card
-          statements are not imported.
+          (yearly) of your latest imported transaction. A subscription charged only once counts as monthly until its
+          second charge. Subscriptions paid by credit card do not appear, because card statements are not imported.
         </p>
       </header>
       <section aria-label="Totals" className="grid grid-cols-1 gap-3 sm:grid-cols-3">
@@ -5430,7 +5481,7 @@ Expected: no errors.
 - [ ] **Step 3: Check the page in the browser (R1, read-only)**
 
 1. `open "http://localhost:3000/subscriptions"`, `snapshot -i`. Expect: the nav "Subscriptions" with `aria-current="page"` and no filter pills; the explanation paragraph; three tiles Active, Per month, Per year; a table with Merchant (links to `/merchants/<id>`), Cadence (Monthly or Yearly), Amount, Per month and Last charge; or the empty state "No active subscriptions".
-2. The numbers agree with the overview: `open "http://localhost:3000/"` and compare its subscriptions line (count, per month, per year) with the three tiles.
+2. The numbers agree with the overview: `open "http://localhost:3000/"` and compare its subscriptions line (count, per month, per year) with the three tiles. The explanation says that a subscription charged only once counts as monthly until its second charge (`docs/money-rules.md`, "Subscriptions").
 3. Click a merchant: its page opens.
 4. Screenshot `task11-subscriptions.png`; check the tokens against `04-tokens.png` (surfaces, type, one accent). `errors`, `close`.
 

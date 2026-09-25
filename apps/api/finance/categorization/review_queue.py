@@ -8,7 +8,7 @@ from uuid import UUID
 
 from pydantic import BaseModel
 
-from finance.categorization.taxonomy import Taxonomy, direction_of
+from finance.categorization.taxonomy import Taxonomy
 from finance.ingestion.structure import mask_card_numbers
 
 
@@ -93,12 +93,13 @@ def suggestion_for(rows: list[ReviewRow], taxonomy: Taxonomy) -> Suggestion:
 
 
 def _joins_its_merchant(row: ReviewRow, taxonomy: Taxonomy) -> bool:
-    """A refund of a merchant with an expense default stands alone: confirming the merchant
-    would overwrite its default, and a one-off label leaves the default as it is."""
+    """Every row of a merchant, purchases and refunds alike, is reviewed as one item: a refund
+    takes the purchase's category (spec 2.2). Money going out is never income (spec 7.3), so it
+    stands alone when the default is income: confirming it would overwrite that default."""
     if row.merchant_id is None:
         return False
     default = row.merchant_category_slug
-    return default is None or taxonomy.fits(default, direction_of(row.amount))
+    return not (row.amount < 0 and default and taxonomy.get(default).tx_type == "income")
 
 
 def _transaction(row: ReviewRow) -> ReviewTransaction:

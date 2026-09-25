@@ -72,6 +72,8 @@ threshold; the rest goes to review, once per merchant. Round-by-round results an
 [the spike write-up](docs/superpowers/spikes/2026-09-23-jev-categorization/README.md).
 Full design: spec sections 4.2 and 5.
 
+How the numbers add up (refunds, loans, credit cards, transfers): [docs/money-rules.md](docs/money-rules.md).
+
 ### Measuring it
 
 `cd apps/api && uv run finance eval-categorization --note "what changed"` runs

@@ -18,6 +18,7 @@ ACME = jev_result(
 )
 # The real ledger has no rows before 2000, so its rows never compete with these.
 SYNTHETIC_DAY = date(1999, 1, 1)
+LOAN_CONTRACT = "0000-1111-22-3333334567"  # synthetic contract number, 4-4-2-10 digits
 
 
 @pytest.fixture(autouse=True)
@@ -220,12 +221,14 @@ def test_a_background_run_logs_a_failure_instead_of_raising(monkeypatch, caplog)
 
 
 def test_a_skipped_background_run_is_a_warning_so_the_api_console_shows_it(monkeypatch, caplog):
-    skipped = store.CategorizeSummary(skipped="TYPESAFE_API_KEY is not set")
+    skipped = store.CategorizeSummary(
+        categorized=1, by_source={"rule": 1}, skipped="TYPESAFE_API_KEY is not set"
+    )
     monkeypatch.setattr(store, "run_categorization", lambda include_all=False: skipped)
     run_categorization_logged()
-    assert [(r.levelno, r.getMessage()) for r in caplog.records] == [
-        (logging.WARNING, skipped.line())
-    ]
+    # The rules ran: only jev was skipped, and every count is printed.
+    line = "jev skipped: TYPESAFE_API_KEY is not set (paired=0 categorized=1 rule=1 needs_review=0)"
+    assert [(r.levelno, r.getMessage()) for r in caplog.records] == [(logging.WARNING, line)]
 
 
 def test_background_runs_hold_one_lock_so_they_never_overlap(monkeypatch):
@@ -238,3 +241,38 @@ def test_background_runs_hold_one_lock_so_they_never_overlap(monkeypatch):
     monkeypatch.setattr(store, "run_categorization", _run)
     run_categorization_logged()
     assert held == [True] and not store._run_lock.locked()
+
+
+@pytest.mark.integration
+def test_without_a_jev_key_rules_still_apply(db_conn, make_tx):
+    settlement = make_tx(
+        "-175.00",
+        "ADEUDO MENSUAL DE TARJETA | ZZTEST",
+        bank_concept="ADEUDO MENSUAL DE TARJETA",
+        booked_at=SYNTHETIC_DAY,
+    )
+    shop = make_tx("-9.90", "PAGO | ZZTEST ACME", merchant="ZZTEST ACME", booked_at=SYNTHETIC_DAY)
+    repayment = "CARGO POR AMORTIZACION DE PRESTAMO/CREDITO"
+    loan = make_tx(
+        "-130.00", f"{repayment} | {LOAN_CONTRACT}", bank_concept=repayment, booked_at=SYNTHETIC_DAY
+    )
+    summary = asyncio.run(categorize_pending(db_conn, Settings(typesafe_api_key=None)))
+    assert summary.skipped and summary.by_source.get("rule", 0) >= 1
+    assert summary.line().startswith("jev skipped: TYPESAFE_API_KEY is not set (paired=")
+    assert _source(db_conn, settlement) == "rule"
+    assert _source(db_conn, shop) == "none"
+    # The run links the loan row to its contract's merchant (link_loans).
+    name = db_conn.execute(
+        "select m.name from transactions t join merchants m on m.id = t.merchant_id"
+        " where t.id = %s",
+        (loan,),
+    ).fetchone()
+    assert name is not None and name["name"] == "Loan ····4567"
+
+
+@pytest.mark.integration
+def test_a_rules_only_run_never_calls_jev(db_conn, make_tx):
+    make_tx("-9.90", "PAGO | ZZTEST ACME", merchant="ZZTEST ACME", booked_at=SYNTHETIC_DAY)
+    jev = FakeJev()
+    asyncio.run(categorize_pending(db_conn, Settings(), jev=jev, rules_only=True))
+    assert jev.calls == []

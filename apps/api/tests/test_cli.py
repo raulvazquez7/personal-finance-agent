@@ -17,7 +17,9 @@ runner = CliRunner()
 @pytest.fixture(autouse=True)
 def no_real_categorization(monkeypatch):
     """`finance import` categorizes afterwards: never against the real ledger from a unit test."""
-    monkeypatch.setattr(cli, "run_categorization", lambda include_all=False: CategorizeSummary())
+    monkeypatch.setattr(
+        cli, "run_categorization", lambda include_all=False, rules_only=False: CategorizeSummary()
+    )
 
 
 def test_import_prints_one_summary_line_per_file(tmp_path, monkeypatch):
@@ -127,28 +129,34 @@ def test_import_succeeds_even_when_categorization_fails(monkeypatch, tmp_path):
 def test_categorize_all_reruns_everything_and_prints_the_counts(monkeypatch):
     calls = []
 
-    def _run(include_all=False):
-        calls.append(include_all)
+    def _run(include_all=False, rules_only=False):
+        calls.append((include_all, rules_only))
         return CategorizeSummary(
             paired=1, categorized=3, needs_review=1, by_source={"rule": 1, "jev": 2}
         )
 
     monkeypatch.setattr(cli, "run_categorization", _run)
     result = runner.invoke(cli.app, ["categorize", "--all"])
-    assert result.exit_code == 0 and calls == [True]
+    assert result.exit_code == 0 and calls == [(True, False)]
     assert "paired=1 categorized=3 jev=2 rule=1 needs_review=1" in result.stdout
 
 
 def test_categorize_says_why_it_skipped(monkeypatch):
     skipped = CategorizeSummary(paired=2, skipped="TYPESAFE_API_KEY is not set")
-    monkeypatch.setattr(cli, "run_categorization", lambda include_all=False: skipped)
+    monkeypatch.setattr(
+        cli, "run_categorization", lambda include_all=False, rules_only=False: skipped
+    )
     result = runner.invoke(cli.app, ["categorize"])
-    assert result.stdout.strip() == "categorization skipped: TYPESAFE_API_KEY is not set (paired=2)"
+    assert result.stdout.strip() == (
+        "jev skipped: TYPESAFE_API_KEY is not set (paired=2 categorized=0 needs_review=0)"
+    )
 
 
 def test_categorize_reports_rows_jev_could_not_answer(monkeypatch):
     partial = CategorizeSummary(categorized=2, by_source={"jev": 2}, failed=1)
-    monkeypatch.setattr(cli, "run_categorization", lambda include_all=False: partial)
+    monkeypatch.setattr(
+        cli, "run_categorization", lambda include_all=False, rules_only=False: partial
+    )
     result = runner.invoke(cli.app, ["categorize"])
     assert result.stdout.strip() == "paired=0 categorized=2 jev=2 needs_review=0 failed=1"
 
@@ -240,8 +248,8 @@ def test_labels_export_with_force_overwrites_the_file(monkeypatch, tmp_path):
     result = runner.invoke(cli.app, ["labels", "export", str(target), "--force"])
     assert result.exit_code == 0 and result.stdout.strip() == f"exported=1 to {target}"
     assert target.read_text().splitlines() == [
-        "dedup_key,category_slug,is_subscription,merchant",
-        "k1,groceries,False,ZZTEST ACME",
+        "dedup_key,category_slug,is_subscription,merchant,note",
+        "k1,groceries,False,ZZTEST ACME,",
     ]
 
 
@@ -253,4 +261,30 @@ def test_labels_import_prints_the_counts(monkeypatch, tmp_path):
         cli, "import_labels", lambda conn, path: LabelsImport(imported=2, missing=1)
     )
     result = runner.invoke(cli.app, ["labels", "import", str(source)])
-    assert result.exit_code == 0 and result.stdout.strip() == "imported=2 missing=1"
+    assert result.exit_code == 0 and result.stdout.strip() == "imported=2 missing=1 notes=0"
+
+
+def test_labels_import_exits_one_and_prints_bad_rows(monkeypatch, tmp_path):
+    source = tmp_path / "labels.csv"
+    source.write_text("dedup_key,category_slug,is_subscription,merchant\n")
+    monkeypatch.setattr(cli, "connection", lambda: nullcontext(None))
+    monkeypatch.setattr(
+        cli,
+        "import_labels",
+        lambda conn, path: LabelsImport(imported=1, missing=0, errors=["line 3: unknown category"]),
+    )
+    result = runner.invoke(cli.app, ["labels", "import", str(source)])
+    assert result.exit_code == 1
+    assert "line 3: unknown category" in result.stderr
+
+
+def test_categorize_rules_only_passes_the_flag(monkeypatch):
+    calls = []
+
+    def _run(include_all=False, rules_only=False):
+        calls.append((include_all, rules_only))
+        return CategorizeSummary(categorized=1, by_source={"rule": 1})
+
+    monkeypatch.setattr(cli, "run_categorization", _run)
+    result = runner.invoke(cli.app, ["categorize", "--all", "--rules-only"])
+    assert result.exit_code == 0 and calls == [(True, True)]

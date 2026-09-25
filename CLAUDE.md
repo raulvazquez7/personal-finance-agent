@@ -10,6 +10,7 @@ imported into Supabase Postgres, categorized through a cascade (rules â†’ jev â†
 human review), shown in Next.js dashboards, and queryable through a LangChain
 agent over a semantic layer. Design: `docs/superpowers/specs/`. Plans:
 `docs/superpowers/plans/`. Read the spec before touching architecture.
+Money rules (what counts as income, spending, transfers): `docs/money-rules.md`.
 
 ## Workflow
 
@@ -39,6 +40,7 @@ cd apps/api && uv run task api              # FastAPI on :8000
 cd apps/api && uv run finance import <pdf>  # CLI import
 cd apps/api && uv run finance seed          # taxonomy + system rules into the DB
 cd apps/api && uv run finance categorize [--all]              # pairing, rules, jev
+cd apps/api && uv run finance categorize --all --rules-only   # pairing and rules only, no jev spend
 cd apps/api && uv run finance eval-categorization --note "..." # benchmark (jev spend)
 cd apps/api && uv run finance labels export|import            # golden set as CSV
 supabase start && supabase db reset         # local Postgres with migrations
@@ -46,11 +48,11 @@ cd apps/web && npm run dev                  # Next.js on :3000
 ```
 
 Never run `supabase db reset` without `uv run finance labels export` first: the
-reset wipes the labels, which are the golden set, and the merchant defaults,
-which the CSV does not hold. To restore (from `apps/api`): `finance seed`,
-re-import the statements with `TYPESAFE_API_KEY=` (empty: no paid categorize
-run), `finance labels import ../../data/labels/<file>.csv`, then
-`finance categorize`.
+reset wipes the labels (the golden set), your notes and the merchant defaults;
+the CSV keeps labels and notes, not the defaults. To restore (from `apps/api`):
+`finance seed`, re-import the statements with `TYPESAFE_API_KEY=` (empty: no
+paid categorize run), `finance labels import ../../data/labels/<file>.csv`,
+then `finance categorize`.
 
 ## Verifying the web app
 

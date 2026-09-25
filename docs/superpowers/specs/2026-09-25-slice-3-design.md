@@ -211,7 +211,7 @@ already classify.
 |---|---|---|
 | `v_transactions_enriched` | one row per transaction | account name, merchant name, `category_slug`, `level1`, `tx_type`, `amount`, `spend` (−amount for expense rows, else 0), `income` (amount for income rows, else 0), `direction`, `is_subscription`, `category_source`, `needs_review`, `note`, `transfer_pair_id`, `month`. The agent's main relation in slice 4 |
 | `v_monthly_summary` | month × account | income, expenses, savings, row count. The API sums the selected accounts and then derives the savings rate, because rates are never summed. The rate's formula lives in `docs/money-rules.md` and in one API helper; slice 4 exposes it as a named metric |
-| `v_spend_by_category` | month × account × level1 × category × merchant | spend, row count. Group, category and merchant breakdowns aggregate this |
+| `v_spend_by_category` | month × account × level1 × category × merchant | spend, row count: the aggregated view for the slice 4 agent. The API's group, category and merchant breakdowns sum `v_transactions_enriched` (the same rows, and it can filter by account and type) |
 | `v_subscriptions` | merchant | flagged expenses: last charge, typical amount (median), cadence (monthly or yearly from the median gap), monthly equivalent, and whether it is active (charged within 45 days for monthly or 400 days for yearly **of the latest imported transaction**, not of today) |
 
 Daily cumulative series are computed in the API from
@@ -222,7 +222,7 @@ needs one.
 ## 6. API
 
 Pydantic models at every boundary, and `npm run gen:api` after each change.
-Every read takes the same filter parameters: `from`, `to` (or `period`) and
+Every read takes the same filter parameters: `start`, `end` (or `period`) and
 `account_id` (repeatable).
 
 | Method and path | Returns |

@@ -110,3 +110,30 @@ def test_backfill_structures_slice_1_rows():
         ).fetchall()
     got = {row["id"]: (row["bank_concept"], row["merchant"], row["card_last4"]) for row in rows}
     assert [got[tx_id] for tx_id in ids] == [expected for _, expected in BACKFILL_CASES]
+
+
+def test_slice_3_columns_and_checks():
+    with connection() as conn:
+        assert "note" in _columns(conn, "transactions")
+        assert "kind" in _columns(conn, "rules")
+        with conn.transaction(force_rollback=True):
+            tx = _insert_slice_1_row(conn, "bbva", "ZZTEST NOTE", None)
+            conn.execute("update transactions set note = %s where id = %s", ("x" * 500, tx))
+            conn.execute("update transactions set merchant_source = 'rule' where id = %s", (tx,))
+            with pytest.raises(Exception, match="note"):
+                with conn.transaction():
+                    conn.execute("update transactions set note = %s where id = %s", ("x" * 501, tx))
+
+
+def test_a_refund_rule_has_no_category_and_a_categorize_rule_needs_one():
+    with connection() as conn, conn.transaction(force_rollback=True):
+        conn.execute(
+            "insert into rules (name, match_field, pattern, direction, kind)"
+            " values ('zztest_refund', 'bank_concept', '^X', 'incoming', 'refund')"
+        )
+        with pytest.raises(Exception, match="rules_kind_category_check"):
+            with conn.transaction():
+                conn.execute(
+                    "insert into rules (name, match_field, pattern, direction)"
+                    " values ('zztest_bad', 'bank_concept', '^X', 'incoming')"
+                )

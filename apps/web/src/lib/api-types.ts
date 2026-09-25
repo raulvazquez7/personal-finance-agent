@@ -72,6 +72,40 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/dashboard/overview": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Overview */
+        get: operations["overview_dashboard_overview_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/dashboard/subscriptions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Subscriptions */
+        get: operations["subscriptions_dashboard_subscriptions_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/imports": {
         parameters: {
             query?: never;
@@ -124,7 +158,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/merchants/{merchant_id}/merge": {
+    "/merchants/{merchant_id}/default": {
         parameters: {
             query?: never;
             header?: never;
@@ -133,9 +167,9 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** Merge */
-        post: operations["merge_merchants__merchant_id__merge_post"];
-        delete?: never;
+        post?: never;
+        /** Clear Default */
+        delete: operations["clear_default_merchants__merchant_id__default_delete"];
         options?: never;
         head?: never;
         patch?: never;
@@ -192,6 +226,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/spending/detail": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Detail */
+        get: operations["detail_spending_detail_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/transactions": {
         parameters: {
             query?: never;
@@ -224,6 +275,23 @@ export interface paths {
         options?: never;
         head?: never;
         patch?: never;
+        trace?: never;
+    };
+    "/transactions/{transaction_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Update Note */
+        patch: operations["update_note_transactions__transaction_id__patch"];
         trace?: never;
     };
     "/health": {
@@ -273,6 +341,32 @@ export interface components {
             /** File */
             file: string;
         };
+        /** BreakdownRow */
+        BreakdownRow: {
+            /** Key */
+            key: string;
+            /** Label */
+            label: string | null;
+            /** Level1 */
+            level1: string | null;
+            /** Category Slug */
+            category_slug: string | null;
+            /** Merchant Id */
+            merchant_id: string | null;
+            /** Amount */
+            amount: string;
+            /** Share */
+            share: number;
+            /** Previous */
+            previous: string | null;
+            /** Count */
+            count: number;
+            /**
+             * Folded
+             * @default 0
+             */
+            folded: number;
+        };
         /** CategoryOut */
         CategoryOut: {
             /** Slug */
@@ -299,6 +393,25 @@ export interface components {
             name?: string | null;
             /** Merge Into Id */
             merge_into_id?: string | null;
+        };
+        /** Cumulative */
+        Cumulative: {
+            /** Current */
+            current: components["schemas"]["CumulativePoint"][];
+            /** Previous */
+            previous: components["schemas"]["CumulativePoint"][] | null;
+        };
+        /** CumulativePoint */
+        CumulativePoint: {
+            /** Day */
+            day: number;
+            /**
+             * Date
+             * Format: date
+             */
+            date: string;
+            /** Total */
+            total: string;
         };
         /** HTTPValidationError */
         HTTPValidationError: {
@@ -389,14 +502,6 @@ export interface components {
             /** Name */
             name: string;
         };
-        /** MergeRequest */
-        MergeRequest: {
-            /**
-             * Into Id
-             * Format: uuid
-             */
-            into_id: string;
-        };
         /** MergeSuggestion */
         MergeSuggestion: {
             /**
@@ -408,6 +513,76 @@ export interface components {
             name: string;
             /** Confidence */
             confidence: number;
+        };
+        /** MonthPoint */
+        MonthPoint: {
+            /** Month */
+            month: string;
+            /** Has Data */
+            has_data: boolean;
+            /** Income */
+            income: string | null;
+            /** Expenses */
+            expenses: string | null;
+            /** Savings */
+            savings: string | null;
+        };
+        /** NoteUpdate */
+        NoteUpdate: {
+            /** Note */
+            note: string | null;
+        };
+        /** Overview */
+        Overview: {
+            period: components["schemas"]["PeriodOut"];
+            kpis: components["schemas"]["Totals"];
+            previous_kpis: components["schemas"]["Totals"] | null;
+            cumulative: components["schemas"]["Cumulative"];
+            /** Months */
+            months: components["schemas"]["MonthPoint"][];
+            /** By Group */
+            by_group: components["schemas"]["BreakdownRow"][];
+            /** By Category */
+            by_category: components["schemas"]["BreakdownRow"][];
+            /** By Merchant */
+            by_merchant: components["schemas"]["BreakdownRow"][];
+            /** Group Slots */
+            group_slots: {
+                [key: string]: number;
+            };
+            subscriptions: components["schemas"]["SubscriptionsSummary"];
+        };
+        /** PeriodOut */
+        PeriodOut: {
+            /**
+             * Name
+             * @enum {string}
+             */
+            name: "month" | "last_3_months" | "ytd" | "last_12_months" | "custom";
+            /**
+             * Start
+             * Format: date
+             */
+            start: string;
+            /**
+             * End
+             * Format: date
+             */
+            end: string;
+            /**
+             * Previous Start
+             * Format: date
+             */
+            previous_start: string;
+            /**
+             * Previous End
+             * Format: date
+             */
+            previous_end: string;
+            /** Has Previous */
+            has_previous: boolean;
+            /** Latest Day */
+            latest_day: string | null;
         };
         /** ReviewCount */
         ReviewCount: {
@@ -462,6 +637,97 @@ export interface components {
              */
             status: "queued";
         };
+        /** ScopeMonth */
+        ScopeMonth: {
+            /** Month */
+            month: string;
+            /** Has Data */
+            has_data: boolean;
+            /** Total */
+            total: string | null;
+            /** By Child */
+            by_child: {
+                [key: string]: string;
+            };
+        };
+        /** SpendingDetail */
+        SpendingDetail: {
+            period: components["schemas"]["PeriodOut"];
+            /**
+             * Type
+             * @enum {string}
+             */
+            type: "expense" | "income";
+            /** Level1 */
+            level1: string | null;
+            /** Category */
+            category: string | null;
+            /** Merchant Id */
+            merchant_id: string | null;
+            /** Merchant Name */
+            merchant_name: string | null;
+            /** Total */
+            total: string;
+            /** Previous Total */
+            previous_total: string | null;
+            /** Count */
+            count: number;
+            /** Months */
+            months: components["schemas"]["ScopeMonth"][];
+            /** Child Keys */
+            child_keys: string[];
+            /** Children */
+            children: components["schemas"]["BreakdownRow"][];
+            /** Top Merchants */
+            top_merchants: components["schemas"]["BreakdownRow"][];
+            cumulative: components["schemas"]["Cumulative"];
+            /** Latest */
+            latest: components["schemas"]["Transaction"][];
+        };
+        /** SubscriptionOut */
+        SubscriptionOut: {
+            /**
+             * Merchant Id
+             * Format: uuid
+             */
+            merchant_id: string;
+            /** Merchant Name */
+            merchant_name: string;
+            /**
+             * Cadence
+             * @enum {string}
+             */
+            cadence: "monthly" | "yearly";
+            /** Typical Amount */
+            typical_amount: string;
+            /** Monthly Equivalent */
+            monthly_equivalent: string;
+            /**
+             * Last Charge
+             * Format: date
+             */
+            last_charge: string;
+            /** Charges */
+            charges: number;
+        };
+        /** Subscriptions */
+        Subscriptions: {
+            /** Items */
+            items: components["schemas"]["SubscriptionOut"][];
+            /** Monthly Total */
+            monthly_total: string;
+            /** Yearly Total */
+            yearly_total: string;
+        };
+        /** SubscriptionsSummary */
+        SubscriptionsSummary: {
+            /** Count */
+            count: number;
+            /** Monthly Total */
+            monthly_total: string;
+            /** Yearly Total */
+            yearly_total: string;
+        };
         /** Suggestion */
         Suggestion: {
             /** Category Slug */
@@ -475,6 +741,17 @@ export interface components {
             /** Top */
             top: components["schemas"]["CategoryScore"][];
         };
+        /** Totals */
+        Totals: {
+            /** Income */
+            income: string;
+            /** Expenses */
+            expenses: string;
+            /** Savings */
+            savings: string;
+            /** Savings Rate */
+            savings_rate: number | null;
+        };
         /** Transaction */
         Transaction: {
             /**
@@ -482,23 +759,64 @@ export interface components {
              * Format: uuid
              */
             id: string;
-            /** Account Name */
-            account_name: string;
             /**
              * Booked At
              * Format: date
              */
             booked_at: string;
+            /**
+             * Account Id
+             * Format: uuid
+             */
+            account_id: string;
+            /** Account Name */
+            account_name: string;
             /** Amount */
             amount: string;
             /** Description Raw */
             description_raw: string;
-            /** Merchant */
-            merchant: string | null;
-            /** Tx Type */
-            tx_type: string;
+            /** Bank Merchant Text */
+            bank_merchant_text: string | null;
+            /** Merchant Id */
+            merchant_id: string | null;
+            /** Merchant Name */
+            merchant_name: string | null;
+            /**
+             * Tx Type
+             * @enum {string}
+             */
+            tx_type: "expense" | "income" | "transfer";
             /** Category Slug */
             category_slug: string | null;
+            /** Level1 */
+            level1: string | null;
+            /**
+             * Category Source
+             * @enum {string}
+             */
+            category_source: "rule" | "merchant" | "jev" | "user" | "none";
+            /** Is Subscription */
+            is_subscription: boolean;
+            /** Needs Review */
+            needs_review: boolean;
+            /** Note */
+            note: string | null;
+            /** Transfer Pair Id */
+            transfer_pair_id: string | null;
+        };
+        /** TransactionPage */
+        TransactionPage: {
+            period: components["schemas"]["PeriodOut"];
+            /** Items */
+            items: components["schemas"]["Transaction"][];
+            /** Next Cursor */
+            next_cursor: string | null;
+            /** Count */
+            count: number;
+            /** Money In */
+            money_in: string;
+            /** Money Out */
+            money_out: string;
         };
         /** ValidationError */
         ValidationError: {
@@ -628,6 +946,61 @@ export interface operations {
             };
         };
     };
+    overview_dashboard_overview_get: {
+        parameters: {
+            query?: {
+                period?: "month" | "last_3_months" | "ytd" | "last_12_months" | "custom";
+                month?: string | null;
+                start?: string | null;
+                end?: string | null;
+                account_id?: string[];
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Overview"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    subscriptions_dashboard_subscriptions_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Subscriptions"];
+                };
+            };
+        };
+    };
     list_imports_imports_get: {
         parameters: {
             query?: never;
@@ -746,7 +1119,7 @@ export interface operations {
             };
         };
     };
-    merge_merchants__merchant_id__merge_post: {
+    clear_default_merchants__merchant_id__default_delete: {
         parameters: {
             query?: never;
             header?: never;
@@ -755,11 +1128,7 @@ export interface operations {
             };
             cookie?: never;
         };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["MergeRequest"];
-            };
-        };
+        requestBody?: never;
         responses: {
             /** @description Successful Response */
             204: {
@@ -848,12 +1217,18 @@ export interface operations {
             };
         };
     };
-    list_transactions_transactions_get: {
+    detail_spending_detail_get: {
         parameters: {
             query?: {
-                account_id?: string | null;
+                type?: "expense" | "income";
+                level1?: string | null;
+                category?: string | null;
+                merchant_id?: string | null;
+                period?: "month" | "last_3_months" | "ytd" | "last_12_months" | "custom";
                 month?: string | null;
-                limit?: number;
+                start?: string | null;
+                end?: string | null;
+                account_id?: string[];
             };
             header?: never;
             path?: never;
@@ -867,7 +1242,53 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["Transaction"][];
+                    "application/json": components["schemas"]["SpendingDetail"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_transactions_transactions_get: {
+        parameters: {
+            query?: {
+                q?: string | null;
+                tx_type?: ("expense" | "income" | "transfer") | null;
+                level1?: string | null;
+                category?: string | null;
+                merchant_id?: string | null;
+                is_subscription?: boolean | null;
+                category_source?: ("rule" | "merchant" | "jev" | "user" | "none") | null;
+                needs_review?: boolean | null;
+                saved?: ("unpaired_own" | "refunds") | null;
+                cursor?: string | null;
+                limit?: number;
+                period?: "month" | "last_3_months" | "ytd" | "last_12_months" | "custom";
+                month?: string | null;
+                start?: string | null;
+                end?: string | null;
+                account_id?: string[];
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TransactionPage"];
                 };
             };
             /** @description Validation Error */
@@ -893,6 +1314,39 @@ export interface operations {
         requestBody: {
             content: {
                 "application/json": components["schemas"]["LabelTransaction"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    update_note_transactions__transaction_id__patch: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                transaction_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["NoteUpdate"];
             };
         };
         responses: {

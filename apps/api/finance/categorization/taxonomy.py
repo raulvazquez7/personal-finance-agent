@@ -40,9 +40,6 @@ class Taxonomy:
         kind = "expense" if direction == "outgoing" else "income"
         return [c for c in self._by_slug.values() if c.tx_type in (kind, "transfer")]
 
-    def fits(self, slug: str, direction: Direction) -> bool:
-        return any(category.slug == slug for category in self.leaves(direction))
-
     def level1_sums(self, probabilities: dict[str, float]) -> dict[str, float]:
         sums: dict[str, float] = defaultdict(float)
         for slug, probability in probabilities.items():
@@ -50,13 +47,13 @@ class Taxonomy:
         return {level1: round(total, 6) for level1, total in sums.items()}
 
     def tx_type_of(self, slug: str, amount: Decimal) -> TxType:
-        if self._by_slug[slug].tx_type == "transfer":
-            return "transfer"
-        return "expense" if amount < 0 else "income"
+        """The category decides: a money-in row labelled `fashion` is a refund, a negative
+        expense (spec 2.1). `amount` is kept for callers; the sign no longer matters."""
+        return self._by_slug[slug].tx_type
 
 
 def read_categories_yaml(path: Path) -> list[Category]:
-    tree = yaml.safe_load(path.read_text())
+    tree = yaml.safe_load(path.read_text(encoding="utf-8"))
     return [
         Category(slug=slug, tx_type=tx_type, level1=level1, **criterion)
         for tx_type, groups in tree.items()

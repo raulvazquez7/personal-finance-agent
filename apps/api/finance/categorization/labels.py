@@ -11,13 +11,15 @@ class NotFound(LookupError):
     pass
 
 
-# Taxonomy.tx_type_of in SQL: a transfer slug makes a transfer, otherwise the sign decides.
-_TX_TYPE = (
-    "case when c.tx_type = 'transfer' then 'transfer'"
-    " when t.amount < 0 then 'expense' else 'income' end"
-)
-# Only expenses are subscriptions: never a refund, never a transfer (spec 5.2, 6).
-_SUBSCRIPTION = f"%(sub)s and {_TX_TYPE} = 'expense'"
+class DirectionMismatch(ValueError):
+    """Money going out cannot be income (spec 7.3). Money in may take an expense category:
+    that is a refund."""
+
+
+# Taxonomy.tx_type_of in SQL: the category decides the row type (spec 2.1).
+_TX_TYPE = "c.tx_type"
+# Only money going out is a subscription: never a refund, never a transfer (spec 6).
+_SUBSCRIPTION = f"%(sub)s and {_TX_TYPE} = 'expense' and t.amount < 0"
 
 _LABEL_ONE = f"""
 update transactions t set category_slug = c.slug, category_source = 'user',
@@ -37,8 +39,16 @@ update transactions t set category_slug = c.slug, category_source = 'merchant',
 from categories c
 where c.slug = %(slug)s and t.merchant_id = %(merchant)s
   and t.category_source in ('jev', 'merchant', 'none')
-  and c.tx_type in ('transfer', case when t.amount < 0 then 'expense' else 'income' end)
+  -- Money going out is never income (spec 7.3): a confirm leaves those rows as they are.
+  and not (t.amount < 0 and c.tx_type = 'income')
 returning t.id, t.is_subscription
+"""
+
+# /review hides user rows, so a side the user labelled keeps its label and stays out of review.
+_UNPAIR = """
+update transactions set transfer_pair_id = null, needs_review = (category_source <> 'user'),
+  updated_at = now()
+where transfer_pair_id = (select transfer_pair_id from transactions where id = %(id)s)
 """
 
 _USER_LABEL = """
@@ -85,6 +95,16 @@ def label_transaction(
             "merchant": merchant_id,
             "id": transaction_id,
         }
+        kind = conn.execute(
+            "select t.amount, t.transfer_pair_id, c.tx_type from transactions t, categories c"
+            " where t.id = %s and c.slug = %s",
+            (transaction_id, category_slug),
+        ).fetchone()
+        if kind and kind["amount"] < 0 and kind["tx_type"] == "income":
+            raise DirectionMismatch(f"{category_slug} is income; this transaction is money out")
+        if kind and kind["transfer_pair_id"] and category_slug != "own_accounts":
+            # Not a transfer: both unpair; the other goes to review unless user-labelled (M13).
+            conn.execute(_UNPAIR, {"id": transaction_id})
         row = conn.execute(_LABEL_ONE, params).fetchone()
         if row is None:
             raise NotFound(f"transaction {transaction_id} or category {category_slug}")
@@ -159,6 +179,30 @@ def confirm_merchant(
                 _USER_LABEL, (row["id"], merchant_id, category_slug, row["is_subscription"])
             )
     return merchant_id
+
+
+def clear_merchant_default(conn: Connection, merchant_id: UUID) -> None:
+    """A mixed merchant (spec 7.3): its rows keep their labels; new rows go through jev."""
+    row = conn.execute(
+        "update merchants set category_slug = null, is_subscription = null where id = %s"
+        " returning id",
+        (merchant_id,),
+    ).fetchone()
+    if row is None:
+        raise NotFound(f"merchant {merchant_id}")
+
+
+def set_note(conn: Connection, transaction_id: UUID, note: str | None) -> None:
+    """A note is not a label: no label history (spec 4)."""
+    text = (note or "").strip() or None
+    if text and len(text) > 500:
+        raise ValueError("a note has at most 500 characters")
+    row = conn.execute(
+        "update transactions set note = %s, updated_at = now() where id = %s returning id",
+        (text, transaction_id),
+    ).fetchone()
+    if row is None:
+        raise NotFound(f"transaction {transaction_id}")
 
 
 def dismiss_merge(conn: Connection, merchant_id: UUID) -> None:

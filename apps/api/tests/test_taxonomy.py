@@ -17,9 +17,9 @@ TAXONOMY = Taxonomy(CATEGORIES)
 
 
 def test_seed_has_the_spec_taxonomy():
-    assert len(CATEGORIES) == 55
-    assert len({c.slug for c in CATEGORIES}) == 55
-    assert len({c.level1 for c in CATEGORIES if c.tx_type == "expense"}) == 14
+    assert len(CATEGORIES) == 57
+    assert len({c.slug for c in CATEGORIES}) == 57
+    assert len({c.level1 for c in CATEGORIES if c.tx_type == "expense"}) == 15
     assert all(c.what for c in CATEGORIES)
 
 
@@ -45,7 +45,8 @@ def test_tx_type_comes_from_the_category_or_the_sign():
 
 def test_every_rule_points_to_a_known_category():
     slugs = {c.slug for c in CATEGORIES}
-    assert {rule.category_slug for rule in read_rules_yaml(SEED_DIR / "rules.yaml")} <= slugs
+    rules = read_rules_yaml(SEED_DIR / "rules.yaml")
+    assert {rule.category_slug for rule in rules if rule.category_slug} <= slugs
 
 
 @pytest.mark.integration
@@ -56,3 +57,10 @@ def test_load_taxonomy_keeps_the_yaml_order():
         for category in reversed(CATEGORIES):  # rewritten rows leave the heap out of YAML order
             conn.execute("update categories set what = what where slug = %s", (category.slug,))
         assert load_taxonomy(conn).categories() == CATEGORIES
+
+
+def test_the_row_type_follows_the_category_not_the_sign():
+    assert TAXONOMY.tx_type_of("fashion", Decimal("80")) == "expense"  # a refund
+    assert TAXONOMY.tx_type_of("fashion", Decimal("-80")) == "expense"
+    assert TAXONOMY.tx_type_of("salary", Decimal("2000")) == "income"
+    assert TAXONOMY.tx_type_of("own_accounts", Decimal("50")) == "transfer"

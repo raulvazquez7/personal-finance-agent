@@ -13,6 +13,7 @@ from pydantic import BaseModel
 from finance.categorization.categorizer import CategorizationContext, categorize
 from finance.categorization.jev_client import Jev, TypesafeJev
 from finance.categorization.labels import get_or_create_merchant
+from finance.categorization.loans import link_loans
 from finance.categorization.merchants import MerchantRef, MerchantRoster
 from finance.categorization.models import Categorization, TxInput
 from finance.categorization.pairing import pair_transfers
@@ -39,8 +40,13 @@ order by t.booked_at, t.id
 _UPDATE = """
 update transactions set tx_type = %(tx_type)s, category_slug = %(category_slug)s,
   category_source = %(category_source)s, category_confidence = %(category_confidence)s,
-  category_probabilities = %(category_probabilities)s, merchant_id = %(merchant_id)s,
-  merchant_source = %(merchant_source)s, merchant_confidence = %(merchant_confidence)s,
+  category_probabilities = %(category_probabilities)s,
+  -- A merchant set by a system step (a loan's contract) survives re-categorization.
+  merchant_id = case when merchant_source = 'rule' then merchant_id else %(merchant_id)s end,
+  merchant_source = case when merchant_source = 'rule' then merchant_source
+    else %(merchant_source)s end,
+  merchant_confidence = case when merchant_source = 'rule' then merchant_confidence
+    else %(merchant_confidence)s end,
   is_subscription = %(is_subscription)s, subscription_score = %(subscription_score)s,
   needs_review = %(needs_review)s, updated_at = now()
 where id = %(id)s and category_source <> 'user'
@@ -62,14 +68,14 @@ class CategorizeSummary(BaseModel):
     skipped: str | None = None
 
     def line(self) -> str:
-        if self.skipped:
-            return f"categorization skipped: {self.skipped} (paired={self.paired})"
         parts = [f"paired={self.paired}", f"categorized={self.categorized}"]
         parts += [f"{source}={n}" for source, n in sorted(self.by_source.items())]
         parts.append(f"needs_review={self.needs_review}")
         if self.failed:
             parts.append(f"failed={self.failed}")
-        return " ".join(parts)
+        counts = " ".join(parts)
+        # Skipped means jev only: pairing and the rules still ran.
+        return f"jev skipped: {self.skipped} ({counts})" if self.skipped else counts
 
 
 def load_pending(conn: Connection, include_all: bool) -> list[TxInput]:
@@ -149,40 +155,56 @@ def save(conn: Connection, results: list[Categorization], roster: MerchantRoster
 
 
 async def categorize_pending(
-    conn: Connection, settings: Settings, include_all: bool = False, jev: Jev | None = None
+    conn: Connection,
+    settings: Settings,
+    include_all: bool = False,
+    jev: Jev | None = None,
+    rules_only: bool = False,
 ) -> CategorizeSummary:
     paired = pair_transfers(conn, settings)
     rows = load_pending(conn, include_all)
+    skipped = None
+    if jev is None and not rules_only and not settings.typesafe_api_key:
+        rules_only, skipped = True, "TYPESAFE_API_KEY is not set"
     if not rows:
-        return CategorizeSummary(paired=paired)
-    if jev is None and not settings.typesafe_api_key:
-        return CategorizeSummary(paired=paired, skipped="TYPESAFE_API_KEY is not set")
+        link_loans(conn)
+        return CategorizeSummary(paired=paired, skipped=skipped)
     ctx = CategorizationContext(load_taxonomy(conn), load_rules(conn), settings)
     roster = load_roster(conn)
-    # One trace per run: every jev generation nests under this span.
-    with langfuse().start_as_current_observation(as_type="span", name="categorize") as span:
-        if jev is None:
-            async with TypesafeJev(
-                settings.typesafe_api_key, concurrency=settings.jev_concurrency
-            ) as client:
-                results = await categorize(rows, ctx, client, roster)
-        else:
-            results = await categorize(rows, ctx, jev, roster)
-        summary = CategorizeSummary(
-            paired=paired,
-            categorized=len(results),
-            needs_review=sum(r.needs_review for r in results),
-            by_source=dict(Counter(r.category_source for r in results)),
-            failed=len(rows) - len(results),
-        )
-        span.update(output=summary.model_dump())
+    if rules_only:
+        # Pairing and rules only: no jev call, so no cost (spec 3).
+        results = await categorize(rows, ctx, None, roster)
+        failed = 0
+    else:
+        # One trace per run: every jev generation nests under this span.
+        with langfuse().start_as_current_observation(as_type="span", name="categorize") as span:
+            if jev is None:
+                async with TypesafeJev(
+                    settings.typesafe_api_key, concurrency=settings.jev_concurrency
+                ) as client:
+                    results = await categorize(rows, ctx, client, roster)
+            else:
+                results = await categorize(rows, ctx, jev, roster)
+            failed = len(rows) - len(results)
+            span.update(output={"categorized": len(results), "failed": failed})
+    summary = CategorizeSummary(
+        paired=paired,
+        categorized=len(results),
+        needs_review=sum(r.needs_review for r in results),
+        by_source=dict(Counter(r.category_source for r in results)),
+        failed=failed,
+        skipped=skipped,
+    )
     save(conn, results, roster)
+    link_loans(conn)
     return summary
 
 
-def run_categorization(include_all: bool = False) -> CategorizeSummary:
+def run_categorization(include_all: bool = False, rules_only: bool = False) -> CategorizeSummary:
     with connection() as conn:
-        return asyncio.run(categorize_pending(conn, get_settings(), include_all))
+        return asyncio.run(
+            categorize_pending(conn, get_settings(), include_all, rules_only=rules_only)
+        )
 
 
 def run_categorization_logged(include_all: bool = False) -> None:

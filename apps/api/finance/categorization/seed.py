@@ -1,4 +1,4 @@
-"""Upsert the taxonomy and system rules from supabase/seed (run after every migration)."""
+"""Sync the taxonomy and system rules from supabase/seed (run after every migration)."""
 
 from psycopg import Connection
 
@@ -23,11 +23,17 @@ def seed(conn: Connection) -> tuple[int, int]:
             )
         for r in rules:
             conn.execute(
-                "insert into rules (name, bank, match_field, pattern, direction, category_slug)"
-                " values (%s, %s, %s, %s, %s, %s) on conflict (name) do update set"
-                " bank = excluded.bank, match_field = excluded.match_field,"
-                " pattern = excluded.pattern, direction = excluded.direction,"
-                " category_slug = excluded.category_slug",
-                (r.name, r.bank, r.match_field, r.pattern, r.direction, r.category_slug),
+                "insert into rules (name, bank, match_field, pattern, direction, kind,"
+                " category_slug, enabled) values (%s, %s, %s, %s, %s, %s, %s, true)"
+                " on conflict (name) do update set bank = excluded.bank,"
+                " match_field = excluded.match_field, pattern = excluded.pattern,"
+                " direction = excluded.direction, kind = excluded.kind,"
+                " category_slug = excluded.category_slug, enabled = true",
+                (r.name, r.bank, r.match_field, r.pattern, r.direction, r.kind, r.category_slug),
             )
+        # A rule removed from rules.yaml must stop running, not linger enabled.
+        conn.execute(
+            "update rules set enabled = false where not (name = any(%s))",
+            ([r.name for r in rules],),
+        )
     return len(categories), len(rules)

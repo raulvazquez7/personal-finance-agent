@@ -49,6 +49,10 @@ def _keys(client):
     return {item["key"] for item in client.get("/review").json()}
 
 
+def _note(conn, tx):
+    return conn.execute("select note from transactions where id = %s", (tx,)).fetchone()["note"]
+
+
 def test_a_labelled_transaction_leaves_the_review_queue(client, db_conn, make_tx):
     tx = make_tx(
         "-4321.07", "ZZTEST UNKNOWN CODE", merchant="ZZTEST UNKNOWN CODE", booked_at=SYNTHETIC_DAY
@@ -72,12 +76,12 @@ def test_the_count_includes_rows_no_run_has_categorized_yet(client, db_conn, mak
     assert after == before | {"uncategorized": before["uncategorized"] + 1}
 
 
-def test_a_refund_of_a_merchant_with_an_expense_default_is_its_own_item(client, db_conn, make_tx):
+def test_a_refund_is_reviewed_with_its_merchant(client, db_conn, make_tx):
     acme = _merchant(db_conn, "ZZTEST ACME", category_slug="groceries")
     refund = make_tx("12.50", "DEVOLUCION | ZZTEST ACME", booked_at=SYNTHETIC_DAY)
-    _to_review(db_conn, refund, "refunds", merchant_id=acme)
+    _to_review(db_conn, refund, "groceries", merchant_id=acme)
     keys = _keys(client)
-    assert f"t:{refund}" in keys and f"m:{acme}" not in keys
+    assert f"m:{acme}" in keys and f"t:{refund}" not in keys
 
 
 def test_unknown_category_and_unknown_merchant(client):
@@ -110,28 +114,46 @@ def test_a_merchant_name_without_letters_or_digits_is_422(client, db_conn, make_
         assert response.status_code == 422 and "no letter" in response.json()["detail"]
 
 
-def test_merge_and_dismiss_merge(client, db_conn):
-    acme = _merchant(db_conn, "ZZTEST ACME")
+def test_dismiss_merge(client, db_conn):
     foods = _merchant(db_conn, "ZZTEST ACME FOODS")
     other = _merchant(db_conn, "ZZTEST OTHER")
     db_conn.execute(
         "update merchants set merge_candidate_id = %s, merge_confidence = 0.6 where id = %s",
         (foods, other),
     )
-    assert client.post(f"/merchants/{acme}/merge", json={"into_id": str(foods)}).status_code == 204
-    assert db_conn.execute("select 1 from merchants where id = %s", (acme,)).fetchone() is None
     assert client.post(f"/merchants/{other}/dismiss-merge").status_code == 204
     row = db_conn.execute("select * from merchants where id = %s", (other,)).fetchone()
     assert row["confirmed"] and row["merge_candidate_id"] is None
-
-    assert (
-        client.post(f"/merchants/{MISSING}/merge", json={"into_id": str(foods)}).status_code == 404
-    )
     assert client.post(f"/merchants/{MISSING}/dismiss-merge").status_code == 404
 
 
 def test_categories_and_merchant_autocomplete(client, db_conn):
     db_conn.execute("insert into merchants (name, match_key) values ('ZZTEST ACME', 'ZZTESTACME')")
-    assert len(client.get("/categories").json()) == 55
+    assert len(client.get("/categories").json()) == 57
     names = [m["name"] for m in client.get("/merchants", params={"q": "zztest"}).json()]
     assert names == ["ZZTEST ACME"]
+
+
+def test_label_rejects_an_income_category_for_money_out(client, make_tx):
+    tx = make_tx("-3.00", "ZZTEST SHOP", booked_at=SYNTHETIC_DAY)
+    body = {"category_slug": "salary", "is_subscription": False}
+    assert client.post(f"/transactions/{tx}/label", json=body).status_code == 422
+
+
+def test_note_and_default_endpoints(client, db_conn, make_tx):
+    tx = make_tx("-3.00", "ZZTEST SHOP", booked_at=SYNTHETIC_DAY)
+    assert client.patch(f"/transactions/{tx}", json={"note": "gift"}).status_code == 204
+    assert client.patch(f"/transactions/{tx}", json={"note": "x" * 501}).status_code == 422
+    assert client.patch(f"/transactions/{MISSING}", json={"note": "x"}).status_code == 404
+    # The note field is required: an empty body is a 422 and leaves the note alone.
+    assert client.patch(f"/transactions/{tx}", json={}).status_code == 422
+    assert _note(db_conn, tx) == "gift"
+    assert client.patch(f"/transactions/{tx}", json={"note": None}).status_code == 204
+    assert _note(db_conn, tx) is None
+    acme = _merchant(db_conn, "ZZTEST ACME", category_slug="groceries")
+    assert client.delete(f"/merchants/{acme}/default").status_code == 204
+    assert client.delete(f"/merchants/{MISSING}/default").status_code == 404
+    # A real target: the old merge route would answer 204; with no route the path is 404.
+    other = _merchant(db_conn, "ZZTEST OTHER")
+    merge = client.post(f"/merchants/{acme}/merge", json={"into_id": str(other)})
+    assert merge.status_code == 404

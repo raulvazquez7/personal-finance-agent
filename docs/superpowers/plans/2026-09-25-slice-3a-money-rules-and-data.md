@@ -17,10 +17,13 @@
 - The row type rule: categorized rows take `categories.tx_type`; uncategorized rows keep the sign rule from import (money in = income, money out = expense).
 - Subscriptions are only money-out expense rows (`tx_type = 'expense' and amount < 0`).
 - Commands run from `apps/api`: `uv run task test` (unit), `uv run task test-integration` (needs local Supabase + `.env`), `uv run task lint`.
+- Lint (ruff, `line-length = 100`): run `uv run task format` before `uv run task lint`. `ruff format` does not split string literals, so split any SQL string that passes 100 characters by hand. Imports added to a test file go in its import block at the top (ruff E402), never mid-file.
 - **Never run `supabase db reset`.** Apply new migrations with `supabase migration up` (from the repo root). Before the first migration, back up labels: `uv run finance labels export` (it refuses to overwrite; that is fine).
 - After a migration or a seed change: `uv run finance seed` (from `apps/api`), so integration tests see the new slugs and rules.
 - Integration tests write synthetic rows only: dates in 1999, fake IBANs `ES00000000000000000000xx`, text prefixed `ZZTEST`. They run inside a rolled-back transaction (`db_conn`). Never copy real statement text or amounts into tests or docs; the repo is public.
-- jev (`typesafe-sdk`) is paid: no task runs `finance categorize` without `--rules-only` or `finance eval-categorization`, except Task 17 with Raul's explicit approval.
+- Integration tests write rows in 1999, with two exceptions, both rolled back: Task 1 reuses the slice-1 helper `_insert_slice_1_row` (its own date and IBAN), and Task 14's active-subscription test books at the ledger's latest day on purpose.
+- Every new `client` fixture saves and restores `app.dependency_overrides[db]` the way `apps/api/tests/test_review_api.py:16-24` does, never with a bare `pop`: `test_api.py` sets a module-level override that other tests rely on.
+- jev (`typesafe-sdk`) is paid: no task runs `finance categorize` without `--rules-only` or `finance eval-categorization`, except Task 16 with Raul's explicit approval.
 - Conventional commits, ending with `Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>`. Git author is already configured in the repo.
 - After any API model change: regenerate the web types with `cd apps/web && npm run gen:api` (API running on :8000).
 
@@ -172,6 +175,7 @@ git commit -m "feat: add transaction notes, rule kinds and category-driven row t
 **Files:**
 - Modify: `apps/api/finance/categorization/taxonomy.py:52-55`
 - Modify: `apps/api/finance/categorization/labels.py:14-20`
+- Modify: `apps/api/finance/categorization/categorizer.py` (the subscription line in `decide()`)
 - Test: `apps/api/tests/test_taxonomy.py`, `apps/api/tests/test_labels.py`
 
 **Interfaces:**
@@ -254,7 +258,7 @@ git commit -m "feat: let the category, not the sign, decide the row type"
 **Files:**
 - Modify: `supabase/seed/categories.yaml`, `supabase/seed/rules.yaml`
 - Modify: `apps/api/finance/categorization/rules.py`, `apps/api/finance/categorization/seed.py`, `apps/api/finance/categorization/taxonomy.py:58-59`
-- Test: `apps/api/tests/test_rules.py`, `apps/api/tests/test_seed.py` (new, integration)
+- Test: `apps/api/tests/test_rules.py`, `apps/api/tests/test_seed.py` (new, integration), `apps/api/tests/test_taxonomy.py`, `apps/api/tests/test_review_api.py`
 
 **Interfaces:**
 - Produces:
@@ -279,12 +283,15 @@ In `apps/api/tests/test_rules.py`, update the expected settlement categories in 
 
 (Replace the two existing `credit_card_payment` lines; keep the other fixtures as they are.)
 
+Add `Rule` and `is_refund` to the imports at the top:
+
+```python
+from finance.categorization.rules import Rule, is_refund, match_rule, read_rules_yaml
+```
+
 Append:
 
 ```python
-from finance.categorization.rules import Rule, is_refund
-
-
 def test_a_card_purchase_coming_back_is_a_refund():
     assert is_refund(RULES, "bbva", "PAGO CON TARJETA EN MODA", "ZZTEST SHOP", "incoming")
     assert not is_refund(RULES, "bbva", "PAGO CON TARJETA EN MODA", "ZZTEST SHOP", "outgoing")
@@ -349,9 +356,31 @@ def test_seed_adds_the_slice_3_slugs(db_conn):
     ]
 ```
 
+Update the pins the new slugs break. In `apps/api/tests/test_taxonomy.py`, `test_seed_has_the_spec_taxonomy` counts 57 categories and 15 expense groups (the new `credit_card`):
+
+```python
+def test_seed_has_the_spec_taxonomy():
+    assert len(CATEGORIES) == 57
+    assert len({c.slug for c in CATEGORIES}) == 57
+    assert len({c.level1 for c in CATEGORIES if c.tx_type == "expense"}) == 15
+    assert all(c.what for c in CATEGORIES)
+```
+
+`test_every_rule_points_to_a_known_category` checks only the rules that name a category (a refund rule names none):
+
+```python
+def test_every_rule_points_to_a_known_category():
+    slugs = {c.slug for c in CATEGORIES}
+    rules = read_rules_yaml(SEED_DIR / "rules.yaml")
+    assert {rule.category_slug for rule in rules if rule.category_slug} <= slugs
+```
+
+In `apps/api/tests/test_review_api.py`, `test_categories_and_merchant_autocomplete` reads the seeded database, which Step 5 seeds: change `== 55` to `== 57`.
+
 - [ ] **Step 2: Run them to verify they fail**
 
 Run: `uv run pytest tests/test_rules.py -v` → FAIL (import error `is_refund`).
+Run: `uv run pytest tests/test_taxonomy.py -k spec_taxonomy -v` → FAIL (`assert 55 == 57`).
 
 - [ ] **Step 3: Update the seed data**
 
@@ -408,7 +437,12 @@ class Rule(BaseModel):
     @field_validator("pattern")
     @classmethod
     def _compiles(cls, pattern: str) -> str:
-        re.compile(pattern)  # a bad regex fails at load, not on the first matching row
+        # A bad regex fails at load, not on the first matching row. re.error is not a
+        # ValueError, so pydantic would not turn it into a ValidationError on its own.
+        try:
+            re.compile(pattern)
+        except re.error as error:
+            raise ValueError(f"invalid pattern {pattern!r}: {error}") from error
         return pattern
 
     @model_validator(mode="after")
@@ -464,7 +498,7 @@ def is_refund(
     )
 ```
 
-Add `field_validator, model_validator` to the pydantic import. Pydantic wraps the `re.error` in a `ValidationError`, which is a `ValueError`, so the test passes.
+Add `field_validator, model_validator` to the pydantic import.
 
 `taxonomy.py:59`: read with `path.read_text(encoding="utf-8")`.
 
@@ -494,12 +528,13 @@ Update the module docstring to: `"""Sync the taxonomy and system rules from supa
 
 Run: `uv run pytest tests/test_rules.py -v` → PASS.
 Run: `uv run finance seed`, then `uv run pytest tests/test_seed.py -m integration -v` → PASS.
-Run: `uv run task test` → PASS. If `test_jev_questions.py` or `test_eval_run.py` pin the exact category count or fingerprint, update the expected number to the new taxonomy: +1 expense leaf, +1 transfer leaf.
+Run: `uv run task test` → PASS, with the new `test_taxonomy.py` pins (57 categories, 15 expense groups, only rules with a category checked).
+Run: `uv run pytest tests/test_review_api.py -m integration -k categories -v` → PASS (57 categories in the seeded database).
 
 - [ ] **Step 6: Commit**
 
 ```bash
-git add supabase/seed apps/api/finance/categorization/rules.py apps/api/finance/categorization/seed.py apps/api/finance/categorization/taxonomy.py apps/api/tests/test_rules.py apps/api/tests/test_seed.py
+git add supabase/seed apps/api/finance/categorization/rules.py apps/api/finance/categorization/seed.py apps/api/finance/categorization/taxonomy.py apps/api/tests/test_rules.py apps/api/tests/test_seed.py apps/api/tests/test_taxonomy.py apps/api/tests/test_review_api.py
 git commit -m "feat: add loan and unitemized card slugs, refund rules and a seed that disables removed rules"
 ```
 
@@ -533,14 +568,30 @@ def test_a_merchant_default_applies_to_a_refund_too():
         "merchant",
         "expense",
     )
+
+
+def test_an_income_default_never_applies_to_money_out():
+    roster = MerchantRoster([MerchantRef(id=uuid4(), name="ACME", category_slug="salary")])
+    charge = jev_result(
+        merchant={"ACME": 0.97, "none": 0.03}, category={"groceries": 0.9, "fashion": 0.1}
+    )
+    [result] = _run([_tx("ACME", amount="-13.77")], FakeJev(first={"ACME": charge}), roster)
+    assert (result.category_slug, result.category_source, result.tx_type) == (
+        "groceries",
+        "jev",
+        "expense",
+    )
+```
+
+Add `category_options` to the imports at the top:
+
+```python
+from finance.categorization.categorizer import CategorizationContext, categorize, category_options
 ```
 
 Append:
 
 ```python
-from finance.categorization.categorizer import category_options
-
-
 def test_a_card_purchase_coming_back_is_offered_expense_categories():
     refund = _tx("ACME", amount="13.77", concept="PAGO CON TARJETA EN MODA")
     slugs = {c.slug for c in category_options(refund, CTX)}
@@ -565,7 +616,9 @@ def test_without_jev_only_pairing_and_rule_rows_come_back():
 - [ ] **Step 2: Run them to verify they fail**
 
 Run: `uv run pytest tests/test_categorizer.py -v`
-Expected: FAIL (`category_options` missing; the default test still gets `refunds`).
+Expected: FAIL (`category_options` missing; the default test gets `("fashion", "jev", "expense")` and fails on the source).
+
+`test_an_income_default_never_applies_to_money_out` passes before Task 4: the old direction check gives it (spec 7.3, an income default never applies to money out). Its red step comes in Step 3: apply the new default block first WITHOUT the income guard, see this test fail (`salary` from the merchant), then add the guard.
 
 - [ ] **Step 3: Implement**
 
@@ -587,13 +640,15 @@ def category_options(tx: TxInput, ctx: CategorizationContext) -> list[Category]:
     return ctx.taxonomy.leaves(direction)
 ```
 
-In `decide()`, delete `direction = direction_of(tx.amount)`, and replace the default block with:
+In `decide()`, delete `direction = direction_of(tx.amount)`, and replace the default block with the one below. Write it first with `if default:` alone, run `test_an_income_default_never_applies_to_money_out` and see it fail, then add the income guard:
 
 ```python
     if use_merchant_defaults and merchant:
         # A default applies in both directions: a shop's refunds take its category (spec 2.2).
-        if merchant.category_slug:
-            slug, source = merchant.category_slug, "merchant"
+        # Money going out is never income (spec 7.3), so an income default skips it.
+        default = merchant.category_slug
+        if default and not (tx.amount < 0 and taxonomy.get(default).tx_type == "income"):
+            slug, source = default, "merchant"
             confidence = level1_confidence = None
         if merchant.is_subscription is not None:
             is_subscription = merchant.is_subscription
@@ -632,6 +687,7 @@ git commit -m "feat: apply merchant defaults to refunds and offer expense catego
 - Produces:
   - `loan_merchant_name(description_raw: str) -> str | None`.
   - `link_loans(conn) -> int`.
+  - `save()` keeps a rule-owned merchant (`merchant_source = 'rule'`, set by `link_loans`): re-categorizing a loan row never drops or renames its merchant.
   - `categorize_pending(conn, settings, include_all=False, jev=None, rules_only=False)`.
   - `run_categorization(include_all=False, rules_only=False)`.
   - The CLI flag `finance categorize --rules-only`.
@@ -642,12 +698,19 @@ Create `apps/api/tests/test_loans.py`:
 
 ```python
 from datetime import date
+from decimal import Decimal
 
 import pytest
 
+from finance.categorization.categorizer import from_rule
 from finance.categorization.loans import link_loans, loan_merchant_name
+from finance.categorization.merchants import MerchantRoster
+from finance.categorization.models import TxInput
+from finance.categorization.store import save
+from finance.categorization.taxonomy import load_taxonomy
 
 CONTRACT = "0000-1111-22-3333334567"  # synthetic contract number
+REPAYMENT = "CARGO POR AMORTIZACION DE PRESTAMO/CREDITO"
 
 
 def test_the_contract_number_names_the_loan():
@@ -660,7 +723,7 @@ def test_the_contract_number_names_the_loan():
 @pytest.mark.integration
 def test_a_disbursement_and_its_instalments_share_one_merchant(db_conn, make_tx):
     rows = [
-        make_tx("1500.00", f"ABONO POR DISPOSICION DE PRESTAMO/CREDITO | {CONTRACT}",
+        make_tx("2400.00", f"ABONO POR DISPOSICION DE PRESTAMO/CREDITO | {CONTRACT}",
                 booked_at=date(1999, 1, 5)),
         make_tx("-130.00", f"CARGO POR AMORTIZACION DE PRESTAMO/CREDITO | {CONTRACT}",
                 booked_at=date(1999, 2, 5)),
@@ -670,7 +733,8 @@ def test_a_disbursement_and_its_instalments_share_one_merchant(db_conn, make_tx)
             "update transactions set category_slug = %s, category_source = 'rule' where id = %s",
             (slug, tx),
         )
-    assert link_loans(db_conn) == 2
+    # the real ledger may hold unlinked loan rows too; the query below checks ours
+    assert link_loans(db_conn) >= 2
     found = db_conn.execute(
         "select distinct t.merchant_id, t.merchant_source, m.name from transactions t"
         " join merchants m on m.id = t.merchant_id where t.id = any(%s)",
@@ -700,11 +764,46 @@ def test_a_renamed_loan_keeps_its_new_instalments(db_conn, make_tx):
         ([first, later],),
     ).fetchall()
     assert [r["name"] for r in names] == ["ZZTEST car loan"]
+
+
+@pytest.mark.integration
+def test_a_renamed_loan_survives_a_full_re_categorization(db_conn, make_tx):
+    text = f"{REPAYMENT} | {CONTRACT}"
+    tx = make_tx("-130.00", text, bank_concept=REPAYMENT, booked_at=date(1999, 2, 5))
+    db_conn.execute(
+        "update transactions set category_slug = 'loan_payment', category_source = 'rule'"
+        " where id = %s",
+        (tx,),
+    )
+    link_loans(db_conn)
+    db_conn.execute(
+        "update merchants set name = 'ZZTEST car loan', match_key = 'ZZTESTCARLOAN'"
+        " where id = (select merchant_id from transactions where id = %s)",
+        (tx,),
+    )
+    # What an --all run saves for this row: the loan rule's result, which names no merchant.
+    # Built from the synthetic row only; categorize_pending(include_all=True) would touch real rows.
+    row = TxInput(
+        id=tx,
+        bank="bbva",
+        booked_at=date(1999, 2, 5),
+        amount=Decimal("-130.00"),
+        description_raw=text,
+        bank_concept=REPAYMENT,
+    )
+    save(db_conn, [from_rule(row, "loan_payment", load_taxonomy(db_conn))], MerchantRoster([]))
+    found = db_conn.execute(
+        "select t.merchant_source, m.name from transactions t"
+        " left join merchants m on m.id = t.merchant_id where t.id = %s",
+        (tx,),
+    ).fetchone()
+    assert (found["merchant_source"], found["name"]) == ("rule", "ZZTEST car loan")
 ```
 
-In `apps/api/tests/test_store.py`, append:
+In `apps/api/tests/test_store.py`, append (that file marks each database test one by one; it has no module-level `pytestmark`):
 
 ```python
+@pytest.mark.integration
 def test_without_a_jev_key_rules_still_apply(db_conn, make_tx):
     settlement = make_tx(
         "-175.00", "ADEUDO MENSUAL DE TARJETA | ZZTEST", bank_concept="ADEUDO MENSUAL DE TARJETA",
@@ -717,6 +816,7 @@ def test_without_a_jev_key_rules_still_apply(db_conn, make_tx):
     assert _source(db_conn, shop) == "none"
 
 
+@pytest.mark.integration
 def test_a_rules_only_run_never_calls_jev(db_conn, make_tx):
     make_tx("-9.90", "PAGO | ZZTEST ACME", merchant="ZZTEST ACME", booked_at=SYNTHETIC_DAY)
     jev = FakeJev()
@@ -745,7 +845,7 @@ def test_categorize_rules_only_passes_the_flag(monkeypatch):
 - [ ] **Step 2: Run them to verify they fail**
 
 Run: `uv run pytest tests/test_loans.py tests/test_store.py tests/test_cli.py -m "integration or not integration" -v`
-Expected: FAIL (`finance.categorization.loans` missing; no `rules_only`).
+Expected: FAIL (`finance.categorization.loans` missing; no `rules_only`). Once `loans.py` exists, `test_a_renamed_loan_survives_a_full_re_categorization` still fails until the `store.py` change in Step 4: `save()` writes `merchant_source = 'none'` and drops the merchant.
 
 - [ ] **Step 3: Implement `loans.py`**
 
@@ -770,7 +870,8 @@ def loan_merchant_name(description_raw: str) -> str | None:
 
 def link_loans(conn: Connection) -> int:
     """Give every loan row without a merchant the merchant of its contract. A row of the same
-    contract already linked wins, so a loan the user renamed keeps its new instalments."""
+    contract already linked by this step wins, so a loan the user renamed keeps its new
+    instalments."""
     rows = conn.execute(
         "select id, description_raw from transactions"
         " where category_slug = any(%s) and merchant_id is null",
@@ -783,7 +884,8 @@ def link_loans(conn: Connection) -> int:
             continue
         known = conn.execute(
             "select merchant_id from transactions where merchant_id is not null"
-            " and category_slug = any(%s) and strpos(description_raw, %s) > 0 limit 1",
+            " and merchant_source = 'rule' and category_slug = any(%s)"
+            " and strpos(description_raw, %s) > 0 limit 1",
             (LOAN_SLUGS, match.group()),
         ).fetchone()
         merchant_id = (
@@ -872,6 +974,27 @@ Update `CategorizeSummary.line()`, so that a skipped run still shows the rule ro
 
 (`test_categorize_says_why_it_skipped` still expects `(paired=2)`, because `by_source` is empty there.) Add `from finance.categorization.loans import link_loans`.
 
+A loan's merchant must survive `--all` runs, or a rename is lost: every rule result has no merchant, so `save()` would null the loan rows before `link_loans` runs. Replace `_UPDATE`:
+
+```python
+_UPDATE = """
+update transactions set tx_type = %(tx_type)s, category_slug = %(category_slug)s,
+  category_source = %(category_source)s, category_confidence = %(category_confidence)s,
+  category_probabilities = %(category_probabilities)s,
+  -- A merchant set by a system step (a loan's contract) survives re-categorization.
+  merchant_id = case when merchant_source = 'rule' then merchant_id else %(merchant_id)s end,
+  merchant_source = case when merchant_source = 'rule' then merchant_source
+    else %(merchant_source)s end,
+  merchant_confidence = case when merchant_source = 'rule' then merchant_confidence
+    else %(merchant_confidence)s end,
+  is_subscription = %(is_subscription)s, subscription_score = %(subscription_score)s,
+  needs_review = %(needs_review)s, updated_at = now()
+where id = %(id)s and category_source <> 'user'
+"""
+```
+
+In an UPDATE every SET expression reads the old row, so the order of the assignments does not matter: `merchant_source` in the three `case` tests is the value before this update.
+
 In `cli.py`, add the option and pass it:
 
 ```python
@@ -904,7 +1027,7 @@ git commit -m "feat: name loans by contract and apply rules without jev"
 ### Task 6: Review groups a merchant's rows in both directions
 
 **Files:**
-- Modify: `apps/api/finance/categorization/review_queue.py:95-101`, `apps/api/finance/categorization/labels.py:33-42`
+- Modify: `apps/api/finance/categorization/review_queue.py:95-101`, `apps/api/finance/categorization/labels.py:33-42`, `apps/api/finance/categorization/taxonomy.py:43-44`
 - Test: `apps/api/tests/test_review_queue.py`, `apps/api/tests/test_review_api.py`, `apps/api/tests/test_labels.py`
 
 **Interfaces:**
@@ -963,14 +1086,16 @@ Update the call in `build_review_items` to `_joins_its_merchant(row)`. Remove im
 
 `labels.py` `_RELABEL_MERCHANT`: delete the line `and c.tx_type in ('transfer', case when t.amount < 0 then 'expense' else 'income' end)`.
 
+`taxonomy.py`: delete `Taxonomy.fits` (lines 43-44). After Task 4 and this task it has no callers (spec 2.2: the direction checks go away). Keep `direction_of`: `jev_questions.py`, `category_options` and the rule loop in `categorize` still use it.
+
 - [ ] **Step 4: Run the tests**
 
-Run: `uv run task test` and `uv run pytest tests/test_review_api.py tests/test_labels.py tests/test_review_queue.py -m "integration or not integration" -v` → PASS.
+Run: `uv run task test` and `uv run pytest tests/test_review_api.py tests/test_labels.py tests/test_review_queue.py -m "integration or not integration" -v` → PASS. (The `/categories` count in `test_review_api.py` was already updated to 57 in Task 3.)
 
 - [ ] **Step 5: Commit**
 
 ```bash
-git add apps/api/finance/categorization/review_queue.py apps/api/finance/categorization/labels.py apps/api/tests
+git add apps/api/finance/categorization/review_queue.py apps/api/finance/categorization/labels.py apps/api/finance/categorization/taxonomy.py apps/api/tests
 git commit -m "feat: review and confirm a merchant's purchases and refunds together"
 ```
 
@@ -984,7 +1109,8 @@ git commit -m "feat: review and confirm a merchant's purchases and refunds toget
 
 **Interfaces:**
 - Produces:
-  - `class DirectionMismatch(ValueError)`: raised by `label_transaction` for money out labelled with an income category, and by `confirm_merchant` for an income default on a merchant with money-out rows.
+  - `class DirectionMismatch(ValueError)`: raised by `label_transaction` for money out labelled with an income category.
+  - `confirm_merchant` never writes an income category on a money-out row: `_RELABEL_MERCHANT` skips those rows, which keep their label (in-flight decision, 2026-09-25; it replaces a 422 guard that could block a merchant for good).
   - `clear_merchant_default(conn, merchant_id) -> None`.
   - `set_note(conn, transaction_id, note: str | None) -> None`.
   - `PATCH /transactions/{id}` with body `{"note": str | null}` → 204.
@@ -993,12 +1119,25 @@ git commit -m "feat: review and confirm a merchant's purchases and refunds toget
 
 - [ ] **Step 1: Write the failing tests**
 
-Append to `apps/api/tests/test_labels.py`:
+In `apps/api/tests/test_labels.py`, add `DirectionMismatch`, `clear_merchant_default` and `set_note` to the imports at the top:
 
 ```python
-from finance.categorization.labels import DirectionMismatch, clear_merchant_default, set_note
+from finance.categorization.labels import (
+    DirectionMismatch,
+    NotFound,
+    clear_merchant_default,
+    confirm_merchant,
+    dismiss_merge,
+    get_or_create_merchant,
+    label_transaction,
+    merge_merchants,
+    set_note,
+)
+```
 
+Append:
 
+```python
 def test_money_out_cannot_take_an_income_category(db_conn, make_tx):
     charge = _tx(make_tx, "-9.90", "PAGO | ZZTEST SHOP")
     with pytest.raises(DirectionMismatch):
@@ -1023,9 +1162,12 @@ def test_relabelling_one_side_of_a_pair_unpairs_both_and_sends_the_other_to_revi
 
 def test_clearing_a_default_keeps_the_rows_as_they_are(db_conn, make_tx):
     acme = _merchant(db_conn, "ZZTEST ACME", category_slug="groceries", is_subscription=False)
+    tx = _tx(make_tx, "-9.90", "PAGO | ZZTEST ACME")
+    _set(db_conn, tx, merchant_id=acme, category_slug="groceries", category_source="merchant")
     clear_merchant_default(db_conn, acme)
     merchant = db_conn.execute("select * from merchants where id = %s", (acme,)).fetchone()
     assert (merchant["category_slug"], merchant["is_subscription"]) == (None, None)
+    assert _row(db_conn, tx)["category_slug"] == "groceries"
     with pytest.raises(NotFound):
         clear_merchant_default(db_conn, uuid4())
 
@@ -1038,12 +1180,16 @@ def test_a_note_is_trimmed_and_an_empty_one_is_cleared(db_conn, make_tx):
     assert _row(db_conn, tx)["note"] is None
 
 
-def test_a_merchant_with_money_out_cannot_take_an_income_default(db_conn, make_tx):
+def test_confirming_an_income_default_leaves_money_out_alone(db_conn, make_tx):
     acme = _merchant(db_conn, "ZZTEST ACME")
     charge = _tx(make_tx, "-9.90", "PAGO | ZZTEST ACME")
     _set(db_conn, charge, merchant_id=acme, category_source="jev", category_slug="groceries")
-    with pytest.raises(DirectionMismatch):
-        confirm_merchant(db_conn, acme, "salary", False)
+    pay = _tx(make_tx, "1200.00", "NOMINA | ZZTEST ACME")
+    _set(db_conn, pay, merchant_id=acme, category_source="jev", category_slug="refunds")
+    confirm_merchant(db_conn, acme, "salary", False)
+    assert _row(db_conn, pay)["category_slug"] == "salary"
+    kept = _row(db_conn, charge)
+    assert (kept["category_slug"], kept["category_source"]) == ("groceries", "jev")
 
 
 def test_confirming_with_another_merchant_sets_the_survivor_default(db_conn, make_tx):
@@ -1112,20 +1258,14 @@ In `label_transaction`, inside the transaction and before `_LABEL_ONE`:
 
 `_LABEL_ONE` sets `needs_review = false` on the labelled row, so only the other side stays in review.
 
-In `confirm_merchant`, after the `if merge_into_id is not None:` block and right before `updated = conn.execute(` (so every confirm runs it, on the survivor's rows after a merge), add:
+In `_RELABEL_MERCHANT`, after the `t.category_source in (...)` line, add the one direction rule that stays (spec 7.3, and the categorizer's income-default skip from Task 4):
 
-```python
-        income = conn.execute(
-            "select 1 from categories c where c.slug = %s and c.tx_type = 'income'"
-            " and exists (select 1 from transactions t where t.merchant_id = %s and t.amount < 0"
-            " and t.category_source <> 'user')",
-            (category_slug, merchant_id),
-        ).fetchone()
-        if income:
-            raise DirectionMismatch(f"{category_slug} is income; this merchant has money out")
+```sql
+  -- Money going out is never income (spec 7.3): a confirm leaves those rows as they are.
+  and not (t.amount < 0 and c.tx_type = 'income')
 ```
 
-`review_merchant` already maps `ValueError` to 422. Then add:
+`confirm_merchant` itself gets no guard: an income default is allowed, and the merchant's money-out rows keep their labels (the categorizer never applies an income default to money out either). Then add:
 
 ```python
 def clear_merchant_default(conn: Connection, merchant_id: UUID) -> None:
@@ -1182,7 +1322,21 @@ def clear_default(merchant_id: UUID, conn: Db) -> Response:
     return Response(status_code=204)
 ```
 
-If `tests/test_review_api.py` or `test_api.py` still call `POST /merchants/{id}/merge`, delete those tests: the web app merges only through confirm, where the survivor's default is the confirmed category (M10/M11 closed).
+`tests/test_review_api.py` `test_merge_and_dismiss_merge` calls `POST /merchants/{id}/merge`, and it is also the only test of `dismiss-merge`. Rename it `test_dismiss_merge` and drop only its `POST /merchants/{id}/merge` asserts (and the `acme` merchant only they use); keep the dismiss-merge asserts. The web app merges only through confirm, where the survivor's default is the confirmed category (M10/M11 closed).
+
+```python
+def test_dismiss_merge(client, db_conn):
+    foods = _merchant(db_conn, "ZZTEST ACME FOODS")
+    other = _merchant(db_conn, "ZZTEST OTHER")
+    db_conn.execute(
+        "update merchants set merge_candidate_id = %s, merge_confidence = 0.6 where id = %s",
+        (foods, other),
+    )
+    assert client.post(f"/merchants/{other}/dismiss-merge").status_code == 204
+    row = db_conn.execute("select * from merchants where id = %s", (other,)).fetchone()
+    assert row["confirmed"] and row["merge_candidate_id"] is None
+    assert client.post(f"/merchants/{MISSING}/dismiss-merge").status_code == 404
+```
 
 - [ ] **Step 5: Run the tests**
 
@@ -1200,7 +1354,7 @@ git commit -m "feat: check label direction, unpair relabelled transfers, clear d
 ### Task 8: Labels export/import carry notes and report bad rows
 
 **Files:**
-- Modify: `apps/api/finance/evals/labels_io.py`, `apps/api/finance/cli.py:104-110`
+- Modify: `apps/api/finance/evals/labels_io.py`, `apps/api/finance/cli.py:104-110`, `apps/api/finance/categorization/labels.py` (`set_note`)
 - Test: `apps/api/tests/test_labels_io.py`, `apps/api/tests/test_cli.py`
 
 **Interfaces:**
@@ -1208,6 +1362,7 @@ git commit -m "feat: check label direction, unpair relabelled transfers, clear d
   - CSV columns `dedup_key, category_slug, is_subscription, merchant, note`. A row with a note but no user label has an empty `category_slug`.
   - `LabelsImport(imported, missing, notes, errors: list[str])`.
   - `finance labels import` exits 1 when `errors` is not empty.
+  - `set_note` raises `ValueError("a note has at most 500 characters")` for a longer trimmed note.
 
 - [ ] **Step 1: Write the failing tests**
 
@@ -1237,9 +1392,35 @@ def test_an_old_csv_imports_and_a_bad_row_is_reported_by_line(db_conn, make_tx, 
     result = import_labels(db_conn, path)
     assert result.imported == 1
     assert len(result.errors) == 1 and result.errors[0].startswith("line 3:")
+
+
+def test_a_note_over_500_characters_is_reported_and_the_rest_imports(db_conn, make_tx, tmp_path):
+    too_long = make_tx("-9.90", "PAGO | ZZTEST LONG NOTE", booked_at=SYNTHETIC_DAY)
+    fine = make_tx("-4.00", "PAGO | ZZTEST SHORT NOTE", booked_at=SYNTHETIC_DAY)
+    path = tmp_path / "notes.csv"
+    path.write_text(
+        "dedup_key,category_slug,is_subscription,merchant,note\n"
+        f"{_dedup_key(db_conn, too_long)},,,,{'x' * 501}\n"
+        f"{_dedup_key(db_conn, fine)},,,,gift\n"
+    )
+    result = import_labels(db_conn, path)
+    assert result.errors == ["line 2: a note has at most 500 characters"]
+    assert result.notes == 1
+    note = "select note from transactions where id = %s"
+    assert db_conn.execute(note, (fine,)).fetchone()["note"] == "gift"
+    assert db_conn.execute(note, (too_long,)).fetchone()["note"] is None
 ```
 
 (Add `from datetime import date` if the file lacks it.)
+
+`test_labels_export_with_force_overwrites_the_file` in `apps/api/tests/test_cli.py` pins the CSV. With `note` in `FIELDS`, the header gains `,note` and the row (its `LABEL` has no note) a trailing `,`:
+
+```python
+    assert target.read_text().splitlines() == [
+        "dedup_key,category_slug,is_subscription,merchant,note",
+        "k1,groceries,False,ZZTEST ACME,",
+    ]
+```
 
 In `apps/api/tests/test_cli.py`, append:
 
@@ -1309,25 +1490,46 @@ def import_labels(conn: Connection, path: Path) -> LabelsImport:
             if found is None:
                 result.missing += 1
                 continue
+            label, note = row["category_slug"], row.get("note")
             try:
-                if row["category_slug"]:
-                    label_transaction(
-                        conn,
-                        found["id"],
-                        row["category_slug"],
-                        row["is_subscription"].strip().lower() in ("1", "true"),
-                        new_merchant_name=row["merchant"] or None,
-                    )
-                    result.imported += 1
-                if row.get("note"):
-                    set_note(conn, found["id"], row["note"])
-                    result.notes += 1
+                with conn.transaction():  # a bad row rolls back whole: its label and its note
+                    if label:
+                        label_transaction(
+                            conn,
+                            found["id"],
+                            label,
+                            row["is_subscription"].strip().lower() in ("1", "true"),
+                            new_merchant_name=row["merchant"] or None,
+                        )
+                    if note:
+                        set_note(conn, found["id"], note)
             except (NotFound, ValueError) as error:
                 result.errors.append(f"line {line}: {error}")
+                continue
+            if label:
+                result.imported += 1
+            if note:
+                result.notes += 1
     return result
 ```
 
-Imports: `from finance.categorization.labels import NotFound, label_transaction, set_note`. An unknown category makes `_LABEL_ONE` return no row, so `label_transaction` raises `NotFound`. That exception is raised inside `label_transaction`'s own `conn.transaction()`, so only that row rolls back.
+Imports: `from finance.categorization.labels import NotFound, label_transaction, set_note`. An unknown category makes `_LABEL_ONE` return no row, so `label_transaction` raises `NotFound`. The row's label and note run inside one `conn.transaction()` (a savepoint), so a failing row rolls back whole, and the counts only include rows that committed. The `except` sits outside that block, so the import goes on with the next row.
+
+`labels.py` `set_note` (Task 7): refuse a note over 500 characters before the UPDATE. The CHECK on `transactions.note` stays as the backstop, but its violation is not a `ValueError` and would abort the whole import:
+
+```python
+def set_note(conn: Connection, transaction_id: UUID, note: str | None) -> None:
+    """A note is not a label: no label history (spec 4)."""
+    text = (note or "").strip() or None
+    if text and len(text) > 500:
+        raise ValueError("a note has at most 500 characters")
+    row = conn.execute(
+        "update transactions set note = %s, updated_at = now() where id = %s returning id",
+        (text, transaction_id),
+    ).fetchone()
+    if row is None:
+        raise NotFound(f"transaction {transaction_id}")
+```
 
 `cli.py` `labels_import`:
 
@@ -1348,7 +1550,7 @@ Run: `uv run task test` and `uv run pytest tests/test_labels_io.py -m integratio
 - [ ] **Step 5: Commit**
 
 ```bash
-git add apps/api/finance/evals/labels_io.py apps/api/finance/cli.py apps/api/tests
+git add apps/api/finance/evals/labels_io.py apps/api/finance/cli.py apps/api/finance/categorization/labels.py apps/api/tests
 git commit -m "feat: keep notes in the labels CSV and report bad rows by line"
 ```
 
@@ -1390,10 +1592,10 @@ ROWS = [  # (amount, category or None, day, description)
     ("2000.00", "salary", date(1999, 1, 28), "ZZTEST PAYROLL"),
     ("-200.00", "fashion", date(1999, 1, 3), "ZZTEST SHOP"),
     ("80.00", "fashion", date(1999, 1, 10), "ZZTEST SHOP REFUND"),
-    ("1500.00", "loan_received", date(1999, 1, 5), "ZZTEST LOAN IN"),
+    ("2400.00", "loan_received", date(1999, 1, 5), "ZZTEST LOAN IN"),
     ("-130.00", "loan_payment", date(1999, 1, 20), "ZZTEST LOAN OUT"),
     ("-175.00", "credit_card_spending", date(1999, 1, 2), "ZZTEST CARD"),
-    ("-300.00", "own_accounts", date(1999, 1, 15), "ZZTEST TO SAVINGS"),
+    ("-340.00", "own_accounts", date(1999, 1, 15), "ZZTEST TO SAVINGS"),
     ("50.00", "own_accounts", date(1999, 1, 16), "ZZTEST FROM OLD ACCOUNT"),
     ("-80.00", "restaurants_bars", date(1999, 1, 12), "ZZTEST DINNER"),
     ("60.00", "restaurants_bars", date(1999, 1, 13), "ZZTEST BIZUM BACK"),
@@ -1424,6 +1626,7 @@ def money_month(db_conn, make_tx) -> UUID:
 Create `apps/api/tests/test_views.py`:
 
 ```python
+from datetime import date
 from decimal import Decimal
 
 import pytest
@@ -1450,7 +1653,8 @@ def test_spend_by_category_nets_refunds_and_keeps_uncategorized(db_conn, make_tx
     account = money_month(db_conn, make_tx)
     rows = db_conn.execute(
         "select category_slug, sum(spend) as spend from v_spend_by_category"
-        " where account_id = %s and month = '1999-01' group by category_slug order by category_slug",
+        " where account_id = %s and month = '1999-01'"
+        " group by category_slug order by category_slug",
         (account,),
     ).fetchall()
     assert {r["category_slug"]: r["spend"] for r in rows} == {
@@ -1475,13 +1679,17 @@ def test_enriched_rows_carry_spend_income_and_note(db_conn, make_tx):
     assert (row["spend"], row["income"], row["direction"], row["level1"]) == (
         Decimal("-80.00"), Decimal("0"), "incoming", "shopping",
     )
+    jacket = db_conn.execute(
+        "select note from v_transactions_enriched where account_id = %s and amount = -200",
+        (account,),
+    ).fetchone()
+    assert jacket["note"] == "jacket"
 
 
-def test_active_subscriptions_are_relative_to_the_latest_import(db_conn, make_tx):
-    from datetime import date
-
+def test_a_monthly_subscription_has_its_cadence_and_typical_amount(db_conn, make_tx):
     shop = db_conn.execute(
-        "insert into merchants (name, match_key) values ('ZZTEST STREAM', 'ZZTESTSTREAM') returning id"
+        "insert into merchants (name, match_key)"
+        " values ('ZZTEST STREAM', 'ZZTESTSTREAM') returning id"
     ).fetchone()["id"]
     for day in (date(1999, 1, 3), date(1999, 2, 3), date(1999, 3, 3)):
         tx = make_tx("-9.99", "ZZTEST STREAM", booked_at=day)
@@ -1500,7 +1708,7 @@ def test_active_subscriptions_are_relative_to_the_latest_import(db_conn, make_tx
     )
 ```
 
-(The real ledger's latest import is newer than 1999, so this synthetic subscription is not `active`, and the test does not assert on `active`. The `active` flag itself is covered through the API in Task 14.)
+(This test checks the cadence and the typical amount only. The real ledger's latest import is newer than 1999, so this synthetic subscription is not `active`; the `active` flag is tested through the API in Task 14.)
 
 - [ ] **Step 3: Run them to verify they fail**
 
@@ -1626,8 +1834,8 @@ Money a bank lends you is a **liability**: you pay it back. It goes to `loan_rec
 transfer, and never counts as income. The monthly instalments are an expense
 (`loan_payment`). The bank line does not split principal from interest, so neither do we.
 
-Example: you borrow €1,500 in January and buy a laptop with it, then repay €130 a month.
-January shows negative savings (you spent €1,500 more than you earned, with borrowed money),
+Example: you borrow €2,400 in January and buy a laptop with it, then repay €130 a month.
+January shows negative savings (you spent €2,400 more than you earned, with borrowed money),
 and each later month shows the €130 instalment as spending.
 
 Each loan is a merchant named after its contract (`Loan ····1234`). You can rename it, and
@@ -1957,7 +2165,8 @@ class MonthPoint(BaseModel):
 
 
 class BreakdownRow(BaseModel):
-    key: str  # a level1 or category slug, a merchant id, "category:<slug>" or "other"
+    # The folded rest is "_other", never "other": the expense level 1 `other` is a real slug.
+    key: str  # a level1 or category slug, a merchant id, "category:<slug>" or "_other"
     label: str | None  # merchant name; the web labels slugs
     level1: str | None
     category_slug: str | None
@@ -1966,7 +2175,7 @@ class BreakdownRow(BaseModel):
     share: float
     previous: Decimal | None  # None when the previous period has no data; 0 = "new"
     count: int
-    folded: int = 0  # entries folded into "other"
+    folded: int = 0  # entries folded into "_other"
 
 
 class SubscriptionOut(BaseModel):
@@ -2037,7 +2246,7 @@ class ScopeMonth(BaseModel):
     month: str
     has_data: bool
     total: Decimal | None
-    by_child: dict[str, Decimal]  # child key (or "other") -> amount; empty without children
+    by_child: dict[str, Decimal]  # child key (or "_other") -> amount; empty without children
 
 
 class SpendingDetail(BaseModel):
@@ -2051,7 +2260,7 @@ class SpendingDetail(BaseModel):
     previous_total: Decimal | None
     count: int
     months: list[ScopeMonth]
-    child_keys: list[str]  # the stacked-bar series, largest first ("other" last)
+    child_keys: list[str]  # the stacked-bar series, largest first ("_other" last)
     children: list[BreakdownRow]
     top_merchants: list[BreakdownRow]
     cumulative: Cumulative
@@ -2071,7 +2280,7 @@ import pytest
 from finance.dashboard.breakdowns import breakdown, group_slots
 from finance.dashboard.filters import Scope
 from finance.dashboard.periods import Period
-from tests.money_month import money_month
+from tests.money_month import IBAN, money_month
 
 pytestmark = pytest.mark.integration
 
@@ -2081,21 +2290,36 @@ FEB = Period(start=date(1999, 2, 1), end=date(1999, 2, 28))
 
 def test_groups_top_five_and_other(db_conn, make_tx):
     account = money_month(db_conn, make_tx)
-    rows = breakdown(db_conn, "group", "spend", Scope(accounts=(account,), tx_type="expense"), JAN, None)
+    scope = Scope(accounts=(account,), tx_type="expense")
+    rows = breakdown(db_conn, "group", "spend", scope, JAN, None)
     by_key = {r.key: r for r in rows}
     assert by_key["credit_card"].amount == Decimal("175.00")
     assert by_key["shopping"].amount == Decimal("120.00")
     assert sum(r.amount for r in rows) == Decimal("455.00")
     assert all(r.previous is None for r in rows)
     assert len(rows) <= 6
+    # January: credit_card 175 (1 row), financial 130 (1), shopping 120 (2), leisure 20 (2),
+    # uncategorized 10 (1). With top=2 the last three fold into "_other".
+    folded = breakdown(db_conn, "group", "spend", scope, JAN, None, top=2)
+    assert [r.key for r in folded] == ["credit_card", "financial", "_other"]
+    rest = folded[-1]
+    assert (rest.amount, rest.folded, rest.count) == (Decimal("150.00"), 3, 5)
 
 
 def test_a_negative_group_is_kept_and_sorted_last(db_conn, make_tx):
     account = money_month(db_conn, make_tx)
-    rows = breakdown(db_conn, "group", "spend", Scope(accounts=(account,), tx_type="expense"), FEB, JAN)
-    assert [(r.key, r.amount) for r in rows] == [("shopping", Decimal("-30.00"))]
-    assert rows[0].share == 0.0  # no positive total to divide by
-    assert rows[0].previous == Decimal("120.00")
+    dinner = make_tx("-15.00", "ZZTEST FEB DINNER", iban=IBAN, booked_at=date(1999, 2, 10))
+    db_conn.execute(
+        "update transactions set category_slug = 'restaurants_bars' where id = %s", (dinner,)
+    )
+    scope = Scope(accounts=(account,), tx_type="expense")
+    rows = breakdown(db_conn, "group", "spend", scope, FEB, JAN)
+    assert [(r.key, r.amount) for r in rows] == [
+        ("leisure", Decimal("15.00")),
+        ("shopping", Decimal("-30.00")),
+    ]
+    assert all(r.share == 0.0 for r in rows)  # the total is -15: no positive total to divide by
+    assert rows[-1].previous == Decimal("120.00")
 
 
 def test_merchants_without_a_merchant_fall_back_to_their_category(db_conn, make_tx):
@@ -2112,7 +2336,7 @@ def test_group_slots_rank_all_time_spend(db_conn):
 - [ ] **Step 6: Implement `breakdowns.py`**
 
 ```python
-"""Where the money went: by group, category or merchant, top N plus "other" (spec 7.1)."""
+"""Where the money went: by group, category or merchant, top N plus "_other" (spec 7.1)."""
 
 from decimal import Decimal
 from typing import Literal
@@ -2129,7 +2353,9 @@ Value = Literal["spend", "income"]
 KEYS: dict[str, str] = {
     "group": "coalesce(level1, 'uncategorized')",
     "category": "coalesce(category_slug, 'uncategorized')",
-    "merchant": "coalesce(merchant_id::text, 'category:' || coalesce(category_slug, 'uncategorized'))",
+    "merchant": (
+        "coalesce(merchant_id::text, 'category:' || coalesce(category_slug, 'uncategorized'))"
+    ),
 }
 
 
@@ -2192,7 +2418,7 @@ def breakdown(
     )
     head.append(
         BreakdownRow(
-            key="other", label=None, level1=None, category_slug=None, merchant_id=None,
+            key="_other", label=None, level1=None, category_slug=None, merchant_id=None,
             amount=amount, share=_share(amount, total), previous=other_previous,
             count=sum(row.count for row in tail), folded=len(tail),
         )
@@ -2204,7 +2430,8 @@ def group_slots(conn: Connection) -> dict[str, int]:
     """Colour slots 1..5 for the groups with the most all-time spend: a period filter never
     repaints them (spec 7.2)."""
     rows = conn.execute(
-        "select level1 from v_transactions_enriched where tx_type = 'expense' and level1 is not null"
+        "select level1 from v_transactions_enriched"
+        " where tx_type = 'expense' and level1 is not null"
         " group by level1 order by sum(spend) desc, level1 limit 5"
     ).fetchall()
     return {row["level1"]: slot for slot, row in enumerate(rows, start=1)}
@@ -2262,9 +2489,13 @@ pytestmark = pytest.mark.integration
 
 @pytest.fixture
 def client(db_conn):
+    previous = app.dependency_overrides.get(db)
     app.dependency_overrides[db] = lambda: db_conn
     yield TestClient(app)
-    app.dependency_overrides.pop(db, None)
+    if previous is None:
+        app.dependency_overrides.pop(db, None)
+    else:
+        app.dependency_overrides[db] = previous
 
 
 def _overview(client, account, **params):
@@ -2305,6 +2536,10 @@ def test_an_account_without_rows_returns_an_empty_overview(client):
 def test_a_bad_custom_range_is_422(client):
     response = client.get("/dashboard/overview", params={"period": "custom", "start": "1999-02-01", "end": "1999-01-01"})
     assert response.status_code == 422
+
+
+def test_a_month_13_is_422(client):
+    assert client.get("/dashboard/overview", params={"month": "1999-13"}).status_code == 422
 
 
 def test_subscriptions_endpoint_returns_totals(client):
@@ -2465,7 +2700,7 @@ class PeriodRequest:
 
 def period_request(
     period: PeriodName = "month",
-    month: str | None = Query(default=None, pattern=r"^\d{4}-\d{2}$"),
+    month: str | None = Query(default=None, pattern=r"^\d{4}-(0[1-9]|1[0-2])$"),
     start: date | None = None,
     end: date | None = None,
     account_id: list[UUID] = Query(default=[]),
@@ -2507,6 +2742,8 @@ def resolve_request(conn: Connection, request: PeriodRequest) -> Resolved:
     )
     return Resolved(current, before, out)
 ```
+
+The `month` pattern accepts only months 01-12: with `1999-13`, `date.fromisoformat` would raise inside the dependency, which is a 500, not a 422.
 
 - [ ] **Step 6: Implement `api/dashboard.py` and register it**
 
@@ -2605,9 +2842,13 @@ pytestmark = pytest.mark.integration
 
 @pytest.fixture
 def client(db_conn):
+    previous = app.dependency_overrides.get(db)
     app.dependency_overrides[db] = lambda: db_conn
     yield TestClient(app)
-    app.dependency_overrides.pop(db, None)
+    if previous is None:
+        app.dependency_overrides.pop(db, None)
+    else:
+        app.dependency_overrides[db] = previous
 
 
 def _list(client, account, **params):
@@ -2619,7 +2860,7 @@ def test_totals_cover_the_whole_filtered_set(client, db_conn, make_tx):
     account = money_month(db_conn, make_tx)
     body = _list(client, account)
     assert body["count"] == 11 and len(body["items"]) == 11
-    assert (body["money_in"], body["money_out"]) == ("3690.00", "895.00")
+    assert (body["money_in"], body["money_out"]) == ("4590.00", "935.00")
 
 
 def test_search_notes_and_saved_filters(client, db_conn, make_tx):
@@ -2654,7 +2895,7 @@ def test_card_numbers_are_masked(client, db_conn, make_tx):
     assert item["description_raw"] == "PAGO CON TARJETA | •••• 1234 ZZTEST ACME"
 ```
 
-Money in for January: 2000 + 80 + 1500 + 50 + 60 = 3690. Money out: 200 + 130 + 175 + 300 + 80 + 10 = 895.
+Money in for January: 2000 + 80 + 2400 + 50 + 60 = 4590. Money out: 200 + 130 + 175 + 340 + 80 + 10 = 935.
 
 In `apps/api/tests/test_api.py`, delete `_Rows` and `test_transactions_mask_card_numbers` (moved to the integration test above). Keep `test_transactions_rejects_malformed_month` and `test_openapi_exposes_web_schemas` (`Transaction` is still a schema name); add `"TransactionPage"` to the latter's set.
 
@@ -2801,7 +3042,7 @@ def list_transactions(
     return page(conn, filters, resolved, cursor, limit)
 ```
 
-Delete the old `_SELECT` and the old `Transaction` class (the model now lives in `dashboard/models.py`). Add `from typing import Literal`.
+Delete the old `_SELECT` and the old `Transaction` class (the model now lives in `dashboard/models.py`). Add `from typing import Literal`. Remove the imports that become unused (ruff F401): `from datetime import date`, `from decimal import Decimal` and `from finance.ingestion.structure import mask_card_numbers` (masking now happens in `dashboard/transactions.py`).
 
 - [ ] **Step 5: Run the API tests**
 
@@ -2814,7 +3055,8 @@ Start the API (`uv run task api`), then from `apps/web` run `npm run gen:api`. I
 - build `query` from `{ period: "month", ...(month ? { month } : {}) }`;
 - iterate `page.items`;
 - show `tx.merchant_name ?? tx.bank_merchant_text ?? tx.description_raw` in the description cell;
-- replace the `LIMIT` hint with `{page.next_cursor && <p ...>Showing the latest 100 transactions of {page.count}.</p>}`.
+- replace the `LIMIT` hint with `{page.next_cursor && <p ...>Showing the latest 100 transactions of {page.count}.</p>}`;
+- delete `const LIMIT = 1000` and its comment, so no `LIMIT` use is left: the API now caps `limit` at 100, and the new query does not send it.
 
 This page is replaced in slice 3b; the change only keeps it working. Run `npm run lint && npm run build` → PASS.
 
@@ -2859,9 +3101,13 @@ pytestmark = pytest.mark.integration
 
 @pytest.fixture
 def client(db_conn):
+    previous = app.dependency_overrides.get(db)
     app.dependency_overrides[db] = lambda: db_conn
     yield TestClient(app)
-    app.dependency_overrides.pop(db, None)
+    if previous is None:
+        app.dependency_overrides.pop(db, None)
+    else:
+        app.dependency_overrides[db] = previous
 
 
 def _detail(client, account, **params):
@@ -2914,7 +3160,7 @@ def scope_months(
     child_keys: list[str],
 ) -> list[ScopeMonth]:
     """12 months of one scope, split by its children for the stacked bars: `child_keys` in
-    order, the rest summed as "other" (spec 7.2)."""
+    order, the rest summed as "_other" (spec 7.2)."""
     period = twelve_months(end)
     with_data = data_months(conn, period, scope.accounts)
     key = KEYS[child] if child else "'total'"
@@ -2925,7 +3171,7 @@ def scope_months(
     ).fetchall()
     by_month: dict[str, dict[str, Decimal]] = {}
     for row in rows:
-        bucket = row["key"] if not child or row["key"] in child_keys else "other"
+        bucket = row["key"] if not child or row["key"] in child_keys else "_other"
         month = by_month.setdefault(row["month"], {})
         month[bucket] = month.get(bucket, Decimal(0)) + row["amount"]
     points = []
@@ -2989,9 +3235,9 @@ def detail(
         if child
         else []
     )
-    keys = [c.key for c in children if c.key != "other"][:5]
+    keys = [c.key for c in children if c.key != "_other"][:5]
     if len(children) > len(keys):
-        keys.append("other")
+        keys.append("_other")
     listing = page(conn, TransactionFilters(scope=scope), resolved, limit=5)
     name = None
     if merchant_id:
@@ -3056,15 +3302,16 @@ def test_a_request_for_another_host_is_refused():
     assert client.get("/health").status_code == 200
 ```
 
-Append to `apps/api/tests/test_dashboard_api.py`:
+In `apps/api/tests/test_dashboard_api.py`, add `from datetime import date` to the imports at the top, and append:
 
 ```python
 def test_a_subscription_is_active_relative_to_the_latest_import(client, db_conn, make_tx):
-    from datetime import date
-
+    # An empty ledger has no latest day: the rows booked below then become the latest day.
     latest = db_conn.execute("select max(booked_at) as d from transactions").fetchone()["d"]
+    latest = latest or date(1999, 3, 31)
     shop = db_conn.execute(
-        "insert into merchants (name, match_key) values ('ZZTEST STREAM', 'ZZTESTSTREAM') returning id"
+        "insert into merchants (name, match_key)"
+        " values ('ZZTEST STREAM', 'ZZTESTSTREAM') returning id"
     ).fetchone()["id"]
     for day in (latest.replace(day=1), latest):
         tx = make_tx("-9.99", "ZZTEST STREAM", booked_at=day)
@@ -3094,7 +3341,12 @@ from fastapi.middleware.trustedhost import TrustedHostMiddleware
 app.add_middleware(TrustedHostMiddleware, allowed_hosts=get_settings().trusted_hosts)
 ```
 
-`.env.example`: add `# TRUSTED_HOSTS=["localhost","127.0.0.1"]` under the CORS line, with a one-line comment.
+`.env.example` has no CORS line: add a short block at the end, after a blank line:
+
+```bash
+# API hosts the server answers (DNS-rebinding guard)
+# TRUSTED_HOSTS=["localhost","127.0.0.1"]
+```
 
 - [ ] **Step 4: Run all tests**
 
@@ -3148,20 +3400,24 @@ This task touches Raul's real data. Do each step with him, and paste only counts
 
 - [ ] **Step 1: Back up and migrate** (skip whatever Tasks 1 and 9 already did)
 
-From `apps/api`: `uv run finance labels export --force` (or a new dated file). From the repo root: `supabase migration up`. From `apps/api`: `uv run finance seed`.
+From `apps/api`: `uv run finance labels export ../../data/labels/labels-YYYYMMDD-task16.csv` (a new file, not `--force`, which would overwrite the backup Task 1 made the same day). From the repo root: `supabase migration up`. From `apps/api`: `uv run finance seed`.
 
 - [ ] **Step 2: Re-apply the rules without jev**
 
-Run: `uv run finance categorize --all --rules-only`
-Expected: a summary line with `rule=<n>`. The card settlements now read `credit_card_spending`, the loan rows `loan_received` / `loan_payment`, and loans have `Loan ····NNNN` merchants. Check with:
+Count by source first, so the run can be compared (paste counts only):
 
 ```sql
-select category_slug, count(*) from transactions
-where category_slug in ('credit_card_spending', 'loan_received', 'loan_payment', 'credit_card_payment')
-group by 1;
+select category_slug, category_source, count(*) from transactions
+where category_slug in
+  ('credit_card_spending', 'loan_received', 'loan_payment', 'credit_card_payment')
+group by 1, 2
+order by 1, 2;
 ```
 
-Expected: `credit_card_payment` is gone (0 rows).
+Run: `uv run finance categorize --all --rules-only`
+Expected: a summary line with `rule=<n>`. The card settlements now read `credit_card_spending`, the loan rows `loan_received` / `loan_payment`, and loans have `Loan ····NNNN` merchants. Run the same query again.
+
+Expected: no `credit_card_payment` row with source `rule` is left. A rules-only run re-saves only the rows that pairing or a rule matched, so `credit_card_payment` rows the user labelled, and rows jev labelled whose text no rule matches, remain. They are also golden labels for the eval (Step 4): decide with Raul how to treat them before going on.
 
 - [ ] **Step 3: Send the purchase refunds labelled `refunds` back to review**
 
@@ -3181,6 +3437,8 @@ where category_slug = 'refunds' and amount > 0 and bank_concept ilike 'PAGO CON 
 
 Then, **with Raul's explicit approval of the paid run** (a handful of rows): `uv run finance categorize`. Raul labels them in `/review` with the purchase's category, and his new labels supersede the old ones in the golden set.
 
+Before that paid run, note that a row whose merchant has a default takes it (Task 4) and comes back with `needs_review = false`: it skips `/review`, so its old `refunds` user label stays the latest golden label. Decide with Raul, before the run, how those rows get relabelled.
+
 - [ ] **Step 4: Eval on the new taxonomy (paid, Raul approves first)**
 
 Run: `uv run finance eval-categorization --note "slice 3 taxonomy: refunds take the purchase category, loans, unitemized card spending"`
@@ -3194,6 +3452,27 @@ git commit -m "docs: record the first benchmark on the slice 3 taxonomy"
 ```
 
 ---
+
+## Pre-flight corrections (2026-09-25)
+
+The plan was checked against the code before Task 1, and Raul approved these changes:
+
+- **Test pins:** the counts the new slugs break (`test_taxonomy.py`: 57 categories, 15 expense groups, only rules with a category; `test_review_api.py`: 57) are updated in Task 3, and the CSV pinned in `test_cli.py` in Task 8.
+- **Regex validation:** `re.error` is not a `ValueError`, so `Rule._compiles` wraps it (Task 3).
+- **Markers and real rows:** the new `test_store.py` tests are marked `integration`, and `link_loans` is asserted on the synthetic rows only (Task 5).
+- **Decisions D1-D4:** a loan's merchant survives `--all` runs (D1, Task 5); the folded row's key is `"_other"`, never a slug (D2, Tasks 10 and 13); tests assert what their names claim (D3, Tasks 7, 9 and 10); an income default never applies to money out (D4, Task 4).
+- **Lint and fixtures:** `uv run task format` before `lint`, long SQL strings split, test imports at the top, unused imports removed (Global Constraints, Task 12); every new `client` fixture restores the override it replaces (Tasks 11-13).
+- **Smaller fixes:** `Taxonomy.fits` deleted (Task 6); the dismiss-merge test kept (Task 7); a note over 500 characters is refused and a failing CSV row rolls back whole (Task 8); `month=1999-13` is a 422 (Task 11); `LIMIT` removed from the old page (Task 12); the `.env.example` block and an empty-ledger fallback (Task 14).
+- **Real ledger:** Task 16 backs up to a new file, and decides with Raul about the `credit_card_payment` rows a rules-only run leaves and the refund rows a merchant default keeps out of `/review`.
+
+## In-flight decisions (2026-09-25)
+
+Taken with Raul while the tasks ran, after a task review found the gap:
+
+- **Task 6:** in `/review`, a money-out row whose merchant default is an income category stands alone (its own item). Confirming the merchant would otherwise overwrite the income default and relabel the merchant's past income. It mirrors D4.
+- **Task 7:** `confirm_merchant` has no income guard. `_RELABEL_MERCHANT` skips money-out rows when the category is income, so they keep their label. The 422 guard first planned could block a merchant for good when jev had labelled one of its charges outside `/review`. "Money out is never income" now holds in three places: labelling a row (422), the categorizer's defaults, and a merchant confirm.
+- **Task 9:** `docs/money-rules.md` also gets a "Subscriptions" section (money-out only, merchant required, median amount, monthly or yearly cadence, active within 45 or 400 days of the latest import, card-paid subscriptions not itemized). The `v_subscriptions` comment points to the doc (spec 4, 10). The loan example uses €2,400 and says the savings drop and can go negative; the Income and Expenses rows use spec 2.1's type-based wording. The shipped doc is the reference; the block in Task 9 is its first draft.
+- **Fix rounds:** where task reviews and the final review strengthened tests or guards beyond this plan's code blocks, the branch code is the reference.
 
 ## Self-review notes (for the executor)
 
