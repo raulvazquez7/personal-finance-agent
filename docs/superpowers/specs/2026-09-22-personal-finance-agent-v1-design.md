@@ -838,3 +838,9 @@ Decided with Raul after he reviewed the March statement in `/review`:
   scores them below the 0.95 gate and each new one reaches `/review`; a
   confident wrong guess is the residual risk. Remembering a label by merchant
   and amount is a candidate for slice 3.
+
+### Slice 3 amendments (2026-09-25)
+
+Designed in `2026-09-25-slice-3-design.md`: refunds take the purchase's category, loans and
+unitemized card spending, category-driven row types, notes, the views and the dashboard API.
+That document lists the v1 sections it changes (its section 13).
