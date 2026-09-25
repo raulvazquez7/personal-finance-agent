@@ -103,7 +103,7 @@ def label_transaction(
         if kind and kind["amount"] < 0 and kind["tx_type"] == "income":
             raise DirectionMismatch(f"{category_slug} is income; this transaction is money out")
         if kind and kind["transfer_pair_id"] and category_slug != "own_accounts":
-            # Not a transfer after all: both sides unpair and the other goes to review (M13).
+            # Not a transfer: both unpair; the other goes to review unless user-labelled (M13).
             conn.execute(_UNPAIR, {"id": transaction_id})
         row = conn.execute(_LABEL_ONE, params).fetchone()
         if row is None:
