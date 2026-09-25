@@ -44,8 +44,10 @@ where c.slug = %(slug)s and t.merchant_id = %(merchant)s
 returning t.id, t.is_subscription
 """
 
+# /review hides user rows, so a side the user labelled keeps its label and stays out of review.
 _UNPAIR = """
-update transactions set transfer_pair_id = null, needs_review = true, updated_at = now()
+update transactions set transfer_pair_id = null, needs_review = (category_source <> 'user'),
+  updated_at = now()
 where transfer_pair_id = (select transfer_pair_id from transactions where id = %(id)s)
 """
 

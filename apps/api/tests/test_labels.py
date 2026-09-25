@@ -224,6 +224,27 @@ def test_relabelling_one_side_of_a_pair_unpairs_both_and_sends_the_other_to_revi
     assert (other["transfer_pair_id"], other["needs_review"]) == (None, True)
 
 
+def test_unpairing_leaves_a_user_labelled_other_side_out_of_review(db_conn, make_tx):
+    """/review hides user rows: flagging one would leave it stuck in needs_review."""
+    out = _tx(make_tx, "-50.00", "TRASPASO | ZZTEST")
+    into = make_tx(
+        "50.00", "TRASPASO | ZZTEST", iban="ES0000000000000000000002", booked_at=SYNTHETIC_DAY
+    )
+    pair = uuid4()
+    for tx in (out, into):
+        _set(
+            db_conn,
+            tx,
+            transfer_pair_id=pair,
+            category_slug="own_accounts",
+            category_source="user",
+            tx_type="transfer",
+        )
+    label_transaction(db_conn, out, "payments_to_people", is_subscription=False)
+    other = _row(db_conn, into)
+    assert (other["transfer_pair_id"], other["needs_review"]) == (None, False)
+
+
 def test_clearing_a_default_keeps_the_rows_as_they_are(db_conn, make_tx):
     acme = _merchant(db_conn, "ZZTEST ACME", category_slug="groceries", is_subscription=False)
     tx = _tx(make_tx, "-9.90", "PAGO | ZZTEST ACME")
