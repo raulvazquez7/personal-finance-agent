@@ -41,6 +41,7 @@ def test_search_notes_and_saved_filters(client, db_conn, make_tx):
     )
     assert [i["note"] for i in _list(client, account, q="wool")["items"]] == ["100% wool_coat"]
     assert _list(client, account, q="100%")["count"] == 1
+    assert _list(client, account, q="%")["count"] == 1  # literal percent, not a wildcard
     assert _list(client, account, q="_")["count"] == 1  # literal underscore, not a wildcard
     assert _list(client, account, saved="unpaired_own")["count"] == 1
     assert _list(client, account, saved="refunds")["count"] == 2  # fashion and Bizum back
@@ -51,14 +52,15 @@ def test_cursor_paging_never_skips_rows_on_the_same_day(client, db_conn, make_tx
         make_tx(f"-{n + 1}.00", f"ZZTEST SAME DAY {n}", iban=IBAN, booked_at=date(1999, 3, 9))
     account = db_conn.execute("select id from accounts where iban = %s", (IBAN,)).fetchone()["id"]
     seen, cursor = [], None
-    while True:
+    for _ in range(5):  # 3 pages expected: a cursor that never advances fails, not hangs
         params = {"month": "1999-03", "limit": 2, **({"cursor": cursor} if cursor else {})}
         body = _list(client, account, **params)
+        assert body["count"] == 5  # totals cover the whole filtered set on every page
         seen += [i["id"] for i in body["items"]]
         cursor = body["next_cursor"]
         if not cursor:
             break
-    assert len(seen) == len(set(seen)) == 5
+    assert cursor is None and len(seen) == len(set(seen)) == 5
 
 
 def test_card_numbers_are_masked(client, db_conn, make_tx):
