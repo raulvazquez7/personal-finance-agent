@@ -42,9 +42,11 @@ class FakeJev:
         self.same = same or {}
         self.default = default
         self.calls: list[tuple[str, dict]] = []
+        self.questions: list[dict] = []  # what each call asked, in the order of `calls`
 
     async def ask(self, name: str, state: dict, questions: dict) -> JevResult:
         self.calls.append((name, dict(state)))
+        self.questions.append(questions)
         if name == "categorize":
             answer = self.first.get(state["merchant_text"], self.default)
         else:

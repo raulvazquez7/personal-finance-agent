@@ -85,3 +85,28 @@ def test_a_monthly_subscription_has_its_cadence_and_typical_amount(db_conn, make
         Decimal("9.99"),
         3,
     )
+
+
+def test_a_yearly_subscription_costs_a_twelfth_per_month(db_conn, make_tx):
+    shop = db_conn.execute(
+        "insert into merchants (name, match_key)"
+        " values ('ZZTEST YEARLY', 'ZZTESTYEARLY') returning id"
+    ).fetchone()["id"]
+    for day in (date(1999, 1, 10), date(1999, 12, 10)):  # a 334-day gap: over 200 is yearly
+        tx = make_tx("-120.00", "ZZTEST YEARLY", booked_at=day)
+        db_conn.execute(
+            "update transactions set merchant_id = %s, is_subscription = true,"
+            " category_slug = 'software_ai', tx_type = 'expense' where id = %s",
+            (shop, tx),
+        )
+    row = db_conn.execute(
+        "select cadence, typical_amount, monthly_equivalent, charges from v_subscriptions"
+        " where merchant_id = %s",
+        (shop,),
+    ).fetchone()
+    assert (row["cadence"], row["typical_amount"], row["monthly_equivalent"], row["charges"]) == (
+        "yearly",
+        Decimal("120.00"),
+        Decimal("10.00"),
+        2,
+    )

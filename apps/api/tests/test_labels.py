@@ -281,8 +281,14 @@ def test_confirming_with_another_merchant_sets_the_survivor_default(db_conn, mak
     """M10: since the review-fix PR the survivor's default is the confirmed category."""
     source = _merchant(db_conn, "ZZTEST ACME SHOP")
     survivor = _merchant(db_conn, "ZZTEST ACME", category_slug="groceries")
+    moved = _tx(make_tx, "-9.90", "PAGO | ZZTEST ACME SHOP")
+    _set(db_conn, moved, merchant_id=source, category_source="jev", category_slug="groceries")
     confirm_merchant(db_conn, source, "fashion", False, merge_into_id=survivor)
     row = db_conn.execute(
         "select category_slug from merchants where id = %s", (survivor,)
     ).fetchone()
     assert row["category_slug"] == "fashion"
+    # M11: a row moved by the merge takes the survivor's default.
+    moved_row = _row(db_conn, moved)
+    assert (moved_row["merchant_id"], moved_row["category_slug"]) == (survivor, "fashion")
+    assert moved_row["category_source"] == "merchant"

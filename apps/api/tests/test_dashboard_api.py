@@ -102,16 +102,25 @@ def test_a_subscription_is_active_relative_to_the_latest_import(client, db_conn,
     # An empty ledger has no latest day: the rows booked below then become the latest day.
     latest = db_conn.execute("select max(booked_at) as d from transactions").fetchone()["d"]
     latest = latest or date(1999, 3, 31)
-    shop = db_conn.execute(
-        "insert into merchants (name, match_key)"
-        " values ('ZZTEST STREAM', 'ZZTESTSTREAM') returning id"
-    ).fetchone()["id"]
-    for day in (latest.replace(day=1), latest):
-        tx = make_tx("-9.99", "ZZTEST STREAM", booked_at=day)
-        db_conn.execute(
-            "update transactions set merchant_id = %s, is_subscription = true,"
-            " category_slug = 'entertainment', tx_type = 'expense' where id = %s",
-            (shop, tx),
-        )
-    names = [s["merchant_name"] for s in client.get("/dashboard/subscriptions").json()["items"]]
-    assert "ZZTEST STREAM" in names
+    # Charged in January 1999: more than 45 days before the real latest day and before the
+    # empty-ledger fallback's 31 March, so it is not active.
+    charges = {
+        "ZZTEST STREAM": (latest.replace(day=1), latest),
+        "ZZTEST OLDSTREAM": (date(1999, 1, 1), date(1999, 1, 15)),
+    }
+    for name, days in charges.items():
+        shop = db_conn.execute(
+            "insert into merchants (name, match_key) values (%s, %s) returning id",
+            (name, name.replace(" ", "")),
+        ).fetchone()["id"]
+        for day in days:
+            tx = make_tx("-9.99", name, booked_at=day)
+            db_conn.execute(
+                "update transactions set merchant_id = %s, is_subscription = true,"
+                " category_slug = 'entertainment', tx_type = 'expense' where id = %s",
+                (shop, tx),
+            )
+    items = client.get("/dashboard/subscriptions").json()["items"]
+    # Only the synthetic names: a failure never prints the real ledger's merchants.
+    listed = {s["merchant_name"] for s in items if s["merchant_name"].startswith("ZZTEST")}
+    assert listed == {"ZZTEST STREAM"}

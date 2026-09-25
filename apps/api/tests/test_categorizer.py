@@ -270,6 +270,15 @@ def test_a_card_purchase_coming_back_is_offered_expense_categories():
     assert "fashion" in slugs and "salary" not in slugs
 
 
+def test_jev_is_asked_with_the_refund_options_for_a_card_purchase_coming_back():
+    refund = _tx("ACME", amount="13.77", concept="PAGO CON TARJETA")
+    jev = FakeJev(first={"ACME": GROCERIES})
+    _run([refund], jev)
+    [questions] = jev.questions
+    offered = set(questions["category"]["criteria"])
+    assert "fashion" in offered and "salary" not in offered
+
+
 def test_other_money_in_keeps_the_income_options():
     salary = _tx("ACME PAYROLL", amount="2000", concept="TRANSFERENCIA")
     slugs = {c.slug for c in category_options(salary, CTX)}
@@ -279,7 +288,11 @@ def test_other_money_in_keeps_the_income_options():
 def test_without_jev_only_pairing_and_rule_rows_come_back():
     settlement = _tx("", amount="-175.00", concept="ADEUDO MENSUAL DE TARJETA")
     shop = _tx("ACME")
-    results = asyncio.run(categorize([settlement, shop], CTX, None, MerchantRoster([])))
+    paired = _tx("ANA EXAMPLE", concept="TRASPASO", transfer_pair_id=uuid4())
+    rows = [settlement, shop, paired]
+    results = asyncio.run(categorize(rows, CTX, None, MerchantRoster([])))
+    # In the order of the rows, not pairing first.
     assert [(r.transaction_id, r.category_slug) for r in results] == [
-        (settlement.id, "credit_card_spending")
+        (settlement.id, "credit_card_spending"),
+        (paired.id, "own_accounts"),
     ]

@@ -1595,7 +1595,7 @@ ROWS = [  # (amount, category or None, day, description)
     ("2400.00", "loan_received", date(1999, 1, 5), "ZZTEST LOAN IN"),
     ("-130.00", "loan_payment", date(1999, 1, 20), "ZZTEST LOAN OUT"),
     ("-175.00", "credit_card_spending", date(1999, 1, 2), "ZZTEST CARD"),
-    ("-300.00", "own_accounts", date(1999, 1, 15), "ZZTEST TO SAVINGS"),
+    ("-340.00", "own_accounts", date(1999, 1, 15), "ZZTEST TO SAVINGS"),
     ("50.00", "own_accounts", date(1999, 1, 16), "ZZTEST FROM OLD ACCOUNT"),
     ("-80.00", "restaurants_bars", date(1999, 1, 12), "ZZTEST DINNER"),
     ("60.00", "restaurants_bars", date(1999, 1, 13), "ZZTEST BIZUM BACK"),
@@ -2860,7 +2860,7 @@ def test_totals_cover_the_whole_filtered_set(client, db_conn, make_tx):
     account = money_month(db_conn, make_tx)
     body = _list(client, account)
     assert body["count"] == 11 and len(body["items"]) == 11
-    assert (body["money_in"], body["money_out"]) == ("4590.00", "895.00")
+    assert (body["money_in"], body["money_out"]) == ("4590.00", "935.00")
 
 
 def test_search_notes_and_saved_filters(client, db_conn, make_tx):
@@ -2895,7 +2895,7 @@ def test_card_numbers_are_masked(client, db_conn, make_tx):
     assert item["description_raw"] == "PAGO CON TARJETA | •••• 1234 ZZTEST ACME"
 ```
 
-Money in for January: 2000 + 80 + 2400 + 50 + 60 = 4590. Money out: 200 + 130 + 175 + 300 + 80 + 10 = 895.
+Money in for January: 2000 + 80 + 2400 + 50 + 60 = 4590. Money out: 200 + 130 + 175 + 340 + 80 + 10 = 935.
 
 In `apps/api/tests/test_api.py`, delete `_Rows` and `test_transactions_mask_card_numbers` (moved to the integration test above). Keep `test_transactions_rejects_malformed_month` and `test_openapi_exposes_web_schemas` (`Transaction` is still a schema name); add `"TransactionPage"` to the latter's set.
 
