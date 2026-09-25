@@ -132,6 +132,6 @@ def test_merge_and_dismiss_merge(client, db_conn):
 
 def test_categories_and_merchant_autocomplete(client, db_conn):
     db_conn.execute("insert into merchants (name, match_key) values ('ZZTEST ACME', 'ZZTESTACME')")
-    assert len(client.get("/categories").json()) == 55
+    assert len(client.get("/categories").json()) == 57
     names = [m["name"] for m in client.get("/merchants", params={"q": "zztest"}).json()]
     assert names == ["ZZTEST ACME"]

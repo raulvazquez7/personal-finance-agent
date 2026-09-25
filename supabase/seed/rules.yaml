@@ -3,10 +3,16 @@
 # matched by two rules with different categories (tests/test_rules.py).
 - {name: atm_withdrawal_concept, match_field: bank_concept, pattern: '^RET\. EFECTIVO', direction: outgoing, category_slug: atm_withdrawal}
 - {name: atm_withdrawal_text, match_field: merchant, pattern: '^REINT\.? ?CAJERO', direction: outgoing, category_slug: atm_withdrawal}
-- {name: card_settlement_concept, match_field: bank_concept, pattern: '^ADEUDO MENSUAL DE TARJETA', direction: outgoing, category_slug: credit_card_payment}
-- {name: card_settlement_text, match_field: merchant, pattern: '^T\. (VISA|MASTERCARD)\b', direction: outgoing, category_slug: credit_card_payment}
+- {name: card_settlement_concept, match_field: bank_concept, pattern: '^ADEUDO MENSUAL DE TARJETA', direction: outgoing, category_slug: credit_card_spending}
+- {name: card_settlement_text, match_field: merchant, pattern: '^T\. (VISA|MASTERCARD)\b', direction: outgoing, category_slug: credit_card_spending}
 - {name: bizum_sent_concept, match_field: bank_concept, pattern: '^BIZUM$', direction: outgoing, category_slug: payments_to_people}
 - {name: bizum_sent_text, match_field: merchant, pattern: '^(BIZUM\b|ENVIADO:)', direction: outgoing, category_slug: payments_to_people}
 - {name: bizum_received_concept, match_field: bank_concept, pattern: '^BIZUM$', direction: incoming, category_slug: payments_from_people}
 - {name: bizum_received_text, match_field: merchant, pattern: '^(BIZUM\b|RECIBIDO:)', direction: incoming, category_slug: payments_from_people}
 - {name: own_transfer_text, match_field: merchant, pattern: '^TRASPASO PROPIO\b', direction: any, category_slug: own_accounts}
+- {name: card_instalment_concept, match_field: bank_concept, pattern: '^CARGO POR OPERACION FINANCIADA CON TARJETA', direction: outgoing, category_slug: credit_card_spending}
+- {name: loan_disbursement_concept, match_field: bank_concept, pattern: '^ABONO POR DISPOSICION DE PRESTAMO', direction: incoming, category_slug: loan_received}
+- {name: loan_repayment_concept, match_field: bank_concept, pattern: '^CARGO POR AMORTIZACION DE PRESTAMO', direction: outgoing, category_slug: loan_payment}
+# Refund rules name no category: a card purchase coming back is a refund, so jev picks among
+# expense categories for it (spec 2.2).
+- {name: card_refund_concept, match_field: bank_concept, pattern: '^PAGO CON TARJETA', direction: incoming, kind: refund}

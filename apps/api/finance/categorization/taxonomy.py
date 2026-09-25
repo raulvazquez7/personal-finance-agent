@@ -56,7 +56,7 @@ class Taxonomy:
 
 
 def read_categories_yaml(path: Path) -> list[Category]:
-    tree = yaml.safe_load(path.read_text())
+    tree = yaml.safe_load(path.read_text(encoding="utf-8"))
     return [
         Category(slug=slug, tx_type=tx_type, level1=level1, **criterion)
         for tx_type, groups in tree.items()

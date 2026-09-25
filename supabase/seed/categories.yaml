@@ -124,6 +124,10 @@ expense:
   other:
     uncategorized_expense:
       what: an expense that fits no other category or whose text gives no clue
+  credit_card:
+    credit_card_spending:
+      what: the monthly settlement of a credit card, or the instalment of a card purchase paid in instalments, when the card's own purchases are not imported (adeudo mensual de tarjeta, operacion financiada con tarjeta)
+      not_for: a purchase paid by card at a shop, which takes the shop's category
 income:
   income:
     salary:
@@ -133,7 +137,8 @@ income:
     pension_benefits:
       what: pension, unemployment benefit, public aid and subsidies, tax refunds from the administration
     refunds:
-      what: refunds, returns, cashback and bonuses paid back by a merchant or bank
+      what: money back with no known purchase behind it, such as cashback or a bonus paid by a bank
+      not_for: the refund of a purchase at a shop, which takes the category of that purchase
     investment_income:
       what: interest, dividends, investment returns
     payments_from_people:
@@ -148,4 +153,7 @@ transfer:
     savings_investment:
       what: contributions to savings, brokers, investment or pension plans
     credit_card_payment:
-      what: monthly settlement of a credit card (adeudo mensual de tarjeta)
+      what: monthly settlement of a credit card whose own statement is imported, so its purchases are already categorized
+    loan_received:
+      what: money a bank or lender pays into the account as a loan or credit line; it is paid back, so it is not income
+      not_for: salary, refunds or payments from people
