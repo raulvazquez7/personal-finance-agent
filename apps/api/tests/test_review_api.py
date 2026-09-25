@@ -72,12 +72,12 @@ def test_the_count_includes_rows_no_run_has_categorized_yet(client, db_conn, mak
     assert after == before | {"uncategorized": before["uncategorized"] + 1}
 
 
-def test_a_refund_of_a_merchant_with_an_expense_default_is_its_own_item(client, db_conn, make_tx):
+def test_a_refund_is_reviewed_with_its_merchant(client, db_conn, make_tx):
     acme = _merchant(db_conn, "ZZTEST ACME", category_slug="groceries")
     refund = make_tx("12.50", "DEVOLUCION | ZZTEST ACME", booked_at=SYNTHETIC_DAY)
-    _to_review(db_conn, refund, "refunds", merchant_id=acme)
+    _to_review(db_conn, refund, "groceries", merchant_id=acme)
     keys = _keys(client)
-    assert f"t:{refund}" in keys and f"m:{acme}" not in keys
+    assert f"m:{acme}" in keys and f"t:{refund}" not in keys
 
 
 def test_unknown_category_and_unknown_merchant(client):

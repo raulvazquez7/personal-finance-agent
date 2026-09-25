@@ -40,9 +40,6 @@ class Taxonomy:
         kind = "expense" if direction == "outgoing" else "income"
         return [c for c in self._by_slug.values() if c.tx_type in (kind, "transfer")]
 
-    def fits(self, slug: str, direction: Direction) -> bool:
-        return any(category.slug == slug for category in self.leaves(direction))
-
     def level1_sums(self, probabilities: dict[str, float]) -> dict[str, float]:
         sums: dict[str, float] = defaultdict(float)
         for slug, probability in probabilities.items():

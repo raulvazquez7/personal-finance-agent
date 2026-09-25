@@ -64,7 +64,8 @@ def test_confirm_sets_the_default_and_relabels_reviewed_rows(db_conn, make_tx):
         "merchant",
     )
     assert _row(db_conn, charge)["needs_review"] is False
-    assert _row(db_conn, refund)["category_slug"] == "refunds"
+    refund_row = _row(db_conn, refund)
+    assert (refund_row["category_slug"], refund_row["tx_type"]) == ("restaurants_bars", "expense")
     assert _row(db_conn, mine)["category_slug"] == "fashion"
     merchant = db_conn.execute("select * from merchants where id = %s", (acme,)).fetchone()
     assert (merchant["category_slug"], merchant["confirmed"]) == ("restaurants_bars", True)

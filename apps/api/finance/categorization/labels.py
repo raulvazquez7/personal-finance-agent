@@ -34,7 +34,6 @@ update transactions t set category_slug = c.slug, category_source = 'merchant',
 from categories c
 where c.slug = %(slug)s and t.merchant_id = %(merchant)s
   and t.category_source in ('jev', 'merchant', 'none')
-  and c.tx_type in ('transfer', case when t.amount < 0 then 'expense' else 'income' end)
 returning t.id, t.is_subscription
 """
 
