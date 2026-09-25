@@ -723,7 +723,7 @@ def test_the_contract_number_names_the_loan():
 @pytest.mark.integration
 def test_a_disbursement_and_its_instalments_share_one_merchant(db_conn, make_tx):
     rows = [
-        make_tx("1500.00", f"ABONO POR DISPOSICION DE PRESTAMO/CREDITO | {CONTRACT}",
+        make_tx("2400.00", f"ABONO POR DISPOSICION DE PRESTAMO/CREDITO | {CONTRACT}",
                 booked_at=date(1999, 1, 5)),
         make_tx("-130.00", f"CARGO POR AMORTIZACION DE PRESTAMO/CREDITO | {CONTRACT}",
                 booked_at=date(1999, 2, 5)),
@@ -1592,7 +1592,7 @@ ROWS = [  # (amount, category or None, day, description)
     ("2000.00", "salary", date(1999, 1, 28), "ZZTEST PAYROLL"),
     ("-200.00", "fashion", date(1999, 1, 3), "ZZTEST SHOP"),
     ("80.00", "fashion", date(1999, 1, 10), "ZZTEST SHOP REFUND"),
-    ("1500.00", "loan_received", date(1999, 1, 5), "ZZTEST LOAN IN"),
+    ("2400.00", "loan_received", date(1999, 1, 5), "ZZTEST LOAN IN"),
     ("-130.00", "loan_payment", date(1999, 1, 20), "ZZTEST LOAN OUT"),
     ("-175.00", "credit_card_spending", date(1999, 1, 2), "ZZTEST CARD"),
     ("-300.00", "own_accounts", date(1999, 1, 15), "ZZTEST TO SAVINGS"),
@@ -1834,8 +1834,8 @@ Money a bank lends you is a **liability**: you pay it back. It goes to `loan_rec
 transfer, and never counts as income. The monthly instalments are an expense
 (`loan_payment`). The bank line does not split principal from interest, so neither do we.
 
-Example: you borrow €1,500 in January and buy a laptop with it, then repay €130 a month.
-January shows negative savings (you spent €1,500 more than you earned, with borrowed money),
+Example: you borrow €2,400 in January and buy a laptop with it, then repay €130 a month.
+January shows negative savings (you spent €2,400 more than you earned, with borrowed money),
 and each later month shows the €130 instalment as spending.
 
 Each loan is a merchant named after its contract (`Loan ····1234`). You can rename it, and
@@ -2860,7 +2860,7 @@ def test_totals_cover_the_whole_filtered_set(client, db_conn, make_tx):
     account = money_month(db_conn, make_tx)
     body = _list(client, account)
     assert body["count"] == 11 and len(body["items"]) == 11
-    assert (body["money_in"], body["money_out"]) == ("3690.00", "895.00")
+    assert (body["money_in"], body["money_out"]) == ("4590.00", "895.00")
 
 
 def test_search_notes_and_saved_filters(client, db_conn, make_tx):
@@ -2895,7 +2895,7 @@ def test_card_numbers_are_masked(client, db_conn, make_tx):
     assert item["description_raw"] == "PAGO CON TARJETA | •••• 1234 ZZTEST ACME"
 ```
 
-Money in for January: 2000 + 80 + 1500 + 50 + 60 = 3690. Money out: 200 + 130 + 175 + 300 + 80 + 10 = 895.
+Money in for January: 2000 + 80 + 2400 + 50 + 60 = 4590. Money out: 200 + 130 + 175 + 300 + 80 + 10 = 895.
 
 In `apps/api/tests/test_api.py`, delete `_Rows` and `test_transactions_mask_card_numbers` (moved to the integration test above). Keep `test_transactions_rejects_malformed_month` and `test_openapi_exposes_web_schemas` (`Transaction` is still a schema name); add `"TransactionPage"` to the latter's set.
 
@@ -3471,6 +3471,7 @@ Taken with Raul while the tasks ran, after a task review found the gap:
 
 - **Task 6:** in `/review`, a money-out row whose merchant default is an income category stands alone (its own item). Confirming the merchant would otherwise overwrite the income default and relabel the merchant's past income. It mirrors D4.
 - **Task 7:** `confirm_merchant` has no income guard. `_RELABEL_MERCHANT` skips money-out rows when the category is income, so they keep their label. The 422 guard first planned could block a merchant for good when jev had labelled one of its charges outside `/review`. "Money out is never income" now holds in three places: labelling a row (422), the categorizer's defaults, and a merchant confirm.
+- **Task 9:** `docs/money-rules.md` also gets a "Subscriptions" section (money-out only, merchant required, median amount, monthly or yearly cadence, active within 45 or 400 days of the latest import, card-paid subscriptions not itemized). The `v_subscriptions` comment points to the doc (spec 4, 10). The loan example uses €2,400.
 
 ## Self-review notes (for the executor)
 
