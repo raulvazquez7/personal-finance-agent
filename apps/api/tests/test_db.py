@@ -44,6 +44,7 @@ EXPECTED_COLUMNS: dict[str, set[str]] = {
         "subscription_score",
         "transfer_pair_id",
         "needs_review",
+        "note",
         "created_at",
         "updated_at",
     },
