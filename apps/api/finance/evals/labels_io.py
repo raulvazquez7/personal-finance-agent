@@ -41,7 +41,7 @@ def export_labels(conn: Connection, path: Path, overwrite: bool = False) -> int:
     backup of the golden set."""
     rows = conn.execute(_EXPORT).fetchall()
     path.parent.mkdir(parents=True, exist_ok=True)
-    with path.open("w" if overwrite else "x", newline="") as handle:
+    with path.open("w" if overwrite else "x", newline="", encoding="utf-8") as handle:
         writer = csv.DictWriter(handle, fieldnames=FIELDS)
         writer.writeheader()
         writer.writerows(rows)
@@ -49,11 +49,13 @@ def export_labels(conn: Connection, path: Path, overwrite: bool = False) -> int:
 
 
 def import_labels(conn: Connection, path: Path) -> LabelsImport:
-    """A CSV exported before slice 3 has no note column. A bad row is reported by its line
-    number and skipped; the others still import."""
+    """A CSV exported before slice 3 has no note column, and a short row reads its missing
+    fields as empty. A bad row is reported by the line it ends on and skipped; the others
+    still import. utf-8-sig accepts the byte-order mark a spreadsheet may add."""
     result = LabelsImport(imported=0, missing=0)
-    with path.open(newline="", encoding="utf-8") as handle:
-        for line, row in enumerate(csv.DictReader(handle), start=2):
+    with path.open(newline="", encoding="utf-8-sig") as handle:
+        reader = csv.DictReader(handle)
+        for row in reader:
             found = conn.execute(
                 "select id from transactions where dedup_key = %s", (row["dedup_key"],)
             ).fetchone()
@@ -68,13 +70,13 @@ def import_labels(conn: Connection, path: Path) -> LabelsImport:
                             conn,
                             found["id"],
                             label,
-                            row["is_subscription"].strip().lower() in ("1", "true"),
+                            (row["is_subscription"] or "").strip().lower() in ("1", "true"),
                             new_merchant_name=row["merchant"] or None,
                         )
                     if note:
                         set_note(conn, found["id"], note)
             except (NotFound, ValueError) as error:
-                result.errors.append(f"line {line}: {error}")
+                result.errors.append(f"line {reader.line_num}: {error}")
                 continue
             if label:
                 result.imported += 1

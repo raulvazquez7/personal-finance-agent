@@ -88,6 +88,8 @@ def test_an_old_csv_imports_and_a_bad_row_is_reported_by_line(db_conn, make_tx, 
     result = import_labels(db_conn, path)
     assert result.imported == 1
     assert len(result.errors) == 1 and result.errors[0].startswith("line 3:")
+    slug = "select category_slug from transactions where id = %s"
+    assert db_conn.execute(slug, (good,)).fetchone()["category_slug"] == "groceries"
 
 
 def test_a_note_over_500_characters_is_reported_and_the_rest_imports(db_conn, make_tx, tmp_path):
@@ -105,3 +107,43 @@ def test_a_note_over_500_characters_is_reported_and_the_rest_imports(db_conn, ma
     note = "select note from transactions where id = %s"
     assert db_conn.execute(note, (fine,)).fetchone()["note"] == "gift"
     assert db_conn.execute(note, (too_long,)).fetchone()["note"] is None
+
+
+def test_a_short_row_imports_what_it_has_and_the_rest_still_import(db_conn, make_tx, tmp_path):
+    short = make_tx("-9.90", "PAGO | ZZTEST SHORT ROW", booked_at=SYNTHETIC_DAY)
+    after = make_tx("-4.00", "PAGO | ZZTEST AFTER ROW", booked_at=SYNTHETIC_DAY)
+    path = tmp_path / "short.csv"
+    path.write_text(
+        "dedup_key,category_slug,is_subscription,merchant,note\n"
+        f"{_dedup_key(db_conn, short)},groceries\n"
+        f"{_dedup_key(db_conn, after)},groceries,false,,\n"
+    )
+    result = import_labels(db_conn, path)
+    assert (result.imported, result.errors) == (2, [])
+    slug = "select category_slug from transactions where id = %s"
+    assert db_conn.execute(slug, (short,)).fetchone()["category_slug"] == "groceries"
+    assert db_conn.execute(slug, (after,)).fetchone()["category_slug"] == "groceries"
+
+
+def test_a_bad_row_after_a_multiline_note_is_reported_by_its_own_line(db_conn, make_tx, tmp_path):
+    key = _dedup_key(db_conn, make_tx("-9.90", "PAGO | ZZTEST MULTILINE", booked_at=SYNTHETIC_DAY))
+    path = tmp_path / "multiline.csv"
+    path.write_text(
+        "dedup_key,category_slug,is_subscription,merchant,note\n"
+        f'{key},,,,"first line\nsecond line"\n'
+        f"{key},no_such_category,false,,\n"
+    )
+    result = import_labels(db_conn, path)
+    assert result.notes == 1
+    assert len(result.errors) == 1 and result.errors[0].startswith("line 4:")
+
+
+def test_a_csv_resaved_with_a_byte_order_mark_imports(db_conn, make_tx, tmp_path):
+    key = _dedup_key(db_conn, make_tx("-9.90", "PAGO | ZZTEST BOM", booked_at=SYNTHETIC_DAY))
+    path = tmp_path / "bom.csv"
+    path.write_text(
+        f"dedup_key,category_slug,is_subscription,merchant\n{key},groceries,false,\n",
+        encoding="utf-8-sig",
+    )
+    result = import_labels(db_conn, path)
+    assert (result.imported, result.errors) == (1, [])
