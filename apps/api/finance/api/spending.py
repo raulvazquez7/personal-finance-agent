@@ -56,7 +56,8 @@ def detail(
         else []
     )
     keys = [c.key for c in children if c.key != "_other"][:5]
-    if len(children) > len(keys):
+    months = scope_months(conn, scope, value, resolved.current.end, child, keys)
+    if any("_other" in m.by_child for m in months):  # every stacked-bar bucket is a series
         keys.append("_other")
     listing = page(conn, TransactionFilters(scope=scope), resolved, limit=5)
     name = None
@@ -73,7 +74,7 @@ def detail(
         total=amount,
         previous_total=previous_total,
         count=listing.count,
-        months=scope_months(conn, scope, value, resolved.current.end, child, keys),
+        months=months,
         child_keys=keys,
         children=children,
         top_merchants=breakdown(conn, "merchant", value, scope, resolved.current, before)
