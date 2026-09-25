@@ -1109,7 +1109,8 @@ git commit -m "feat: review and confirm a merchant's purchases and refunds toget
 
 **Interfaces:**
 - Produces:
-  - `class DirectionMismatch(ValueError)`: raised by `label_transaction` for money out labelled with an income category, and by `confirm_merchant` for an income default on a merchant with money-out rows.
+  - `class DirectionMismatch(ValueError)`: raised by `label_transaction` for money out labelled with an income category.
+  - `confirm_merchant` never writes an income category on a money-out row: `_RELABEL_MERCHANT` skips those rows, which keep their label (in-flight decision, 2026-09-25; it replaces a 422 guard that could block a merchant for good).
   - `clear_merchant_default(conn, merchant_id) -> None`.
   - `set_note(conn, transaction_id, note: str | None) -> None`.
   - `PATCH /transactions/{id}` with body `{"note": str | null}` → 204.
@@ -1179,12 +1180,16 @@ def test_a_note_is_trimmed_and_an_empty_one_is_cleared(db_conn, make_tx):
     assert _row(db_conn, tx)["note"] is None
 
 
-def test_a_merchant_with_money_out_cannot_take_an_income_default(db_conn, make_tx):
+def test_confirming_an_income_default_leaves_money_out_alone(db_conn, make_tx):
     acme = _merchant(db_conn, "ZZTEST ACME")
     charge = _tx(make_tx, "-9.90", "PAGO | ZZTEST ACME")
     _set(db_conn, charge, merchant_id=acme, category_source="jev", category_slug="groceries")
-    with pytest.raises(DirectionMismatch):
-        confirm_merchant(db_conn, acme, "salary", False)
+    pay = _tx(make_tx, "1200.00", "NOMINA | ZZTEST ACME")
+    _set(db_conn, pay, merchant_id=acme, category_source="jev", category_slug="refunds")
+    confirm_merchant(db_conn, acme, "salary", False)
+    assert _row(db_conn, pay)["category_slug"] == "salary"
+    kept = _row(db_conn, charge)
+    assert (kept["category_slug"], kept["category_source"]) == ("groceries", "jev")
 
 
 def test_confirming_with_another_merchant_sets_the_survivor_default(db_conn, make_tx):
@@ -1253,20 +1258,14 @@ In `label_transaction`, inside the transaction and before `_LABEL_ONE`:
 
 `_LABEL_ONE` sets `needs_review = false` on the labelled row, so only the other side stays in review.
 
-In `confirm_merchant`, after the `if merge_into_id is not None:` block and right before `updated = conn.execute(` (so every confirm runs it, on the survivor's rows after a merge), add:
+In `_RELABEL_MERCHANT`, after the `t.category_source in (...)` line, add the one direction rule that stays (spec 7.3, and the categorizer's income-default skip from Task 4):
 
-```python
-        income = conn.execute(
-            "select 1 from categories c where c.slug = %s and c.tx_type = 'income'"
-            " and exists (select 1 from transactions t where t.merchant_id = %s and t.amount < 0"
-            " and t.category_source <> 'user')",
-            (category_slug, merchant_id),
-        ).fetchone()
-        if income:
-            raise DirectionMismatch(f"{category_slug} is income; this merchant has money out")
+```sql
+  -- Money going out is never income (spec 7.3): a confirm leaves those rows as they are.
+  and not (t.amount < 0 and c.tx_type = 'income')
 ```
 
-`review_merchant` already maps `ValueError` to 422. Then add:
+`confirm_merchant` itself gets no guard: an income default is allowed, and the merchant's money-out rows keep their labels (the categorizer never applies an income default to money out either). Then add:
 
 ```python
 def clear_merchant_default(conn: Connection, merchant_id: UUID) -> None:
@@ -3465,6 +3464,13 @@ The plan was checked against the code before Task 1, and Raul approved these cha
 - **Lint and fixtures:** `uv run task format` before `lint`, long SQL strings split, test imports at the top, unused imports removed (Global Constraints, Task 12); every new `client` fixture restores the override it replaces (Tasks 11-13).
 - **Smaller fixes:** `Taxonomy.fits` deleted (Task 6); the dismiss-merge test kept (Task 7); a note over 500 characters is refused and a failing CSV row rolls back whole (Task 8); `month=1999-13` is a 422 (Task 11); `LIMIT` removed from the old page (Task 12); the `.env.example` block and an empty-ledger fallback (Task 14).
 - **Real ledger:** Task 16 backs up to a new file, and decides with Raul about the `credit_card_payment` rows a rules-only run leaves and the refund rows a merchant default keeps out of `/review`.
+
+## In-flight decisions (2026-09-25)
+
+Taken with Raul while the tasks ran, after a task review found the gap:
+
+- **Task 6:** in `/review`, a money-out row whose merchant default is an income category stands alone (its own item). Confirming the merchant would otherwise overwrite the income default and relabel the merchant's past income. It mirrors D4.
+- **Task 7:** `confirm_merchant` has no income guard. `_RELABEL_MERCHANT` skips money-out rows when the category is income, so they keep their label. The 422 guard first planned could block a merchant for good when jev had labelled one of its charges outside `/review`. "Money out is never income" now holds in three places: labelling a row (422), the categorizer's defaults, and a merchant confirm.
 
 ## Self-review notes (for the executor)
 

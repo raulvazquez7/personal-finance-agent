@@ -18,7 +18,7 @@ Each has a default; the plan is written for the default.
 - **B. Text contrast (default: the approved tokens).** Muted `#8A8A94` is 3.4:1 on white and 3.2:1 on `#F7F7F9`; income/good `#16A34A` is 3.3:1 and 3.1:1. Both are below WCAG AA (4.5:1) for small text. Alternative: text-only values `--muted-foreground: #6b6b75` (4.9:1) and `--good`/`--income: #15803d` (4.7:1), keeping the mockup values for chart marks. Task 3 Step 3 has the line to change.
 - **C. Active nav item: the mockup (resolved; spec 7.2 corrected).** `index.html:24` draws the active pill near-black (`.nav.on{background:var(--text)}`), while spec 7.2 (lines 270-271) names the accent for "the active nav item". Default: a near-black pill, with the accent for links, the current series and the logo dot.
 - **D. Settings in the navigation (default: last nav item).** The mockup nav has no Settings entry, and `/settings` needs a way in.
-- **E. Resolved in plan 3a Task 7:** `confirm_merchant` rejects an income default for a merchant with money-out rows (422), so "Apply to all" cannot turn money out into income.
+- **E. Resolved in plan 3a Task 7:** confirming a merchant never writes an income category on its money-out rows (they keep their labels), so "Apply to all" cannot turn money out into income. The API returns no 422 for it; only labelling one money-out row with an income category is a 422.
 
 ## Before Task 1
 
