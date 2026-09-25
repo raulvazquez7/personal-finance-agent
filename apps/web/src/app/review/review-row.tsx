@@ -1,11 +1,12 @@
 "use client";
 
-import { Check, ChevronRight } from "lucide-react";
+import { ArrowDownLeft, ArrowUpRight, Check, ChevronRight } from "lucide-react";
 import { useState } from "react";
 
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
-import { euro, type Schemas } from "@/lib/api";
+import { signedEuro, type Schemas } from "@/lib/api";
 import { cn } from "@/lib/utils";
 
 import { CategoryPicker } from "./category-picker";
@@ -36,9 +37,12 @@ export function ReviewRow({ item, categories, merchants, onConfirm, onLabelOne, 
   const single = item.count < 2 ? item.transactions[0] : null;
   // Merge only picks the suggested merchant: confirming then merges and sets the category in one request.
   const mergePicked = merge != null && merchant?.id === merge.merchant_id;
+  const incoming = item.transactions.some((t) => Number(t.amount) > 0);
+  const outgoing = item.transactions.some((t) => Number(t.amount) < 0);
 
   return (
-    <li className="flex flex-col gap-3 rounded-xl border bg-card p-4 shadow-xs">
+    <li className={cn("flex flex-col gap-3 rounded-xl border bg-card p-4 shadow-xs",
+                      incoming && !outgoing && "border-l-4 border-l-green-600")}>
       <button
         type="button"
         onClick={() => setOpen(!open)}
@@ -46,10 +50,17 @@ export function ReviewRow({ item, categories, merchants, onConfirm, onLabelOne, 
         className="flex min-w-0 items-center gap-2 text-left text-sm text-muted-foreground"
       >
         <ChevronRight className={cn("size-4 shrink-0 transition-transform", open && "rotate-90", item.count < 2 && "invisible")} />
-        {single && <span className="shrink-0 tabular-nums">{single.booked_at} · {single.account_name}</span>}
+        <Direction incoming={incoming} outgoing={outgoing} />
+        {single && (
+          <span className="shrink-0 tabular-nums">
+            {single.booked_at}
+            {/* On phones the account would push the amount off the row. */}
+            <span className="hidden sm:inline"> · {single.account_name}</span>
+          </span>
+        )}
         <span className="truncate">{item.transactions[0].description_raw}</span>
         {item.count > 1 && <span className="shrink-0 tabular-nums">×{item.count}</span>}
-        <span className="ml-auto shrink-0 font-medium tabular-nums text-foreground">{euro.format(Number(item.total))}</span>
+        <Amount value={Number(item.total)} className="ml-auto shrink-0 font-medium" />
       </button>
 
       <div className="grid gap-3 md:grid-cols-[1fr_1fr_7rem_auto_auto] md:items-center">
@@ -117,7 +128,7 @@ function TransactionLine({ tx, categories, initial, initialSubscription, onLabel
   return (
     <li className="grid gap-2 py-2 text-sm md:grid-cols-[6rem_1fr_1fr_auto_auto] md:items-center">
       <span className="tabular-nums text-muted-foreground">{tx.booked_at}</span>
-      <span className="truncate">{euro.format(Number(tx.amount))} · {tx.account_name}</span>
+      <span className="truncate"><Amount value={Number(tx.amount)} /> · {tx.account_name}</span>
       <CategoryPicker categories={categories} suggested={[]} value={slug} onChange={setSlug} />
       <Switch checked={subscription} onCheckedChange={(checked) => setSubscription(checked)} aria-label="Subscription" />
       <Button size="sm" variant="outline" disabled={!slug}
@@ -126,5 +137,23 @@ function TransactionLine({ tx, categories, initial, initialSubscription, onLabel
         Only this one
       </Button>
     </li>
+  );
+}
+
+/** Money in or out at a glance, beyond the sign: a refund must not read as a purchase. */
+function Direction({ incoming, outgoing }: { incoming: boolean; outgoing: boolean }) {
+  if (incoming && outgoing) return <Badge variant="outline">Money in and out</Badge>;
+  return incoming ? (
+    <Badge variant="outline" className="border-green-600/40 bg-green-50 text-green-700"><ArrowDownLeft />Money in</Badge>
+  ) : (
+    <Badge variant="outline"><ArrowUpRight />Money out</Badge>
+  );
+}
+
+function Amount({ value, className }: { value: number; className?: string }) {
+  return (
+    <span className={cn("tabular-nums text-foreground", value > 0 && "text-green-700", className)}>
+      {signedEuro.format(value)}
+    </span>
   );
 }

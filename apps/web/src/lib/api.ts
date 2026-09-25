@@ -12,6 +12,12 @@ export async function apiGet<T>(path: string, init: { signal?: AbortSignal } = {
 }
 
 export const euro = new Intl.NumberFormat("en-IE", { style: "currency", currency: "EUR" });
+/** With an explicit sign, so money in (+€25.19) never reads as money out (-€25.19). */
+export const signedEuro = new Intl.NumberFormat("en-IE", {
+  style: "currency",
+  currency: "EUR",
+  signDisplay: "exceptZero",
+});
 
 export async function apiPost(
   path: string,
