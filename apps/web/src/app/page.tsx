@@ -5,13 +5,17 @@ import { CumulativeChart } from "@/components/charts/cumulative-chart";
 import { MonthsChart } from "@/components/charts/months-chart";
 import { DeltaText } from "@/components/money/delta-text";
 import { KpiTile } from "@/components/money/kpi-tile";
+import { WhereMoneyWent } from "@/components/overview/where-money-went";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardAction, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Empty, EmptyContent, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from "@/components/ui/empty";
 import { apiGet, type Schemas } from "@/lib/api";
+import { breakdownItems, type BreakdownContext } from "@/lib/breakdown";
+import { foldBySlot } from "@/lib/colors";
 import { DEFINITIONS } from "@/lib/definitions";
 import { atSameDay, delta, periodHasData } from "@/lib/delta";
-import { moneyWhole, periodNames, previousLabel, rangeLabel, rate, signedMoneyWhole } from "@/lib/format";
+import { money, moneyWhole, periodNames, previousLabel, rangeLabel, rate, signedMoneyWhole } from "@/lib/format";
+import { plural } from "@/lib/labels";
 import { filterParams, parseFilters, withFilters } from "@/lib/params";
 
 export const dynamic = "force-dynamic";
@@ -21,12 +25,22 @@ const amount = (value: string | null | undefined) => (value === null || value ==
 /** "How am I doing?" in one look (spec 7.1; mockup 02). */
 export default async function OverviewPage({ searchParams }: PageProps<"/">) {
   const filters = parseFilters(await searchParams);
-  const overview = await apiGet<Schemas["Overview"]>(`/dashboard/overview?${filterParams(filters)}`);
+  const [overview, categories] = await Promise.all([
+    apiGet<Schemas["Overview"]>(`/dashboard/overview?${filterParams(filters)}`),
+    apiGet<Schemas["CategoryOut"][]>("/categories"),
+  ]);
   if (overview.period.latest_day === null) return <NoTransactions filtered={filters.accounts.length > 0} />;
 
   const { period, kpis, previous_kpis: before } = overview;
   const versus = previousLabel(period);
   const spent = atSameDay(overview.cumulative);
+  const context: BreakdownContext = { categories, slots: overview.group_slots, filters, good: "down", type: "expense" };
+  const views = {
+    group: breakdownItems(foldBySlot(overview.by_group, overview.group_slots), "group", context),
+    category: breakdownItems(overview.by_category, "category", context),
+    merchant: breakdownItems(overview.by_merchant, "merchant", context),
+  };
+  const subscriptions = overview.subscriptions;
   // Decision G: a period without data shows "—" in the tiles, never €0.
   const hasData = periodHasData(overview.months, period);
   return (
@@ -93,6 +107,36 @@ export default async function OverviewPage({ searchParams }: PageProps<"/">) {
         <CardContent>
           <MonthsChart months={overview.months} range={[period.start.slice(0, 7), period.end.slice(0, 7)]} />
         </CardContent>
+      </Card>
+      <WhereMoneyWent
+        views={views}
+        total={hasData ? kpis.expenses : null}
+        change={delta(amount(kpis.expenses), amount(before?.expenses), "down", "percent")}
+        versus={versus}
+        subtitle={`${rangeLabel(period)} · ${previousLabel(period, "long")} · colour = group`}
+      />
+      <Card size="sm">
+        <CardHeader>
+          <CardTitle>
+            {plural(subscriptions.count, "active subscription", "active subscriptions")}
+            {/* v_subscriptions is per merchant: the account filter does not apply, so say so. */}
+            <span className="font-normal text-muted-foreground">
+              {" "}
+              · {money(subscriptions.monthly_total)} per month · {money(subscriptions.yearly_total)} per year · all
+              accounts
+            </span>
+          </CardTitle>
+          {/* Decision I: "active" is relative to the latest import (spec 5, v_subscriptions). */}
+          <CardDescription>
+            Active means charged within 45 days (monthly) or 400 days (yearly) of your latest imported transaction, not
+            of today.
+          </CardDescription>
+          <CardAction>
+            <Link href="/subscriptions" className="text-sm font-medium text-primary">
+              Subscriptions →
+            </Link>
+          </CardAction>
+        </CardHeader>
       </Card>
     </>
   );
