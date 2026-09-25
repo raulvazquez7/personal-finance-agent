@@ -11,34 +11,51 @@ const inRange = (month: string, [from, to]: MonthRange) => month >= from && mont
 // savings, so the box follows the axis scale. Without a scale (no month has data) it stands on the
 // axis line, `lift` px above the tick text.
 const BOX = { width: 32, height: 30, lift: 12 };
+// On a phone a month column is ~22 px: the box shrinks to its column, its words need 28 px (the
+// <title> still says it on hover), and a column under 28 px shows the month's first letter.
+const NARROW = 28;
 
-type TickProps = { x?: number | string; y?: number | string; payload?: { value?: string }; range: MonthRange; noData: Set<string> };
+type TickProps = {
+  x?: number | string;
+  y?: number | string;
+  width?: number | string; // the axis width, from Recharts
+  visibleTicksCount?: number;
+  payload?: { value?: string };
+  range: MonthRange;
+  noData: Set<string>;
+};
 
 /** The month under each column, bold inside the selected period, with a dashed "no data" box for
  * a month without imported data (spec 2.6: such a month is never drawn as zero). */
-export function MonthTick({ x = 0, y = 0, payload, range, noData }: TickProps) {
+export function MonthTick({ x = 0, y = 0, width = Infinity, visibleTicksCount = 1, payload, range, noData }: TickProps) {
   const month = payload?.value ?? "";
   const cx = Number(x);
   const top = Number(y);
   const baseline = useYAxisScale()?.(0) ?? top - BOX.lift;
+  const band = Number(width) / visibleTicksCount;
+  const boxWidth = Math.min(BOX.width, band - 6);
+  const name = month ? monthShort(month) : "";
   return (
     <g>
       {noData.has(month) && (
-        <>
+        <g>
+          <title>no data</title>
           <rect
-            x={cx - BOX.width / 2}
+            x={cx - boxWidth / 2}
             y={baseline - BOX.height}
-            width={BOX.width}
+            width={boxWidth}
             height={BOX.height}
             rx={4}
-            fill="none"
+            fill="transparent" // painted, so the whole box shows the <title> on hover
             stroke="var(--chart-previous)"
             strokeDasharray="3 3"
           />
-          <text x={cx} y={baseline - BOX.height - 4} textAnchor="middle" fontSize={10} className="fill-muted-foreground">
-            no data
-          </text>
-        </>
+          {boxWidth >= NARROW && (
+            <text x={cx} y={baseline - BOX.height - 4} textAnchor="middle" fontSize={10} className="fill-muted-foreground">
+              no data
+            </text>
+          )}
+        </g>
       )}
       <text
         x={cx}
@@ -48,7 +65,7 @@ export function MonthTick({ x = 0, y = 0, payload, range, noData }: TickProps) {
         fontSize={12}
         className={inRange(month, range) ? "fill-foreground font-semibold" : "fill-muted-foreground"}
       >
-        {month ? monthShort(month) : ""}
+        {band < NARROW ? name.charAt(0) : name}
       </text>
     </g>
   );
