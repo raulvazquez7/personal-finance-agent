@@ -9,6 +9,7 @@ from finance.api import (
     imports,
     merchants,
     review,
+    spending,
     transactions,
 )
 from finance.api.deps import same_origin
@@ -30,6 +31,7 @@ app.include_router(dashboard.router)
 app.include_router(imports.router)
 app.include_router(merchants.router)
 app.include_router(review.router)
+app.include_router(spending.router)
 app.include_router(transactions.router)
 
 

@@ -226,6 +226,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/spending/detail": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Detail */
+        get: operations["detail_spending_detail_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/transactions": {
         parameters: {
             query?: never;
@@ -619,6 +636,53 @@ export interface components {
              * @constant
              */
             status: "queued";
+        };
+        /** ScopeMonth */
+        ScopeMonth: {
+            /** Month */
+            month: string;
+            /** Has Data */
+            has_data: boolean;
+            /** Total */
+            total: string | null;
+            /** By Child */
+            by_child: {
+                [key: string]: string;
+            };
+        };
+        /** SpendingDetail */
+        SpendingDetail: {
+            period: components["schemas"]["PeriodOut"];
+            /**
+             * Type
+             * @enum {string}
+             */
+            type: "expense" | "income";
+            /** Level1 */
+            level1: string | null;
+            /** Category */
+            category: string | null;
+            /** Merchant Id */
+            merchant_id: string | null;
+            /** Merchant Name */
+            merchant_name: string | null;
+            /** Total */
+            total: string;
+            /** Previous Total */
+            previous_total: string | null;
+            /** Count */
+            count: number;
+            /** Months */
+            months: components["schemas"]["ScopeMonth"][];
+            /** Child Keys */
+            child_keys: string[];
+            /** Children */
+            children: components["schemas"]["BreakdownRow"][];
+            /** Top Merchants */
+            top_merchants: components["schemas"]["BreakdownRow"][];
+            cumulative: components["schemas"]["Cumulative"];
+            /** Latest */
+            latest: components["schemas"]["Transaction"][];
         };
         /** SubscriptionOut */
         SubscriptionOut: {
@@ -1143,6 +1207,45 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["ReviewCount"];
+                };
+            };
+        };
+    };
+    detail_spending_detail_get: {
+        parameters: {
+            query?: {
+                type?: "expense" | "income";
+                level1?: string | null;
+                category?: string | null;
+                merchant_id?: string | null;
+                period?: "month" | "last_3_months" | "ytd" | "last_12_months" | "custom";
+                month?: string | null;
+                start?: string | null;
+                end?: string | null;
+                account_id?: string[];
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SpendingDetail"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
                 };
             };
         };

@@ -6,8 +6,9 @@ from typing import Literal
 
 from psycopg import Connection
 
+from finance.dashboard.breakdowns import KEYS, VALUES, Dimension
 from finance.dashboard.filters import WHERE, Scope, data_months
-from finance.dashboard.models import CumulativePoint, MonthPoint, Totals
+from finance.dashboard.models import CumulativePoint, MonthPoint, ScopeMonth, Totals
 from finance.dashboard.periods import Period, add_months, month_end, months_between, savings_rate
 
 Value = Literal["spend", "income"]
@@ -84,4 +85,41 @@ def cumulative(
         total += daily.get(day, Decimal(0))
         points.append(CumulativePoint(day=(day - period.start).days + 1, date=day, total=total))
         day += timedelta(days=1)
+    return points
+
+
+def scope_months(
+    conn: Connection,
+    scope: Scope,
+    value: Value,
+    end: date,
+    child: Dimension | None,
+    child_keys: list[str],
+) -> list[ScopeMonth]:
+    """12 months of one scope, split by its children for the stacked bars: `child_keys` in
+    order, the rest summed as "_other" (spec 7.2)."""
+    period = twelve_months(end)
+    with_data = data_months(conn, period, scope.accounts)
+    key = KEYS[child] if child else "'total'"
+    # Both names come from the fixed dictionaries in breakdowns, never from a request.
+    rows = conn.execute(
+        f"select month, {key} as key, sum({VALUES[value]}) as amount"
+        f" from v_transactions_enriched where {WHERE} group by 1, 2",
+        scope.params(period),
+    ).fetchall()
+    by_month: dict[str, dict[str, Decimal]] = {}
+    for row in rows:
+        bucket = row["key"] if not child or row["key"] in child_keys else "_other"
+        month = by_month.setdefault(row["month"], {})
+        month[bucket] = month.get(bucket, Decimal(0)) + row["amount"]
+    points = []
+    for month in months_between(period.start, period.end):
+        parts = by_month.get(month, {})
+        if month not in with_data:
+            points.append(ScopeMonth(month=month, has_data=False, total=None, by_child={}))
+            continue
+        total = sum(parts.values(), Decimal(0))
+        points.append(
+            ScopeMonth(month=month, has_data=True, total=total, by_child=parts if child else {})
+        )
     return points
