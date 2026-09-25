@@ -25,7 +25,7 @@ def test_the_contract_number_names_the_loan():
 def test_a_disbursement_and_its_instalments_share_one_merchant(db_conn, make_tx):
     rows = [
         make_tx(
-            "1500.00",
+            "2400.00",
             f"ABONO POR DISPOSICION DE PRESTAMO/CREDITO | {CONTRACT}",
             booked_at=date(1999, 1, 5),
         ),

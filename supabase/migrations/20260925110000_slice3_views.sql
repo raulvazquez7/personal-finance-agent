@@ -65,4 +65,4 @@ from per_merchant cross join latest;
 
 comment on view v_subscriptions is
   'Flagged money-out expenses per merchant. Active = charged within 45 days (monthly) or 400 '
-  'days (yearly) of the latest imported transaction, not of today';
+  'days (yearly) of the latest imported transaction, not of today (docs/money-rules.md)';

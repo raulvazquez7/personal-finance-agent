@@ -15,7 +15,7 @@ ROWS = [  # (amount, category or None, day, description)
     ("2000.00", "salary", date(1999, 1, 28), "ZZTEST PAYROLL"),
     ("-200.00", "fashion", date(1999, 1, 3), "ZZTEST SHOP"),
     ("80.00", "fashion", date(1999, 1, 10), "ZZTEST SHOP REFUND"),
-    ("1500.00", "loan_received", date(1999, 1, 5), "ZZTEST LOAN IN"),
+    ("2400.00", "loan_received", date(1999, 1, 5), "ZZTEST LOAN IN"),
     ("-130.00", "loan_payment", date(1999, 1, 20), "ZZTEST LOAN OUT"),
     ("-175.00", "credit_card_spending", date(1999, 1, 2), "ZZTEST CARD"),
     ("-300.00", "own_accounts", date(1999, 1, 15), "ZZTEST TO SAVINGS"),

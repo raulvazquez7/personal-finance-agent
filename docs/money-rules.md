@@ -1,15 +1,16 @@
 # Money rules
 
 How tally ai adds up your money. These rules are the contract behind every number in the
-dashboards and every answer of the chat agent. They live in one SQL view,
-`v_transactions_enriched`; everything else only sums it.
+dashboards and every answer of the chat agent. Every total comes from one SQL view,
+`v_transactions_enriched`; everything else only sums it. `v_subscriptions` adds the
+subscription rules below.
 
 ## The numbers
 
 | Number | What it is |
 |---|---|
-| **Income** | The sum of rows whose category is an income category |
-| **Expenses** | The sum of rows whose category is an expense category. A refund subtracts |
+| **Income** | The sum of income-type rows: rows with an income category, and uncategorized money in |
+| **Expenses** | Minus the sum of expense-type rows: rows with an expense category, and uncategorized money out. A refund (money in with an expense category) subtracts |
 | **Savings** | Income − expenses. Money you move to your own savings or investment accounts counts as saved |
 | **Savings rate** | Savings ÷ income. It can be negative (you spent more than you earned). It is empty when there is no income |
 | **Out of every total** | Transfers: between your own accounts, loan money received, and a card settlement once card statements are imported |
@@ -34,9 +35,9 @@ Money a bank lends you is a **liability**: you pay it back. It goes to `loan_rec
 transfer, and never counts as income. The monthly instalments are an expense
 (`loan_payment`). The bank line does not split principal from interest, so neither do we.
 
-Example: you borrow €1,500 in January and buy a laptop with it, then repay €130 a month.
-January shows negative savings (you spent €1,500 more than you earned, with borrowed money),
-and each later month shows the €130 instalment as spending.
+Example: you borrow €2,400 in January and buy a laptop with it, then repay €130 a month.
+January's savings drop by the €2,400 you spent with borrowed money, and can go negative.
+Each later month shows the €130 instalment as spending.
 
 Each loan is a merchant named after its contract (`Loan ····1234`). You can rename it, and
 its disbursement and instalments stay together.
@@ -56,6 +57,21 @@ transfer and the card's purchases carry the categories.
 - **A Bizum you receive is income; a Bizum you send is an expense.** When a friend pays you
   back their share of a dinner, you can give that Bizum the dinner's category
   (restaurants): it then subtracts, exactly like a refund.
+
+## Subscriptions
+
+Rows flagged as a subscription are grouped by merchant, with these rules:
+
+- **Only money going out counts.** A flagged refund or transfer never does.
+- **A flagged row needs a merchant.** Without one, it is not listed.
+- **The typical amount is the median charge.**
+- **The cadence is yearly** when the median gap between charges is over 200 days, otherwise
+  monthly. A yearly subscription's monthly equivalent is a twelfth of its typical amount.
+- **A subscription is active** when it was charged within 45 days (monthly) or 400 days
+  (yearly) of the latest imported transaction, not of today, so an old import does not make
+  every subscription look cancelled.
+- **Subscriptions paid by credit card are not listed.** Card statements are not imported, so
+  the card's charges are not itemized.
 
 ## Comparisons
 
