@@ -30,9 +30,10 @@ export function PeriodPicker({ latestDay }: { latestDay: string | null }) {
   const search = useSearchParams();
   const filters = parseFilters(toSearchParams(search));
   const [open, setOpen] = useState(false);
+  const latestMonth = latestDay?.slice(0, 7);
+  const [month, setMonth] = useState(filters.month ?? latestMonth ?? "");
   const [start, setStart] = useState(filters.start ?? "");
   const [end, setEnd] = useState(filters.end ?? "");
-  const latestMonth = latestDay?.slice(0, 7);
   const presets: { label: string; choice: Choice }[] = [
     { label: "Latest month", choice: { period: "month" } },
     ...(latestMonth ? [{ label: "Previous month", choice: { period: "month" as const, month: shiftMonth(latestMonth, -1) } }] : []),
@@ -47,8 +48,18 @@ export function PeriodPicker({ latestDay }: { latestDay: string | null }) {
     router.push(`${pathname}?${replaceParams(search.toString(), periodChanges(choice))}`);
   }
 
+  function openChange(next: boolean) {
+    // The URL may have changed since the last open (a choice, back or forward): start from it.
+    if (next) {
+      setMonth(filters.month ?? latestMonth ?? "");
+      setStart(filters.start ?? "");
+      setEnd(filters.end ?? "");
+    }
+    setOpen(next);
+  }
+
   return (
-    <Popover open={open} onOpenChange={setOpen}>
+    <Popover open={open} onOpenChange={openChange}>
       <PopoverTrigger render={<Button variant="secondary" size="sm" className="rounded-full" />}>
         <span className="sr-only">Period: </span>
         {periodLabel(filters, latestDay)}
@@ -64,16 +75,21 @@ export function PeriodPicker({ latestDay }: { latestDay: string | null }) {
           ))}
         </div>
         <Separator />
-        <Field className="p-2">
-          <FieldLabel htmlFor="period-month">One month</FieldLabel>
-          <Input
-            id="period-month"
-            type="month"
-            max={latestMonth}
-            defaultValue={filters.month ?? latestMonth}
-            onChange={(event) => event.target.value && go({ period: "month", month: event.target.value })}
-          />
-        </Field>
+        <form
+          className="flex flex-col gap-2 p-2"
+          onSubmit={(event) => {
+            event.preventDefault();
+            go({ period: "month", month });
+          }}
+        >
+          <Field>
+            <FieldLabel htmlFor="period-month">One month</FieldLabel>
+            <Input id="period-month" type="month" value={month} max={latestMonth} onChange={(event) => setMonth(event.target.value)} />
+          </Field>
+          <Button type="submit" size="sm" disabled={!month}>
+            Show month
+          </Button>
+        </form>
         <Separator />
         <form
           className="flex flex-col gap-2 p-2"
