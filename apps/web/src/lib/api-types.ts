@@ -530,7 +530,7 @@ export interface components {
         /** NoteUpdate */
         NoteUpdate: {
             /** Note */
-            note?: string | null;
+            note: string | null;
         };
         /** Overview */
         Overview: {
@@ -781,14 +781,20 @@ export interface components {
             merchant_id: string | null;
             /** Merchant Name */
             merchant_name: string | null;
-            /** Tx Type */
-            tx_type: string;
+            /**
+             * Tx Type
+             * @enum {string}
+             */
+            tx_type: "expense" | "income" | "transfer";
             /** Category Slug */
             category_slug: string | null;
             /** Level1 */
             level1: string | null;
-            /** Category Source */
-            category_source: string;
+            /**
+             * Category Source
+             * @enum {string}
+             */
+            category_source: "rule" | "merchant" | "jev" | "user" | "none";
             /** Is Subscription */
             is_subscription: boolean;
             /** Needs Review */

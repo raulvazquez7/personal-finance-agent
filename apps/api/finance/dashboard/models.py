@@ -7,6 +7,8 @@ from uuid import UUID
 
 from pydantic import BaseModel
 
+from finance.categorization.models import CategorySource
+from finance.categorization.taxonomy import TxType
 from finance.dashboard.periods import PeriodName
 
 
@@ -105,10 +107,10 @@ class Transaction(BaseModel):
     bank_merchant_text: str | None
     merchant_id: UUID | None
     merchant_name: str | None
-    tx_type: str
+    tx_type: TxType
     category_slug: str | None
     level1: str | None
-    category_source: str
+    category_source: CategorySource
     is_subscription: bool
     needs_review: bool
     note: str | None
