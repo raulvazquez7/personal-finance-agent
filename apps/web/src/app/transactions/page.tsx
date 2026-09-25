@@ -14,9 +14,10 @@ export default async function TransactionsPage({ searchParams }: Props) {
   const page = await apiGet<Schemas["TransactionPage"]>(`/transactions?${query}`);
 
   return (
-    <main className="mx-auto flex max-w-5xl flex-col gap-6 p-6">
+    <div className="flex flex-col gap-6">
       <form method="get" className="flex items-center gap-2">
-        <Input type="month" name="month" aria-label="Month" defaultValue={month} className="w-48" />
+        {/* Keyed: the top bar now changes `month` without a reload, and Base UI warns when a default changes. */}
+        <Input key={month} type="month" name="month" aria-label="Month" defaultValue={month} className="w-48" />
         <Button type="submit" variant="secondary">Filter</Button>
       </form>
       {page.next_cursor && (
@@ -48,6 +49,6 @@ export default async function TransactionsPage({ searchParams }: Props) {
           ))}
         </TableBody>
       </Table>
-    </main>
+    </div>
   );
 }

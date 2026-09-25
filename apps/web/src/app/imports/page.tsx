@@ -10,7 +10,7 @@ export default async function ImportsPage() {
   const imports = await apiGet<Schemas["ImportRecord"][]>("/imports");
 
   return (
-    <main className="mx-auto flex max-w-5xl flex-col gap-6 p-6">
+    <div className="flex flex-col gap-6">
       <Card>
         <CardHeader><CardTitle>Import statements</CardTitle></CardHeader>
         <CardContent><UploadForm /></CardContent>
@@ -46,6 +46,6 @@ export default async function ImportsPage() {
           </Table>
         </CardContent>
       </Card>
-    </main>
+    </div>
   );
 }

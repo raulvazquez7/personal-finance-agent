@@ -47,3 +47,19 @@ export async function reviewCount(): Promise<number | null> {
     return null;
   }
 }
+
+/** What the top bar's filters need: the accounts, and the latest imported day, which is the
+ * default month (spec 2.6). Empty when the API is unreachable or slow, like reviewCount. */
+export async function filterContext(): Promise<{ accounts: Schemas["Account"][]; latestDay: string | null }> {
+  try {
+    const signal = AbortSignal.timeout(2000);
+    const [accounts, page] = await Promise.all([
+      apiGet<Schemas["Account"][]>("/accounts", { signal }),
+      // No endpoint returns the latest day alone; every period read carries it in `period`.
+      apiGet<Schemas["TransactionPage"]>("/transactions?limit=1", { signal }),
+    ]);
+    return { accounts, latestDay: page.period.latest_day };
+  } catch {
+    return { accounts: [], latestDay: null };
+  }
+}
