@@ -11,13 +11,10 @@ class NotFound(LookupError):
     pass
 
 
-# Taxonomy.tx_type_of in SQL: a transfer slug makes a transfer, otherwise the sign decides.
-_TX_TYPE = (
-    "case when c.tx_type = 'transfer' then 'transfer'"
-    " when t.amount < 0 then 'expense' else 'income' end"
-)
-# Only expenses are subscriptions: never a refund, never a transfer (spec 5.2, 6).
-_SUBSCRIPTION = f"%(sub)s and {_TX_TYPE} = 'expense'"
+# Taxonomy.tx_type_of in SQL: the category decides the row type (spec 2.1).
+_TX_TYPE = "c.tx_type"
+# Only money going out is a subscription: never a refund, never a transfer (spec 6).
+_SUBSCRIPTION = f"%(sub)s and {_TX_TYPE} = 'expense' and t.amount < 0"
 
 _LABEL_ONE = f"""
 update transactions t set category_slug = c.slug, category_source = 'user',

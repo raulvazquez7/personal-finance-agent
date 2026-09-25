@@ -58,8 +58,8 @@ def decide(
         if merchant.is_subscription is not None:
             is_subscription = merchant.is_subscription
     tx_type = taxonomy.tx_type_of(slug, tx.amount)
-    # Only expenses are subscriptions: never a refund, never a transfer (spec 5.2, 6).
-    is_subscription = is_subscription and tx_type == "expense"
+    # Only money going out is a subscription: never a refund, never a transfer (spec 6).
+    is_subscription = is_subscription and tx_type == "expense" and tx.amount < 0
     below_threshold = source == "jev" and confidence < settings.category_threshold
     return Categorization(
         transaction_id=tx.id,

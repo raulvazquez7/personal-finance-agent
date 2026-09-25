@@ -56,3 +56,10 @@ def test_load_taxonomy_keeps_the_yaml_order():
         for category in reversed(CATEGORIES):  # rewritten rows leave the heap out of YAML order
             conn.execute("update categories set what = what where slug = %s", (category.slug,))
         assert load_taxonomy(conn).categories() == CATEGORIES
+
+
+def test_the_row_type_follows_the_category_not_the_sign():
+    assert TAXONOMY.tx_type_of("fashion", Decimal("80")) == "expense"  # a refund
+    assert TAXONOMY.tx_type_of("fashion", Decimal("-80")) == "expense"
+    assert TAXONOMY.tx_type_of("salary", Decimal("2000")) == "income"
+    assert TAXONOMY.tx_type_of("own_accounts", Decimal("50")) == "transfer"

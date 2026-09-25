@@ -50,9 +50,9 @@ class Taxonomy:
         return {level1: round(total, 6) for level1, total in sums.items()}
 
     def tx_type_of(self, slug: str, amount: Decimal) -> TxType:
-        if self._by_slug[slug].tx_type == "transfer":
-            return "transfer"
-        return "expense" if amount < 0 else "income"
+        """The category decides: a money-in row labelled `fashion` is a refund, a negative
+        expense (spec 2.1). `amount` is kept for callers; the sign no longer matters."""
+        return self._by_slug[slug].tx_type
 
 
 def read_categories_yaml(path: Path) -> list[Category]:

@@ -182,3 +182,10 @@ def test_dismiss_merge_confirms_the_merchant(db_conn):
     dismiss_merge(db_conn, source)
     row = db_conn.execute("select * from merchants where id = %s", (source,)).fetchone()
     assert (row["confirmed"], row["merge_candidate_id"]) == (True, None)
+
+
+def test_a_money_in_row_labelled_with_an_expense_category_is_a_negative_expense(db_conn, make_tx):
+    refund = _tx(make_tx, "80.00", "DEVOLUCION | ZZTEST SHOP")
+    label_transaction(db_conn, refund, "fashion", is_subscription=True)
+    row = _row(db_conn, refund)
+    assert (row["tx_type"], row["is_subscription"]) == ("expense", False)
