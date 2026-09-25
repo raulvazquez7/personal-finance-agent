@@ -149,3 +149,9 @@ def test_openapi_exposes_review_schemas():
     assert {"ReviewItem", "ReviewCount", "CategoryOut", "MerchantOut", "ConfirmMerchant"} <= set(
         schemas
     )
+
+
+def test_a_request_for_another_host_is_refused():
+    response = client.get("/health", headers={"host": "attacker.example"})
+    assert response.status_code == 400
+    assert client.get("/health").status_code == 200

@@ -1,3 +1,4 @@
+from datetime import date
 from decimal import Decimal
 from uuid import uuid4
 
@@ -81,3 +82,22 @@ def test_a_month_13_is_422(client):
 def test_subscriptions_endpoint_returns_totals(client):
     body = client.get("/dashboard/subscriptions").json()
     assert Decimal(body["yearly_total"]) == Decimal(body["monthly_total"]) * 12
+
+
+def test_a_subscription_is_active_relative_to_the_latest_import(client, db_conn, make_tx):
+    # An empty ledger has no latest day: the rows booked below then become the latest day.
+    latest = db_conn.execute("select max(booked_at) as d from transactions").fetchone()["d"]
+    latest = latest or date(1999, 3, 31)
+    shop = db_conn.execute(
+        "insert into merchants (name, match_key)"
+        " values ('ZZTEST STREAM', 'ZZTESTSTREAM') returning id"
+    ).fetchone()["id"]
+    for day in (latest.replace(day=1), latest):
+        tx = make_tx("-9.99", "ZZTEST STREAM", booked_at=day)
+        db_conn.execute(
+            "update transactions set merchant_id = %s, is_subscription = true,"
+            " category_slug = 'entertainment', tx_type = 'expense' where id = %s",
+            (shop, tx),
+        )
+    names = [s["merchant_name"] for s in client.get("/dashboard/subscriptions").json()["items"]]
+    assert "ZZTEST STREAM" in names

@@ -21,6 +21,8 @@ class Settings(BaseSettings):
     langfuse_secret_key: str | None = Field(default=None, repr=False)
     langfuse_base_url: str = "https://cloud.langfuse.com"
     cors_origins: list[str] = ["http://localhost:3000"]
+    # TestClient sends Host: testserver.
+    trusted_hosts: list[str] = ["localhost", "127.0.0.1", "testserver"]
     transfer_pattern: str = "TRASPASO|TRANSFER|BIZUM|TRF"
     transfer_window_days: int = 2
     jev_concurrency: int = Field(default=8, ge=1)

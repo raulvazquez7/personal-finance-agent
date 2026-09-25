@@ -1,5 +1,6 @@
 from fastapi import Depends, FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.middleware.trustedhost import TrustedHostMiddleware
 
 from finance.api import (
     accounts,
@@ -24,6 +25,8 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+# A DNS-rebinding page reaches the API under its own host name: refuse any other Host.
+app.add_middleware(TrustedHostMiddleware, allowed_hosts=get_settings().trusted_hosts)
 app.include_router(accounts.router)
 app.include_router(categories.router)
 app.include_router(categorize.router)
