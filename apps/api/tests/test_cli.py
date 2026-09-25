@@ -246,8 +246,8 @@ def test_labels_export_with_force_overwrites_the_file(monkeypatch, tmp_path):
     result = runner.invoke(cli.app, ["labels", "export", str(target), "--force"])
     assert result.exit_code == 0 and result.stdout.strip() == f"exported=1 to {target}"
     assert target.read_text().splitlines() == [
-        "dedup_key,category_slug,is_subscription,merchant",
-        "k1,groceries,False,ZZTEST ACME",
+        "dedup_key,category_slug,is_subscription,merchant,note",
+        "k1,groceries,False,ZZTEST ACME,",
     ]
 
 
@@ -259,7 +259,21 @@ def test_labels_import_prints_the_counts(monkeypatch, tmp_path):
         cli, "import_labels", lambda conn, path: LabelsImport(imported=2, missing=1)
     )
     result = runner.invoke(cli.app, ["labels", "import", str(source)])
-    assert result.exit_code == 0 and result.stdout.strip() == "imported=2 missing=1"
+    assert result.exit_code == 0 and result.stdout.strip() == "imported=2 missing=1 notes=0"
+
+
+def test_labels_import_exits_one_and_prints_bad_rows(monkeypatch, tmp_path):
+    source = tmp_path / "labels.csv"
+    source.write_text("dedup_key,category_slug,is_subscription,merchant\n")
+    monkeypatch.setattr(cli, "connection", lambda: nullcontext(None))
+    monkeypatch.setattr(
+        cli,
+        "import_labels",
+        lambda conn, path: LabelsImport(imported=1, missing=0, errors=["line 3: unknown category"]),
+    )
+    result = runner.invoke(cli.app, ["labels", "import", str(source)])
+    assert result.exit_code == 1
+    assert "line 3: unknown category" in result.stderr
 
 
 def test_categorize_rules_only_passes_the_flag(monkeypatch):

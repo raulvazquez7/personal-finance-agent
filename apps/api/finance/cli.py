@@ -110,4 +110,8 @@ def labels_import(path: Path = typer.Argument(..., exists=True, readable=True)) 
     """Load labels from CSV by dedup_key."""
     with connection() as conn:
         result = import_labels(conn, path)
-    typer.echo(f"imported={result.imported} missing={result.missing}")
+    typer.echo(f"imported={result.imported} missing={result.missing} notes={result.notes}")
+    for error in result.errors:
+        typer.echo(error, err=True)
+    if result.errors:
+        raise typer.Exit(code=1)

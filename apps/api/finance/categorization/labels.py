@@ -193,6 +193,8 @@ def clear_merchant_default(conn: Connection, merchant_id: UUID) -> None:
 def set_note(conn: Connection, transaction_id: UUID, note: str | None) -> None:
     """A note is not a label: no label history (spec 4)."""
     text = (note or "").strip() or None
+    if text and len(text) > 500:
+        raise ValueError("a note has at most 500 characters")
     row = conn.execute(
         "update transactions set note = %s, updated_at = now() where id = %s returning id",
         (text, transaction_id),

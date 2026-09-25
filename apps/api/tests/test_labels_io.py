@@ -58,3 +58,50 @@ def test_labels_travel_by_dedup_key(db_conn, make_tx, tmp_path):
         "select category_slug, category_source from transactions where id = %s", (fresh,)
     ).fetchone()
     assert (row["category_slug"], row["category_source"]) == ("tobacco", "user")
+
+
+def test_notes_travel_even_without_a_label(db_conn, make_tx, tmp_path):
+    tx = make_tx("-51.00", "PAGO | ZZTEST SHOP", booked_at=date(1999, 1, 1))
+    db_conn.execute("update transactions set note = 'AirPods case' where id = %s", (tx,))
+    path = tmp_path / "labels.csv"
+    export_labels(db_conn, path)
+    db_conn.execute("update transactions set note = null where id = %s", (tx,))
+    result = import_labels(db_conn, path)
+    assert result.notes >= 1
+    assert (
+        db_conn.execute("select note from transactions where id = %s", (tx,)).fetchone()["note"]
+        == "AirPods case"
+    )
+
+
+def test_an_old_csv_imports_and_a_bad_row_is_reported_by_line(db_conn, make_tx, tmp_path):
+    good = make_tx("-9.90", "PAGO | ZZTEST ACME", booked_at=date(1999, 1, 1))
+    key = db_conn.execute("select dedup_key from transactions where id = %s", (good,)).fetchone()[
+        "dedup_key"
+    ]
+    path = tmp_path / "old.csv"
+    path.write_text(
+        "dedup_key,category_slug,is_subscription,merchant\n"
+        f"{key},groceries,false,ZZTEST ACME\n"
+        f"{key},no_such_category,false,\n"
+    )
+    result = import_labels(db_conn, path)
+    assert result.imported == 1
+    assert len(result.errors) == 1 and result.errors[0].startswith("line 3:")
+
+
+def test_a_note_over_500_characters_is_reported_and_the_rest_imports(db_conn, make_tx, tmp_path):
+    too_long = make_tx("-9.90", "PAGO | ZZTEST LONG NOTE", booked_at=SYNTHETIC_DAY)
+    fine = make_tx("-4.00", "PAGO | ZZTEST SHORT NOTE", booked_at=SYNTHETIC_DAY)
+    path = tmp_path / "notes.csv"
+    path.write_text(
+        "dedup_key,category_slug,is_subscription,merchant,note\n"
+        f"{_dedup_key(db_conn, too_long)},,,,{'x' * 501}\n"
+        f"{_dedup_key(db_conn, fine)},,,,gift\n"
+    )
+    result = import_labels(db_conn, path)
+    assert result.errors == ["line 2: a note has at most 500 characters"]
+    assert result.notes == 1
+    note = "select note from transactions where id = %s"
+    assert db_conn.execute(note, (fine,)).fetchone()["note"] == "gift"
+    assert db_conn.execute(note, (too_long,)).fetchone()["note"] is None
