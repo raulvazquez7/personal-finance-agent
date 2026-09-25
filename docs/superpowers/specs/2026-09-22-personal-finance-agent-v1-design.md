@@ -841,6 +841,7 @@ Decided with Raul after he reviewed the March statement in `/review`:
 
 ### Slice 3 amendments (2026-09-25)
 
-Designed in `2026-09-25-slice-3-design.md`: refunds take the purchase's category, loans and
-unitemized card spending, category-driven row types, notes, the views and the dashboard API.
+Designed in [2026-09-25-slice-3-design.md](2026-09-25-slice-3-design.md): refunds take the
+purchase's category, loans and unitemized card spending, category-driven row types, notes,
+the views and the dashboard API.
 That document lists the v1 sections it changes (its section 13).

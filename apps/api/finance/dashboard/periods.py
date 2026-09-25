@@ -56,7 +56,8 @@ def _year_back(day: date) -> date:
 
 def previous(name: PeriodName, period: Period) -> Period:
     """August -> July, a quarter -> the quarter before, year to date -> the same dates a year
-    earlier, a custom range -> the same number of days just before it."""
+    earlier. A custom range of whole calendar months -> the same number of months just before
+    it; any other custom range -> the same number of days just before it."""
     if name == "ytd":
         return Period(start=_year_back(period.start), end=_year_back(period.end))
     if period.start.day == 1 and period.end == month_end(period.end):

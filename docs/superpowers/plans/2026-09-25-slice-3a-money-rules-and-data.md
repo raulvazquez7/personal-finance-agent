@@ -3472,6 +3472,7 @@ Taken with Raul while the tasks ran, after a task review found the gap:
 - **Task 6:** in `/review`, a money-out row whose merchant default is an income category stands alone (its own item). Confirming the merchant would otherwise overwrite the income default and relabel the merchant's past income. It mirrors D4.
 - **Task 7:** `confirm_merchant` has no income guard. `_RELABEL_MERCHANT` skips money-out rows when the category is income, so they keep their label. The 422 guard first planned could block a merchant for good when jev had labelled one of its charges outside `/review`. "Money out is never income" now holds in three places: labelling a row (422), the categorizer's defaults, and a merchant confirm.
 - **Task 9:** `docs/money-rules.md` also gets a "Subscriptions" section (money-out only, merchant required, median amount, monthly or yearly cadence, active within 45 or 400 days of the latest import, card-paid subscriptions not itemized). The `v_subscriptions` comment points to the doc (spec 4, 10). The loan example uses €2,400 and says the savings drop and can go negative; the Income and Expenses rows use spec 2.1's type-based wording. The shipped doc is the reference; the block in Task 9 is its first draft.
+- **Fix rounds:** where task reviews and the final review strengthened tests or guards beyond this plan's code blocks, the branch code is the reference.
 
 ## Self-review notes (for the executor)
 

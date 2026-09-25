@@ -67,6 +67,8 @@ Rows flagged as a subscription are grouped by merchant, with these rules:
 - **The typical amount is the median charge.**
 - **The cadence is yearly** when the median gap between charges is over 200 days, otherwise
   monthly. A yearly subscription's monthly equivalent is a twelfth of its typical amount.
+- **A merchant charged once counts as monthly** until a second charge gives a gap: a yearly
+  plan charged once shows its full price per month until then.
 - **A subscription is active** when it was charged within 45 days (monthly) or 400 days
   (yearly) of the latest imported transaction, not of today, so an old import does not make
   every subscription look cancelled.
