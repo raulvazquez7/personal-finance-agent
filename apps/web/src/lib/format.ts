@@ -20,7 +20,7 @@ type Amount = string | number | null | undefined;
 export const toNumber = (value: Amount): number => (value === null || value === undefined ? 0 : Number(value));
 export const money = (value: Amount) => cents.format(toNumber(value)); // €2,184.00
 export const moneyWhole = (value: Amount) => whole.format(toNumber(value)); // €2,184
-/** With an explicit sign, so money in (+€25.19) never reads as money out (-€25.19). */
+/** With an explicit sign, so money in (+€12.34) never reads as money out (-€12.34). */
 export const signedMoney = (value: Amount) => signedCents.format(toNumber(value));
 export const signedMoneyWhole = (value: Amount) => signedWhole.format(toNumber(value));
 export const compactMoney = (value: number) => compact.format(value); // €2.4K, for axis ticks

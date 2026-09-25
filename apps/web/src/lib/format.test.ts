@@ -28,7 +28,7 @@ describe("money", () => {
     expect(money("2184")).toBe("€2,184.00");
     expect(moneyWhole("3250.40")).toBe("€3,250");
     expect(signedMoney("-42.10")).toBe("-€42.10");
-    expect(signedMoney("25.19")).toBe("+€25.19");
+    expect(signedMoney("12.34")).toBe("+€12.34");
     expect(signedMoneyWhole(3250)).toBe("+€3,250");
     expect(compactMoney(2400)).toBe("€2.4K");
     expect(money(null)).toBe("€0.00");
