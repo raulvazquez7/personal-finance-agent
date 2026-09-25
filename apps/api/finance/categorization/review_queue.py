@@ -92,10 +92,14 @@ def suggestion_for(rows: list[ReviewRow], taxonomy: Taxonomy) -> Suggestion:
     )
 
 
-def _joins_its_merchant(row: ReviewRow) -> bool:
+def _joins_its_merchant(row: ReviewRow, taxonomy: Taxonomy) -> bool:
     """Every row of a merchant, purchases and refunds alike, is reviewed as one item: a refund
-    takes the purchase's category (spec 2.2)."""
-    return row.merchant_id is not None
+    takes the purchase's category (spec 2.2). Money going out is never income (spec 7.3), so it
+    stands alone when the default is income: confirming it would overwrite that default."""
+    if row.merchant_id is None:
+        return False
+    default = row.merchant_category_slug
+    return not (row.amount < 0 and default and taxonomy.get(default).tx_type == "income")
 
 
 def _transaction(row: ReviewRow) -> ReviewTransaction:
@@ -110,7 +114,7 @@ def build_review_items(
 ) -> list[ReviewItem]:
     groups: dict[str, list[ReviewRow]] = defaultdict(list)
     for row in rows:
-        key = f"m:{row.merchant_id}" if _joins_its_merchant(row) else f"t:{row.id}"
+        key = f"m:{row.merchant_id}" if _joins_its_merchant(row, taxonomy) else f"t:{row.id}"
         groups[key].append(row)
     items = []
     for key, members in groups.items():

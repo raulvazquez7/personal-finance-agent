@@ -80,6 +80,18 @@ def test_a_refund_joins_its_merchant_item():
     assert item.merge == merge
 
 
+def test_money_out_of_a_merchant_with_an_income_default_stands_alone():
+    default = "payments_from_people"
+    money_out = _row(
+        "-30", ACME, {"payments_to_people": 0.6, "restaurants_bars": 0.4}, default=default
+    )
+    money_in = _row("50", ACME, {"payments_from_people": 0.9, "salary": 0.1}, default=default)
+    items = {item.key: item for item in build_review_items([money_out, money_in], {}, TAXONOMY)}
+    assert set(items) == {f"t:{money_out.id}", f"m:{ACME}"}
+    assert items[f"t:{money_out.id}"].kind == "transaction"
+    assert [tx.id for tx in items[f"m:{ACME}"].transactions] == [money_in.id]
+
+
 def test_rows_in_the_direction_of_the_default_stay_grouped():
     rows = [
         _row("-10", ACME, {"groceries": 0.6, "restaurants_bars": 0.4}, default="groceries"),
