@@ -53,6 +53,7 @@ Expected: no errors.
 ## Global Constraints
 
 - 3b starts after 3a is merged. Web types come from `npm run gen:api` (API on :8000) into `apps/web/src/lib/api-types.ts`, and code uses them as `Schemas["<Name>"]` from `@/lib/api`. The names used are: `Overview`, `PeriodOut`, `Totals`, `Cumulative`, `CumulativePoint`, `MonthPoint`, `BreakdownRow`, `SubscriptionsSummary`, `Subscriptions`, `SubscriptionOut`, `SpendingDetail`, `ScopeMonth`, `Transaction`, `TransactionPage`, `Account`, `CategoryOut`, `MerchantOut`, `ReviewItem`, `ReviewTransaction`, `ReviewCount`, `ImportRecord`, `ImportSummary`. Decimals arrive as strings.
+- The folded row's key is "_other" (never a slug); plan 3a Task 10.
 - This is Next.js 16.3.6, not the Next.js of training data. Read the guide in `apps/web/node_modules/next/dist/docs/` before using any API (`apps/web/AGENTS.md`). `params` and `searchParams` are Promises. `PageProps<"/route">` and `LayoutProps<"/route">` are global types. `error.tsx` receives `retry` (stable since 16.3). A client component that calls `useSearchParams` inside the root layout needs a `<Suspense>` boundary, or `next build` fails on the prerendered 404 page.
 - Every page that fetches exports `export const dynamic = "force-dynamic"` (the existing convention), so `next build` in CI never calls the API.
 - shadcn `base-nova` runs on Base UI, not Radix. Use `render={<Button />}`, never `asChild`. Add `nativeButton={false}` when `render` is a `Link`. `ToggleGroup` values are arrays. `Select` takes an `items` prop. Follow `.claude/skills/shadcn/rules/*.md`. Add components with `npx shadcn@latest add <name> --dry-run`, then without `--dry-run`, and read every added file. Icons come from `lucide-react`, and `cn` from `@/lib/utils`.
@@ -824,7 +825,7 @@ const slots = { home: 1, shopping: 2, leisure: 3, transport: 4, credit_card: 5 }
 const row = (key: string, amount: string, share: number, previous: string | null, folded = 0): Row => ({
   key,
   label: null,
-  level1: key === "other" ? null : key,
+  level1: key === "_other" ? null : key,
   category_slug: null,
   merchant_id: null,
   amount,
@@ -851,11 +852,11 @@ describe("colours", () => {
         row("home", "830.00", 0.38, "800.00"),
         row("health", "100.00", 0.05, "90.00"),
         row("shopping", "481.20", 0.22, "500.00"),
-        row("other", "94.80", 0.04, "100.00", 3),
+        row("_other", "94.80", 0.04, "100.00", 3),
       ],
       slots,
     );
-    expect(folded.map((r) => r.key)).toEqual(["home", "shopping", "other"]);
+    expect(folded.map((r) => r.key)).toEqual(["home", "shopping", "_other"]);
     expect(folded[2]).toMatchObject({ amount: "194.80", share: 0.09, previous: "190.00", folded: 4, count: 2 });
   });
 
@@ -922,12 +923,12 @@ describe("labels", () => {
   });
 
   it("names rows, including the folded ones and merchants without a merchant", () => {
-    expect(rowName(row({ key: "other", folded: 12 }), "merchant")).toBe("Other 12 merchants");
-    expect(rowName(row({ key: "other", folded: 3 }), "group")).toBe("Other");
+    expect(rowName(row({ key: "_other", folded: 12 }), "merchant")).toBe("Other 12 merchants");
+    expect(rowName(row({ key: "_other", folded: 3 }), "group")).toBe("Other");
     expect(rowName(row({ key: "category:credit_card_spending", category_slug: "credit_card_spending" }), "merchant")).toBe(
       "Credit card spending",
     );
-    expect(rowHint(row({ key: "other", folded: 3 }), "group", categories)).toBe("3 groups");
+    expect(rowHint(row({ key: "_other", folded: 3 }), "group", categories)).toBe("3 groups");
     expect(rowHint(row({ key: "fashion", level1: "shopping" }), "category", categories)).toBe("Shopping");
     expect(rowHint(row({ key: "m", category_slug: "groceries", count: 12 }), "merchant", categories)).toBe(
       "Groceries · 12 transactions",
@@ -989,7 +990,7 @@ describe("breakdownItems", () => {
     const [groceries, other] = breakdownItems(
       [
         row({ key: "groceries", level1: "shopping", category_slug: "groceries", amount: "268.40", share: 0.56, previous: "280.00" }),
-        row({ key: "other", amount: "10.00", previous: "12.00", folded: 2 }),
+        row({ key: "_other", amount: "10.00", previous: "12.00", folded: 2 }),
       ],
       "category",
       { categories, slots: { shopping: 2 }, filters: august, good: "down", type: "expense" },
@@ -1132,20 +1133,20 @@ export function groupColor(level1: string | null | undefined, slots: Record<stri
   return slot ? `var(--chart-${slot})` : OTHER_COLOR;
 }
 
-/** The one-hue ramp inside a group page, darkest = largest; the 6th step also paints "other". */
+/** The one-hue ramp inside a group page, darkest = largest; the 6th step also paints "_other". */
 export const rampColor = (index: number) => `var(--ramp-${Math.min(index, 5) + 1})`;
 
 const sum = (values: number[]) => values.reduce((total, value) => total + value, 0);
 
 /** The Groups view shows the five coloured groups and folds the rest into one "Other" row
  * (spec 7.2). The API ranks its top five by the period's spend, so a group without a slot can
- * be among them: it is folded here, with the API's own "other" row. */
+ * be among them: it is folded here, with the API's own "_other" row. */
 export function foldBySlot(rows: Row[], slots: Record<string, number>): Row[] {
-  const kept = rows.filter((row) => row.key !== "other" && slots[row.key] !== undefined);
+  const kept = rows.filter((row) => row.key !== "_other" && slots[row.key] !== undefined);
   const rest = rows.filter((row) => !kept.includes(row));
   if (rest.length === 0) return rows;
   const other: Row = {
-    key: "other",
+    key: "_other",
     label: null,
     level1: null,
     category_slug: null,
@@ -1154,7 +1155,7 @@ export function foldBySlot(rows: Row[], slots: Record<string, number>): Row[] {
     share: Math.round(sum(rest.map((row) => row.share)) * 10_000) / 10_000,
     previous: rest.every((row) => row.previous !== null) ? sum(rest.map((row) => Number(row.previous))).toFixed(2) : null,
     count: sum(rest.map((row) => row.count)),
-    folded: sum(rest.map((row) => (row.key === "other" ? (row.folded ?? 0) : 1))),
+    folded: sum(rest.map((row) => (row.key === "_other" ? (row.folded ?? 0) : 1))),
   };
   return [...kept, other];
 }
@@ -1196,7 +1197,7 @@ export function groupHint(level1: string, categories: Category[]): string {
 }
 
 export function rowName(row: Row, dimension: Dimension): string {
-  if (row.key === "other") {
+  if (row.key === "_other") {
     return dimension === "merchant" ? `Other ${plural(row.folded ?? 0, "merchant", "merchants")}` : "Other";
   }
   // A merchant row without a merchant is keyed "category:<slug>" and reads as its category.
@@ -1204,7 +1205,7 @@ export function rowName(row: Row, dimension: Dimension): string {
 }
 
 export function rowHint(row: Row, dimension: Dimension, categories: Category[]): string {
-  if (row.key === "other") {
+  if (row.key === "_other") {
     if (dimension === "merchant") return "";
     const folded = row.folded ?? 0;
     return dimension === "group" ? plural(folded, "group", "groups") : plural(folded, "category", "categories");
@@ -1290,7 +1291,7 @@ export type BreakdownContext = {
 };
 
 function hrefOf(row: Row, dimension: Dimension, { filters, type }: BreakdownContext): string | null {
-  if (row.key === "other") return null;
+  if (row.key === "_other") return null;
   if (dimension === "group") return withFilters(`/spending/${row.key}`, filters);
   if (dimension === "category") {
     return withFilters(type === "income" ? `/income/${row.key}` : `/spending/${row.level1 ?? "uncategorized"}/${row.key}`, filters);
@@ -1306,7 +1307,7 @@ export function breakdownItems(rows: Row[], dimension: Dimension, context: Break
     hint: rowHint(row, dimension, context.categories),
     href: hrefOf(row, dimension, context),
     color: context.slots
-      ? groupColor(dimension === "group" && row.key !== "other" ? row.key : row.level1, context.slots)
+      ? groupColor(dimension === "group" && row.key !== "_other" ? row.key : row.level1, context.slots)
       : undefined,
     share: row.share,
     amount: row.amount,
@@ -3060,7 +3061,7 @@ import { LegendButtons } from "./legend-buttons";
 import { MonthTick, monthBarShape, type MonthRange } from "./month-axis";
 import { moneyRow, monthTooltipLabel } from "./money-tooltip";
 
-/** One stacked series: a child of the scope (a category, or "other"), in a ramp shade. */
+/** One stacked series: a child of the scope (a category, or "_other"), in a ramp shade. */
 export type Series = { key: string; label: string; color: string };
 
 type Props = { months: Schemas["ScopeMonth"][]; series: Series[]; range: MonthRange };
@@ -3332,8 +3333,8 @@ export function DetailPage({ detail, categories, filters, title, crumbs, childDi
   const names = new Map(children.map((item) => [item.key, item.name]));
   const series = detail.child_keys.map((key, index) => ({
     key,
-    label: key === "other" ? "Other" : (names.get(key) ?? key),
-    color: rampColor(key === "other" ? 5 : index),
+    label: key === "_other" ? "Other" : (names.get(key) ?? key),
+    color: rampColor(key === "_other" ? 5 : index),
   }));
   const tiles = children
     .filter((item) => Number(item.amount) > 0)
