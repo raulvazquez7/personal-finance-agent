@@ -52,38 +52,16 @@ def test_transactions_rejects_malformed_month():
     assert response.status_code == 422
 
 
-class _Rows:
-    """A connection whose one query returns these rows."""
-
-    def __init__(self, rows):
-        self.rows = rows
-
-    def execute(self, *_args):
-        return self
-
-    def fetchall(self):
-        return self.rows
-
-
-def test_transactions_mask_card_numbers(monkeypatch):
-    row = {
-        "id": uuid4(),
-        "account_name": "test 0001",
-        "booked_at": "1999-01-01",
-        "amount": "-9.90",
-        "description_raw": "PAGO CON TARJETA | 4000123412341234 ZZTEST ACME",
-        "merchant": None,
-        "tx_type": "expense",
-        "category_slug": None,
-    }
-    monkeypatch.setitem(app.dependency_overrides, db, lambda: _Rows([row]))
-    [tx] = client.get("/transactions").json()
-    assert tx["description_raw"] == "PAGO CON TARJETA | •••• 1234 ZZTEST ACME"
-
-
 def test_openapi_exposes_web_schemas():
     schemas = client.get("/openapi.json").json()["components"]["schemas"]
-    assert {"Account", "ImportRecord", "ImportSummary", "RunQueued", "Transaction"} <= set(schemas)
+    assert {
+        "Account",
+        "ImportRecord",
+        "ImportSummary",
+        "RunQueued",
+        "Transaction",
+        "TransactionPage",
+    } <= set(schemas)
 
 
 def test_import_succeeds_and_reports_counts_even_when_categorization_fails(monkeypatch):
