@@ -5,7 +5,7 @@ from uuid import uuid4
 
 import pytest
 
-from finance.categorization.categorizer import CategorizationContext, categorize
+from finance.categorization.categorizer import CategorizationContext, categorize, category_options
 from finance.categorization.merchants import MerchantRef, MerchantRoster
 from finance.categorization.models import TxInput
 from finance.categorization.rules import read_rules_yaml
@@ -127,16 +127,29 @@ def test_merchant_default_wins_over_jev_and_is_ignored_in_evals():
     assert (without.category_slug, without.category_source) == ("groceries", "jev")
 
 
-def test_expense_default_does_not_apply_to_a_refund():
+def test_a_merchant_default_applies_to_a_refund_too():
     roster = MerchantRoster([MerchantRef(id=uuid4(), name="ACME", category_slug="fashion")])
     refund = jev_result(
-        merchant={"ACME": 0.97, "none": 0.03}, category={"refunds": 0.97, "other_income": 0.03}
+        merchant={"ACME": 0.97, "none": 0.03}, category={"fashion": 0.6, "home_goods": 0.4}
     )
     [result] = _run([_tx("ACME", amount="13.77")], FakeJev(first={"ACME": refund}), roster)
     assert (result.category_slug, result.category_source, result.tx_type) == (
-        "refunds",
+        "fashion",
+        "merchant",
+        "expense",
+    )
+
+
+def test_an_income_default_never_applies_to_money_out():
+    roster = MerchantRoster([MerchantRef(id=uuid4(), name="ACME", category_slug="salary")])
+    charge = jev_result(
+        merchant={"ACME": 0.97, "none": 0.03}, category={"groceries": 0.9, "fashion": 0.1}
+    )
+    [result] = _run([_tx("ACME", amount="-13.77")], FakeJev(first={"ACME": charge}), roster)
+    assert (result.category_slug, result.category_source, result.tx_type) == (
+        "groceries",
         "jev",
-        "income",
+        "expense",
     )
 
 
@@ -249,3 +262,24 @@ def test_a_malformed_jev_answer_leaves_out_only_that_row(caplog):
     assert [r.transaction_id for r in results] == [ok.id]
     [warning] = caplog.records
     assert str(malformed.id) in warning.getMessage()
+
+
+def test_a_card_purchase_coming_back_is_offered_expense_categories():
+    refund = _tx("ACME", amount="13.77", concept="PAGO CON TARJETA EN MODA")
+    slugs = {c.slug for c in category_options(refund, CTX)}
+    assert "fashion" in slugs and "salary" not in slugs
+
+
+def test_other_money_in_keeps_the_income_options():
+    salary = _tx("ACME PAYROLL", amount="2000", concept="TRANSFERENCIA")
+    slugs = {c.slug for c in category_options(salary, CTX)}
+    assert "salary" in slugs and "fashion" not in slugs
+
+
+def test_without_jev_only_pairing_and_rule_rows_come_back():
+    settlement = _tx("", amount="-175.00", concept="ADEUDO MENSUAL DE TARJETA")
+    shop = _tx("ACME")
+    results = asyncio.run(categorize([settlement, shop], CTX, None, MerchantRoster([])))
+    assert [(r.transaction_id, r.category_slug) for r in results] == [
+        (settlement.id, "credit_card_spending")
+    ]
