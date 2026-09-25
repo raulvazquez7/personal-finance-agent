@@ -595,7 +595,12 @@ merchant (payments to people, opaque codes) appear one by one.
 ```
 
 - Bank text (muted, truncated), a transaction count and the total amount. A
-  row with a single transaction also shows its date and account.
+  row with a single transaction also shows its date and account (the account
+  is hidden on phones).
+- Direction at a glance: a "Money in" (green) or "Money out" badge, "Money
+  in and out" when a merchant row mixes both, and amounts with an explicit
+  sign, green for money in; a money-in row also gets a green left edge. A
+  refund must never read as a purchase.
 - Merchant: searchable combobox over known merchants with "Create '…'";
   picking another merchant merges, typing a new name renames.
 - Category: searchable level-2 combobox grouped by level 1, jev's top three
@@ -819,6 +824,11 @@ Decided with Raul after he reviewed the March statement in `/review`:
   button "Only this one". Before, the icon-only merchant button sat right
   above the first line's button, and pressing it overwrote the categories
   picked on the lines.
+- Section 11.1: every review row says whether money comes in or goes out
+  (badge, signed amount, green for money in). A refund from a clothes shop
+  was labelled as a clothing purchase because only the sign told them apart.
+  How refunds are categorized and counted is open for slice 3
+  (`docs/superpowers/specs/2026-09-25-slice-3-brainstorm-inputs.md`).
 - Sections 5.3 and 11.1: Merge no longer saves on its own and hides the row
   (which left the moved transactions' category undecided until a reload); it
   picks the suggested merchant, and the confirm merges and labels in one
