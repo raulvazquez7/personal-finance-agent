@@ -1,4 +1,4 @@
-"""Routes for listing transactions and labelling one of them."""
+"""Routes for listing transactions, labelling one of them and editing its note."""
 
 from datetime import date
 from decimal import Decimal
@@ -9,7 +9,7 @@ from pydantic import BaseModel, Field
 
 from finance.api.categories import require_category
 from finance.api.deps import Db
-from finance.categorization.labels import NotFound, label_transaction
+from finance.categorization.labels import NotFound, label_transaction, set_note
 from finance.ingestion.structure import mask_card_numbers
 
 router = APIRouter(prefix="/transactions", tags=["transactions"])
@@ -74,6 +74,19 @@ def label(transaction_id: UUID, body: LabelTransaction, conn: Db) -> Response:
         )
     except NotFound as error:
         raise HTTPException(status_code=404, detail=str(error)) from error
-    except ValueError as error:  # a new merchant name with no letter or digit
+    except ValueError as error:  # a merchant name with no letter or digit, or income on money out
         raise HTTPException(status_code=422, detail=str(error)) from error
+    return Response(status_code=204)
+
+
+class NoteUpdate(BaseModel):
+    note: str | None = Field(default=None, max_length=500)
+
+
+@router.patch("/{transaction_id}", status_code=204)
+def update_note(transaction_id: UUID, body: NoteUpdate, conn: Db) -> Response:
+    try:
+        set_note(conn, transaction_id, body.note)
+    except NotFound as error:
+        raise HTTPException(status_code=404, detail=str(error)) from error
     return Response(status_code=204)

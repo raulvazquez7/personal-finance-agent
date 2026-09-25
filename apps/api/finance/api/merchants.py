@@ -7,7 +7,12 @@ from pydantic import BaseModel
 
 from finance.api.categories import require_category
 from finance.api.deps import Db
-from finance.categorization.labels import NotFound, confirm_merchant, dismiss_merge, merge_merchants
+from finance.categorization.labels import (
+    NotFound,
+    clear_merchant_default,
+    confirm_merchant,
+    dismiss_merge,
+)
 from finance.categorization.review_queue import MerchantOut
 
 router = APIRouter(prefix="/merchants", tags=["merchants"])
@@ -18,10 +23,6 @@ class ConfirmMerchant(BaseModel):
     is_subscription: bool
     name: str | None = None
     merge_into_id: UUID | None = None
-
-
-class MergeRequest(BaseModel):
-    into_id: UUID
 
 
 @router.get("")
@@ -55,10 +56,10 @@ def review_merchant(merchant_id: UUID, body: ConfirmMerchant, conn: Db) -> Respo
     return Response(status_code=204)
 
 
-@router.post("/{merchant_id}/merge", status_code=204)
-def merge(merchant_id: UUID, body: MergeRequest, conn: Db) -> Response:
+@router.delete("/{merchant_id}/default", status_code=204)
+def clear_default(merchant_id: UUID, conn: Db) -> Response:
     try:
-        merge_merchants(conn, merchant_id, body.into_id)
+        clear_merchant_default(conn, merchant_id)
     except NotFound as error:
         raise HTTPException(status_code=404, detail=str(error)) from error
     return Response(status_code=204)

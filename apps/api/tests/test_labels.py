@@ -4,12 +4,15 @@ from uuid import uuid4
 import pytest
 
 from finance.categorization.labels import (
+    DirectionMismatch,
     NotFound,
+    clear_merchant_default,
     confirm_merchant,
     dismiss_merge,
     get_or_create_merchant,
     label_transaction,
     merge_merchants,
+    set_note,
 )
 
 pytestmark = pytest.mark.integration
@@ -190,3 +193,75 @@ def test_a_money_in_row_labelled_with_an_expense_category_is_a_negative_expense(
     label_transaction(db_conn, refund, "fashion", is_subscription=True)
     row = _row(db_conn, refund)
     assert (row["tx_type"], row["is_subscription"]) == ("expense", False)
+
+
+def test_money_out_cannot_take_an_income_category(db_conn, make_tx):
+    charge = _tx(make_tx, "-9.90", "PAGO | ZZTEST SHOP")
+    with pytest.raises(DirectionMismatch):
+        label_transaction(db_conn, charge, "salary", is_subscription=False)
+
+
+def test_relabelling_one_side_of_a_pair_unpairs_both_and_sends_the_other_to_review(
+    db_conn, make_tx
+):
+    out = _tx(make_tx, "-50.00", "TRASPASO | ZZTEST")
+    into = make_tx(
+        "50.00", "TRASPASO | ZZTEST", iban="ES0000000000000000000002", booked_at=SYNTHETIC_DAY
+    )
+    pair = uuid4()
+    for tx in (out, into):
+        _set(
+            db_conn,
+            tx,
+            transfer_pair_id=pair,
+            category_slug="own_accounts",
+            category_source="rule",
+            tx_type="transfer",
+        )
+    label_transaction(db_conn, out, "payments_to_people", is_subscription=False)
+    assert _row(db_conn, out)["transfer_pair_id"] is None
+    other = _row(db_conn, into)
+    assert (other["transfer_pair_id"], other["needs_review"]) == (None, True)
+
+
+def test_clearing_a_default_keeps_the_rows_as_they_are(db_conn, make_tx):
+    acme = _merchant(db_conn, "ZZTEST ACME", category_slug="groceries", is_subscription=False)
+    tx = _tx(make_tx, "-9.90", "PAGO | ZZTEST ACME")
+    _set(db_conn, tx, merchant_id=acme, category_slug="groceries", category_source="merchant")
+    clear_merchant_default(db_conn, acme)
+    merchant = db_conn.execute("select * from merchants where id = %s", (acme,)).fetchone()
+    assert (merchant["category_slug"], merchant["is_subscription"]) == (None, None)
+    assert _row(db_conn, tx)["category_slug"] == "groceries"
+    with pytest.raises(NotFound):
+        clear_merchant_default(db_conn, uuid4())
+
+
+def test_a_note_is_trimmed_and_an_empty_one_is_cleared(db_conn, make_tx):
+    tx = _tx(make_tx, "-51.00", "PAGO | ZZTEST SHOP")
+    set_note(db_conn, tx, "  AirPods case  ")
+    assert _row(db_conn, tx)["note"] == "AirPods case"
+    set_note(db_conn, tx, "   ")
+    assert _row(db_conn, tx)["note"] is None
+
+
+def test_confirming_an_income_default_leaves_money_out_alone(db_conn, make_tx):
+    acme = _merchant(db_conn, "ZZTEST ACME")
+    charge = _tx(make_tx, "-9.90", "PAGO | ZZTEST ACME")
+    _set(db_conn, charge, merchant_id=acme, category_source="jev", category_slug="groceries")
+    pay = _tx(make_tx, "1200.00", "NOMINA | ZZTEST ACME")
+    _set(db_conn, pay, merchant_id=acme, category_source="jev", category_slug="refunds")
+    confirm_merchant(db_conn, acme, "salary", False)
+    assert _row(db_conn, pay)["category_slug"] == "salary"
+    kept = _row(db_conn, charge)
+    assert (kept["category_slug"], kept["category_source"]) == ("groceries", "jev")
+
+
+def test_confirming_with_another_merchant_sets_the_survivor_default(db_conn, make_tx):
+    """M10: since the review-fix PR the survivor's default is the confirmed category."""
+    source = _merchant(db_conn, "ZZTEST ACME SHOP")
+    survivor = _merchant(db_conn, "ZZTEST ACME", category_slug="groceries")
+    confirm_merchant(db_conn, source, "fashion", False, merge_into_id=survivor)
+    row = db_conn.execute(
+        "select category_slug from merchants where id = %s", (survivor,)
+    ).fetchone()
+    assert row["category_slug"] == "fashion"
