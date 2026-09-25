@@ -14,9 +14,9 @@ because jev failed on them.
 Golden set changes between runs, which make the next line not directly
 comparable with the previous one:
 
-- After the 2026-09-24 eval: the March statement's review labels joined the
-  set, and 6 Apple labels changed from `entertainment` to `other_insurance`
-  (AppleCare) or `software_ai` (iCloud+ storage).
+- After the 2026-09-24 eval: the review labels of a newly imported monthly
+  statement joined the set, and 6 labels of a mixed merchant were corrected
+  from one category to per-charge categories.
 
 | Date | Source | jev | Golden rows | L2 acc | L1 acc | Precision @0.95 | Review @0.95 | Subs P / R | Note |
 |---|---|---|---|---|---|---|---|---|---|

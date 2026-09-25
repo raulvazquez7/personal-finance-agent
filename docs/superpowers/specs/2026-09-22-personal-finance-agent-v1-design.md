@@ -374,9 +374,9 @@ merchants such as marketplaces) stay as they are. Future transactions of
 that merchant take the default without review. Merging two merchants in
 `/review` happens on confirm: it repoints their transactions, keeps the
 surviving name and sets the confirmed category as the survivor's default. A
-merchant whose charges differ in category only by price (Apple: AppleCare and
-iCloud+ read the same `APPLE.COM/BILL`) keeps no default and is labelled line
-by line. A "recategorize all" action re-runs the cascade over every
+merchant whose charges differ in category only by price (a device insurance
+plan and a storage plan billed under the same bank text) keeps no default and
+is labelled line by line. A "recategorize all" action re-runs the cascade over every
 non-user-labelled transaction; with output tokens free and input at
 $0.042 per million tokens, re-labelling years of history costs cents.
 
@@ -824,6 +824,7 @@ Decided with Raul after he reviewed the March statement in `/review`:
   picks the suggested merchant, and the confirm merges and labels in one
   request through `POST /merchants/{id}/review` with `merge_into_id`.
 - Section 5.3: mixed merchants whose category depends on the price keep no
-  default. Apple's charges score 0.58 to 0.70 with jev, below the 0.95 gate,
-  so each new one reaches `/review`. Remembering a label by merchant and
-  amount is a candidate for slice 3.
+  default. The bank text cannot tell their charges apart, so jev usually
+  scores them below the 0.95 gate and each new one reaches `/review`; a
+  confident wrong guess is the residual risk. Remembering a label by merchant
+  and amount is a candidate for slice 3.
