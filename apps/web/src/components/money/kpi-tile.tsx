@@ -6,6 +6,7 @@ import { cn } from "@/lib/utils";
 
 import { DeltaText } from "./delta-text";
 import { InfoTip } from "./info-tip";
+import { NoData } from "./no-data";
 
 type Props = {
   label: string;
@@ -40,7 +41,7 @@ export function KpiTile({ label, definition, value, delta, versus, href, income 
       </CardHeader>
       <CardContent className="flex flex-col gap-1">
         <p className={cn("text-2xl font-semibold tracking-tight", income && hasData && "text-income")}>
-          {hasData ? value : "—"}
+          {hasData ? value : <NoData />}
         </p>
         <p className="min-h-4 text-xs text-muted-foreground">
           {hasData && delta.kind !== "hidden" && (

@@ -3,6 +3,7 @@
 import { Pie, PieChart } from "recharts";
 
 import { DeltaText } from "@/components/money/delta-text";
+import { NoData } from "@/components/money/no-data";
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
 import type { Delta } from "@/lib/delta";
 import { moneyWhole } from "@/lib/format";
@@ -41,7 +42,7 @@ export function BreakdownDonut({ slices, total, change, versus, title }: Props) 
       </ChartContainer>
       <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center text-center">
         <span className="text-xs text-muted-foreground">Spent</span>
-        <span className="text-2xl font-semibold tracking-tight">{total === null ? "—" : moneyWhole(total)}</span>
+        <span className="text-2xl font-semibold tracking-tight">{total === null ? <NoData /> : moneyWhole(total)}</span>
         {total !== null && (
           <span className="text-xs">
             <DeltaText value={change} /> {change.kind === "change" && <span className="text-muted-foreground">{versus}</span>}

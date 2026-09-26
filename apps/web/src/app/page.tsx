@@ -94,9 +94,9 @@ export default async function OverviewPage({ searchParams }: PageProps<"/">) {
       <Card>
         <CardHeader>
           <CardTitle>
-            {/* An empty current series (no data in the period, or it starts after the latest imported day) is no data, never €0. */}
-            {spent.current === null ? "No data" : `${moneyWhole(spent.current)} spent`}{" "}
-            {period.name === "month" ? `in ${periodNames(period).current}` : "in this period"}
+            {/* An empty current series (no data in the period, or it starts after the latest imported day) is no data,
+                never €0. One string: Chrome drops a lone space between server-rendered text parts from a heading's name. */}
+            {`${spent.current === null ? "No data" : `${moneyWhole(spent.current)} spent`} ${period.name === "month" ? `in ${periodNames(period).current}` : "in this period"}`}
           </CardTitle>
           <CardDescription>
             <DeltaText value={delta(spent.current, spent.previous, "down", "euro")} />{" "}
@@ -130,9 +130,7 @@ export default async function OverviewPage({ searchParams }: PageProps<"/">) {
             {plural(subscriptions.count, "active subscription", "active subscriptions")}
             {/* v_subscriptions is per merchant: the account filter does not apply, so say so. */}
             <span className="font-normal text-muted-foreground">
-              {" "}
-              · {money(subscriptions.monthly_total)} per month · {money(subscriptions.yearly_total)} per year · all
-              accounts
+              {` · ${money(subscriptions.monthly_total)} per month · ${money(subscriptions.yearly_total)} per year · all accounts`}
             </span>
           </CardTitle>
           {/* Decision I: "active" is relative to the latest import (spec 5, v_subscriptions). */}
@@ -142,7 +140,7 @@ export default async function OverviewPage({ searchParams }: PageProps<"/">) {
           </CardDescription>
           <CardAction>
             <Link href="/subscriptions" className="text-sm font-medium text-primary">
-              Subscriptions →
+              Subscriptions <span aria-hidden>→</span>
             </Link>
           </CardAction>
         </CardHeader>

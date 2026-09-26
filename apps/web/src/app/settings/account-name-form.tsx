@@ -42,8 +42,9 @@ export function AccountNameForm({ account }: { account: Schemas["Account"] }) {
   return (
     <form onSubmit={onSubmit}>
       <Field>
-        <FieldLabel htmlFor={id}>
-          {account.bank.toUpperCase()} {DIGITS_SEPARATOR}{account.iban_last4}
+        <FieldLabel htmlFor={id} id={`${id}-label`}>
+          {/* One string: Chrome drops a lone space between server-rendered text parts from the name. */}
+          {`${account.bank.toUpperCase()} ${DIGITS_SEPARATOR}${account.iban_last4}`}
         </FieldLabel>
         <div className="flex gap-2">
           <Input
@@ -53,7 +54,14 @@ export function AccountNameForm({ account }: { account: Schemas["Account"] }) {
             aria-describedby={`${id}-help`}
             onChange={(event) => setName(event.target.value)}
           />
-          <Button type="submit" variant="outline" disabled={busy || !trimmed || trimmed === saved}>
+          {/* "Save <account>": every account has a Save button. */}
+          <Button
+            type="submit"
+            variant="outline"
+            id={`${id}-save`}
+            aria-labelledby={`${id}-save ${id}-label`}
+            disabled={busy || !trimmed || trimmed === saved}
+          >
             {busy && <Spinner data-icon="inline-start" />}
             Save
           </Button>

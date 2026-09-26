@@ -2,7 +2,7 @@ import { Repeat, StickyNote } from "lucide-react";
 
 import { TableCell, TableRow } from "@/components/ui/table";
 import type { Schemas } from "@/lib/api";
-import { signedMoney } from "@/lib/format";
+import { dayLong, signedMoney } from "@/lib/format";
 import { label, sourceLabel } from "@/lib/labels";
 import { cn } from "@/lib/utils";
 
@@ -39,8 +39,11 @@ export function TransactionRow({ tx, onOpen, showSource = false }: Props) {
           </span>
           <div className="min-w-0">
             {onOpen ? (
+              // Named with its day and amount (the list repeats merchants); it opens the side panel.
               <button
                 type="button"
+                aria-label={`${name}, ${dayLong(tx.booked_at)}, ${signedMoney(amount)}`}
+                aria-haspopup="dialog"
                 className="block w-full truncate text-left font-medium"
                 onClick={(event) => {
                   event.stopPropagation();

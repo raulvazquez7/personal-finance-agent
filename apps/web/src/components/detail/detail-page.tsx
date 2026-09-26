@@ -4,6 +4,7 @@ import { Fragment } from "react";
 import { BreakdownTable } from "@/components/breakdown/breakdown-table";
 import { CategoryTreemap } from "@/components/charts/category-treemap";
 import { DeltaText } from "@/components/money/delta-text";
+import { NoData } from "@/components/money/no-data";
 import { TransactionTable } from "@/components/transactions/transaction-table";
 import {
   Breadcrumb,
@@ -94,7 +95,7 @@ export function DetailPage({ detail, categories, filters, title, crumbs, childDi
         </h1>
         {/* Spec 7.2: income is green with a "+"; expenses are neutral. */}
         <p className={cn("text-4xl font-semibold tracking-tight", income && total !== null && total > 0 && "text-income")}>
-          {total === null ? "—" : income ? signedMoney(total) : money(total)}
+          {total === null ? <NoData /> : income ? signedMoney(total) : money(total)}
         </p>
         <p className="text-sm text-muted-foreground">
           {total === null ? (
@@ -151,7 +152,8 @@ export function DetailPage({ detail, categories, filters, title, crumbs, childDi
             {detail.count > 0 && (
               <CardAction>
                 <Link href={seeAllHref} className="text-sm font-medium text-primary">
-                  {detail.count === 1 ? "See it in Transactions" : `See all ${detail.count} in Transactions`} →
+                  {detail.count === 1 ? "See it in Transactions" : `See all ${detail.count} in Transactions`}{" "}
+                  <span aria-hidden>→</span>
                 </Link>
               </CardAction>
             )}

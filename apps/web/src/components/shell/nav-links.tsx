@@ -42,6 +42,8 @@ export function NavLinks({ pending }: { pending: number | null }) {
             key={item.href}
             href={item.keepsFilters && query ? `${item.href}?${query}` : item.href}
             aria-current={active ? "page" : undefined}
+            // The count alone would read "Review3": say what it counts.
+            aria-label={item.href === "/review" && pending ? `${item.label}, ${pending} to review` : undefined}
             className={cn(
               "shrink-0 rounded-full px-3 py-1.5 text-muted-foreground transition-colors hover:text-foreground",
               active && "bg-foreground font-medium text-background hover:text-background",
