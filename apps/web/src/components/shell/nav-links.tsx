@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
+import { useEffect, useRef } from "react";
 
 import { filterParams, parseFilters, toSearchParams } from "@/lib/params";
 import { cn } from "@/lib/utils";
@@ -30,6 +31,18 @@ export function NavLinks({ pending }: { pending: number | null }) {
   const pathname = usePathname();
   const search = useSearchParams();
   const query = filterParams(parseFilters(toSearchParams(search))).toString();
+  const activeLink = useRef<HTMLAnchorElement>(null);
+
+  useEffect(() => {
+    // On phones the active pill can start off-screen: centre it in the row. Only the row scrolls,
+    // never the page (scrollIntoView would also scroll the window).
+    const link = activeLink.current;
+    const row = link?.parentElement;
+    if (!link || !row) return;
+    const offset = link.getBoundingClientRect().left - row.getBoundingClientRect().left;
+    row.scrollLeft += offset - (row.clientWidth - link.offsetWidth) / 2;
+  }, [pathname]);
+
   return (
     <nav
       aria-label="Main"
@@ -40,6 +53,7 @@ export function NavLinks({ pending }: { pending: number | null }) {
         return (
           <Link
             key={item.href}
+            ref={active ? activeLink : undefined}
             href={item.keepsFilters && query ? `${item.href}?${query}` : item.href}
             aria-current={active ? "page" : undefined}
             // The count alone would read "Review3": say what it counts.
