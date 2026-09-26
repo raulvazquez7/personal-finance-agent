@@ -1,8 +1,11 @@
+import type { Metadata } from "next";
+
 import { apiGet, type Schemas } from "@/lib/api";
 
 import { ReviewList } from "./review-list";
 
 export const dynamic = "force-dynamic";
+export const metadata: Metadata = { title: "Review" };
 
 export default async function ReviewPage() {
   const [items, categories, merchants, count] = await Promise.all([

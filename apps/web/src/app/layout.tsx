@@ -17,7 +17,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "tally ai",
+  // Each page names itself: "Transactions · tally ai" (WCAG 2.4.2).
+  title: { default: "tally ai", template: "%s · tally ai" },
   description: "Local-first personal finance: import bank statements and see where your money goes.",
 };
 

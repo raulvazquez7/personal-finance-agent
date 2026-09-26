@@ -1,8 +1,11 @@
+import type { Metadata } from "next";
+
 import { DetailPage } from "@/components/detail/detail-page";
 import { apiGet, type Schemas } from "@/lib/api";
 import { parseFilters, withFilters } from "@/lib/params";
 
 export const dynamic = "force-dynamic";
+export const metadata: Metadata = { title: "Income" };
 
 /** Income (spec 7.1): the group template over the income categories. More is good here. */
 export default async function IncomePage({ searchParams }: PageProps<"/income">) {

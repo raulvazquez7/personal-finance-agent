@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
 import { DetailPage } from "@/components/detail/detail-page";
@@ -6,6 +7,10 @@ import { knownCategory, label } from "@/lib/labels";
 import { isSlug, parseFilters, withFilters } from "@/lib/params";
 
 export const dynamic = "force-dynamic";
+
+export async function generateMetadata({ params }: PageProps<"/income/[category]">): Promise<Metadata> {
+  return { title: label((await params).category) };
+}
 
 /** One income category, with the merchants that paid it. */
 export default async function IncomeCategoryPage({ params, searchParams }: PageProps<"/income/[category]">) {

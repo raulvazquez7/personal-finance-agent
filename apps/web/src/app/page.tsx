@@ -1,4 +1,5 @@
 import { FileUp } from "lucide-react";
+import type { Metadata } from "next";
 import Link from "next/link";
 
 import { CumulativeChart } from "@/components/charts/cumulative-chart";
@@ -18,6 +19,8 @@ import { plural } from "@/lib/labels";
 import { filterParams, parseFilters, withFilters } from "@/lib/params";
 
 export const dynamic = "force-dynamic";
+// The root layout's title template does not apply to the page of its own segment: spelled out.
+export const metadata: Metadata = { title: "Overview · tally ai" };
 
 const amount = (value: string | null | undefined) => (value === null || value === undefined ? null : Number(value));
 

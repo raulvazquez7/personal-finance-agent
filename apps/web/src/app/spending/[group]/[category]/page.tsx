@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
 import { DetailPage } from "@/components/detail/detail-page";
@@ -6,6 +7,10 @@ import { knownCategory, label } from "@/lib/labels";
 import { isSlug, parseFilters, withFilters } from "@/lib/params";
 
 export const dynamic = "force-dynamic";
+
+export async function generateMetadata({ params }: PageProps<"/spending/[group]/[category]">): Promise<Metadata> {
+  return { title: label((await params).category) };
+}
 
 /** A category inside a group (spec 7.1): the same template, with merchants instead of categories. */
 export default async function CategoryPage({ params, searchParams }: PageProps<"/spending/[group]/[category]">) {

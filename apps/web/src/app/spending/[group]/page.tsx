@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
 import { DetailPage } from "@/components/detail/detail-page";
@@ -6,6 +7,10 @@ import { knownGroup, label } from "@/lib/labels";
 import { isSlug, parseFilters, withFilters } from "@/lib/params";
 
 export const dynamic = "force-dynamic";
+
+export async function generateMetadata({ params }: PageProps<"/spending/[group]">): Promise<Metadata> {
+  return { title: label((await params).group) };
+}
 
 /** A spending group (spec 7.1): its categories as a treemap + table, top merchants, rows. */
 export default async function GroupPage({ params, searchParams }: PageProps<"/spending/[group]">) {

@@ -1,3 +1,5 @@
+import type { Metadata } from "next";
+
 import { apiGet, type Schemas } from "@/lib/api";
 import { money, rangeLabel, signedMoney } from "@/lib/format";
 import { plural } from "@/lib/labels";
@@ -7,6 +9,7 @@ import { ExplorerFilters } from "./explorer-filters";
 import { TransactionList } from "./transaction-list";
 
 export const dynamic = "force-dynamic";
+export const metadata: Metadata = { title: "Transactions" };
 
 /** The explorer (spec 7.3): any row can be found, understood and corrected in the side panel.
  * The page URL and the API take the same params, so one sanitized query string serves both. */

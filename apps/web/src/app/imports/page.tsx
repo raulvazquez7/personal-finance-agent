@@ -1,3 +1,5 @@
+import type { Metadata } from "next";
+
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { apiGet, type Schemas } from "@/lib/api";
@@ -6,6 +8,7 @@ import { dateTime, dayRange } from "@/lib/format";
 import { UploadForm } from "./upload-form";
 
 export const dynamic = "force-dynamic";
+export const metadata: Metadata = { title: "Imports" };
 
 export default async function ImportsPage() {
   const imports = await apiGet<Schemas["ImportRecord"][]>("/imports");

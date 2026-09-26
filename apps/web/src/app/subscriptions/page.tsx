@@ -1,3 +1,5 @@
+import type { Metadata } from "next";
+
 import { Repeat } from "lucide-react";
 import Link from "next/link";
 
@@ -8,6 +10,7 @@ import { apiGet, type Schemas } from "@/lib/api";
 import { dayLong, money } from "@/lib/format";
 
 export const dynamic = "force-dynamic";
+export const metadata: Metadata = { title: "Subscriptions" };
 
 const CADENCE: Record<Schemas["SubscriptionOut"]["cadence"], string> = { monthly: "Monthly", yearly: "Yearly" };
 

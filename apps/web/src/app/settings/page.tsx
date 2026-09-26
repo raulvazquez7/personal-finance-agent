@@ -1,3 +1,5 @@
+import type { Metadata } from "next";
+
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { FieldGroup } from "@/components/ui/field";
@@ -8,6 +10,7 @@ import { byLevel1 } from "@/lib/pickers";
 import { AccountNameForm } from "./account-name-form";
 
 export const dynamic = "force-dynamic";
+export const metadata: Metadata = { title: "Settings" };
 
 const TYPES = [
   { type: "expense", title: "Expenses" },
