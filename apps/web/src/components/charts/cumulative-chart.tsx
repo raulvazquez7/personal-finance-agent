@@ -34,6 +34,7 @@ export function CumulativeChart({ cumulative, period, title }: Props) {
     <div className="flex flex-col gap-3">
       {cumulative.previous && (
         <LegendButtons
+          chart={title}
           isolated={isolated}
           onIsolate={setIsolated}
           items={[

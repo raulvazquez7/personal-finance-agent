@@ -18,6 +18,7 @@ const config = {
 } satisfies ChartConfig;
 
 const amount = (value: string | null) => (value === null ? null : Number(value));
+const TITLE = "Income, expenses and savings per month, last 12 months";
 
 /** Twelve months of income and expenses as bars and savings as a line, on one € axis (spec 7.2:
  * no dual axes). Months without imported data are dashed boxes, not zeros. */
@@ -35,6 +36,7 @@ export function MonthsChart({ months, range }: { months: Schemas["MonthPoint"][]
   return (
     <div className="flex flex-col gap-3">
       <LegendButtons
+        chart={TITLE}
         isolated={isolated}
         onIsolate={setIsolated}
         items={[
@@ -46,7 +48,7 @@ export function MonthsChart({ months, range }: { months: Schemas["MonthPoint"][]
       <ChartContainer config={config} className="aspect-auto h-64 w-full">
         <ComposedChart
           accessibilityLayer
-          title="Income, expenses and savings per month, last 12 months"
+          title={TITLE}
           desc="Bars for income and expenses, a line for savings; months without imported data are marked. The left and right arrow keys move through the months."
           data={data}
           barGap={2}

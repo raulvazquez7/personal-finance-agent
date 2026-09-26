@@ -38,6 +38,7 @@ export function ScopeMonthsChart({ months, series, range, title }: Props) {
     <div className="flex flex-col gap-3">
       {series.length > 1 && (
         <LegendButtons
+          chart={title}
           isolated={isolated}
           onIsolate={setIsolated}
           items={series.map((s, index) => ({ key: `s${index}`, label: s.label, color: s.color }))}
