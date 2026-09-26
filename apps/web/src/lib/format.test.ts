@@ -5,6 +5,7 @@ import {
   compactMoney,
   dayAt,
   dayHeader,
+  dayRange,
   dayLong,
   dayShort,
   daysIn,
@@ -66,6 +67,11 @@ describe("dates are formatted in UTC", () => {
     expect(dayLong("2026-01-01")).toBe("1 Jan 2026");
     expect(monthLabel("2026-08")).toBe("August 2026");
     expect(monthShort("2026-02")).toBe("Feb");
+  });
+
+  it("names a range of days, with the start's year only across two years", () => {
+    expect(dayRange("2026-08-01", "2026-08-31")).toBe("1 Aug – 31 Aug 2026");
+    expect(dayRange("2025-12-10", "2026-01-19")).toBe("10 Dec 2025 – 19 Jan 2026");
   });
 
   it("counts the days of a period", () => {
