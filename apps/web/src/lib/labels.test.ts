@@ -59,9 +59,10 @@ describe("labels", () => {
     expect(rowName(row({ key: "_other", folded: 3 }), "group")).toBe("Other groups");
     expect(rowName(row({ key: "_other", folded: 4 }), "category")).toBe("Other categories");
     expect(rowName(row({ key: "other", level1: "other" }), "group")).toBe("Other");
-    expect(rowName(row({ key: "category:credit_card_spending", category_slug: "credit_card_spending" }), "merchant")).toBe(
-      "Credit card spending",
-    );
+    // Rows without a merchant never read like a merchant named after their category.
+    const noMerchant = row({ key: "category:credit_card_spending", category_slug: "credit_card_spending", count: 3 });
+    expect(rowName(noMerchant, "merchant")).toBe("No merchant");
+    expect(rowHint(noMerchant, "merchant", categories)).toBe("Credit card spending · 3 transactions");
     expect(rowHint(row({ key: "_other", folded: 3 }), "group", categories)).toBe("3 groups");
     expect(rowHint(row({ key: "fashion", level1: "shopping" }), "category", categories)).toBe("Shopping");
     expect(rowHint(row({ key: "m", category_slug: "groceries", count: 12 }), "merchant", categories)).toBe(

@@ -62,7 +62,7 @@ describe("breakdownItems", () => {
       count: 2,
     });
     expect(employer.color).toBeUndefined();
-    expect(card).toMatchObject({ name: "Credit card spending", href: null });
+    expect(card).toMatchObject({ name: "No merchant", hint: "Credit card spending · 1 transaction", href: null });
   });
 
   it("links a group to its page and an income category to the income pages", () => {

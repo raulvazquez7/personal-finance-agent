@@ -36,8 +36,8 @@ export function rowName(row: Row, dimension: Dimension): string {
     if (dimension === "merchant") return `Other ${plural(row.folded ?? 0, "merchant", "merchants")}`;
     return dimension === "group" ? "Other groups" : "Other categories";
   }
-  // A merchant row without a merchant is keyed "category:<slug>" and reads as its category.
-  return dimension === "merchant" ? (row.label ?? label(row.category_slug)) : label(row.key);
+  // A merchant row without a merchant is keyed "category:<slug>"; its hint names the category.
+  return dimension === "merchant" ? (row.label ?? "No merchant") : label(row.key);
 }
 
 export function rowHint(row: Row, dimension: Dimension, categories: Category[]): string {
