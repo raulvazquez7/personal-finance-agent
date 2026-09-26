@@ -26,10 +26,11 @@ export function TransactionRow({ tx, onOpen, showSource = false }: Props) {
   const amount = Number(tx.amount);
   return (
     <TableRow onClick={onOpen} className={cn(onOpen && "cursor-pointer")}>
-      {/* Auto-table truncation: the name takes the free width and ends in "…", so a long name
-          never widens the table past its card (a nowrap cell sets the column's minimum). */}
-      <TableCell className="w-full max-w-0">
-        <div className="flex items-center gap-3">
+      <TableCell className="max-w-72">
+        {/* A minmax(0, 1fr) track has no min-content width: a long name shrinks and ends in "…"
+            instead of widening the table past its card. With room to spare, the table spreads
+            its columns as usual (mockup 03); max-w-72 keeps a long name from taking that room. */}
+        <div className="grid grid-cols-[auto_minmax(0,1fr)] items-center gap-3">
           <span
             aria-hidden
             className="flex size-7 shrink-0 items-center justify-center rounded-full bg-muted text-xs font-semibold text-muted-foreground"
