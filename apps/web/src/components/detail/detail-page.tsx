@@ -136,13 +136,9 @@ export function DetailPage({ detail, categories, filters, title, crumbs, childDi
       <div className={cn("grid items-start gap-4", merchants.length > 0 && "lg:grid-cols-[minmax(0,1fr)_minmax(0,1.25fr)]")}>
         {merchants.length > 0 && (
           <Card>
+            {/* No link of its own: the Transactions card beside it opens the same list. */}
             <CardHeader>
               <CardTitle>Top merchants</CardTitle>
-              <CardAction>
-                <Link href={seeAllHref} className="text-sm font-medium text-primary">
-                  All →
-                </Link>
-              </CardAction>
             </CardHeader>
             <CardContent>
               <BreakdownTable items={merchants} nameHeader="Merchant" versus={versus} showShare={false} />
@@ -155,7 +151,7 @@ export function DetailPage({ detail, categories, filters, title, crumbs, childDi
             {detail.count > 0 && (
               <CardAction>
                 <Link href={seeAllHref} className="text-sm font-medium text-primary">
-                  See all {detail.count} in Transactions →
+                  {detail.count === 1 ? "See it in Transactions" : `See all ${detail.count} in Transactions`} →
                 </Link>
               </CardAction>
             )}
