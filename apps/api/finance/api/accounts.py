@@ -1,9 +1,10 @@
 """Routes for listing and renaming accounts."""
 
+from typing import Annotated
 from uuid import UUID
 
 from fastapi import APIRouter, HTTPException
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, StringConstraints
 
 from finance.api.deps import Db
 
@@ -21,7 +22,8 @@ class Account(BaseModel):
 
 
 class AccountUpdate(BaseModel):
-    name: str = Field(min_length=1, max_length=80)
+    # Trimmed before the length check: a name of only spaces is a 422, never a blank account.
+    name: Annotated[str, StringConstraints(strip_whitespace=True, min_length=1, max_length=80)]
 
 
 @router.get("")

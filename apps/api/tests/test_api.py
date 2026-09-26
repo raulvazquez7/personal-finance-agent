@@ -4,6 +4,7 @@ import pytest
 from fastapi.testclient import TestClient
 
 from finance.api import categorize, imports
+from finance.api.accounts import AccountUpdate
 from finance.api.deps import db
 from finance.api.main import app
 from finance.categorization import store
@@ -142,6 +143,16 @@ def test_label_rejects_a_missing_category():
         "/transactions/00000000-0000-0000-0000-000000000001/label", json={"is_subscription": True}
     )
     assert response.status_code == 422
+
+
+def test_an_account_name_of_only_spaces_is_422():
+    response = client.patch(f"/accounts/{uuid4()}", json={"name": "   "})
+    assert response.status_code == 422
+
+
+def test_an_account_name_is_trimmed_before_its_length_is_checked():
+    assert AccountUpdate(name="  ZZTEST joint ").name == "ZZTEST joint"
+    assert len(AccountUpdate(name=f" {'x' * 80} ").name) == 80
 
 
 def test_openapi_exposes_review_schemas():
