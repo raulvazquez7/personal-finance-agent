@@ -64,8 +64,10 @@ export function TransactionList({ initial, search, categories, merchants }: Prop
         </CardContent>
       </Card>
       <div className="flex flex-col items-center gap-2 text-sm text-muted-foreground">
+        {/* Two counts, not "X of N": a row you edit stays in the list even when the edit moves it
+            out of the filters, while the count (refreshed after the save) no longer includes it. */}
         <span>
-          Showing {items.length} of {initial.count}
+          {items.length} shown · {initial.count} {initial.count === 1 ? "matches" : "match"} these filters
         </span>
         {cursor && (
           <Button variant="secondary" onClick={loadMore} disabled={loading}>
