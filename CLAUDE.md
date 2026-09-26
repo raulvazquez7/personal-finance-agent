@@ -9,7 +9,8 @@ Open-source, local-first personal finance assistant. Bank PDF statements are
 imported into Supabase Postgres, categorized through a cascade (rules → jev →
 human review), shown in Next.js dashboards, and queryable through a LangChain
 agent over a semantic layer. Design: `docs/superpowers/specs/`. Plans:
-`docs/superpowers/plans/`. Read the spec before touching architecture.
+`docs/superpowers/plans/`. Ideas not yet designed: `docs/backlog.md`. Read the
+spec before touching architecture.
 Money rules (what counts as income, spending, transfers): `docs/money-rules.md`.
 
 ## Workflow
