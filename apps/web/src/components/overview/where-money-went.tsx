@@ -44,7 +44,13 @@ export function WhereMoneyWent({ views, total, change, versus, subtitle }: Props
         </CardAction>
       </CardHeader>
       <CardContent className="grid items-center gap-6 md:grid-cols-[13rem_minmax(0,1fr)]">
-        <BreakdownDonut slices={slices} total={total} change={change} versus={versus} />
+        <BreakdownDonut
+          slices={slices}
+          total={total}
+          change={change}
+          versus={versus}
+          title={`Spending by ${HEADERS[dimension].toLowerCase()}`}
+        />
         <BreakdownTable items={items} nameHeader={HEADERS[dimension]} versus={versus} />
       </CardContent>
     </Card>

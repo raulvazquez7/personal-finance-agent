@@ -10,11 +10,12 @@ import { compactMoney, dayAt, dayShort, daysIn, periodNames } from "@/lib/format
 import { LegendButtons } from "./legend-buttons";
 import { dayTooltipLabel, moneyRow } from "./money-tooltip";
 
-type Props = { cumulative: Schemas["Cumulative"]; period: Schemas["PeriodOut"] };
+/** `title` names the chart for screen readers: Recharts makes it a focusable application. */
+type Props = { cumulative: Schemas["Cumulative"]; period: Schemas["PeriodOut"]; title: string };
 
 /** Spent so far, day by day, against the previous period (spec 7.1). The current line stops at
  * the latest imported day; the x axis always spans the whole current period. */
-export function CumulativeChart({ cumulative, period }: Props) {
+export function CumulativeChart({ cumulative, period, title }: Props) {
   const [isolated, setIsolated] = useState<string | null>(null);
   const names = periodNames(period);
   const config = {
@@ -28,6 +29,7 @@ export function CumulativeChart({ cumulative, period }: Props) {
     previous: cumulative.previous?.[index] ? Number(cumulative.previous[index].total) : null,
   }));
   const dayLabel = (day: number) => dayShort(dayAt(period.start, day - 1));
+  const lines = cumulative.previous ? `${names.current} against ${names.previous}` : names.current;
   return (
     <div className="flex flex-col gap-3">
       {cumulative.previous && (
@@ -41,7 +43,13 @@ export function CumulativeChart({ cumulative, period }: Props) {
         />
       )}
       <ChartContainer config={config} className="aspect-auto h-56 w-full">
-        <AreaChart accessibilityLayer data={data} margin={{ top: 8, right: 12, left: 0 }}>
+        <AreaChart
+          accessibilityLayer
+          title={title}
+          desc={`A running total per day: ${lines}. The left and right arrow keys move through the days.`}
+          data={data}
+          margin={{ top: 8, right: 12, left: 0 }}
+        >
           <CartesianGrid vertical={false} stroke="var(--chart-grid)" />
           <XAxis
             dataKey="day"

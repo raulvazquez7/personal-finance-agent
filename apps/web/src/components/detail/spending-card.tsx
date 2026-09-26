@@ -59,12 +59,13 @@ export function SpendingCard({ name, months, series, cumulative, period, split, 
       </CardHeader>
       <CardContent>
         {view === "cumulative" ? (
-          <CumulativeChart cumulative={cumulative} period={period} />
+          <CumulativeChart cumulative={cumulative} period={period} title={title} />
         ) : (
           <ScopeMonthsChart
             months={months}
             series={split && stacked ? series : []}
             range={[period.start.slice(0, 7), period.end.slice(0, 7)]}
+            title={title}
           />
         )}
       </CardContent>

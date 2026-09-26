@@ -14,12 +14,13 @@ import { moneyRow, monthTooltipLabel } from "./money-tooltip";
 /** One stacked series: a child of the scope (a category, or "_other"), in a ramp shade. */
 export type Series = { key: string; label: string; color: string };
 
-type Props = { months: Schemas["ScopeMonth"][]; series: Series[]; range: MonthRange };
+/** `title` names the chart for screen readers: Recharts makes it a focusable application. */
+type Props = { months: Schemas["ScopeMonth"][]; series: Series[]; range: MonthRange; title: string };
 
 /** A scope's 12 months (spec 7.1): one bar per month, or each month stacked by child in the
  * one-hue ramp (spec 7.2). Series keys are s0..s5 because child keys (slugs, "category:…") are not
  * valid CSS variable names. Refund-only months stack below zero (`stackOffset="sign"`). */
-export function ScopeMonthsChart({ months, series, range }: Props) {
+export function ScopeMonthsChart({ months, series, range, title }: Props) {
   const [isolated, setIsolated] = useState<string | null>(null);
   const keys = series.map((_, index) => `s${index}`);
   const visible = keys.filter((key) => isolated === null || key === isolated);
@@ -43,7 +44,14 @@ export function ScopeMonthsChart({ months, series, range }: Props) {
         />
       )}
       <ChartContainer config={config} className="aspect-auto h-60 w-full">
-        <BarChart accessibilityLayer data={data} stackOffset="sign" margin={{ top: 28, right: 8, left: 0 }}>
+        <BarChart
+          accessibilityLayer
+          title={title}
+          desc={`One bar per month${series.length > 0 ? ", split by category" : ""}; months without imported data are marked. The left and right arrow keys move through the months.`}
+          data={data}
+          stackOffset="sign"
+          margin={{ top: 28, right: 8, left: 0 }}
+        >
           <CartesianGrid vertical={false} stroke="var(--chart-grid)" />
           <XAxis
             dataKey="month"

@@ -11,16 +11,18 @@ import { moneyRow } from "./money-tooltip";
 
 export type Slice = { name: string; value: number; fill: string };
 
-type Props = { slices: Slice[]; total: string | null; change: Delta; versus: string };
+type Props = { slices: Slice[]; total: string | null; change: Delta; versus: string; title: string };
 
 /** Part-to-whole at a glance, with the total in the centre (mockup 02). Only positive amounts
  * draw a slice (spec 2.1); the table next to it lists every row. A period without data (`total`
- * null) reads "—" with no change, like the Expenses tile (Decision G). */
-export function BreakdownDonut({ slices, total, change, versus }: Props) {
+ * null) reads "—" with no change, like the Expenses tile (Decision G). The table is also its
+ * keyboard and screen-reader twin, so the donut is no Tab stop: Recharts' arrow keys walk an axis,
+ * which a pie does not have. */
+export function BreakdownDonut({ slices, total, change, versus, title }: Props) {
   return (
     <div className="relative mx-auto size-52">
       <ChartContainer config={{}} className="aspect-square size-full">
-        <PieChart>
+        <PieChart accessibilityLayer={false} title={title} desc="The table beside it lists the same rows.">
           <ChartTooltip content={<ChartTooltipContent hideLabel formatter={moneyRow({})} />} />
           <Pie
             data={slices}
@@ -33,6 +35,7 @@ export function BreakdownDonut({ slices, total, change, versus }: Props) {
             stroke="var(--card)"
             strokeWidth={2}
             isAnimationActive={false}
+            rootTabIndex={-1}
           />
         </PieChart>
       </ChartContainer>

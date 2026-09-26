@@ -102,7 +102,7 @@ export default async function OverviewPage({ searchParams }: PageProps<"/">) {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <CumulativeChart cumulative={cumulative} period={period} />
+          <CumulativeChart cumulative={cumulative} period={period} title="Spending so far, day by day" />
         </CardContent>
       </Card>
       <Card>

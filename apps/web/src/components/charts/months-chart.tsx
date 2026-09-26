@@ -44,7 +44,14 @@ export function MonthsChart({ months, range }: { months: Schemas["MonthPoint"][]
         ]}
       />
       <ChartContainer config={config} className="aspect-auto h-64 w-full">
-        <ComposedChart accessibilityLayer data={data} barGap={2} margin={{ top: 28, right: 8, left: 0 }}>
+        <ComposedChart
+          accessibilityLayer
+          title="Income, expenses and savings per month, last 12 months"
+          desc="Bars for income and expenses, a line for savings; months without imported data are marked. The left and right arrow keys move through the months."
+          data={data}
+          barGap={2}
+          margin={{ top: 28, right: 8, left: 0 }}
+        >
           <CartesianGrid vertical={false} stroke="var(--chart-grid)" />
           <XAxis
             dataKey="month"
