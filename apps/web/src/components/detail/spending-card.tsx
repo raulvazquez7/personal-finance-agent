@@ -7,11 +7,12 @@ import { ScopeMonthsChart, type Series } from "@/components/charts/scope-months-
 import { Card, CardAction, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import type { Schemas } from "@/lib/api";
+import { previousLabel } from "@/lib/format";
 
 type View = "monthly" | "cumulative";
 
 type Props = {
-  title: string;
+  name: string;
   months: Schemas["ScopeMonth"][];
   series: Series[];
   cumulative: Schemas["Cumulative"];
@@ -20,10 +21,13 @@ type Props = {
   defaultView: View;
 };
 
-/** "<Scope> per month" (mockup 03): Total | By category, and Monthly | Cumulative. */
-export function SpendingCard({ title, months, series, cumulative, period, split, defaultView }: Props) {
+/** "<Scope> per month" (mockup 03): Total | By category, and Monthly | Cumulative. The title
+ * follows the view: the cumulative line is the running total against the previous period. */
+export function SpendingCard({ name, months, series, cumulative, period, split, defaultView }: Props) {
   const [view, setView] = useState<View>(defaultView);
   const [stacked, setStacked] = useState(false);
+  const title =
+    view === "monthly" ? `${name} per month` : `${name} so far${cumulative.previous ? ` ${previousLabel(period, "long")}` : ""}`;
   return (
     <Card>
       <CardHeader>

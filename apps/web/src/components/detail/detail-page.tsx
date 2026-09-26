@@ -109,7 +109,7 @@ export function DetailPage({ detail, categories, filters, title, crumbs, childDi
         </p>
       </header>
       <SpendingCard
-        title={`${title} per month`}
+        name={title}
         months={detail.months}
         series={series}
         cumulative={cumulative}
