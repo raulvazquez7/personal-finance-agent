@@ -52,6 +52,13 @@ export function ExplorerFilters({ search, explorer, categories, merchants }: Pro
     go({ q: q.trim() || undefined });
   }
 
+  // An emptied box is no search: Escape, Chrome's × and deleting the text all clear it from the URL
+  // at once, so the box and the list never disagree (the URL is the state).
+  function onType(next: string) {
+    setQ(next);
+    if (next === "" && explorer.q) go({ q: undefined });
+  }
+
   return (
     <div className="flex flex-col gap-3">
       <div className="flex flex-wrap items-center gap-2">
@@ -62,15 +69,13 @@ export function ExplorerFilters({ search, explorer, categories, merchants }: Pro
             <InputGroupAddon>
               <Search />
             </InputGroupAddon>
-            {/* Enter runs the search: the phone keyboard's key says so. Chrome's own × only empties the
-                box without searching again, so it is hidden ("Clear filters" resets the list). */}
+            {/* Enter runs the search: the phone keyboard's key says so. */}
             <InputGroupInput
               type="search"
               enterKeyHint="search"
-              className="[&::-webkit-search-cancel-button]:appearance-none"
               name="q"
               value={q}
-              onChange={(event) => setQ(event.target.value)}
+              onChange={(event) => onType(event.target.value)}
               maxLength={100}
               placeholder="Merchant, description or note…"
               aria-label="Search transactions"
