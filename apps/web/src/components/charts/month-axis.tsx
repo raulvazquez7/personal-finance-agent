@@ -11,9 +11,11 @@ const inRange = (month: string, [from, to]: MonthRange) => month >= from && mont
 // savings, so the box follows the axis scale. Without a scale (no month has data) it stands on the
 // axis line, `lift` px above the tick text.
 const BOX = { width: 32, height: 30, lift: 12 };
-// On a phone a month column is ~22 px: the box shrinks to its column, its words need 28 px (the
-// <title> still says it on hover), and a column under 28 px shows the month's first letter.
+// On a phone a month column is ~22 px: the box shrinks to its column, and a column under 28 px
+// shows the month's first letter. The words are ~34 px wide, so they show only in a column of
+// 40 px or more, which keeps neighbouring words apart (the <title> still says it on hover).
 const NARROW = 28;
+const WORDS = 40;
 
 type TickProps = {
   x?: number | string;
@@ -50,7 +52,7 @@ export function MonthTick({ x = 0, y = 0, width = Infinity, visibleTicksCount = 
             stroke="var(--chart-previous)"
             strokeDasharray="3 3"
           />
-          {boxWidth >= NARROW && (
+          {band >= WORDS && (
             <text x={cx} y={baseline - BOX.height - 4} textAnchor="middle" fontSize={10} className="fill-muted-foreground">
               no data
             </text>
