@@ -20,7 +20,9 @@ router = APIRouter(prefix="/merchants", tags=["merchants"])
 
 class ConfirmMerchant(BaseModel):
     category_slug: str
-    is_subscription: bool
+    # Required, like the note: null keeps the merchant's flag and its rows' marks (money in has
+    # no subscription switch), so leaving it out must not mean either answer.
+    is_subscription: bool | None
     name: str | None = None
     merge_into_id: UUID | None = None
 

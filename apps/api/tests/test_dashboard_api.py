@@ -7,7 +7,7 @@ from fastapi.testclient import TestClient
 
 from finance.api.deps import db
 from finance.api.main import app
-from tests.money_month import money_month
+from tests.money_month import IBAN, money_month
 
 pytestmark = pytest.mark.integration
 
@@ -51,13 +51,76 @@ def test_overview_kpis_and_breakdowns_follow_the_money_rules(client, db_conn, ma
     assert (last["day"], last["total"]) == (31, "455.00")
 
 
+SEVEN_GROUPS = {  # expense group -> one of its categories (supabase/seed/categories.yaml)
+    "home": "rent",
+    "shopping": "groceries",
+    "leisure": "restaurants_bars",
+    "transport": "fuel",
+    "travel": "flights",
+    "health": "pharmacy",
+    "education": "courses",
+}
+
+
+def test_the_overview_returns_every_expense_group(client, db_conn, make_tx):
+    # The web colours groups by all-time slots, so a slotted group ranked 6th or lower in the
+    # period must keep its own row: by_group is never folded into "_other".
+    iban = "ES0000000000000000000078"
+    for n, slug in enumerate(SEVEN_GROUPS.values(), start=1):
+        tx = make_tx(f"-{n * 10}.00", f"ZZTEST SHOP {n}", iban=iban, booked_at=date(1999, 3, n))
+        db_conn.execute(
+            "update transactions t set category_slug = c.slug, tx_type = c.tx_type,"
+            " category_source = 'user' from categories c where c.slug = %s and t.id = %s",
+            (slug, tx),
+        )
+    account = db_conn.execute("select id from accounts where iban = %s", (iban,)).fetchone()["id"]
+    by_group = _overview(client, account, period="month", month="1999-03")["by_group"]
+    assert len(by_group) == 7
+    assert {r["key"] for r in by_group} == set(SEVEN_GROUPS)  # none is keyed "_other"
+
+
 def test_february_compares_with_january(client, db_conn, make_tx):
     account = money_month(db_conn, make_tx)
+    # Data up to February's last day: the whole of January is the comparison.
+    make_tx("-10.00", "ZZTEST LAST DAY", iban=IBAN, booked_at=date(1999, 2, 28))
     body = _overview(client, account, period="month", month="1999-02")
     assert body["period"]["has_previous"] is True
     assert body["previous_kpis"]["expenses"] == "455.00"
     assert body["kpis"]["savings_rate"] is None  # no income in February
     assert body["cumulative"]["previous"][-1]["total"] == "455.00"
+
+
+def test_data_that_ends_early_compares_with_as_many_days_before(client, db_conn, make_tx):
+    # The fixture's February ends on the 2nd: every comparison reads 1-2 January, never all of it.
+    account = money_month(db_conn, make_tx)
+    body = _overview(client, account, period="month", month="1999-02")
+    period = body["period"]
+    assert (period["end"], period["latest_day"]) == ("1999-02-28", "1999-02-02")
+    assert (period["previous_start"], period["previous_end"]) == ("1999-01-01", "1999-01-02")
+    assert body["previous_kpis"]["expenses"] == "175.00"  # the card settlement on 2 January
+    [shopping] = [row for row in body["by_group"] if row["key"] == "shopping"]
+    assert shopping["previous"] == "0"  # the January purchase came on the 3rd
+    # The chart draws the whole of January as a reference; the same-day card reads it on day 2.
+    previous = body["cumulative"]["previous"]
+    assert (len(previous), previous[-1]["total"]) == (31, "455.00")
+    assert previous[1]["total"] == body["previous_kpis"]["expenses"]
+
+
+def test_a_previous_month_with_rows_only_after_the_cut_day_still_has_data(client, db_conn, make_tx):
+    # June's data ends on the 2nd and May's rows start on the 10th. May was imported, so the
+    # changes show against 1-2 May: zero, which the web reads as "new", never a hidden delta.
+    iban = "ES0000000000000000000079"
+    make_tx("-40.00", "ZZTEST MAY", iban=iban, booked_at=date(1999, 5, 10))
+    make_tx("-60.00", "ZZTEST MAY", iban=iban, booked_at=date(1999, 5, 20))
+    make_tx("-20.00", "ZZTEST JUNE", iban=iban, booked_at=date(1999, 6, 2))
+    account = db_conn.execute("select id from accounts where iban = %s", (iban,)).fetchone()["id"]
+    body = _overview(client, account, period="month", month="1999-06")
+    assert body["period"]["has_previous"] is True
+    assert body["previous_kpis"]["expenses"] == "0"
+    assert [row["previous"] for row in body["by_group"]] == ["0"]
+    previous = body["cumulative"]["previous"]
+    assert (len(previous), previous[-1]["total"]) == (31, "100.00")  # all of May
+    assert previous[1]["total"] == "0"  # the same-day card reads "new" too
 
 
 def test_an_account_without_rows_returns_an_empty_overview(client):

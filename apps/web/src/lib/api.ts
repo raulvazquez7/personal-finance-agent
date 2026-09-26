@@ -11,29 +11,40 @@ export async function apiGet<T>(path: string, init: { signal?: AbortSignal } = {
   return (await response.json()) as T;
 }
 
-export const euro = new Intl.NumberFormat("en-IE", { style: "currency", currency: "EUR" });
-/** With an explicit sign, so money in (+€25.19) never reads as money out (-€25.19). */
-export const signedEuro = new Intl.NumberFormat("en-IE", {
-  style: "currency",
-  currency: "EUR",
-  signDisplay: "exceptZero",
-});
+/** A failed write: the HTTP status, and FastAPI's `detail` when it is a sentence (for example
+ * the 422 for an income category on money going out). */
+export class ApiError extends Error {
+  status: number;
+  detail: string | null;
 
-export async function apiPost(
-  path: string,
-  body?: unknown,
-  init: { keepalive?: boolean } = {},
-): Promise<void> {
-  const response = await fetch(`${API_URL}${path}`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: body === undefined ? undefined : JSON.stringify(body),
-    keepalive: init.keepalive,
-  });
-  if (!response.ok) {
-    throw new Error(`POST ${path} failed with ${response.status}`);
+  constructor(status: number, detail: string | null, message: string) {
+    super(message);
+    this.status = status;
+    this.detail = detail;
   }
 }
+
+async function send<T>(method: "POST" | "PATCH" | "DELETE", path: string, body?: unknown, keepalive?: boolean): Promise<T> {
+  const response = await fetch(`${API_URL}${path}`, {
+    method,
+    headers: body === undefined ? undefined : { "Content-Type": "application/json" },
+    body: body === undefined ? undefined : JSON.stringify(body),
+    keepalive,
+  });
+  if (!response.ok) {
+    const detail = await response.json().then(
+      (json: { detail?: unknown }) => (typeof json.detail === "string" ? json.detail : null),
+      () => null,
+    );
+    throw new ApiError(response.status, detail, `${method} ${path} failed with ${response.status}`);
+  }
+  return (response.status === 204 ? undefined : await response.json()) as T;
+}
+
+export const apiPost = (path: string, body?: unknown, init: { keepalive?: boolean } = {}) =>
+  send<void>("POST", path, body, init.keepalive);
+export const apiPatch = <T = void>(path: string, body: unknown) => send<T>("PATCH", path, body);
+export const apiDelete = (path: string) => send<void>("DELETE", path);
 
 /** Pending review items for the navigation badge; null when the API is unreachable or slow. */
 export async function reviewCount(): Promise<number | null> {
@@ -45,5 +56,21 @@ export async function reviewCount(): Promise<number | null> {
     return count.pending;
   } catch {
     return null;
+  }
+}
+
+/** What the top bar's filters need: the accounts, and the latest imported day, which is the
+ * default month (spec 2.6). Empty when the API is unreachable or slow, like reviewCount. */
+export async function filterContext(): Promise<{ accounts: Schemas["Account"][]; latestDay: string | null }> {
+  try {
+    const signal = AbortSignal.timeout(2000);
+    const [accounts, page] = await Promise.all([
+      apiGet<Schemas["Account"][]>("/accounts", { signal }),
+      // No endpoint returns the latest day alone; every period read carries it in `period`.
+      apiGet<Schemas["TransactionPage"]>("/transactions?limit=1", { signal }),
+    ]);
+    return { accounts, latestDay: page.period.latest_day };
+  } catch {
+    return { accounts: [], latestDay: null };
   }
 }

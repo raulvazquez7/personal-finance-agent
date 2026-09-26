@@ -41,6 +41,7 @@ function ComboboxClear({ className, ...props }: ComboboxPrimitive.Clear.Props) {
     <ComboboxPrimitive.Clear
       data-slot="combobox-clear"
       render={<InputGroupButton variant="ghost" size="icon-xs" />}
+      aria-label="Clear"
       className={cn(className)}
       {...props}
     >
@@ -60,6 +61,11 @@ function ComboboxInput({
   showTrigger?: boolean
   showClear?: boolean
 }) {
+  // The buttons take the field's name, so a page with several pickers has no two "Show options".
+  // Without an aria-label they keep a generic name: ComboboxClear spreads its props after its own
+  // "Clear", so an undefined label would erase it.
+  const field = props["aria-label"]
+  const named = field ? field.charAt(0).toLowerCase() + field.slice(1) : null
   return (
     <InputGroup className={cn("w-auto", className)}>
       <ComboboxPrimitive.Input
@@ -72,12 +78,18 @@ function ComboboxInput({
             size="icon-xs"
             variant="ghost"
             render={<ComboboxTrigger />}
+            aria-label={named ? `Show options for ${named}` : "Show options"}
             data-slot="input-group-button"
             className="group-has-data-[slot=combobox-clear]/input-group:hidden data-pressed:bg-transparent"
             disabled={disabled}
           />
         )}
-        {showClear && <ComboboxClear disabled={disabled} />}
+        {showClear && (
+          <ComboboxClear
+            disabled={disabled}
+            aria-label={named ? `Clear ${named}` : "Clear"}
+          />
+        )}
       </InputGroupAddon>
       {children}
     </InputGroup>

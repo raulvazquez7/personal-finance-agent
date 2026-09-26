@@ -10,7 +10,7 @@ from psycopg import Connection
 
 from finance.dashboard.filters import has_data, latest_day
 from finance.dashboard.models import PeriodOut
-from finance.dashboard.periods import Period, PeriodName, previous, resolve
+from finance.dashboard.periods import Period, PeriodName, previous, resolve, until_same_day
 
 
 @dataclass(frozen=True)
@@ -43,13 +43,15 @@ PeriodQuery = Annotated[PeriodRequest, Depends(period_request)]
 @dataclass(frozen=True)
 class Resolved:
     current: Period
-    previous: Period
+    previous: Period  # the whole previous period: the cumulative chart's reference line
+    cut: Period  # the previous period after as many days as the data covers (until_same_day)
     out: PeriodOut
 
     @property
     def comparable(self) -> Period | None:
-        """The previous period when it has data; otherwise no delta is shown."""
-        return self.previous if self.out.has_previous else None
+        """The cut previous period, which every change compares with, when the previous period
+        has data; otherwise no delta is shown."""
+        return self.cut if self.out.has_previous else None
 
 
 def resolve_request(conn: Connection, request: PeriodRequest) -> Resolved:
@@ -60,14 +62,18 @@ def resolve_request(conn: Connection, request: PeriodRequest) -> Resolved:
         )
     except ValueError as error:
         raise HTTPException(status_code=422, detail=str(error)) from error
-    before = previous(request.name, current)
+    whole = previous(request.name, current)
+    # One cut for the whole page: the tiles and the change columns compare it, and the same-day
+    # card agrees with them when the data ends inside the period (a whole period is not cut).
+    cut = until_same_day(whole, current, latest)
     out = PeriodOut(
         name=request.name,
         start=current.start,
         end=current.end,
-        previous_start=before.start,
-        previous_end=before.end,
-        has_previous=has_data(conn, before, request.accounts),
+        previous_start=cut.start,
+        previous_end=cut.end,
+        # Judged on the whole period (spec 2.6): rows only after the cut day still count.
+        has_previous=has_data(conn, whole, request.accounts),
         latest_day=latest,
     )
-    return Resolved(current, before, out)
+    return Resolved(current, whole, cut, out)

@@ -1,8 +1,11 @@
+import type { Metadata } from "next";
+
 import { apiGet, type Schemas } from "@/lib/api";
 
 import { ReviewList } from "./review-list";
 
 export const dynamic = "force-dynamic";
+export const metadata: Metadata = { title: "Review" };
 
 export default async function ReviewPage() {
   const [items, categories, merchants, count] = await Promise.all([
@@ -12,9 +15,9 @@ export default async function ReviewPage() {
     apiGet<Schemas["ReviewCount"]>("/review/count"),
   ]);
   return (
-    <main className="mx-auto flex w-full max-w-4xl flex-col gap-6 p-4 sm:p-6">
+    <div className="mx-auto flex w-full max-w-4xl flex-col gap-6">
       <ReviewList initialItems={items} categories={categories} merchants={merchants}
                   uncategorized={count.uncategorized} />
-    </main>
+    </div>
   );
 }

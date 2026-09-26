@@ -31,10 +31,14 @@ def overview(conn: Db, query: PeriodQuery) -> Overview:
             current=cumulative(conn, spend, resolved.current, "spend", until=latest)
             if latest
             else [],
-            previous=cumulative(conn, spend, before, "spend") if before else None,
+            # The whole previous period, a reference line; the same-day card reads it at the
+            # current line's last day. That agrees with the tiles when the data ends inside the
+            # period (they compare the cut period); a whole period's tiles compare whole periods.
+            previous=cumulative(conn, spend, resolved.previous, "spend") if before else None,
         ),
         months=month_series(conn, scope, resolved.current.end),
-        by_group=breakdown(conn, "group", "spend", spend, resolved.current, before),
+        # Every group: the web gives each its own row, coloured by group_slots (grey without one).
+        by_group=breakdown(conn, "group", "spend", spend, resolved.current, before, top=None),
         by_category=breakdown(conn, "category", "spend", spend, resolved.current, before),
         by_merchant=breakdown(conn, "merchant", "spend", spend, resolved.current, before),
         group_slots=group_slots(conn),

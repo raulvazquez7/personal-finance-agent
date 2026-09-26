@@ -3,7 +3,14 @@ from decimal import Decimal
 
 import pytest
 
-from finance.dashboard.periods import Period, months_between, previous, resolve, savings_rate
+from finance.dashboard.periods import (
+    Period,
+    months_between,
+    previous,
+    resolve,
+    savings_rate,
+    until_same_day,
+)
 
 AUG_20 = date(2026, 8, 20)
 
@@ -47,6 +54,41 @@ def test_a_custom_range_compares_with_the_same_number_of_days_before():
 def test_year_to_date_on_a_leap_day():
     period = Period(start=date(2028, 1, 1), end=date(2028, 2, 29))
     assert previous("ytd", period).end == date(2027, 2, 28)
+
+
+@pytest.mark.parametrize(
+    ("name", "latest", "cut"),
+    [
+        ("month", date(2026, 8, 10), (date(2026, 7, 1), date(2026, 7, 10))),
+        ("last_3_months", date(2026, 8, 10), (date(2026, 3, 1), date(2026, 5, 10))),
+        ("ytd", date(2026, 8, 10), (date(2025, 1, 1), date(2025, 8, 10))),
+        ("last_12_months", date(2026, 8, 10), (date(2024, 9, 1), date(2025, 8, 10))),
+        ("month", date(2026, 3, 30), (date(2026, 2, 1), date(2026, 2, 28))),  # February is shorter
+        # Days, not dates: after 29 February 2028, 1 January-10 March is cut at 11 March 2027.
+        ("ytd", date(2028, 3, 10), (date(2027, 1, 1), date(2027, 3, 11))),
+    ],
+)
+def test_data_that_ends_inside_the_period_cuts_the_previous_one_at_as_many_days(name, latest, cut):
+    period = resolve(name, latest)
+    before = until_same_day(previous(name, period), period, latest)
+    assert (before.start, before.end) == cut
+
+
+def test_a_custom_range_whose_data_ends_early_is_cut_the_same_way():
+    period = resolve("custom", AUG_20, start=date(2026, 8, 10), end=date(2026, 8, 19))
+    cut = until_same_day(previous("custom", period), period, date(2026, 8, 15))
+    assert cut == Period(start=date(2026, 7, 31), end=date(2026, 8, 5))  # six days each
+
+
+@pytest.mark.parametrize(
+    "latest",
+    [date(2026, 8, 31), date(2026, 9, 3), date(2026, 7, 20), None],
+    ids=["ends-with-the-period", "after-it", "before-it", "no-data"],
+)
+def test_the_previous_period_stays_whole_unless_the_data_ends_inside_the_period(latest):
+    period = resolve("month", AUG_20)
+    whole = previous("month", period)
+    assert until_same_day(whole, period, latest) == whole
 
 
 def test_months_between_and_the_savings_rate():

@@ -547,7 +547,7 @@ block.
 | `GET /review` | review items (section 11.1) |
 | `GET /categories` | taxonomy tree for pickers |
 | `GET /merchants?q=` | merchant autocomplete |
-| `POST /merchants/{id}/review` | confirm a merchant: category, subscription, optional rename; sets the default and relabels its non-user rows |
+| `POST /merchants/{id}/review` | confirm a merchant: category, subscription, optional rename; sets the default and relabels the merchant's rows that neither the user nor a rule labelled (with an income category, its money-out rows keep theirs); a null `is_subscription` keeps the merchant's flag and each row's flag where the row can still be a subscription (money out with an expense category) |
 | `POST /merchants/{id}/merge`, `POST /merchants/{id}/dismiss-merge` | accept or reject a merge suggestion (the web app merges through `review` with `merge_into_id`, so the category is confirmed in the same request) |
 | `POST /transactions/{id}/label` | label one transaction: existing or new merchant, category, subscription |
 | `POST /categorize/run` | re-run the cascade over uncategorized or all non-user rows |

@@ -292,3 +292,41 @@ def test_confirming_with_another_merchant_sets_the_survivor_default(db_conn, mak
     moved_row = _row(db_conn, moved)
     assert (moved_row["merchant_id"], moved_row["category_slug"]) == (survivor, "fashion")
     assert moved_row["category_source"] == "merchant"
+
+
+def test_confirming_without_a_subscription_answer_keeps_every_flag(db_conn, make_tx):
+    """A confirm from money in has no subscription switch: None keeps the merchant's flag and
+    each row's own mark, and the category still relabels the rows."""
+    acme = _merchant(db_conn, "ZZTEST ACME", category_slug="groceries", is_subscription=True)
+    plan = _tx(make_tx, "-20.00", "PAGO | ZZTEST ACME")
+    extra = _tx(make_tx, "-10.00", "PAGO | ZZTEST ACME")
+    refund = _tx(make_tx, "20.00", "DEVOLUCION | ZZTEST ACME")
+    for tx, source in ((plan, "jev"), (extra, "merchant"), (refund, "jev")):
+        _set(db_conn, tx, merchant_id=acme, category_source=source, category_slug="groceries")
+    _set(db_conn, plan, is_subscription=True)
+
+    confirm_merchant(db_conn, acme, "fashion", None)
+
+    merchant = db_conn.execute("select * from merchants where id = %s", (acme,)).fetchone()
+    assert (merchant["category_slug"], merchant["is_subscription"]) == ("fashion", True)
+    rows = [_row(db_conn, tx) for tx in (plan, extra, refund)]
+    assert [(r["category_slug"], r["category_source"], r["is_subscription"]) for r in rows] == [
+        ("fashion", "merchant", True),
+        ("fashion", "merchant", False),
+        ("fashion", "merchant", False),
+    ]
+    label = db_conn.execute(
+        "select is_subscription from transaction_labels where transaction_id = %s", (plan,)
+    ).fetchone()
+    assert label["is_subscription"] is True
+
+
+def test_a_kept_subscription_mark_still_needs_an_expense(db_conn, make_tx):
+    broker = _merchant(db_conn, "ZZTEST BROKER", is_subscription=True)
+    deposit = _tx(make_tx, "-50.00", "TRASPASO | ZZTEST BROKER")
+    _set(db_conn, deposit, merchant_id=broker, category_source="jev", category_slug="fashion")
+    _set(db_conn, deposit, is_subscription=True)
+
+    confirm_merchant(db_conn, broker, "savings_investment", None)
+
+    assert _row(db_conn, deposit)["is_subscription"] is False

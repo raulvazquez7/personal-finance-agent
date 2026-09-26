@@ -86,7 +86,8 @@ def detail(
             current=cumulative(conn, scope, resolved.current, value, until=latest)
             if latest
             else [],
-            previous=cumulative(conn, scope, before, value) if before else None,
+            # The whole previous period, a reference line (see the overview).
+            previous=cumulative(conn, scope, resolved.previous, value) if before else None,
         ),
         latest=listing.items,
     )

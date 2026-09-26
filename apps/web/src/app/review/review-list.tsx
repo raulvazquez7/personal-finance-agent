@@ -7,7 +7,10 @@ import { toast } from "sonner";
 
 import { Progress } from "@/components/ui/progress";
 import { apiPost, type Schemas } from "@/lib/api";
+import { plural } from "@/lib/labels";
+import { directionOf } from "@/lib/pickers";
 
+import { ReviewHelp } from "./review-help";
 import { ReviewRow, type Decision } from "./review-row";
 
 type Item = Schemas["ReviewItem"];
@@ -51,19 +54,33 @@ export function ReviewList({ initialItems, categories, merchants, uncategorized 
     });
   }
 
+  function sendNow(key: string) {
+    const earlier = pending.current.get(key);
+    if (earlier) {
+      clearTimeout(earlier.timer);
+      earlier.commit(false);
+    }
+  }
+
   function schedule(
     original: Item,
     next: Item | null,
     message: string,
     send: (keepalive: boolean) => Promise<void>,
+    settled: Item | null = null,
   ) {
-    // A new change on the same row sends the earlier one first, so Undo never restores a stale row.
-    const earlier = pending.current.get(original.key);
-    if (earlier) {
-      clearTimeout(earlier.timer);
-      earlier.commit(false);
-    }
+    // A new change on a row sends that row's earlier change first, so Undo never restores a stale
+    // row. The survivor of a merge counts as one of those rows.
+    sendNow(original.key);
+    if (settled) sendNow(settled.key);
+    // A merge and confirm also settles the surviving merchant's own item (inputs topic 6):
+    // it leaves the page with the merged one, and Undo brings both back.
+    const restore = () => {
+      replace(original.key, original);
+      if (settled) replace(settled.key, settled);
+    };
     replace(original.key, next);
+    if (settled) replace(settled.key, null);
     const id = `${original.key}:${++seq}`;
     const commit = (keepalive: boolean) => {
       pending.current.delete(original.key);
@@ -74,7 +91,7 @@ export function ReviewList({ initialItems, categories, merchants, uncategorized 
         () => router.refresh(),
         () => {
           toast.error("Could not save that change.");
-          replace(original.key, original);
+          restore();
         },
       );
     };
@@ -89,7 +106,7 @@ export function ReviewList({ initialItems, categories, merchants, uncategorized 
           if (pending.current.get(original.key)?.id !== id) return;
           clearTimeout(timer);
           pending.current.delete(original.key);
-          replace(original.key, original);
+          restore();
         },
       },
     });
@@ -98,14 +115,18 @@ export function ReviewList({ initialItems, categories, merchants, uncategorized 
   function confirm(item: Item, d: Decision) {
     if (item.kind === "merchant" && item.merchant) {
       const merchantId = item.merchant.id;
+      const mergeInto = d.merchant?.id && d.merchant.id !== merchantId ? d.merchant.id : null;
       const body = {
         category_slug: d.categorySlug,
-        is_subscription: d.isSubscription,
+        // Money in has no subscription switch: null keeps the merchant's flag and its rows' marks.
+        is_subscription: directionOf(item.transactions.map((t) => t.amount)) === "in" ? null : d.isSubscription,
         name: d.merchant && d.merchant.id === null ? d.merchant.name : null,
-        merge_into_id: d.merchant?.id && d.merchant.id !== merchantId ? d.merchant.id : null,
+        merge_into_id: mergeInto,
       };
-      schedule(item, null, "Confirmed", (keepalive) =>
-        apiPost(`/merchants/${merchantId}/review`, body, { keepalive }));
+      const survivor = mergeInto
+        ? (items.find((other) => other.kind === "merchant" && other.merchant?.id === mergeInto) ?? null)
+        : null;
+      schedule(item, null, "Confirmed", (keepalive) => apiPost(`/merchants/${merchantId}/review`, body, { keepalive }), survivor);
     } else {
       labelOne(item, item.transactions[0], d, "Confirmed");
     }
@@ -136,13 +157,15 @@ export function ReviewList({ initialItems, categories, merchants, uncategorized 
           {total > 0 && <span className="text-sm tabular-nums text-muted-foreground">{done} of {total}</span>}
         </div>
         <p className="text-sm text-muted-foreground">Confirm or fix. Your answer applies to every transaction of the merchant.</p>
+        {items.length > 0 && <ReviewHelp items={items} categories={categories} />}
         {uncategorized > 0 && (
           <p className="text-sm text-muted-foreground">
-            {uncategorized === 1 ? "1 transaction is" : `${uncategorized} transactions are`} not categorized
-            yet — run <code className="font-mono">finance categorize</code>.
+            {plural(uncategorized, "transaction is", "transactions are")} not categorized yet. Each import starts a
+            categorization run in the background: give it a minute and reload this page before starting another run.
+            If they stay, the API console says why (“jev skipped” when no jev key is set).
           </p>
         )}
-        {total > 0 && <Progress value={(done / total) * 100} />}
+        {total > 0 && <Progress aria-label="Review progress" value={(done / total) * 100} />}
       </header>
 
       {items.length === 0 ? (

@@ -151,8 +151,19 @@ total.
   date, last 12 months, custom range.
 - Every delta compares with **the previous period of the same length**
   (August vs July, a quarter vs the quarter before). When the previous period
-  has no data, the delta is hidden. When the previous value is 0, it reads
-  "new".
+  has no data, the delta is hidden. When the previous value is 0, a
+  percentage change reads "new"; a change in euros or points stays signed.
+- When the selected accounts' data ends inside the period (`latest_day` before
+  its end), the API cuts the previous period after as many days: August up to
+  the 10th against 1-10 July. It counts days, not dates (after a 29 February,
+  year to date up to 10 March is cut at 11 March the year before). The KPI
+  tiles, the change columns and the same-day card compare those days, like
+  with like. Whether the previous period has data is still judged on the whole
+  of it, and the cumulative chart's previous line, drawn as a reference, keeps
+  running past the cut day, up to the current period's length (the same-day
+  card reads it at the same day). The tiles and the change columns then say
+  so: "vs Jul by the same day"; year to date keeps "vs the same dates last
+  year", which already says it.
 - A month "has data" when at least one transaction of the selected accounts
   is booked in it. Months without data are drawn as "no data", never as 0.
   Per-account import coverage is v2.
@@ -227,7 +238,7 @@ Every read takes the same filter parameters: `start`, `end` (or `period`) and
 
 | Method and path | Returns |
 |---|---|
-| `GET /dashboard/overview` | 4 KPIs for the period and the previous one (with `has_previous`); cumulative daily spend for both; a 12-month series of income, expenses and savings with `has_data`; breakdowns by group, category and merchant (top 5 + other, each with its previous value); a subscriptions summary |
+| `GET /dashboard/overview` | 4 KPIs for the period and the previous one (with `has_previous`); cumulative daily spend for both; a 12-month series of income, expenses and savings with `has_data`; breakdowns by group (every group), category and merchant (top 5 + other), each with its previous value; a subscriptions summary |
 | `GET /spending/detail?type=expense\|income&level1=&category=&merchant_id=` | the scope's total and previous total; monthly series (total and by child); cumulative daily series; the next-level breakdown; top merchants; the 5 latest rows |
 | `GET /transactions` | filters: period, `q` (merchant, description, note), `tx_type`, `level1`, `category`, `merchant_id`, `account_id`, `is_subscription`, `category_source`, `needs_review`, `saved=unpaired_own\|refunds`. Pages of 100 with a cursor; totals for the whole filtered set |
 | `PATCH /transactions/{id}` | the note (no label history: a note is not a label) |
@@ -275,10 +286,12 @@ contract, and the pixel values are indicative.
   black. Green and red are reserved for deltas and never used for a series.
 - **Group palette** (validated with the dataviz validator, light surface):
   `#4F46E5`, `#EB6834`, `#1BAF7A`, `#EDA100`, `#E87BA4`, other `#D4D4DC`.
-  Five groups get a colour and the rest fold into "Other". Colour follows the
-  group, never the rank. Slots are assigned by all-time spend, so a period
-  filter never repaints them, and the Categories and Merchants views paint
-  each slice with its group's colour.
+  Five groups get a colour; every other group is drawn in the "other" grey.
+  The overview's Groups view gives every group with spend in the period its
+  own row and slice, so a large group without a colour is never hidden.
+  Colour follows the group, never the rank. Slots are assigned by all-time
+  spend, so a period filter never repaints them, and the Categories and
+  Merchants views paint each slice with its group's colour.
 - **One-hue ramp** for categories inside a group page: `#4F46E5` → `#DAD8FB`
   (darkest = largest). It is used by the "By category" stacked bars and the
   treemap. Hover shows the name and amount, and clicking a legend item
@@ -315,8 +328,8 @@ contract, and the pixel values are indicative.
   also has a "Clear merchant default" action.
 - **Direction-aware pickers** everywhere (`/review`, the panel, the filters):
   - money out offers expense and transfer categories;
-  - money in offers income first, then a "Refund of a purchase" group with
-    the expense categories, then transfers.
+  - money in offers income first, then one "Refund of a purchase · <Group>"
+    group per expense group, with that group's categories, then transfers.
 
 ## 8. Libraries
 

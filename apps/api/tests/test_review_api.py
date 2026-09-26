@@ -157,3 +157,15 @@ def test_note_and_default_endpoints(client, db_conn, make_tx):
     other = _merchant(db_conn, "ZZTEST OTHER")
     merge = client.post(f"/merchants/{acme}/merge", json={"into_id": str(other)})
     assert merge.status_code == 404
+
+
+def test_a_confirm_without_a_subscription_answer_keeps_the_flag(client, db_conn):
+    acme = _merchant(db_conn, "ZZTEST ACME", category_slug="groceries")
+    db_conn.execute("update merchants set is_subscription = true where id = %s", (acme,))
+    body = {"category_slug": "fashion"}
+    # Required, like the note: leaving it out is a 422; null keeps the merchant's flag.
+    assert client.post(f"/merchants/{acme}/review", json=body).status_code == 422
+    kept = client.post(f"/merchants/{acme}/review", json={**body, "is_subscription": None})
+    assert kept.status_code == 204
+    row = db_conn.execute("select * from merchants where id = %s", (acme,)).fetchone()
+    assert (row["category_slug"], row["is_subscription"]) == ("fashion", True)

@@ -18,8 +18,11 @@ class DirectionMismatch(ValueError):
 
 # Taxonomy.tx_type_of in SQL: the category decides the row type (spec 2.1).
 _TX_TYPE = "c.tx_type"
-# Only money going out is a subscription: never a refund, never a transfer (spec 6).
-_SUBSCRIPTION = f"%(sub)s and {_TX_TYPE} = 'expense' and t.amount < 0"
+# Only money going out is a subscription: never a refund, never a transfer (spec 6). A null
+# answer (a confirm from money in, which has no subscription switch) keeps the row's own mark.
+_SUBSCRIPTION = (
+    f"coalesce(%(sub)s::boolean, t.is_subscription) and {_TX_TYPE} = 'expense' and t.amount < 0"
+)
 
 _LABEL_ONE = f"""
 update transactions t set category_slug = c.slug, category_source = 'user',
@@ -145,10 +148,11 @@ def confirm_merchant(
     conn: Connection,
     merchant_id: UUID,
     category_slug: str,
-    is_subscription: bool,
+    is_subscription: bool | None,
     name: str | None = None,
     merge_into_id: UUID | None = None,
 ) -> UUID:
+    """None keeps the merchant's subscription flag and each relabelled row's own mark."""
     with conn.transaction():
         if name and merge_into_id is None:
             key = _key_of(name)
@@ -166,7 +170,8 @@ def confirm_merchant(
             merge_merchants(conn, merchant_id, merge_into_id)
             merchant_id = merge_into_id
         updated = conn.execute(
-            "update merchants set category_slug = %s, is_subscription = %s, confirmed = true,"
+            "update merchants set category_slug = %s,"
+            " is_subscription = coalesce(%s::boolean, is_subscription), confirmed = true,"
             " merge_candidate_id = null, merge_confidence = null where id = %s returning id",
             (category_slug, is_subscription, merchant_id),
         ).fetchone()

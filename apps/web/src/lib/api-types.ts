@@ -388,7 +388,7 @@ export interface components {
             /** Category Slug */
             category_slug: string;
             /** Is Subscription */
-            is_subscription: boolean;
+            is_subscription: boolean | null;
             /** Name */
             name?: string | null;
             /** Merge Into Id */
