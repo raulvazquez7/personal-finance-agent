@@ -52,7 +52,7 @@ export default async function SettingsPage() {
         <CardContent className="flex flex-col gap-6">
           {TYPES.map(({ type, title }) => (
             <section key={type} className="flex flex-col gap-3">
-              <h2 className="text-sm font-medium">{title}</h2>
+              <h3 className="text-sm font-medium">{title}</h3>
               <dl className="grid gap-4 sm:grid-cols-2">
                 {byLevel1(categories.filter((category) => category.tx_type === type)).map((group) => (
                   <div key={group.value} className="flex flex-col gap-1.5">

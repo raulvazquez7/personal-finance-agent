@@ -9,7 +9,7 @@ export default function Error({ retry }: { error: Error & { digest?: string }; r
   return (
     <Empty>
       <EmptyHeader>
-        <EmptyTitle>This page could not load</EmptyTitle>
+        <EmptyTitle render={<h1 />}>This page could not load</EmptyTitle>
         <EmptyDescription>
           Something went wrong while loading it. Try again; if it keeps happening, check that the API is running
           (from apps/api: uv run task api).

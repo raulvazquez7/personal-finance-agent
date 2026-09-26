@@ -156,7 +156,7 @@ function NoTransactions({ filtered }: { filtered: boolean }) {
         <EmptyMedia variant="icon">
           <FileUp />
         </EmptyMedia>
-        <EmptyTitle>{filtered ? "No transactions in these accounts" : "No statements yet"}</EmptyTitle>
+        <EmptyTitle render={<h1 />}>{filtered ? "No transactions in these accounts" : "No statements yet"}</EmptyTitle>
         <EmptyDescription>Import a bank statement PDF to see your income, spending and savings here.</EmptyDescription>
       </EmptyHeader>
       <EmptyContent>

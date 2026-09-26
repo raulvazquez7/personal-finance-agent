@@ -1,3 +1,5 @@
+import { mergeProps } from "@base-ui/react/merge-props"
+import { useRender } from "@base-ui/react/use-render"
 import { cva, type VariantProps } from "class-variance-authority"
 import { cn } from "cn"
 
@@ -54,17 +56,25 @@ function EmptyMedia({
   )
 }
 
-function EmptyTitle({ className, ...props }: React.ComponentProps<"div">) {
-  return (
-    <div
-      data-slot="empty-title"
-      className={cn(
-        "font-heading text-sm font-medium tracking-tight",
-        className
-      )}
-      {...props}
-    />
-  )
+// A heading (h2 by default): `render={<h1 />}` when the empty state is the whole page.
+function EmptyTitle({
+  className,
+  render,
+  ...props
+}: useRender.ComponentProps<"h2">) {
+  return useRender({
+    defaultTagName: "h2",
+    props: mergeProps<"h2">(
+      {
+        className: cn("font-heading text-sm font-medium tracking-tight", className),
+      },
+      props
+    ),
+    render,
+    state: {
+      slot: "empty-title",
+    },
+  })
 }
 
 function EmptyDescription({ className, ...props }: React.ComponentProps<"p">) {
