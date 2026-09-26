@@ -4,7 +4,9 @@ import { useRouter } from "next/navigation";
 import { type FormEvent, useState } from "react";
 
 import { Button } from "@/components/ui/button";
+import { Field, FieldDescription, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
+import { Spinner } from "@/components/ui/spinner";
 import { API_URL, type Schemas } from "@/lib/api";
 
 export function UploadForm() {
@@ -51,14 +53,33 @@ export function UploadForm() {
 
   return (
     <form onSubmit={onSubmit} className="flex flex-col gap-3">
-      <div className="flex items-center gap-2">
-        <Input type="file" name="files" accept="application/pdf" multiple required aria-label="Bank statement PDFs" />
-        <Button type="submit" disabled={busy}>{busy ? "Importing…" : "Import"}</Button>
-      </div>
+      <Field>
+        <FieldLabel htmlFor="statements">Statement PDFs</FieldLabel>
+        <div className="flex items-center gap-2">
+          <Input
+            id="statements"
+            type="file"
+            name="files"
+            accept="application/pdf"
+            multiple
+            required
+            aria-describedby="statements-help"
+          />
+          <Button type="submit" disabled={busy}>
+            {busy && <Spinner data-icon="inline-start" />}
+            Import
+          </Button>
+        </div>
+        <FieldDescription id="statements-help">
+          One or more PDF statements. A statement imported twice only adds its new rows.
+        </FieldDescription>
+      </Field>
       <div aria-live="polite">
         {messages.length > 0 && (
           <ul className="text-sm text-muted-foreground">
-            {messages.map((message) => <li key={message}>{message}</li>)}
+            {messages.map((message) => (
+              <li key={message}>{message}</li>
+            ))}
           </ul>
         )}
       </div>
