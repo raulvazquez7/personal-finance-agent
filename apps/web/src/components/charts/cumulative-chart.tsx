@@ -31,6 +31,7 @@ export function CumulativeChart({ cumulative, period, title }: Props) {
   const dayLabel = (day: number) => dayShort(dayAt(period.start, day - 1));
   // Only the series with points: a period without data has an empty current line, which must not
   // be listed or shown alone (an empty chart). A series isolated before it emptied shows all again.
+  // One series gets no legend (spec 7.2): the aria-label, the desc and the card title name its line.
   const legend: LegendItem[] = [];
   if (cumulative.current.length > 0) legend.push({ key: "current", label: names.current, color: config.current.color, shape: "line" });
   if (cumulative.previous?.length) legend.push({ key: "previous", label: names.previous, color: config.previous.color, shape: "line" });
@@ -38,7 +39,7 @@ export function CumulativeChart({ cumulative, period, title }: Props) {
   const lines = legend.map((item) => item.label).join(" against ") || "no data";
   return (
     <div className="flex flex-col gap-3">
-      {cumulative.previous && legend.length > 0 && (
+      {legend.length > 1 && (
         <LegendButtons chart={title} isolated={shown} onIsolate={setIsolated} items={legend} />
       )}
       <ChartContainer config={config} className="aspect-auto h-56 w-full">
