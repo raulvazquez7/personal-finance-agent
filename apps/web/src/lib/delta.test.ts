@@ -17,6 +17,12 @@ describe("delta", () => {
     expect(delta(306.4, 273.6, "down", "percent")).toMatchObject({ direction: "up", tone: "bad", text: "+12%" });
   });
 
+  it("reads income, savings and the rate that went down as bad, with a minus sign", () => {
+    expect(delta(3000, 3250, "up", "percent")).toEqual({ kind: "change", direction: "down", tone: "bad", text: "−8%" });
+    expect(delta(811, 1066, "up", "euro")).toEqual({ kind: "change", direction: "down", tone: "bad", text: "−€255" });
+    expect(delta(0.258, 0.328, "up", "points")).toEqual({ kind: "change", direction: "down", tone: "bad", text: "−7 pts" });
+  });
+
   it("hides the delta without previous data and says new after a zero", () => {
     expect(delta(100, null, "down", "percent")).toEqual({ kind: "hidden" });
     expect(delta(100, undefined, "down", "percent")).toEqual({ kind: "hidden" });

@@ -78,6 +78,8 @@ describe("labels", () => {
     expect(accountsLabel([], accounts)).toBe("All accounts");
     expect(accountsLabel(["b"], accounts)).toBe("Savings");
     expect(accountsLabel(["a", "b"], accounts)).toBe("2 accounts");
+    // An account id the list does not know (renamed away, or a stale link) still reads as one account.
+    expect(accountsLabel(["zztest-unknown"], accounts)).toBe("1 account");
     // The importer's default name already ends with the digits; a renamed account shows them again.
     expect(accountDigits({ name: "zztest ····1234", iban_last4: "1234" })).toBeNull();
     // One way to write the digits: the importer's four dots (Settings uses the same separator).

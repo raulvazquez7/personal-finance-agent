@@ -21,6 +21,7 @@ import {
   rate,
   signedMoney,
   signedMoneyWhole,
+  toNumber,
 } from "./format";
 
 // West of Greenwich, 2026-08-01 (UTC) is still 31 July: vitest.config.mts sets TZ=America/Los_Angeles.
@@ -34,6 +35,12 @@ describe("money", () => {
     expect(signedMoneyWhole(3250)).toBe("+€3,250");
     expect(compactMoney(2400)).toBe("€2.4K");
     expect(money(null)).toBe("€0.00");
+  });
+
+  it("reads the API's decimal strings as numbers, and a missing value as 0", () => {
+    expect(toNumber("-42.10")).toBe(-42.1);
+    expect(toNumber(null)).toBe(0);
+    expect(toNumber(undefined)).toBe(0);
   });
 
   it("writes every negative number with the true minus sign, as the deltas do", () => {
@@ -109,6 +116,7 @@ describe("period labels", () => {
     expect(rangeLabel({ ...august, name: "last_3_months", start: "2026-06-01" })).toBe("1 Jun – 31 Aug 2026");
     expect(rangeLabel({ ...august, name: "last_12_months", start: "2025-09-01" })).toBe("1 Sept 2025 – 31 Aug 2026");
     expect(previousLabel({ ...august, name: "last_3_months" })).toBe("vs the 3 months before");
+    expect(previousLabel({ ...august, name: "last_12_months" })).toBe("vs the 12 months before");
     expect(previousLabel({ ...august, name: "ytd" })).toBe("vs the same dates last year");
     const tenDays = { name: "custom", start: "2026-08-10", end: "2026-08-19", previous_start: "2026-07-31", previous_end: "2026-08-09" };
     expect(previousLabel(tenDays)).toBe("vs the 10 days before");

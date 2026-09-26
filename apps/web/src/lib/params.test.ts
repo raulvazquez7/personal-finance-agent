@@ -8,6 +8,7 @@ import {
   isDay,
   parseExplorer,
   parseFilters,
+  periodChanges,
   replaceParams,
   shiftMonth,
   toSearchParams,
@@ -49,6 +50,12 @@ describe("parseFilters", () => {
     expect(parseFilters({ period: "custom", start: "2026-08-19", end: "2026-08-10" }).period).toBe("month");
     expect(parseFilters({ period: "custom", start: "2026-02-01", end: "2026-02-30" }).period).toBe("month");
     expect(parseFilters({ period: "custom", start: "1899-12-31", end: "2026-08-10" }).period).toBe("month");
+  });
+
+  it("keeps an upper-case UUID, as the API does", () => {
+    const upper = "AAAAAAAA-BBBB-4CCC-8DDD-EEEEEEEEEEEE";
+    expect(parseFilters({ account_id: upper }).accounts).toEqual([upper]);
+    expect(parseExplorer({ merchant_id: upper }).merchant_id).toBe(upper);
   });
 });
 
@@ -108,6 +115,17 @@ describe("query helpers", () => {
       `account_id=${A}&month=2026-07`,
     );
     expect(replaceParams("", { account_id: [A, B] })).toBe(`account_id=${A}&account_id=${B}`);
+  });
+
+  it("selects a period and keeps the accounts and explorer filters", () => {
+    const custom = `period=custom&start=2026-08-10&end=2026-08-19&account_id=${A}&q=zztest`;
+    expect(replaceParams(custom, periodChanges({ period: "month", month: "2026-07" }))).toBe(
+      `account_id=${A}&q=zztest&month=2026-07`,
+    );
+    // The default period leaves the URL; a custom range drops the month.
+    expect(replaceParams("month=2026-07", periodChanges({ period: "custom", start: "2026-08-10", end: "2026-08-19" }))).toBe(
+      "period=custom&start=2026-08-10&end=2026-08-19",
+    );
   });
 
   it("shifts months across a year", () => {
