@@ -62,7 +62,12 @@ export function ExplorerFilters({ search, explorer, categories, merchants }: Pro
             <InputGroupAddon>
               <Search />
             </InputGroupAddon>
+            {/* Enter runs the search: the phone keyboard's key says so. Chrome's own × only empties the
+                box without searching again, so it is hidden ("Clear filters" resets the list). */}
             <InputGroupInput
+              type="search"
+              enterKeyHint="search"
+              className="[&::-webkit-search-cancel-button]:appearance-none"
               name="q"
               value={q}
               onChange={(event) => setQ(event.target.value)}
