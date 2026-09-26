@@ -17,6 +17,7 @@ export type BreakdownItem = {
   color?: string;
   share: number;
   amount: string;
+  count: number;
   delta: Delta;
 };
 
@@ -49,6 +50,7 @@ export function breakdownItems(rows: Row[], dimension: Dimension, context: Break
       : undefined,
     share: row.share,
     amount: row.amount,
+    count: row.count,
     delta: delta(Number(row.amount), row.previous === null ? null : Number(row.previous), context.good, "percent"),
   }));
 }

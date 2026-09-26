@@ -26,7 +26,9 @@ export function TransactionRow({ tx, onOpen, showSource = false }: Props) {
   const amount = Number(tx.amount);
   return (
     <TableRow onClick={onOpen} className={cn(onOpen && "cursor-pointer")}>
-      <TableCell className="max-w-72 whitespace-normal">
+      {/* Auto-table truncation: the name takes the free width and ends in "…", so a long name
+          never widens the table past its card (a nowrap cell sets the column's minimum). */}
+      <TableCell className="w-full max-w-0">
         <div className="flex items-center gap-3">
           <span
             aria-hidden
@@ -38,7 +40,7 @@ export function TransactionRow({ tx, onOpen, showSource = false }: Props) {
             {onOpen ? (
               <button
                 type="button"
-                className="max-w-full truncate text-left font-medium"
+                className="block w-full truncate text-left font-medium"
                 onClick={(event) => {
                   event.stopPropagation();
                   onOpen();
@@ -50,9 +52,9 @@ export function TransactionRow({ tx, onOpen, showSource = false }: Props) {
               <p className="truncate font-medium">{name}</p>
             )}
             {tx.note && (
-              <p className="flex items-center gap-1 truncate text-xs text-muted-foreground">
+              <p className="flex items-center gap-1 text-xs text-muted-foreground">
                 <StickyNote aria-hidden className="size-3 shrink-0" />
-                {tx.note}
+                <span className="truncate">{tx.note}</span>
               </p>
             )}
           </div>

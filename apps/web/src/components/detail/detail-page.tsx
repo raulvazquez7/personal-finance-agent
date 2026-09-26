@@ -44,8 +44,12 @@ export function DetailPage({ detail, categories, filters, title, crumbs, childDi
   const good: Good = detail.type === "expense" ? "down" : "up";
   const context: BreakdownContext = { categories, slots: null, filters, good, type: detail.type };
   const rows = childDimension ? breakdownItems(detail.children, childDimension, context) : [];
-  // A category's hint names its group, which is this page's own scope (mockup 03: no hint).
-  const children = childDimension === "category" ? rows.map((item) => ({ ...item, hint: "" })) : rows;
+  // A child's hint names its parent, which is this page's own scope: a category shows none
+  // (mockup 03), a merchant only its count. The folded merchant row keeps its own.
+  const children = rows.map((item) => {
+    if (childDimension === "category") return { ...item, hint: "" };
+    return item.key === "_other" ? item : { ...item, hint: plural(item.count, "transaction", "transactions") };
+  });
   const merchants = breakdownItems(detail.top_merchants, "merchant", context);
   const names = new Map(children.map((item) => [item.key, item.name]));
   // The bars only stack by category, so the folded series reads like the table's folded row.

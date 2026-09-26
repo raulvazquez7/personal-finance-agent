@@ -59,6 +59,7 @@ describe("breakdownItems", () => {
       name: "ZZTEST EMPLOYER",
       hint: "Salary · 2 transactions",
       href: `/merchants/${M}?month=2026-08&type=income`,
+      count: 2,
     });
     expect(employer.color).toBeUndefined();
     expect(card).toMatchObject({ name: "Credit card spending", href: null });
