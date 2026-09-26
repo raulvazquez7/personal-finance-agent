@@ -14,6 +14,8 @@ import { label } from "@/lib/labels";
 import { directionOf, fitsDirection } from "@/lib/pickers";
 import { cn } from "@/lib/utils";
 
+import { HELP_ID } from "./review-help";
+
 type Item = Schemas["ReviewItem"];
 type Transaction = Schemas["ReviewTransaction"];
 
@@ -35,6 +37,8 @@ export function ReviewRow({ item, categories, merchants, onConfirm, onLabelOne, 
   const suggested = suggestion.category_slug ?? "";
   const [categorySlug, setCategorySlug] = useState(fitsDirection(suggested, categories, direction) ? suggested : "");
   const [isSubscription, setIsSubscription] = useState(suggestion.is_subscription);
+  // Only money out is a subscription (spec 6): money in never shows or sends one.
+  const subscription = isSubscription && direction === "out";
   const [merchant, setMerchant] = useState<MerchantChoice | null>(item.merchant ?? null);
   const [open, setOpen] = useState(false);
   const level1 = categories.find((c) => c.slug === categorySlug)?.level1;
@@ -52,6 +56,7 @@ export function ReviewRow({ item, categories, merchants, onConfirm, onLabelOne, 
         type="button"
         onClick={() => setOpen(!open)}
         disabled={item.count < 2}
+        aria-expanded={item.count > 1 ? open : undefined}
         className="flex min-w-0 items-center gap-2 text-left text-sm text-muted-foreground"
       >
         <ChevronRight className={cn("size-4 shrink-0 transition-transform", open && "rotate-90", item.count < 2 && "invisible")} />
@@ -72,7 +77,7 @@ export function ReviewRow({ item, categories, merchants, onConfirm, onLabelOne, 
       </button>
 
       <div className="grid gap-3 md:grid-cols-[1fr_1fr_7rem_auto_auto] md:items-center">
-        <MerchantPicker merchants={merchants} value={merchant} onChange={setMerchant} />
+        <MerchantPicker merchants={merchants} value={merchant} onChange={setMerchant} ariaDescribedBy={HELP_ID.merchant} />
         <div className="flex items-center gap-2">
           <CategoryPicker
             categories={categories}
@@ -80,6 +85,7 @@ export function ReviewRow({ item, categories, merchants, onConfirm, onLabelOne, 
             suggested={suggestion.top.map((score) => score.slug)}
             value={categorySlug}
             onChange={setCategorySlug}
+            ariaDescribedBy={HELP_ID.category}
           />
           {showConfidence && (
             <span className="text-xs text-muted-foreground" title="jev confidence">
@@ -89,7 +95,12 @@ export function ReviewRow({ item, categories, merchants, onConfirm, onLabelOne, 
         </div>
         <span className="truncate text-sm text-muted-foreground">{level1 ? label(level1) : "—"}</span>
         <label className="flex items-center gap-2 text-sm text-muted-foreground">
-          <Switch checked={isSubscription} onCheckedChange={(checked) => setIsSubscription(checked)} />
+          <Switch
+            checked={subscription}
+            disabled={direction === "in"}
+            onCheckedChange={(checked) => setIsSubscription(checked)}
+            aria-describedby={HELP_ID.subscription}
+          />
           Subscription
         </label>
         {/* With several transactions, say that the answer covers all of them, not the first line. */}
@@ -97,7 +108,7 @@ export function ReviewRow({ item, categories, merchants, onConfirm, onLabelOne, 
           size={single ? "icon" : "default"}
           aria-label={single ? "Confirm" : undefined}
           disabled={!categorySlug}
-          onClick={() => onConfirm({ categorySlug, isSubscription, merchant })}
+          onClick={() => onConfirm({ categorySlug, isSubscription: subscription, merchant })}
         >
           <Check />
           {!single && `Apply to all ${item.count}`}
@@ -134,7 +145,7 @@ export function ReviewRow({ item, categories, merchants, onConfirm, onLabelOne, 
               tx={tx}
               categories={categories}
               initial={categorySlug}
-              initialSubscription={isSubscription}
+              initialSubscription={subscription}
               onLabel={(decision) => onLabelOne(tx, decision)}
             />
           ))}
@@ -159,6 +170,7 @@ function TransactionLine({
 }) {
   const [slug, setSlug] = useState(initial);
   const [subscription, setSubscription] = useState(initialSubscription);
+  const outgoing = Number(tx.amount) < 0;
   return (
     <li className="grid gap-2 py-2 text-sm md:grid-cols-[6.5rem_minmax(0,1fr)_minmax(0,1fr)_auto_auto] md:items-center">
       <span className="text-muted-foreground">{dayLong(tx.booked_at)}</span>
@@ -177,18 +189,20 @@ function TransactionLine({
         value={slug}
         onChange={setSlug}
         ariaLabel="Category for this transaction"
+        ariaDescribedBy={`${HELP_ID.line} ${HELP_ID.category}`}
       />
       <Switch
-        checked={subscription && Number(tx.amount) < 0}
-        disabled={Number(tx.amount) > 0}
+        checked={subscription && outgoing}
+        disabled={!outgoing}
         onCheckedChange={(checked) => setSubscription(checked)}
         aria-label="Subscription"
+        aria-describedby={HELP_ID.subscription}
       />
       <Button
         size="sm"
         variant="outline"
         disabled={!slug}
-        onClick={() => onLabel({ categorySlug: slug, isSubscription: subscription, merchant: null })}
+        onClick={() => onLabel({ categorySlug: slug, isSubscription: subscription && outgoing, merchant: null })}
       >
         <Check data-icon="inline-start" />
         Only this one

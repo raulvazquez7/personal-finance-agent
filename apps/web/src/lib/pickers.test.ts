@@ -23,7 +23,7 @@ describe("pickerGroups", () => {
   it("offers income first, then refunds of a purchase, then transfers for money in", () => {
     const groups = pickerGroups(categories, "in");
     expect(groups.map((group) => group.label)).toEqual(["Income", "Refund of a purchase", "Transfer"]);
-    expect(slugs(groups)[1]).toEqual(["groceries", "fashion", "rent"]);
+    expect(slugs(groups)).toEqual([["salary", "refunds"], ["groceries", "fashion", "rent"], ["own_accounts"]]);
   });
 
   it("keeps only the suggestions that fit the direction", () => {
@@ -31,6 +31,12 @@ describe("pickerGroups", () => {
     expect(suggested.label).toBe("Suggested");
     expect(suggested.items.map((item) => item.slug)).toEqual(["fashion"]);
     expect(pickerGroups(categories, "out", ["salary"])[0].label).toBe("Shopping");
+  });
+
+  it("keeps an expense score as a refund suggestion for money in", () => {
+    const [suggested] = pickerGroups(categories, "in", ["fashion", "unknown", "salary"]);
+    expect(suggested.label).toBe("Suggested");
+    expect(suggested.items.map((item) => item.slug)).toEqual(["fashion", "salary"]);
   });
 
   it("reads a merchant with purchases and refunds as money out", () => {

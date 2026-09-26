@@ -25,11 +25,22 @@ type Props = {
   onChange: (slug: string) => void;
   id?: string;
   ariaLabel?: string;
+  /** The id of the field's one-line description (spec 7.2). */
+  ariaDescribedBy?: string;
 };
 
 /** A category picker that follows the money's direction (spec 7.3), used by /review, the
  * explorer's side panel and nothing else: the explorer's filter has its own (CategoryFilter). */
-export function CategoryPicker({ categories, direction, suggested = [], value, onChange, id, ariaLabel = "Category" }: Props) {
+export function CategoryPicker({
+  categories,
+  direction,
+  suggested = [],
+  value,
+  onChange,
+  id,
+  ariaLabel = "Category",
+  ariaDescribedBy,
+}: Props) {
   const bySlug = new Map(categories.map((category) => [category.slug, category]));
   return (
     <Combobox
@@ -38,7 +49,7 @@ export function CategoryPicker({ categories, direction, suggested = [], value, o
       onValueChange={(category: Category | null) => category && onChange(category.slug)}
       itemToStringLabel={(category: Category) => label(category.slug)}
     >
-      <ComboboxInput id={id} placeholder="Category" aria-label={ariaLabel} className="w-full" />
+      <ComboboxInput id={id} placeholder="Category" aria-label={ariaLabel} aria-describedby={ariaDescribedBy} className="w-full" />
       <ComboboxContent>
         <ComboboxEmpty>No category found.</ComboboxEmpty>
         <ComboboxList>

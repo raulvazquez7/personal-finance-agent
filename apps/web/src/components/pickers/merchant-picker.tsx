@@ -24,6 +24,8 @@ type Props = {
   showClear?: boolean;
   id?: string;
   ariaLabel?: string;
+  /** The id of the field's one-line description (spec 7.2). */
+  ariaDescribedBy?: string;
 };
 
 export function MerchantPicker({
@@ -34,6 +36,7 @@ export function MerchantPicker({
   showClear = false,
   id,
   ariaLabel = "Merchant",
+  ariaDescribedBy,
 }: Props) {
   const [query, setQuery] = useState(value?.name ?? "");
   // The value can change from outside (Merge picks the suggested merchant): show its name.
@@ -59,7 +62,14 @@ export function MerchantPicker({
       itemToStringLabel={(merchant: MerchantChoice) => merchant.name}
       isItemEqualToValue={(a: MerchantChoice, b: MerchantChoice) => a.id === b.id && a.name === b.name}
     >
-      <ComboboxInput id={id} placeholder="Merchant" aria-label={ariaLabel} showClear={showClear} className="w-full" />
+      <ComboboxInput
+        id={id}
+        placeholder="Merchant"
+        aria-label={ariaLabel}
+        aria-describedby={ariaDescribedBy}
+        showClear={showClear}
+        className="w-full"
+      />
       <ComboboxContent>
         <ComboboxEmpty>No merchant found.</ComboboxEmpty>
         <ComboboxList>

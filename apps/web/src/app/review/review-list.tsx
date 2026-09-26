@@ -9,6 +9,7 @@ import { Progress } from "@/components/ui/progress";
 import { apiPost, type Schemas } from "@/lib/api";
 import { plural } from "@/lib/labels";
 
+import { ReviewHelp } from "./review-help";
 import { ReviewRow, type Decision } from "./review-row";
 
 type Item = Schemas["ReviewItem"];
@@ -52,6 +53,14 @@ export function ReviewList({ initialItems, categories, merchants, uncategorized 
     });
   }
 
+  function sendNow(key: string) {
+    const earlier = pending.current.get(key);
+    if (earlier) {
+      clearTimeout(earlier.timer);
+      earlier.commit(false);
+    }
+  }
+
   function schedule(
     original: Item,
     next: Item | null,
@@ -59,12 +68,10 @@ export function ReviewList({ initialItems, categories, merchants, uncategorized 
     send: (keepalive: boolean) => Promise<void>,
     settled: Item | null = null,
   ) {
-    // A new change on the same row sends the earlier one first, so Undo never restores a stale row.
-    const earlier = pending.current.get(original.key);
-    if (earlier) {
-      clearTimeout(earlier.timer);
-      earlier.commit(false);
-    }
+    // A new change on a row sends that row's earlier change first, so Undo never restores a stale
+    // row. The survivor of a merge counts as one of those rows.
+    sendNow(original.key);
+    if (settled) sendNow(settled.key);
     // A merge and confirm also settles the surviving merchant's own item (inputs topic 6):
     // it leaves the page with the merged one, and Undo brings both back.
     const restore = () => {
@@ -114,8 +121,9 @@ export function ReviewList({ initialItems, categories, merchants, uncategorized 
         name: d.merchant && d.merchant.id === null ? d.merchant.name : null,
         merge_into_id: mergeInto,
       };
-      // Review keys merchant items "m:<merchant id>" (review_queue.build_review_items).
-      const survivor = mergeInto ? (items.find((other) => other.key === `m:${mergeInto}`) ?? null) : null;
+      const survivor = mergeInto
+        ? (items.find((other) => other.kind === "merchant" && other.merchant?.id === mergeInto) ?? null)
+        : null;
       schedule(item, null, "Confirmed", (keepalive) => apiPost(`/merchants/${merchantId}/review`, body, { keepalive }), survivor);
     } else {
       labelOne(item, item.transactions[0], d, "Confirmed");
@@ -147,6 +155,7 @@ export function ReviewList({ initialItems, categories, merchants, uncategorized 
           {total > 0 && <span className="text-sm tabular-nums text-muted-foreground">{done} of {total}</span>}
         </div>
         <p className="text-sm text-muted-foreground">Confirm or fix. Your answer applies to every transaction of the merchant.</p>
+        {items.length > 0 && <ReviewHelp />}
         {uncategorized > 0 && (
           <p className="text-sm text-muted-foreground">
             {plural(uncategorized, "transaction is", "transactions are")} not categorized yet. Each import starts a
