@@ -7,7 +7,7 @@ import { useState, type FormEvent } from "react";
 
 import { CategoryFilter } from "@/components/pickers/category-filter";
 import { MerchantPicker } from "@/components/pickers/merchant-picker";
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { Field, FieldGroup, FieldLabel } from "@/components/ui/field";
 import { InputGroup, InputGroupAddon, InputGroupInput } from "@/components/ui/input-group";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
@@ -163,9 +163,9 @@ export function ExplorerFilters({ search, explorer, categories, merchants }: Pro
           </PopoverContent>
         </Popover>
         {cleared !== search && (
-          <Button variant="ghost" size="sm" render={<Link href={`${pathname}?${cleared}`} />} nativeButton={false}>
+          <Link href={`${pathname}?${cleared}`} className={buttonVariants({ variant: "ghost", size: "sm" })}>
             Clear filters
-          </Button>
+          </Link>
         )}
       </div>
       <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">

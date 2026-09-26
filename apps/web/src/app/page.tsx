@@ -7,7 +7,7 @@ import { MonthsChart } from "@/components/charts/months-chart";
 import { DeltaText } from "@/components/money/delta-text";
 import { KpiTile } from "@/components/money/kpi-tile";
 import { WhereMoneyWent } from "@/components/overview/where-money-went";
-import { Button } from "@/components/ui/button";
+import { buttonVariants } from "@/components/ui/button";
 import { Card, CardAction, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Empty, EmptyContent, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from "@/components/ui/empty";
 import { apiGet, type Schemas } from "@/lib/api";
@@ -163,9 +163,10 @@ function NoTransactions({ filtered }: { filtered: boolean }) {
         <EmptyDescription>Import a bank statement PDF to see your income, spending and savings here.</EmptyDescription>
       </EmptyHeader>
       <EmptyContent>
-        <Button render={<Link href="/imports" />} nativeButton={false}>
+        {/* A link styled as a button stays a link for screen readers (Base UI's Button would add role="button"). */}
+        <Link href="/imports" className={buttonVariants()}>
           Import statements
-        </Button>
+        </Link>
       </EmptyContent>
     </Empty>
   );
