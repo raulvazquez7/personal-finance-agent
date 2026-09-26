@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 
 import type { Schemas } from "./api";
 import {
+  accountDigits,
   accountsLabel,
   groupHint,
   knownCategory,
@@ -75,6 +76,9 @@ describe("labels", () => {
     expect(accountsLabel([], accounts)).toBe("All accounts");
     expect(accountsLabel(["b"], accounts)).toBe("Savings");
     expect(accountsLabel(["a", "b"], accounts)).toBe("2 accounts");
+    // The importer's default name already ends with the digits; a renamed account shows them again.
+    expect(accountDigits({ name: "zztest ····1234", iban_last4: "1234" })).toBeNull();
+    expect(accountDigits({ name: "ZZTEST joint", iban_last4: "1234" })).toBe("··1234");
   });
 
   it("knows which groups and categories exist", () => {

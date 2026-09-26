@@ -61,6 +61,11 @@ export function accountsLabel(ids: string[], accounts: { id: string; name: strin
   return `${ids.length} accounts`;
 }
 
+/** "··1234" after an account's name, unless the name already carries those digits (the importer's
+ * default name does). */
+export const accountDigits = (account: { name: string; iban_last4: string }) =>
+  account.name.includes(account.iban_last4) ? null : `··${account.iban_last4}`;
+
 /** A group in the URL must exist, or the page is a 404, never an empty page. */
 export function knownGroup(level1: string, categories: Category[]): boolean {
   return level1 === "uncategorized" || categories.some((c) => c.tx_type === "expense" && c.level1 === level1);

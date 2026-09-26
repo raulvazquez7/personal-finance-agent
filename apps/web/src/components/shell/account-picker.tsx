@@ -6,7 +6,7 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import type { Schemas } from "@/lib/api";
-import { accountsLabel } from "@/lib/labels";
+import { accountDigits, accountsLabel } from "@/lib/labels";
 import { parseFilters, replaceParams, toSearchParams } from "@/lib/params";
 
 /** The account filter: none selected means all accounts; several can be picked (spec 6). */
@@ -30,20 +30,24 @@ export function AccountPicker({ accounts }: { accounts: Schemas["Account"][] }) 
           All accounts
           {selected.length === 0 && <Check data-icon="inline-end" />}
         </Button>
-        {accounts.map((account) => (
-          <Button
-            key={account.id}
-            variant="ghost"
-            className="justify-between"
-            aria-pressed={selected.includes(account.id)}
-            onClick={() => toggle(account.id)}
-          >
-            <span className="truncate">
-              {account.name} <span className="text-muted-foreground">··{account.iban_last4}</span>
-            </span>
-            {selected.includes(account.id) && <Check data-icon="inline-end" />}
-          </Button>
-        ))}
+        {accounts.map((account) => {
+          const digits = accountDigits(account);
+          return (
+            <Button
+              key={account.id}
+              variant="ghost"
+              className="justify-between"
+              aria-pressed={selected.includes(account.id)}
+              onClick={() => toggle(account.id)}
+            >
+              <span className="truncate">
+                {account.name}
+                {digits && <span className="text-muted-foreground"> {digits}</span>}
+              </span>
+              {selected.includes(account.id) && <Check data-icon="inline-end" />}
+            </Button>
+          );
+        })}
       </PopoverContent>
     </Popover>
   );
