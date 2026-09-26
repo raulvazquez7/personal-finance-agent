@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import {
+  MINUS,
   compactMoney,
   dayAt,
   dayHeader,
@@ -27,18 +28,28 @@ describe("money", () => {
   it("formats euros the way the tables and tiles show them", () => {
     expect(money("2184")).toBe("€2,184.00");
     expect(moneyWhole("3250.40")).toBe("€3,250");
-    expect(signedMoney("-42.10")).toBe("-€42.10");
+    expect(signedMoney("-42.10")).toBe("−€42.10");
     expect(signedMoney("12.34")).toBe("+€12.34");
     expect(signedMoneyWhole(3250)).toBe("+€3,250");
     expect(compactMoney(2400)).toBe("€2.4K");
     expect(money(null)).toBe("€0.00");
   });
 
+  it("writes every negative number with the true minus sign, as the deltas do", () => {
+    // Intl writes a hyphen-minus; one sign everywhere, so money and its change never differ.
+    expect(MINUS).toBe("\u2212");
+    expect(money(-5)).toBe("−€5.00");
+    expect(moneyWhole("-3250.40")).toBe("−€3,250");
+    expect(signedMoneyWhole(-3250)).toBe("−€3,250");
+    expect(compactMoney(-2400)).toBe("−€2.4K");
+    expect(rate(-0.052)).toBe("−5.2%");
+  });
+
   it("formats shares and rates", () => {
     expect(percent(0.3799)).toBe("38%");
     // A refund after its purchase month makes an entry's net negative: shares leave 0-100%.
     expect(percent(1.25)).toBe("125%");
-    expect(percent(-0.1)).toBe("-10%");
+    expect(percent(-0.1)).toBe("−10%");
     expect(rate(0.328)).toBe("32.8%");
     expect(rate(null)).toBe("—");
   });

@@ -2,6 +2,8 @@
  * "new" when the previous value was 0, and a tone that says whether the change is good. The
  * arrow and the sign carry the meaning, so it never depends on colour alone. */
 
+import { MINUS } from "./format";
+
 export type Good = "up" | "down";
 export type Unit = "percent" | "euro" | "points";
 export type Tone = "good" | "bad" | "neutral";
@@ -10,7 +12,6 @@ export type Delta =
   | { kind: "new" }
   | { kind: "change"; direction: "up" | "down" | "flat"; tone: Tone; text: string };
 
-const MINUS = "−";
 const euro = new Intl.NumberFormat("en-IE", {
   style: "currency",
   currency: "EUR",

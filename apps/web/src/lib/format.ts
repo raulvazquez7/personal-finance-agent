@@ -17,16 +17,21 @@ const compact = new Intl.NumberFormat(LOCALE, { ...EUR, notation: "compact", max
 
 type Amount = string | number | null | undefined;
 
+/** The true minus sign. Intl and toFixed write a hyphen-minus; every number on screen, money and
+ * deltas alike, shows this one instead. */
+export const MINUS = "\u2212";
+const minus = (text: string) => text.replace("-", MINUS);
+
 export const toNumber = (value: Amount): number => (value === null || value === undefined ? 0 : Number(value));
-export const money = (value: Amount) => cents.format(toNumber(value)); // €2,184.00
-export const moneyWhole = (value: Amount) => whole.format(toNumber(value)); // €2,184
-/** With an explicit sign, so money in (+€12.34) never reads as money out (-€12.34). */
-export const signedMoney = (value: Amount) => signedCents.format(toNumber(value));
-export const signedMoneyWhole = (value: Amount) => signedWhole.format(toNumber(value));
-export const compactMoney = (value: number) => compact.format(value); // €2.4K, for axis ticks
-export const percent = (share: number) => `${Math.round(share * 100)}%`;
+export const money = (value: Amount) => minus(cents.format(toNumber(value))); // €2,184.00
+export const moneyWhole = (value: Amount) => minus(whole.format(toNumber(value))); // €2,184
+/** With an explicit sign, so money in (+€12.34) never reads as money out (−€12.34). */
+export const signedMoney = (value: Amount) => minus(signedCents.format(toNumber(value)));
+export const signedMoneyWhole = (value: Amount) => minus(signedWhole.format(toNumber(value)));
+export const compactMoney = (value: number) => minus(compact.format(value)); // €2.4K, for axis ticks
+export const percent = (share: number) => minus(`${Math.round(share * 100)}%`);
 /** The savings rate; empty without income (docs/money-rules.md). */
-export const rate = (value: number | null) => (value === null ? "—" : `${(value * 100).toFixed(1)}%`);
+export const rate = (value: number | null) => (value === null ? "—" : minus(`${(value * 100).toFixed(1)}%`));
 
 const utc = (day: string) => new Date(`${day.slice(0, 10)}T00:00:00Z`);
 const dates = (options: Intl.DateTimeFormatOptions) =>

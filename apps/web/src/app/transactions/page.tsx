@@ -1,5 +1,5 @@
 import { apiGet, type Schemas } from "@/lib/api";
-import { rangeLabel, signedMoney } from "@/lib/format";
+import { money, rangeLabel, signedMoney } from "@/lib/format";
 import { plural } from "@/lib/labels";
 import { explorerParams, parseExplorer, parseFilters } from "@/lib/params";
 
@@ -23,11 +23,12 @@ export default async function TransactionsPage({ searchParams }: PageProps<"/tra
     <>
       <header className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
         <h1 className="text-xl font-semibold tracking-tight">Transactions</h1>
-        {/* nowrap: a narrow screen may break between "+" and "€", splitting the sign from its amount. */}
+        {/* nowrap: a narrow screen may break between "+" and "€", splitting the sign from its amount.
+            "out" already gives money out its direction, so it takes no sign. */}
         <p className="text-sm text-muted-foreground">
           {rangeLabel(page.period)} · {plural(page.count, "transaction", "transactions")} ·{" "}
           <span className="whitespace-nowrap text-income">{signedMoney(page.money_in)}</span> in ·{" "}
-          <span className="whitespace-nowrap">{signedMoney(-Number(page.money_out))}</span> out
+          <span className="whitespace-nowrap">{money(page.money_out)}</span> out
         </p>
       </header>
       <ExplorerFilters search={search} explorer={explorer} categories={categories} merchants={merchants} />
