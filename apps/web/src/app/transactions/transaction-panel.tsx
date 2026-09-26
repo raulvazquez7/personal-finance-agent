@@ -68,6 +68,7 @@ function PanelForm({ tx, categories, merchants, onClose, onSaved }: Omit<Props, 
   const [isSubscription, setIsSubscription] = useState(tx.is_subscription);
   const [note, setNote] = useState(tx.note ?? "");
   const [asking, setAsking] = useState(false);
+  const [clearing, setClearing] = useState(false);
   const [busy, setBusy] = useState(false);
 
   const category = categories.find((c) => c.slug === categorySlug);
@@ -127,11 +128,16 @@ function PanelForm({ tx, categories, merchants, onClose, onSaved }: Omit<Props, 
 
   async function clearDefault() {
     if (!tx.merchant_id) return;
+    // Busy until the answer, so a double click sends one DELETE.
+    setBusy(true);
     try {
       await apiDelete(`/merchants/${tx.merchant_id}/default`);
       toast.success(`${tx.merchant_name ?? "This merchant"} has no default category now.`);
     } catch {
       toast.error("Could not clear the merchant default.");
+    } finally {
+      setBusy(false);
+      setClearing(false);
     }
   }
 
@@ -214,7 +220,7 @@ function PanelForm({ tx, categories, merchants, onClose, onSaved }: Omit<Props, 
                 variant="outline"
                 size="sm"
                 className="self-start"
-                onClick={clearDefault}
+                onClick={() => setClearing(true)}
                 disabled={busy}
                 aria-describedby="panel-clear-help"
               >
@@ -254,6 +260,24 @@ function PanelForm({ tx, categories, merchants, onClose, onSaved }: Omit<Props, 
             </AlertDialogAction>
             <AlertDialogAction disabled={busy} onClick={() => save(true)}>
               Apply to all
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+      {/* Confirmed first, not undone: the panel does not know the default it would restore. */}
+      <AlertDialog open={clearing} onOpenChange={setClearing}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>{`Clear the default category of ${tx.merchant_name ?? "this merchant"}?`}</AlertDialogTitle>
+            <AlertDialogDescription>
+              Its transactions keep their categories, and new ones are categorized one by one.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={busy}>Back</AlertDialogCancel>
+            <AlertDialogAction disabled={busy} onClick={clearDefault}>
+              {busy && <Spinner data-icon="inline-start" />}
+              {busy ? "Clearing…" : "Clear default"}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
