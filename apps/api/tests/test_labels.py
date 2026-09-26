@@ -299,7 +299,7 @@ def test_confirming_without_a_subscription_answer_keeps_every_flag(db_conn, make
     each row's own mark, and the category still relabels the rows."""
     acme = _merchant(db_conn, "ZZTEST ACME", category_slug="groceries", is_subscription=True)
     plan = _tx(make_tx, "-20.00", "PAGO | ZZTEST ACME")
-    extra = _tx(make_tx, "-5.00", "PAGO | ZZTEST ACME")
+    extra = _tx(make_tx, "-10.00", "PAGO | ZZTEST ACME")
     refund = _tx(make_tx, "20.00", "DEVOLUCION | ZZTEST ACME")
     for tx, source in ((plan, "jev"), (extra, "merchant"), (refund, "jev")):
         _set(db_conn, tx, merchant_id=acme, category_source=source, category_slug="groceries")
