@@ -36,6 +36,12 @@ describe("delta", () => {
     expect(delta(0, 1000, "down", "percent")).toMatchObject({ text: "−100%" });
   });
 
+  it("keeps a real −100% when either amount is not positive", () => {
+    // Twice as negative as a negative month (refunds only), and a fall just past zero.
+    expect(delta(-60, -30, "down", "percent")).toMatchObject({ direction: "down", text: "−100%" });
+    expect(delta(-0.3, 100, "down", "percent")).toMatchObject({ direction: "down", text: "−100%" });
+  });
+
   it("compares with a negative month (refunds only) by its size", () => {
     expect(delta(120, -30, "down", "percent")).toMatchObject({ direction: "up", tone: "bad", text: "+500%" });
   });
