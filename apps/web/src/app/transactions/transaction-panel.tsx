@@ -68,7 +68,7 @@ function PanelForm({ tx, categories, merchants, onClose, onSaved }: Omit<Props, 
   const [isSubscription, setIsSubscription] = useState(tx.is_subscription);
   const [note, setNote] = useState(tx.note ?? "");
   const [asking, setAsking] = useState(false);
-  const [clearing, setClearing] = useState(false);
+  const [confirmingClear, setConfirmingClear] = useState(false);
   // The request running, if any: its button says so, and every button waits for it.
   const [pending, setPending] = useState<"save" | "clear" | null>(null);
   const busy = pending !== null;
@@ -139,7 +139,7 @@ function PanelForm({ tx, categories, merchants, onClose, onSaved }: Omit<Props, 
       toast.error("Could not clear the merchant default.");
     } finally {
       setPending(null);
-      setClearing(false);
+      setConfirmingClear(false);
     }
   }
 
@@ -222,7 +222,7 @@ function PanelForm({ tx, categories, merchants, onClose, onSaved }: Omit<Props, 
                 variant="outline"
                 size="sm"
                 className="self-start"
-                onClick={() => setClearing(true)}
+                onClick={() => setConfirmingClear(true)}
                 disabled={busy}
                 aria-describedby="panel-clear-help"
               >
@@ -267,7 +267,7 @@ function PanelForm({ tx, categories, merchants, onClose, onSaved }: Omit<Props, 
         </AlertDialogContent>
       </AlertDialog>
       {/* Confirmed first, not undone: the panel does not know the default it would restore. */}
-      <AlertDialog open={clearing} onOpenChange={setClearing}>
+      <AlertDialog open={confirmingClear} onOpenChange={setConfirmingClear}>
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>{`Clear the default category of ${tx.merchant_name ?? "this merchant"}?`}</AlertDialogTitle>
