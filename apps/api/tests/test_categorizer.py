@@ -212,6 +212,21 @@ def test_merchant_subscription_default_overrides_jev_on_expenses_only(
     assert result.is_subscription is expected
 
 
+@pytest.mark.parametrize(("noul", "expected"), [(0.9, True), (0.05, False)])
+def test_a_merchant_confirmed_from_money_in_leaves_the_subscription_flag_to_jev(noul, expected):
+    # Confirming from money in (a refund) keeps the merchant's flag null (ConfirmMerchant with
+    # is_subscription None): its next charge takes the default category and jev's score.
+    roster = MerchantRoster(
+        [MerchantRef(id=uuid4(), name="ACME TV", category_slug="entertainment")]
+    )
+    answer = jev_result(
+        merchant={"ACME TV": 0.99, "none": 0.01}, category={"software_ai": 1.0}, subscription=noul
+    )
+    [result] = _run([_tx("ACME TV")], FakeJev(first={"ACME TV": answer}), roster)
+    assert (result.category_slug, result.category_source) == ("entertainment", "merchant")
+    assert result.is_subscription is expected
+
+
 def test_the_category_edge_is_accepted_and_the_subscription_edge_is_not():
     settings = CTX.settings
     edge = jev_result(
