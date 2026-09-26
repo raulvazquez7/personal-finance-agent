@@ -18,7 +18,7 @@ export function BreakdownTable({ items, nameHeader, versus, showShare = true }: 
       <TableHeader>
         <TableRow className="hover:bg-transparent">
           <TableHead>{nameHeader}</TableHead>
-          {showShare && <TableHead className="text-right">Share</TableHead>}
+          {showShare && <TableHead className="hidden text-right sm:table-cell">Share</TableHead>}
           <TableHead className="text-right">Amount</TableHead>
           {compared && <TableHead className="text-right">{versus}</TableHead>}
         </TableRow>
@@ -44,11 +44,11 @@ export function BreakdownTable({ items, nameHeader, versus, showShare = true }: 
                   ) : (
                     <span className="font-medium">{item.name}</span>
                   )}
-                  {item.hint && <p className="truncate text-xs text-muted-foreground">{item.hint}</p>}
+                  {item.hint && <p className="line-clamp-1 text-xs text-muted-foreground">{item.hint}</p>}
                 </div>
               </div>
             </TableCell>
-            {showShare && <TableCell className="text-right text-muted-foreground">{percent(item.share)}</TableCell>}
+            {showShare && <TableCell className="hidden text-right text-muted-foreground sm:table-cell">{percent(item.share)}</TableCell>}
             <TableCell className="text-right font-semibold">{money(item.amount)}</TableCell>
             {compared && (
               <TableCell className="text-right">
