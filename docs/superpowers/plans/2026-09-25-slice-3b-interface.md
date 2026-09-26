@@ -35,7 +35,7 @@ What shipped differs from the tasks below in these points. The code blocks stay 
 - Money-in pickers: income first, then one "Refund of a purchase · <Group>" group per expense group, then transfers (`apps/web/src/lib/pickers.ts`; Global Constraint and Review Focus 5 updated; Task 8's `pickerGroups` and the picker checks in Tasks 8 and 10 show the single group planned first).
 - Groups view: the API's overview `by_group` returns every group (`apps/api/finance/api/dashboard.py`), and the view lists every group with spend in the period as its own row, the five slotted groups in their colours and the rest in the "other" grey; `foldBySlot` and its test were removed (`apps/web/src/lib/colors.ts`). A folded `_other` row reads "Other groups" or "Other categories", and merchants keep "Other N merchants" (`rowName` in `apps/web/src/lib/labels.ts`); the Groups view has no folded row (Task 5's check and the known gaps note updated).
 - Previous period (Task 14 finding D2): when the selected accounts' data ends inside the period, the API cuts the previous period after as many days (`apps/api/finance/api/periods.py`); the KPI tiles, the change columns and the same-day card compare those days, whether the previous period has data is judged on the whole of it, and the cumulative chart's previous line keeps running past the cut day, up to the current period's length (`apps/web/src/components/charts/cumulative-chart.tsx`). A custom range's `previousLabel` still counts the whole range before (`format.ts`). Spec 2.6 describes it.
-- Same-day label (final review M1): when that cut applies, the "vs …" label of the KPI tiles and the change columns ends with " by the same day" ("vs Jul by the same day", "vs the 3 months before by the same day"); a whole period keeps the plain label, and the same-day card never says it twice (`previousLabel` and `endsInside` in `apps/web/src/lib/format.ts`).
+- Same-day label (final review M1): when that cut applies, the "vs …" label of the KPI tiles and the change columns ends with " by the same day" ("vs Jul by the same day", "vs the 3 months before by the same day"), except year to date, whose "vs the same dates last year" already says it; a whole period keeps the plain label, and the same-day card never says it twice (`previousLabel` and `endsInside` in `apps/web/src/lib/format.ts`).
 - ⓘ definitions: `InfoTip` is a Popover that also opens on hover (`openOnHover`), not a Tooltip: Base UI tooltips are unreachable on touch and with a screen reader (`apps/web/src/components/money/info-tip.tsx`; Global Constraint updated; Task 4 Step 5 shows the Tooltip planned first).
 - `ConfirmMerchant.is_subscription` is required and nullable: null (a confirm from money in, which has no subscription switch) keeps the merchant's flag and each row's mark where the row can still be a subscription (money out with an expense category) (`apps/api/finance/api/merchants.py`).
 - `AccountUpdate.name` is trimmed before its 1-80 check, so a name of only spaces is a 422, never a blank account (`apps/api/finance/api/accounts.py`).
@@ -176,7 +176,7 @@ All paths are under `apps/web/`.
 | `src/components/shell/period-picker.tsx` (new) | Period presets, a month, a custom range |
 | `src/components/shell/account-picker.tsx` (new) | Accounts, several at once |
 | `src/app/error.tsx` (new) | A readable error with Try again |
-| `src/components/money/delta-text.tsx`, `info-tip.tsx`, `kpi-tile.tsx` (new) | Deltas, ⓘ tooltips, KPI tiles |
+| `src/components/money/delta-text.tsx`, `info-tip.tsx`, `kpi-tile.tsx` (new) | Deltas, ⓘ popovers, KPI tiles |
 | `src/components/charts/money-tooltip.tsx`, `legend-buttons.tsx`, `month-axis.tsx` (new) | Shared chart pieces |
 | `src/components/charts/cumulative-chart.tsx`, `months-chart.tsx`, `breakdown-donut.tsx`, `scope-months-chart.tsx`, `category-treemap.tsx` (new) | One file per chart |
 | `src/components/breakdown/breakdown-table.tsx` (new) | Name, share, amount, change |
@@ -2346,7 +2346,7 @@ export function MonthsChart({ months, range }: { months: Schemas["MonthPoint"][]
 }
 ```
 
-- [ ] **Step 5: Deltas, ⓘ tooltips and KPI tiles**
+- [ ] **Step 5: Deltas, ⓘ popovers and KPI tiles**
 
 Create `apps/web/src/components/money/delta-text.tsx`:
 

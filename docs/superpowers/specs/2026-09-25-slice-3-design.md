@@ -151,8 +151,8 @@ total.
   date, last 12 months, custom range.
 - Every delta compares with **the previous period of the same length**
   (August vs July, a quarter vs the quarter before). When the previous period
-  has no data, the delta is hidden. When the previous value is 0, it reads
-  "new".
+  has no data, the delta is hidden. When the previous value is 0, a
+  percentage change reads "new"; a change in euros or points stays signed.
 - When the selected accounts' data ends inside the period (`latest_day` before
   its end), the API cuts the previous period after as many days: August up to
   the 10th against 1-10 July. It counts days, not dates (after a 29 February,
@@ -161,7 +161,9 @@ total.
   with like. Whether the previous period has data is still judged on the whole
   of it, and the cumulative chart's previous line, drawn as a reference, keeps
   running past the cut day, up to the current period's length (the same-day
-  card reads it at the same day).
+  card reads it at the same day). The tiles and the change columns then say
+  so: "vs Jul by the same day"; year to date keeps "vs the same dates last
+  year", which already says it.
 - A month "has data" when at least one transaction of the selected accounts
   is booked in it. Months without data are drawn as "no data", never as 0.
   Per-account import coverage is v2.

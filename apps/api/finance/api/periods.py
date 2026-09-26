@@ -63,7 +63,8 @@ def resolve_request(conn: Connection, request: PeriodRequest) -> Resolved:
     except ValueError as error:
         raise HTTPException(status_code=422, detail=str(error)) from error
     whole = previous(request.name, current)
-    # One cut for the whole page: tiles, change columns and the same-day card agree.
+    # One cut for the whole page: the tiles and the change columns compare it, and the same-day
+    # card agrees with them when the data ends inside the period (a whole period is not cut).
     cut = until_same_day(whole, current, latest)
     out = PeriodOut(
         name=request.name,
