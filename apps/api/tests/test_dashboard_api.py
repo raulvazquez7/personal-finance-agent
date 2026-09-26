@@ -98,9 +98,29 @@ def test_data_that_ends_early_compares_with_as_many_days_before(client, db_conn,
     assert (period["end"], period["latest_day"]) == ("1999-02-28", "1999-02-02")
     assert (period["previous_start"], period["previous_end"]) == ("1999-01-01", "1999-01-02")
     assert body["previous_kpis"]["expenses"] == "175.00"  # the card settlement on 2 January
-    assert [p["total"] for p in body["cumulative"]["previous"]] == ["0", "175.00"]
     [shopping] = [row for row in body["by_group"] if row["key"] == "shopping"]
     assert shopping["previous"] == "0"  # the January purchase came on the 3rd
+    # The chart draws the whole of January as a reference; the same-day card reads it on day 2.
+    previous = body["cumulative"]["previous"]
+    assert (len(previous), previous[-1]["total"]) == (31, "455.00")
+    assert previous[1]["total"] == body["previous_kpis"]["expenses"]
+
+
+def test_a_previous_month_with_rows_only_after_the_cut_day_still_has_data(client, db_conn, make_tx):
+    # June's data ends on the 2nd and May's rows start on the 10th. May was imported, so the
+    # changes show against 1-2 May: zero, which the web reads as "new", never a hidden delta.
+    iban = "ES0000000000000000000079"
+    make_tx("-40.00", "ZZTEST MAY", iban=iban, booked_at=date(1999, 5, 10))
+    make_tx("-60.00", "ZZTEST MAY", iban=iban, booked_at=date(1999, 5, 20))
+    make_tx("-20.00", "ZZTEST JUNE", iban=iban, booked_at=date(1999, 6, 2))
+    account = db_conn.execute("select id from accounts where iban = %s", (iban,)).fetchone()["id"]
+    body = _overview(client, account, period="month", month="1999-06")
+    assert body["period"]["has_previous"] is True
+    assert body["previous_kpis"]["expenses"] == "0"
+    assert [row["previous"] for row in body["by_group"]] == ["0"]
+    previous = body["cumulative"]["previous"]
+    assert (len(previous), previous[-1]["total"]) == (31, "100.00")  # all of May
+    assert previous[1]["total"] == "0"  # the same-day card reads "new" too
 
 
 def test_an_account_without_rows_returns_an_empty_overview(client):

@@ -17,7 +17,7 @@ class PeriodOut(BaseModel):
     start: date
     end: date
     previous_start: date
-    previous_end: date
+    previous_end: date  # cut at as many days when the data ends inside the period
     has_previous: bool
     latest_day: date | None
 

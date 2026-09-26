@@ -43,13 +43,15 @@ PeriodQuery = Annotated[PeriodRequest, Depends(period_request)]
 @dataclass(frozen=True)
 class Resolved:
     current: Period
-    previous: Period
+    previous: Period  # the whole previous period: the cumulative chart's reference line
+    cut: Period  # the previous period after as many days as the data covers (until_same_day)
     out: PeriodOut
 
     @property
     def comparable(self) -> Period | None:
-        """The previous period when it has data; otherwise no delta is shown."""
-        return self.previous if self.out.has_previous else None
+        """The cut previous period, which every change compares with, when the previous period
+        has data; otherwise no delta is shown."""
+        return self.cut if self.out.has_previous else None
 
 
 def resolve_request(conn: Connection, request: PeriodRequest) -> Resolved:
@@ -60,15 +62,17 @@ def resolve_request(conn: Connection, request: PeriodRequest) -> Resolved:
         )
     except ValueError as error:
         raise HTTPException(status_code=422, detail=str(error)) from error
-    # One previous period for the whole page: tiles, change columns and the same-day card agree.
-    before = until_same_day(previous(request.name, current), current, latest)
+    whole = previous(request.name, current)
+    # One cut for the whole page: tiles, change columns and the same-day card agree.
+    cut = until_same_day(whole, current, latest)
     out = PeriodOut(
         name=request.name,
         start=current.start,
         end=current.end,
-        previous_start=before.start,
-        previous_end=before.end,
-        has_previous=has_data(conn, before, request.accounts),
+        previous_start=cut.start,
+        previous_end=cut.end,
+        # Judged on the whole period (spec 2.6): rows only after the cut day still count.
+        has_previous=has_data(conn, whole, request.accounts),
         latest_day=latest,
     )
-    return Resolved(current, before, out)
+    return Resolved(current, whole, cut, out)

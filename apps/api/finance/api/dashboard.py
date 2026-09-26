@@ -31,7 +31,9 @@ def overview(conn: Db, query: PeriodQuery) -> Overview:
             current=cumulative(conn, spend, resolved.current, "spend", until=latest)
             if latest
             else [],
-            previous=cumulative(conn, spend, before, "spend") if before else None,
+            # The whole previous period, a reference line; the same-day card reads it at the
+            # current line's last day, so it agrees with the tiles.
+            previous=cumulative(conn, spend, resolved.previous, "spend") if before else None,
         ),
         months=month_series(conn, scope, resolved.current.end),
         # Every group: the web gives each its own row, coloured by group_slots (grey without one).

@@ -62,7 +62,10 @@ def test_year_to_date_on_a_leap_day():
         ("month", date(2026, 8, 10), (date(2026, 7, 1), date(2026, 7, 10))),
         ("last_3_months", date(2026, 8, 10), (date(2026, 3, 1), date(2026, 5, 10))),
         ("ytd", date(2026, 8, 10), (date(2025, 1, 1), date(2025, 8, 10))),
+        ("last_12_months", date(2026, 8, 10), (date(2024, 9, 1), date(2025, 8, 10))),
         ("month", date(2026, 3, 30), (date(2026, 2, 1), date(2026, 2, 28))),  # February is shorter
+        # Days, not dates: after 29 February 2028, 1 January-10 March is cut at 11 March 2027.
+        ("ytd", date(2028, 3, 10), (date(2027, 1, 1), date(2027, 3, 11))),
     ],
 )
 def test_data_that_ends_inside_the_period_cuts_the_previous_one_at_as_many_days(name, latest, cut):

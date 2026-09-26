@@ -154,9 +154,13 @@ total.
   has no data, the delta is hidden. When the previous value is 0, it reads
   "new".
 - When the selected accounts' data ends inside the period (`latest_day` before
-  its end), the API cuts the previous period at as many days: August up to the
-  10th against 1-10 July. The KPI tiles, the change columns, the same-day card
-  and the previous cumulative line then compare like with like.
+  its end), the API cuts the previous period after as many days: August up to
+  the 10th against 1-10 July. It counts days, not dates (after a 29 February,
+  year to date up to 10 March is cut at 11 March the year before). The KPI
+  tiles, the change columns and the same-day card compare those days, like
+  with like. Whether the previous period has data is still judged on the whole
+  of it, and the cumulative chart draws the whole previous period as a
+  reference line (the same-day card reads it at the same day).
 - A month "has data" when at least one transaction of the selected accounts
   is booked in it. Months without data are drawn as "no data", never as 0.
   Per-account import coverage is v2.

@@ -78,7 +78,9 @@ def test_a_detail_page_whose_data_ends_early_compares_with_as_many_days_before(
     body = _detail(client, account, level1="shopping", month="1999-02")
     assert body["period"]["previous_end"] == "1999-01-02"
     assert body["previous_total"] == "0"  # the January purchase came on the 3rd
-    assert len(body["cumulative"]["previous"]) == len(body["cumulative"]["current"]) == 2
+    previous = body["cumulative"]["previous"]
+    assert (len(previous), previous[-1]["total"]) == (31, "120.00")  # all of January, for reference
+    assert previous[1]["total"] == body["previous_total"]  # the same-day card agrees
 
 
 def test_a_child_seen_only_in_earlier_months_folds_into_a_listed_other(client, db_conn, make_tx):
