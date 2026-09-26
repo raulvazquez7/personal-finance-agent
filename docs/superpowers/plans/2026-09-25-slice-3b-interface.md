@@ -14,7 +14,7 @@
 
 The tasks below are written for these decisions.
 
-- **A. Vitest for pure helpers: yes.** Add `vitest` and `vite-tsconfig-paths` as dev dependencies, configured as the Next.js Vitest guide recommends, minus `jsdom` and React Testing Library, which only component tests need. Only `src/lib/*.test.ts` exists; CI does not run it.
+- **A. Vitest for pure helpers: yes.** Add `vitest` as a dev dependency, configured as the Next.js Vitest guide recommends, minus `jsdom` and React Testing Library, which only component tests need, and with Vite 8's built-in `resolve: { tsconfigPaths: true }` in place of the guide's `vite-tsconfig-paths` plugin. Only `src/lib/*.test.ts` exists; CI does not run it.
 - **B. Text contrast: darker text tokens for WCAG AA.** The mockup's muted `#8A8A94` is 3.4:1 on white and 3.2:1 on `#F7F7F9`, and its income/good `#16A34A` is 3.3:1 and 3.1:1, below AA (4.5:1) for small text. The text tokens are `--muted-foreground: #6b6b75` (4.9:1) and `--good`/`--income: #15803d` (4.7:1). Chart marks keep the mockup colours: the palette, ramp and chart chrome tokens are unchanged (Task 3 Step 2).
 - **C. Active nav item: the mockup (resolved; spec 7.2 corrected).** `index.html:24` draws the active pill near-black (`.nav.on{background:var(--text)}`), while spec 7.2 (lines 270-271) names the accent for "the active nav item". A near-black pill, with the accent for links, the current series and the logo dot.
 - **D. Settings in the navigation: the last nav item.** The mockup nav has no Settings entry, and `/settings` needs a way in.
@@ -23,6 +23,19 @@ The tasks below are written for these decisions.
 - **G. No data in the period: KPI tiles read "—".** When no month of the period has data (`MonthPoint.has_data` false, `periodHasData`), the four tiles show "—" and hide their deltas (spec 2.6: "no data, never 0"). The donut centre repeats the Expenses number, so it follows the same rule (Tasks 2, 4 and 5).
 - **H. /review drops a jev suggestion that does not fit the item's direction** (an income suggestion on a money-out or mixed item). The category field then starts empty (`fitsDirection`, Task 8).
 - **I. Copy.** The uncategorized group's hint reads "Not categorized yet", because those rows never reach /review (Task 2). The overview's subscriptions line says that "active" is measured from the latest import (Task 5). The /review "jev skipped" hint, the "Apply to all" income note and the "No data in <month>" title stay as written.
+
+## Amendments during execution (2026-09-26)
+
+What shipped differs from the tasks below in these points. The code blocks stay as planned; where one differs from the shipped file, the shipped file is the record.
+
+- Vitest (Decision A): no `vite-tsconfig-paths`; `apps/web/vitest.config.mts` resolves the `@/` paths with Vite 8's `resolve: { tsconfigPaths: true }` (Task 1 Steps 1-2 updated).
+- Range labels: a range of days across two years also shows the start's year ("10 Dec 2025 – 19 Jan 2026"); `periodLabel` and `rangeLabel` share one helper, `dayRange` in `apps/web/src/lib/format.ts` (Task 1 updated).
+- Example values: Task 1's signed-money example and Task 2's breakdown example use the values of `apps/web/src/lib/format.test.ts` and `apps/web/src/lib/breakdown.test.ts`.
+- Links styled as buttons: a plain Next `<Link>` with `className={buttonVariants(...)}`, never a `Button` rendered as a `Link` (`apps/web/src/app/page.tsx`, `apps/web/src/app/transactions/explorer-filters.tsx`; Global Constraint updated; the Task 4 and Task 9 code blocks show the first version).
+- Money-in pickers: income first, then one "Refund of a purchase · <Group>" group per expense group, then transfers (`apps/web/src/lib/pickers.ts`; Global Constraint and Review Focus 5 updated; Task 8's `pickerGroups` and the picker checks in Tasks 8 and 10 show the single group planned first).
+- Groups view: the API's overview `by_group` returns every group (`apps/api/finance/api/dashboard.py`), and the view lists every group with spend in the period as its own row, the five slotted groups in their colours and the rest in the "other" grey; `foldBySlot` and its test were removed (`apps/web/src/lib/colors.ts`). A folded `_other` row reads "Other groups" or "Other categories", and merchants keep "Other N merchants" (`rowName` in `apps/web/src/lib/labels.ts`); the Groups view has no folded row (Task 5's check and the known gaps note updated).
+- Previous period (Task 14 finding D2): when the selected accounts' data ends inside the period, the API cuts the previous period after as many days (`apps/api/finance/api/periods.py`); the KPI tiles, the change columns and the same-day card compare those days, whether the previous period has data is judged on the whole of it, and the cumulative chart's previous line keeps running past the cut day, up to the current period's length (`apps/web/src/components/charts/cumulative-chart.tsx`). A custom range's `previousLabel` still counts the whole range before (`format.ts`). Spec 2.6 describes it.
+- Task 14 Step 3 ran as four fix waves after the dogfood and guidelines passes: data and copy, accessibility, interaction and layout, then tests, code quality, API validation and D2 (commits `b191cd6..e21b652`).
 
 ## Before Task 1
 
@@ -60,7 +73,7 @@ Expected: no errors.
 - The folded row's key is "_other" (never a slug); plan 3a Task 10.
 - This is Next.js 16.3.6, not the Next.js of training data. Read the guide in `apps/web/node_modules/next/dist/docs/` before using any API (`apps/web/AGENTS.md`). `params` and `searchParams` are Promises. `PageProps<"/route">` and `LayoutProps<"/route">` are global types. `error.tsx` receives `retry` (stable since 16.3). A client component that calls `useSearchParams` inside the root layout needs a `<Suspense>` boundary, or `next build` fails on the prerendered 404 page.
 - Every page that fetches exports `export const dynamic = "force-dynamic"` (the existing convention), so `next build` in CI never calls the API.
-- shadcn `base-nova` runs on Base UI, not Radix. Use `render={<Button />}`, never `asChild`. Add `nativeButton={false}` when `render` is a `Link`. `ToggleGroup` values are arrays. `Select` takes an `items` prop. Follow `.claude/skills/shadcn/rules/*.md`. Add components with `npx shadcn@latest add <name> --dry-run`, then without `--dry-run`, and read every added file. Icons come from `lucide-react`, and `cn` from `@/lib/utils`.
+- shadcn `base-nova` runs on Base UI, not Radix. Use `render={<Button />}`, never `asChild`. A link styled as a button is a plain Next `<Link>` with `className={buttonVariants(...)}`, never a `Button` rendered as a `Link`: Base UI gives that one `role="button"`, so screen readers announce the link as a button. `ToggleGroup` values are arrays. `Select` takes an `items` prop. Follow `.claude/skills/shadcn/rules/*.md`. Add components with `npx shadcn@latest add <name> --dry-run`, then without `--dry-run`, and read every added file. Icons come from `lucide-react`, and `cn` from `@/lib/utils`.
 - Charts use Recharts 3 through the shadcn `chart` component. It installs `recharts@3.8.0`: keep that version and upgrade only on purpose, in its own change. Run `npm install react-is@19.2.8` to match React 19.2.8 (spec 8, gotcha 1). Every `ChartContainer` gets a height or `aspect-*` class. Colours are written as `var(--…)`, never `hsl(var(--…))`. Months without data arrive as `null` and are drawn as dashed "no data" boxes, never as 0. Legend isolation is a hidden-series state, plus `hide` on the series, plus legend items rendered as `<button aria-pressed>`. Use the Recharts v3 docs only.
 - No other libraries: no nuqs, no TanStack Table, no date library. `Intl` formats money and dates, and period maths stays in the API; the web only shifts a month for the "Previous month" preset.
 - The URL is the state. The period (`period`, `month`, `start`, `end`), `account_id` (repeatable) and the explorer filters live in `searchParams`, and they are parsed and written only through `src/lib/params.ts`. Every link carries them (`withFilters`).
@@ -69,7 +82,7 @@ Expected: no errors.
 - Visual system (spec 7.2, mockup tokens): white page `#FFFFFF`; surfaces `#F7F7F9` without borders; text `#0B0B0F`; muted text `#6b6b75` (Decision B; the mockup's `#8A8A94` fails AA); one accent, indigo `#4F46E5`; income/good text `#15803d` (Decision B; the mockup's `#16A34A`); bad `#E11D48`; radius 16 for cards and 999 for pills; Geist with tabular numbers; the logo is lower-case "tally ai", in one colour and one weight, with the accent dot; a top navigation bar with a pill for the active item and the filters on the right.
 - Group palette `#4F46E5 #EB6834 #1BAF7A #EDA100 #E87BA4`, other `#D4D4DC`, assigned by `Overview.group_slots`: colour follows the group, never its rank. One-hue ramp `#4F46E5 #6D66EE #8C86F2 #AAA6F5 #C4C0F8 #DAD8FB` (darkest = largest) for categories inside a group page. Green and red only for deltas, always with an arrow and a sign. Light mode only.
 - The UI explains itself. Every edit field has a one-line `FieldDescription`, and every KPI has an ⓘ tooltip that quotes `docs/money-rules.md`. UI copy is in English, in sentence case.
-- Direction-aware category pickers everywhere: money out offers expense and transfer categories; money in offers income first, then a "Refund of a purchase" group with the expense categories, then transfers.
+- Direction-aware category pickers everywhere: money out offers expense and transfer categories; money in offers income first, then one "Refund of a purchase · <Group>" group per expense group, with that group's categories, then transfers.
 - Simplicity: one responsibility per file, no abstraction for a single caller, 15 readable lines over 30 clever ones.
 - Testing policy: CI stays lint + type-check + build (`npm run lint` and `npm run build`, which type-checks). Pure TypeScript helpers in `src/lib` get Vitest unit tests (Decision A). Components are verified in the browser with agent-browser, not with unit tests. The local gate for every task is `cd apps/web && npm run lint && npx tsc --noEmit && npm test && npm run build`.
 - Browser checks follow "Browser checks" below. Real data is read-only; checks that write data run on the scratch database. Screenshots are saved only as absolute paths under `dogfood-output/slice-3b/`, which is git-ignored because the captures show real bank data; never commit them. Use a named session, stay on localhost, and `close` at the end.
@@ -83,7 +96,7 @@ Expected: no errors.
 2. **A browser west of UTC**: `2026-08-01` must read "Sat, 1 Aug", never 31 July. Day headers, axis labels and the period pill all format through `format.ts` in UTC. Tests: Task 1 (`format.test.ts`, run with `TZ=America/Los_Angeles`).
 3. **A period whose previous period has no data, was zero, or was negative (refunds only), and a month without income**: the delta is hidden, reads "new", or keeps its real direction; the savings rate reads "—" and its delta is hidden. Tests: Task 2 (`delta.test.ts`).
 4. **A day split across two "Load more" pages**: one header for the day, with the net of all its loaded rows. Tests: Task 6 (`transactions.test.ts`, `groupByDay`).
-5. **Money in on a merchant with an expense default (a refund)**: its pickers list income first, then "Refund of a purchase", then transfers; it can never be saved as a subscription; and "Apply to all" never relabels rows the user or a rule labelled. Tests: Task 8 (`pickers.test.ts`) and Task 10 (`transactions.test.ts`, `applyChange`).
+5. **Money in on a merchant with an expense default (a refund)**: its pickers list income first, then one "Refund of a purchase · <Group>" group per expense group, then transfers; it can never be saved as a subscription; and "Apply to all" never relabels rows the user or a rule labelled. Tests: Task 8 (`pickers.test.ts`) and Task 10 (`transactions.test.ts`, `applyChange`).
 
 ## Browser checks
 
@@ -193,12 +206,12 @@ All paths are under `apps/web/`.
   - `parseFilters(params: SearchParams): Filters`; `filterParams(filters): URLSearchParams`; `withFilters(path: string, filters: Filters, extra?: Record<string, string | undefined>): string`.
   - `parseExplorer(params): ExplorerFilters`; `explorerParams(filters, explorer): URLSearchParams`; `clearedExplorer(query: string): string`.
   - `toSearchParams(search: URLSearchParams): SearchParams`; `replaceParams(query: string, changes: Record<string, string | string[] | undefined>): string`; `periodChanges(choice: Omit<Filters, "accounts">): Record<string, string | undefined>`; `shiftMonth(month: string, months: number): string`; `detailType(params): "expense" | "income"`.
-- Produces, `format.ts`: `toNumber`, `money`, `moneyWhole`, `signedMoney`, `signedMoneyWhole`, `compactMoney`, `percent`, `rate`, `monthLabel`, `monthShort`, `dayHeader`, `dayShort`, `dayLong`, `dateTime`, `dayAt(start, offset)`, `daysIn(start, end)`, `PeriodLike`, `periodLabel(filters, latestDay)`, `rangeLabel(period)`, `previousLabel(period, style?)`, `periodNames(period)`.
+- Produces, `format.ts`: `toNumber`, `money`, `moneyWhole`, `signedMoney`, `signedMoneyWhole`, `compactMoney`, `percent`, `rate`, `monthLabel`, `monthShort`, `dayHeader`, `dayShort`, `dayLong`, `dateTime`, `dayAt(start, offset)`, `daysIn(start, end)`, `dayRange(start, end)`, `PeriodLike`, `periodLabel(filters, latestDay)`, `rangeLabel(period)`, `previousLabel(period, style?)`, `periodNames(period)`.
 
 - [ ] **Step 1: Install Vitest (Decision A)**
 
 ```bash
-cd apps/web && npm install -D vitest vite-tsconfig-paths
+cd apps/web && npm install -D vitest
 ```
 
 - [ ] **Step 2: Configure it**
@@ -206,13 +219,12 @@ cd apps/web && npm install -D vitest vite-tsconfig-paths
 Create `apps/web/vitest.config.mts`:
 
 ```ts
-import tsconfigPaths from "vite-tsconfig-paths";
 import { defineConfig } from "vitest/config";
 
 // Pure helpers only (src/lib). Components are checked in the browser with agent-browser, so
 // jsdom and React Testing Library from the Next.js guide are left out.
 export default defineConfig({
-  plugins: [tsconfigPaths()],
+  resolve: { tsconfigPaths: true },
   test: { environment: "node", include: ["src/**/*.test.ts"] },
 });
 ```
@@ -360,6 +372,7 @@ import {
   compactMoney,
   dayAt,
   dayHeader,
+  dayRange,
   dayLong,
   dayShort,
   daysIn,
@@ -385,7 +398,7 @@ describe("money", () => {
     expect(money("2184")).toBe("€2,184.00");
     expect(moneyWhole("3250.40")).toBe("€3,250");
     expect(signedMoney("-42.10")).toBe("-€42.10");
-    expect(signedMoney("25.19")).toBe("+€25.19");
+    expect(signedMoney("12.34")).toBe("+€12.34");
     expect(signedMoneyWhole(3250)).toBe("+€3,250");
     expect(compactMoney(2400)).toBe("€2.4K");
     expect(money(null)).toBe("€0.00");
@@ -410,6 +423,11 @@ describe("dates are formatted in UTC", () => {
     expect(monthShort("2026-02")).toBe("Feb");
   });
 
+  it("names a range of days, with the start's year only across two years", () => {
+    expect(dayRange("2026-08-01", "2026-08-31")).toBe("1 Aug – 31 Aug 2026");
+    expect(dayRange("2025-12-10", "2026-01-19")).toBe("10 Dec 2025 – 19 Jan 2026");
+  });
+
   it("counts the days of a period", () => {
     expect(dayAt("2026-08-01", 30)).toBe("2026-08-31");
     expect(daysIn("2026-02-01", "2026-02-28")).toBe(28);
@@ -431,6 +449,9 @@ describe("period labels", () => {
     expect(periodLabel({ period: "month", accounts: [] }, null)).toBe("Latest month");
     expect(periodLabel({ period: "custom", start: "2026-08-10", end: "2026-08-19", accounts: [] }, null)).toBe(
       "10 Aug – 19 Aug 2026",
+    );
+    expect(periodLabel({ period: "custom", start: "2025-12-10", end: "2026-01-19", accounts: [] }, null)).toBe(
+      "10 Dec 2025 – 19 Jan 2026",
     );
   });
 
@@ -665,7 +686,7 @@ type Amount = string | number | null | undefined;
 export const toNumber = (value: Amount): number => (value === null || value === undefined ? 0 : Number(value));
 export const money = (value: Amount) => cents.format(toNumber(value)); // €2,184.00
 export const moneyWhole = (value: Amount) => whole.format(toNumber(value)); // €2,184
-/** With an explicit sign, so money in (+€25.19) never reads as money out (-€25.19). */
+/** With an explicit sign, so money in (+€12.34) never reads as money out (-€12.34). */
 export const signedMoney = (value: Amount) => signedCents.format(toNumber(value));
 export const signedMoneyWhole = (value: Amount) => signedWhole.format(toNumber(value));
 export const compactMoney = (value: number) => compact.format(value); // €2.4K, for axis ticks
@@ -698,6 +719,11 @@ export const dayAt = (start: string, offset: number) =>
 export const daysIn = (start: string, end: string) =>
   Math.round((utc(end).getTime() - utc(start).getTime()) / DAY_MS) + 1;
 
+/** A range of days, with the start's year only when it spans two years: "10 Aug – 19 Aug 2026",
+ * "10 Dec 2025 – 19 Jan 2026". */
+export const dayRange = (start: string, end: string) =>
+  `${start.slice(0, 4) === end.slice(0, 4) ? dayShort(start) : dayLong(start)} – ${dayLong(end)}`;
+
 /** The fields of Schemas["PeriodOut"] these labels need. */
 export type PeriodLike = { name: string; start: string; end: string; previous_start: string; previous_end: string };
 
@@ -715,15 +741,13 @@ export function periodLabel(filters: Filters, latestDay: string | null): string 
     case "ytd":
       return "Year to date";
     case "custom":
-      return `${dayShort(filters.start!)} – ${dayLong(filters.end!)}`;
+      return dayRange(filters.start!, filters.end!);
   }
 }
 
 /** A page's resolved period: "August 2026" or "1 Jun – 31 Aug 2026". */
 export function rangeLabel(period: PeriodLike): string {
-  return period.name === "month"
-    ? monthLabel(period.start.slice(0, 7))
-    : `${dayShort(period.start)} – ${dayLong(period.end)}`;
+  return period.name === "month" ? monthLabel(period.start.slice(0, 7)) : dayRange(period.start, period.end);
 }
 
 /** What a delta compares with (spec 2.6: the previous period of the same length). */
@@ -1034,7 +1058,7 @@ describe("breakdownItems", () => {
     const [groceries, other] = breakdownItems(
       [
         row({ key: "groceries", level1: "shopping", category_slug: "groceries", amount: "268.40", share: 0.56, previous: "280.00" }),
-        row({ key: "_other", amount: "10.00", previous: "12.00", folded: 2 }),
+        row({ key: "_other", amount: "10.00", previous: "20.00", folded: 2 }),
       ],
       "category",
       { categories, slots: { shopping: 2 }, filters: august, good: "down", type: "expense" },
@@ -2888,9 +2912,9 @@ Expected: no errors.
 
 - [ ] **Step 7: Check the card in the browser (R1, read-only)**
 
-1. `open "http://localhost:3000/"`, `snapshot -i`. Expect the card "Where your money went" with a group of three toggle buttons, "Groups" pressed; a table with the headers GROUP, SHARE, AMOUNT and "VS <PREVIOUS MONTH>" (the last one only when the previous month has data); at most six rows, the last one "Other" when groups were folded, each with a hint under its name ("Not itemized: card statements are not imported" for Credit card).
-2. Colour = group: `eval "[...document.querySelectorAll('[data-slot=series-dot]')].map(e => e.style.background)"` lists `var(--chart-N)` values, `var(--chart-other)` for "Other". Note each group's value; choose "Last 12 months" in the period picker and read them again: every group that is still listed keeps the same colour.
-3. Click "Categories": category rows with their group's name as the hint, dots in their group's colour. Click "Merchants": the last row reads "Other N merchants" when merchants were folded.
+1. `open "http://localhost:3000/"`, `snapshot -i`. Expect the card "Where your money went" with a group of three toggle buttons, "Groups" pressed; a table with the headers GROUP, SHARE, AMOUNT and "VS <PREVIOUS MONTH>" (the last one only when the previous month has data); one row per group with spend in the period and no folded row, each with a hint under its name ("Not itemized: card statements are not imported" for Credit card).
+2. Colour = group: `eval "[...document.querySelectorAll('[data-slot=series-dot]')].map(e => e.style.background)"` lists `var(--chart-N)` for the slotted groups and `var(--chart-other)` for the rest. Note each group's value; choose "Last 12 months" in the period picker and read them again: every group that is still listed keeps the same colour.
+3. Click "Categories": category rows with their group's name as the hint, dots in their group's colour, the last row "Other categories" when categories were folded. Click "Merchants": the last row reads "Other N merchants" when merchants were folded.
 4. Hover a donut slice (`find first ".recharts-pie-sector" hover`), `snapshot`: the tooltip shows its name and an amount in euros.
 5. `snapshot -i -u`: a group's link is `/spending/<group>?<the same period params>`; a category's link is `/spending/<group>/<category>?…`; a merchant's link is `/merchants/<id>?…`. (These pages come in Tasks 6 and 7.)
 6. The subscriptions line reads "N active subscriptions · €… per month · €… per year · all accounts", with the line "Active means charged within 45 days (monthly) or 400 days (yearly) of your latest imported transaction, not of today." under it (Decision I) and a link to `/subscriptions`; picking one account in the top bar leaves it unchanged (`/dashboard/overview` ignores `account_id` for subscriptions). `open "http://localhost:3000/?month=2099-12"`: the donut centre reads "Spent —" with no delta (Decision G).
@@ -5983,5 +6007,5 @@ Expected: the spec's slice 3 "done" list for the web holds: every page in sectio
 ## Notes for the executor
 
 - **Order:** Tasks 1 → 14. Tasks 1-2 are pure helpers; every later task consumes them. Task 8 must come before Tasks 9 and 10 (the pickers move), and Task 10 before Task 12 (`apiPatch`).
-- **Known gaps in the contract, handled here:** the API has no endpoint for the latest imported day, so the top bar reads `period.latest_day` from `GET /transactions?limit=1`; the Groups view folds groups without a colour slot into "Other" on the client (`foldBySlot`), because the API ranks its top five by the period's spend; the mockup's "12 months | Year to date | All" switch is left out, because the API sends exactly 12 months; `Transaction` has no account bank or last digits, so rows show `account_name`; the panel always offers "Clear merchant default" for a row with a merchant, because the API does not say whether the merchant has a default.
+- **Known gaps in the contract, handled here:** the API has no endpoint for the latest imported day, so the top bar reads `period.latest_day` from `GET /transactions?limit=1`; the API's overview `by_group` returns every group, so the Groups view lists every group with spend in the period as its own row, the five slotted groups in their colours and the rest in the "other" grey (`foldBySlot` was removed); the mockup's "12 months | Year to date | All" switch is left out, because the API sends exactly 12 months; `Transaction` has no account bank or last digits, so rows show `account_name`; the panel always offers "Clear merchant default" for a row with a merchant, because the API does not say whether the merchant has a default.
 - **Not in this plan:** Playwright tests (v2), dark mode (v2), a phone bottom tab bar (v2), editing categories (v2), and the Decision E check in the API.

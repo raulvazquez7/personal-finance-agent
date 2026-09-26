@@ -159,8 +159,9 @@ total.
   year to date up to 10 March is cut at 11 March the year before). The KPI
   tiles, the change columns and the same-day card compare those days, like
   with like. Whether the previous period has data is still judged on the whole
-  of it, and the cumulative chart draws the whole previous period as a
-  reference line (the same-day card reads it at the same day).
+  of it, and the cumulative chart's previous line, drawn as a reference, keeps
+  running past the cut day, up to the current period's length (the same-day
+  card reads it at the same day).
 - A month "has data" when at least one transaction of the selected accounts
   is booked in it. Months without data are drawn as "no data", never as 0.
   Per-account import coverage is v2.
@@ -325,8 +326,8 @@ contract, and the pixel values are indicative.
   also has a "Clear merchant default" action.
 - **Direction-aware pickers** everywhere (`/review`, the panel, the filters):
   - money out offers expense and transfer categories;
-  - money in offers income first, then a "Refund of a purchase" group with
-    the expense categories, then transfers.
+  - money in offers income first, then one "Refund of a purchase · <Group>"
+    group per expense group, with that group's categories, then transfers.
 
 ## 8. Libraries
 
