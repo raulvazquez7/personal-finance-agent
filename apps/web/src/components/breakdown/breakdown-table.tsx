@@ -26,7 +26,9 @@ export function BreakdownTable({ items, nameHeader, versus, showShare = true }: 
       <TableBody>
         {items.map((item) => (
           <TableRow key={item.key}>
-            <TableCell className="max-w-72 whitespace-normal">
+            {/* wrap-anywhere, not break-words: a long name without spaces must also shrink the column's
+                minimum width, or the table scrolls inside its card on a phone. */}
+            <TableCell className="max-w-72 whitespace-normal wrap-anywhere">
               <div className="flex items-center gap-2.5">
                 {item.color && (
                   <span

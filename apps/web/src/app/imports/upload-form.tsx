@@ -76,7 +76,8 @@ export function UploadForm() {
       </Field>
       <div aria-live="polite">
         {messages.length > 0 && (
-          <ul className="text-sm text-muted-foreground">
+          // A long file name without spaces wraps instead of running past the card on a phone.
+          <ul className="text-sm wrap-anywhere text-muted-foreground">
             {messages.map((message) => (
               <li key={message}>{message}</li>
             ))}
