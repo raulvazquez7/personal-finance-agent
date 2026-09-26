@@ -10,8 +10,16 @@ export const HELP_ID = {
 } as const;
 
 const LINES = [
-  { id: HELP_ID.merchant, field: "Merchant", text: "who the money went to or came from; type a name to rename it, or pick an existing merchant to merge." },
-  { id: HELP_ID.category, field: "Category", text: 'money out lists expenses and transfers; money in lists income first, then refunds under "Refund of a purchase".' },
+  {
+    id: HELP_ID.merchant,
+    field: "Merchant",
+    text: "who the money went to or came from; type a name to rename the merchant, or pick an existing one to merge them. For a transaction without a merchant, a name you type creates one and a pick assigns it.",
+  },
+  {
+    id: HELP_ID.category,
+    field: "Category",
+    text: 'money out lists expenses and transfers; money in lists income first, then refunds under "Refund of a purchase", then transfers.',
+  },
   { id: HELP_ID.subscription, field: "Subscription", text: "a recurring charge; only money out can be one." },
   { id: HELP_ID.line, field: "Category for this transaction", text: "expand a merchant to label one transaction on its own." },
 ];
