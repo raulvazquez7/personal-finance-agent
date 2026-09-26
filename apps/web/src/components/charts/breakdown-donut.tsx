@@ -45,7 +45,8 @@ export function BreakdownDonut({ slices, total, change, versus, title }: Props) 
         <span className="text-xs text-muted-foreground">Spent</span>
         <span className="text-2xl font-semibold tracking-tight">{total === null ? <NoData /> : moneyWhole(total)}</span>
         {total !== null && (
-          <span className="text-xs">
+          // Kept inside the hole: a long "vs …" label wraps onto a second line.
+          <span className="max-w-28 text-xs text-balance">
             <DeltaText value={change} /> {change.kind === "change" && <span className="text-muted-foreground">{versus}</span>}
           </span>
         )}

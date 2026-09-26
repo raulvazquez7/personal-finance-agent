@@ -102,6 +102,7 @@ describe("period labels", () => {
     end: "2026-08-31",
     previous_start: "2026-07-01",
     previous_end: "2026-07-31",
+    latest_day: "2026-08-31",
   };
 
   it("names the filter pill", () => {
@@ -126,10 +127,39 @@ describe("period labels", () => {
     expect(previousLabel({ ...august, name: "last_3_months" })).toBe("vs the 3 months before");
     expect(previousLabel({ ...august, name: "last_12_months" })).toBe("vs the 12 months before");
     expect(previousLabel({ ...august, name: "ytd" })).toBe("vs the same dates last year");
-    const tenDays = { name: "custom", start: "2026-08-10", end: "2026-08-19", previous_start: "2026-07-31", previous_end: "2026-08-09" };
+    const tenDays = {
+      name: "custom",
+      start: "2026-08-10",
+      end: "2026-08-19",
+      previous_start: "2026-07-31",
+      previous_end: "2026-08-09",
+      latest_day: "2026-08-20",
+    };
     expect(previousLabel(tenDays)).toBe("vs the 10 days before");
-    // Data that ends on 15 August cuts the previous range at as many days (the API): still the 10 days before.
-    expect(previousLabel({ ...tenDays, previous_end: "2026-08-05" })).toBe("vs the 10 days before");
     expect(periodNames({ ...august, name: "ytd" })).toEqual({ current: "This period", previous: "Previous period" });
+  });
+
+  it("says when the data ends inside the period and the previous one is cut at the same day", () => {
+    // Data to 10 August: 1-10 August against 1-10 July (the API's until_same_day).
+    const cut = { ...august, previous_end: "2026-07-10", latest_day: "2026-08-10" };
+    expect(previousLabel(cut)).toBe("vs Jul by the same day");
+    expect(previousLabel(cut, "long")).toBe("vs July by the same day");
+    expect(previousLabel({ ...cut, name: "last_3_months", start: "2026-06-01" })).toBe(
+      "vs the 3 months before by the same day",
+    );
+    // Data that ends on 15 August cuts the previous range at as many days: still the 10 days before.
+    const tenDays = { name: "custom", start: "2026-08-10", end: "2026-08-19", previous_start: "2026-07-31" };
+    expect(previousLabel({ ...tenDays, previous_end: "2026-08-05", latest_day: "2026-08-15" })).toBe(
+      "vs the 10 days before by the same day",
+    );
+    // The first day counts as inside; the last day means the data covers the period whole.
+    expect(previousLabel({ ...cut, latest_day: "2026-08-01" })).toBe("vs Jul by the same day");
+  });
+
+  it("keeps the plain label when the data covers the period whole", () => {
+    expect(previousLabel({ ...august, latest_day: "2026-08-31" })).toBe("vs Jul");
+    expect(previousLabel({ ...august, latest_day: "2026-09-20" })).toBe("vs Jul");
+    expect(previousLabel({ ...august, latest_day: "2026-07-20" })).toBe("vs Jul");
+    expect(previousLabel({ ...august, latest_day: null })).toBe("vs Jul");
   });
 });

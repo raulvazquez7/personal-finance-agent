@@ -73,7 +73,19 @@ export const dayRange = (start: string, end: string) =>
   `${start.slice(0, 4) === end.slice(0, 4) ? dayShort(start) : dayLong(start)} – ${dayLong(end)}`;
 
 /** The fields of Schemas["PeriodOut"] these labels need. */
-export type PeriodLike = { name: string; start: string; end: string; previous_start: string; previous_end: string };
+export type PeriodLike = {
+  name: string;
+  start: string;
+  end: string;
+  previous_start: string;
+  previous_end: string;
+  latest_day: string | null;
+};
+
+/** The selected accounts' data ends inside the period: the API then cuts the previous period
+ * after as many days, so every change compares like with like (spec 2.6, until_same_day). */
+export const endsInside = (period: PeriodLike) =>
+  period.latest_day !== null && period.start <= period.latest_day && period.latest_day < period.end;
 
 /** The period pill: "August 2026", "Last 3 months", "10 Aug – 19 Aug 2026". */
 export function periodLabel(filters: Filters, latestDay: string | null): string {
@@ -98,14 +110,19 @@ export function rangeLabel(period: PeriodLike): string {
   return period.name === "month" ? monthLabel(period.start.slice(0, 7)) : dayRange(period.start, period.end);
 }
 
-/** What a delta compares with (spec 2.6: the previous period of the same length). */
+/** What a delta compares with (spec 2.6: the previous period of the same length), "by the same
+ * day" when the data ends inside the period: "vs Jul", "vs Jul by the same day". */
 export function previousLabel(period: PeriodLike, style: "short" | "long" = "short"): string {
+  return `${previousName(period, style)}${endsInside(period) ? " by the same day" : ""}`;
+}
+
+function previousName(period: PeriodLike, style: "short" | "long"): string {
   if (period.name === "month") return `vs ${(style === "short" ? monthAbbr : monthLong).format(utc(period.previous_start))}`;
   if (period.name === "last_3_months") return "vs the 3 months before";
   if (period.name === "last_12_months") return "vs the 12 months before";
   if (period.name === "ytd") return "vs the same dates last year";
-  // The whole range before: it ends the day before this one starts. `previous_end` can come
-  // earlier, when the data ends inside the period (the API then compares as many days).
+  // The whole range before: it ends the day before this one starts. `previous_end` comes
+  // earlier when the data ends inside the period (the suffix says so).
   return `vs the ${daysIn(period.previous_start, dayAt(period.start, -1))} days before`;
 }
 

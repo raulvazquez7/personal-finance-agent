@@ -20,7 +20,8 @@ export function BreakdownTable({ items, nameHeader, versus, showShare = true }: 
           <TableHead>{nameHeader}</TableHead>
           {showShare && <TableHead className="hidden text-right sm:table-cell">Share</TableHead>}
           <TableHead className="text-right">Amount</TableHead>
-          {compared && <TableHead className="text-right">{versus}</TableHead>}
+          {/* May wrap: "vs Jul by the same day" on one line squeezes the names on a phone. */}
+          {compared && <TableHead className="text-right whitespace-normal">{versus}</TableHead>}
         </TableRow>
       </TableHeader>
       <TableBody>

@@ -14,7 +14,7 @@ import { apiGet, type Schemas } from "@/lib/api";
 import { breakdownItems, type BreakdownContext } from "@/lib/breakdown";
 import { DEFINITIONS } from "@/lib/definitions";
 import { atSameDay, delta, periodHasData } from "@/lib/delta";
-import { money, moneyWhole, periodNames, previousLabel, rangeLabel, rate, signedMoneyWhole } from "@/lib/format";
+import { endsInside, money, moneyWhole, periodNames, previousLabel, rangeLabel, rate, signedMoneyWhole } from "@/lib/format";
 import { plural } from "@/lib/labels";
 import { filterParams, parseFilters, withFilters } from "@/lib/params";
 
@@ -104,7 +104,8 @@ export default async function OverviewPage({ searchParams }: PageProps<"/">) {
             <CardDescription>
               <DeltaText value={delta(spent.current, spent.previous, "down", "euro")} />{" "}
               <DeltaText value={delta(spent.current, spent.previous, "down", "percent")} arrow={false} parens />{" "}
-              {`${previousLabel(period, "long")}${period.name === "month" ? " by the same day" : ""}`}
+              {/* The label says "by the same day" itself when the data ends inside the period. */}
+              {`${previousLabel(period, "long")}${period.name === "month" && !endsInside(period) ? " by the same day" : ""}`}
             </CardDescription>
           )}
         </CardHeader>
