@@ -56,9 +56,20 @@ export function MerchantPicker({
     <Combobox
       items={items}
       value={value}
-      onValueChange={(merchant: MerchantChoice | null) => onChange(merchant)}
+      // Base UI still reports the change it canceled below (Escape on a label): skip it.
+      onValueChange={(merchant: MerchantChoice | null, details) => {
+        if (!details.isCanceled) onChange(merchant);
+      }}
       inputValue={query}
-      onInputValueChange={setQuery}
+      onInputValueChange={(next, details) => {
+        // A label keeps its merchant on Escape, as CategoryPicker does; a filter (with its ×) empties.
+        if (details.reason === "escape-key" && !showClear) {
+          details.cancel();
+          details.allowPropagation();
+          return;
+        }
+        setQuery(next);
+      }}
       itemToStringLabel={(merchant: MerchantChoice) => merchant.name}
       isItemEqualToValue={(a: MerchantChoice, b: MerchantChoice) => a.id === b.id && a.name === b.name}
     >

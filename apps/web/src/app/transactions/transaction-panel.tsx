@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useRef, useState } from "react";
+import { useState } from "react";
 import { toast } from "sonner";
 
 import { CategoryPicker } from "@/components/pickers/category-picker";
@@ -43,10 +43,6 @@ const NOTE_MAX = 500; // transactions.note: char_length(note) <= 500
 
 /** The side panel (spec 7.3): the category, merchant, subscription flag and note of one row. */
 export function TransactionPanel({ tx, categories, merchants, onClose, onSaved }: Props) {
-  // Focus the panel itself on open, as Base UI does for touch: on a combobox that holds a value,
-  // Escape clears the value and stops there, so a focused category box would keep Escape from
-  // closing the panel. Tab still reaches the category first.
-  const popup = useRef<HTMLDivElement>(null);
   return (
     <Sheet
       open={tx !== null}
@@ -54,7 +50,7 @@ export function TransactionPanel({ tx, categories, merchants, onClose, onSaved }
         if (!open) onClose();
       }}
     >
-      <SheetContent ref={popup} initialFocus={popup} className="data-[side=right]:w-full data-[side=right]:sm:max-w-md">
+      <SheetContent className="data-[side=right]:w-full data-[side=right]:sm:max-w-md">
         {tx && <PanelForm key={tx.id} tx={tx} categories={categories} merchants={merchants} onClose={onClose} onSaved={onSaved} />}
       </SheetContent>
     </Sheet>
@@ -95,7 +91,7 @@ function PanelForm({ tx, categories, merchants, onClose, onSaved }: Omit<Props, 
       // Money in has no subscription switch, so a default set from it gives no answer (null): the
       // merchant keeps its flag and every row its own mark. This row itself is never one.
       const defaultSubscription = direction === "in" ? null : subscription;
-      if (noteChanged) await apiPatch(`/transactions/${tx.id}`, { note: finalNote });
+      // The label first: when the API refuses it (a 422), the note is not saved either.
       if (labelChanged) {
         await apiPost(`/transactions/${tx.id}/label`, {
           category_slug: categorySlug,
@@ -104,6 +100,7 @@ function PanelForm({ tx, categories, merchants, onClose, onSaved }: Omit<Props, 
           new_merchant_name: merchant && merchant.id === null ? merchant.name : null,
         });
       }
+      if (noteChanged) await apiPatch(`/transactions/${tx.id}`, { note: finalNote });
       if (toMerchant && merchant?.id) {
         // The merchant's default: its other rows (not the user's own labels) and future imports.
         await apiPost(`/merchants/${merchant.id}/review`, { category_slug: categorySlug, is_subscription: defaultSubscription });
@@ -195,7 +192,7 @@ function PanelForm({ tx, categories, merchants, onClose, onSaved }: Omit<Props, 
           <Field>
             <FieldLabel htmlFor="panel-note">
               Note
-              <span className="ml-auto font-normal text-muted-foreground">
+              <span aria-hidden className="ml-auto font-normal text-muted-foreground">
                 {note.length}/{NOTE_MAX}
               </span>
             </FieldLabel>
@@ -244,8 +241,8 @@ function PanelForm({ tx, categories, merchants, onClose, onSaved }: Omit<Props, 
           <AlertDialogHeader>
             <AlertDialogTitle>Apply to all transactions of this merchant?</AlertDialogTitle>
             <AlertDialogDescription>
-              {merchant?.name} then uses {label(categorySlug)} for its other transactions and for new imports. Transactions you
-              labelled yourself keep their category.
+              {merchant?.name} then uses {label(categorySlug)} for its other transactions and for new imports. Transactions
+              that you or a rule labelled keep their category.
               {category?.tx_type === "income" && " Money going out keeps its category too: it is never income."}
             </AlertDialogDescription>
           </AlertDialogHeader>

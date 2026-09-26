@@ -47,6 +47,15 @@ export function CategoryPicker({
       items={pickerGroups(categories, direction, suggested)}
       value={bySlug.get(value) ?? null}
       onValueChange={(category: Category | null) => category && onChange(category.slug)}
+      // Escape on a closed picker empties it and stops there (Base UI), while the category stays
+      // picked: keep the text (one `details` covers it and the value) and let Escape go on to the
+      // panel around the picker.
+      onInputValueChange={(_, details) => {
+        if (details.reason === "escape-key") {
+          details.cancel();
+          details.allowPropagation();
+        }
+      }}
       itemToStringLabel={(category: Category) => label(category.slug)}
     >
       <ComboboxInput id={id} placeholder="Category" aria-label={ariaLabel} aria-describedby={ariaDescribedBy} className="w-full" />
