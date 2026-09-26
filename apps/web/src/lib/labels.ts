@@ -62,10 +62,14 @@ export function accountsLabel(ids: string[], accounts: { id: string; name: strin
   return `${ids.length} accounts`;
 }
 
-/** "··1234" after an account's name, unless the name already carries those digits (the importer's
- * default name does). */
+/** What stands before an account's last four digits, as the importer writes its default name
+ * ("<bank> ····1234"). Every place that shows the digits uses it. */
+export const DIGITS_SEPARATOR = "····";
+
+/** "····1234" after an account's name, unless the name already carries those digits (the
+ * importer's default name does). */
 export const accountDigits = (account: { name: string; iban_last4: string }) =>
-  account.name.includes(account.iban_last4) ? null : `··${account.iban_last4}`;
+  account.name.includes(account.iban_last4) ? null : `${DIGITS_SEPARATOR}${account.iban_last4}`;
 
 /** A group in the URL must exist, or the page is a 404, never an empty page. */
 export function knownGroup(level1: string, categories: Category[]): boolean {

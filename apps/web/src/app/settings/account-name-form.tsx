@@ -9,6 +9,7 @@ import { Field, FieldDescription, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { Spinner } from "@/components/ui/spinner";
 import { apiPatch, type Schemas } from "@/lib/api";
+import { DIGITS_SEPARATOR } from "@/lib/labels";
 
 const NAME_MAX = 80; // AccountUpdate.name: 1-80 characters
 
@@ -42,7 +43,7 @@ export function AccountNameForm({ account }: { account: Schemas["Account"] }) {
     <form onSubmit={onSubmit}>
       <Field>
         <FieldLabel htmlFor={id}>
-          {account.bank.toUpperCase()} ··{account.iban_last4}
+          {account.bank.toUpperCase()} {DIGITS_SEPARATOR}{account.iban_last4}
         </FieldLabel>
         <div className="flex gap-2">
           <Input

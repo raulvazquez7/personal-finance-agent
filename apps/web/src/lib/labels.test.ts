@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 
 import type { Schemas } from "./api";
 import {
+  DIGITS_SEPARATOR,
   accountDigits,
   accountsLabel,
   groupHint,
@@ -79,7 +80,9 @@ describe("labels", () => {
     expect(accountsLabel(["a", "b"], accounts)).toBe("2 accounts");
     // The importer's default name already ends with the digits; a renamed account shows them again.
     expect(accountDigits({ name: "zztest ····1234", iban_last4: "1234" })).toBeNull();
-    expect(accountDigits({ name: "ZZTEST joint", iban_last4: "1234" })).toBe("··1234");
+    // One way to write the digits: the importer's four dots (Settings uses the same separator).
+    expect(DIGITS_SEPARATOR).toBe("····");
+    expect(accountDigits({ name: "ZZTEST joint", iban_last4: "1234" })).toBe("····1234");
   });
 
   it("knows which groups and categories exist", () => {
