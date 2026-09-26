@@ -4,7 +4,6 @@ import "./globals.css";
 
 import { TopBar } from "@/components/shell/top-bar";
 import { Toaster } from "@/components/ui/sonner";
-import { TooltipProvider } from "@/components/ui/tooltip";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -33,10 +32,8 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         >
           Skip to content
         </a>
-        <TooltipProvider>
-          <TopBar />
-          <main id="main" className="mx-auto flex w-full max-w-6xl flex-1 flex-col gap-4 px-4 py-5 sm:px-6">{children}</main>
-        </TooltipProvider>
+        <TopBar />
+        <main id="main" className="mx-auto flex w-full max-w-6xl flex-1 flex-col gap-4 px-4 py-5 sm:px-6">{children}</main>
         {/* Light mode only in slice 3: the toaster must not follow a dark system theme. */}
         <Toaster position="bottom-center" theme="light" />
       </body>
