@@ -17,12 +17,16 @@ export function AccountPicker({ accounts }: { accounts: Schemas["Account"][] }) 
   const selected = parseFilters(toSearchParams(search)).accounts;
   const go = (ids: string[]) => router.push(`${pathname}?${replaceParams(search.toString(), { account_id: ids })}`);
   const toggle = (id: string) => go(selected.includes(id) ? selected.filter((other) => other !== id) : [...selected, id]);
+  const label = accountsLabel(selected, accounts);
 
   return (
     <Popover>
       <PopoverTrigger render={<Button variant="secondary" size="sm" className="rounded-full" />}>
         <span className="sr-only">Accounts: </span>
-        {accountsLabel(selected, accounts)}
+        {/* A renamed account can be 80 characters long: it must not push the top bar past a phone's width. */}
+        <span className="max-w-40 truncate" title={label}>
+          {label}
+        </span>
         <ChevronDown data-icon="inline-end" />
       </PopoverTrigger>
       <PopoverContent align="end" className="w-64 gap-0 p-1">
@@ -40,7 +44,7 @@ export function AccountPicker({ accounts }: { accounts: Schemas["Account"][] }) 
               aria-pressed={selected.includes(account.id)}
               onClick={() => toggle(account.id)}
             >
-              <span className="truncate">
+              <span className="truncate" title={account.name}>
                 {account.name}
                 {digits && <span className="text-muted-foreground"> {digits}</span>}
               </span>
