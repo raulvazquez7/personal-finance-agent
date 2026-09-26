@@ -12,7 +12,7 @@ import { Switch } from "@/components/ui/switch";
 import type { Schemas } from "@/lib/api";
 import { dayLong, signedMoney } from "@/lib/format";
 import { label } from "@/lib/labels";
-import { directionOf, fitsDirection } from "@/lib/pickers";
+import { directionOf, startingCategory } from "@/lib/pickers";
 import { cn } from "@/lib/utils";
 
 import { HELP_ID } from "./review-help";
@@ -35,8 +35,7 @@ export function ReviewRow({ item, categories, merchants, onConfirm, onLabelOne, 
   const { suggestion, merge } = item;
   const direction = directionOf(item.transactions.map((t) => t.amount));
   // Decision H: a jev suggestion that does not fit the direction (income on money out) is dropped.
-  const suggested = suggestion.category_slug ?? "";
-  const [categorySlug, setCategorySlug] = useState(fitsDirection(suggested, categories, direction) ? suggested : "");
+  const [categorySlug, setCategorySlug] = useState(() => startingCategory(item, categories));
   const [isSubscription, setIsSubscription] = useState(suggestion.is_subscription);
   // Only money out is a subscription (spec 6): money in never shows or sends one.
   const subscription = isSubscription && direction === "out";

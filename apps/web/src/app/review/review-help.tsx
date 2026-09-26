@@ -1,5 +1,6 @@
 import { FieldDescription } from "@/components/ui/field";
 import type { Schemas } from "@/lib/api";
+import { startingCategory } from "@/lib/pickers";
 
 /** Every edit field has a one-line description (spec 7.2). /review says it once, above the cards,
  * and every card's fields point here with aria-describedby. */
@@ -13,8 +14,9 @@ export const HELP_ID = {
 } as const;
 
 type Item = Schemas["ReviewItem"];
+type Category = Schemas["CategoryOut"];
 /** `when` shows a line only for the cards that need it. */
-type Line = { id: string; field: string; text: string; when?: (items: Item[]) => boolean };
+type Line = { id: string; field: string; text: string; when?: (items: Item[], categories: Category[]) => boolean };
 
 const LINES: Line[] = [
   // One line per card kind: a merchant's card renames or merges the merchant, while a transaction
@@ -42,18 +44,20 @@ const LINES: Line[] = [
     id: HELP_ID.confidence,
     field: "jev",
     text: "the percentage beside a category is how sure jev, the AI categorizer, is of its suggestion; it goes once you pick another category.",
-    when: (items) => items.some((item) => item.suggestion.confidence != null),
+    // Only where a card shows "jev N%": beside a suggestion it starts with (none under Decision H).
+    when: (items, categories) =>
+      items.some((item) => item.suggestion.confidence != null && startingCategory(item, categories) !== ""),
   },
 ];
 
-export function ReviewHelp({ items }: { items: Item[] }) {
+export function ReviewHelp({ items, categories }: { items: Item[]; categories: Category[] }) {
   return (
     <section aria-labelledby="review-help-title" className="flex flex-col gap-1">
       <h2 id="review-help-title" className="text-sm font-medium">
         How to review
       </h2>
       <ul className="flex flex-col gap-0.5">
-        {LINES.filter((line) => !line.when || line.when(items)).map((line) => (
+        {LINES.filter((line) => !line.when || line.when(items, categories)).map((line) => (
           <li key={line.id}>
             <FieldDescription id={line.id}>
               <span className="font-medium text-foreground">{line.field}:</span> {line.text}

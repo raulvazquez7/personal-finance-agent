@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 
 import type { Schemas } from "./api";
 import type { TxType } from "./params";
-import { directionOf, filterGroups, fitsDirection, pickerGroups, selectedFilter } from "./pickers";
+import { directionOf, filterGroups, fitsDirection, pickerGroups, selectedFilter, startingCategory } from "./pickers";
 
 const categories: Schemas["CategoryOut"][] = [
   { slug: "groceries", tx_type: "expense", level1: "shopping" },
@@ -60,6 +60,28 @@ describe("fitsDirection", () => {
     // A refund keeps its purchase's category, so money in takes any category.
     expect(fitsDirection("fashion", categories, "in")).toBe(true);
     expect(fitsDirection("unknown", categories, "in")).toBe(false);
+  });
+});
+
+describe("startingCategory", () => {
+  const item = (slug: string | null, amounts: string[]) => ({
+    suggestion: { category_slug: slug },
+    transactions: amounts.map((amount) => ({ amount })),
+  });
+
+  it("starts a review card from jev's suggestion when it fits the item's direction", () => {
+    expect(startingCategory(item("fashion", ["-20.00"]), categories)).toBe("fashion");
+    expect(startingCategory(item("salary", ["2000.00"]), categories)).toBe("salary");
+    // A refund keeps its purchase's category.
+    expect(startingCategory(item("fashion", ["15.00"]), categories)).toBe("fashion");
+  });
+
+  it("starts empty when the suggestion does not fit or is missing (Decision H)", () => {
+    expect(startingCategory(item("salary", ["-20.00"]), categories)).toBe("");
+    // Purchases and refunds together read as money out.
+    expect(startingCategory(item("salary", ["15.00", "-20.00"]), categories)).toBe("");
+    expect(startingCategory(item(null, ["15.00"]), categories)).toBe("");
+    expect(startingCategory(item("zztest_unknown", ["15.00"]), categories)).toBe("");
   });
 });
 

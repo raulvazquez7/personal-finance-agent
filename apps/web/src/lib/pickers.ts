@@ -22,6 +22,16 @@ export function fitsDirection(slug: string, categories: Category[], direction: D
   return category !== undefined && (direction === "in" || category.tx_type !== "income");
 }
 
+/** The category a /review card starts with: jev's suggestion when it fits the item's direction,
+ * else none (Decision H). The card shows jev's confidence only beside that suggestion. */
+export function startingCategory(
+  item: { suggestion: { category_slug: string | null }; transactions: { amount: string | number }[] },
+  categories: Category[],
+): string {
+  const slug = item.suggestion.category_slug ?? "";
+  return fitsDirection(slug, categories, directionOf(item.transactions.map((t) => t.amount))) ? slug : "";
+}
+
 export function byLevel1(categories: Category[]): PickerGroup[] {
   const groups = new Map<string, Category[]>();
   for (const category of categories) groups.set(category.level1, [...(groups.get(category.level1) ?? []), category]);

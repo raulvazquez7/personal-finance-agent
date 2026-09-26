@@ -157,7 +157,7 @@ export function ReviewList({ initialItems, categories, merchants, uncategorized 
           {total > 0 && <span className="text-sm tabular-nums text-muted-foreground">{done} of {total}</span>}
         </div>
         <p className="text-sm text-muted-foreground">Confirm or fix. Your answer applies to every transaction of the merchant.</p>
-        {items.length > 0 && <ReviewHelp items={items} />}
+        {items.length > 0 && <ReviewHelp items={items} categories={categories} />}
         {uncategorized > 0 && (
           <p className="text-sm text-muted-foreground">
             {plural(uncategorized, "transaction is", "transactions are")} not categorized yet. Each import starts a
