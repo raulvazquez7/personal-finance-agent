@@ -51,7 +51,8 @@ export type FilterGroup = { value: string; label: string; items: FilterOption[] 
 
 /** The explorer's "group or category" filter follows its type filter; each group starts with
  * "All of <group>". Rows without a category are "uncategorized", as the detail pages link to them
- * (knownGroup, knownCategory): money out as a group of its own, money in as a category of Income. */
+ * (knownGroup, knownCategory): money out as a group of its own, money in as a category of Income.
+ * All types list only the group, which matches those rows in both directions. */
 export function filterGroups(categories: Category[], txType?: TxType): FilterGroup[] {
   const shown = txType ? categories.filter((category) => category.tx_type === txType) : categories;
   const groups: FilterGroup[] = byLevel1(shown).map((group) => ({
@@ -63,9 +64,22 @@ export function filterGroups(categories: Category[], txType?: TxType): FilterGro
     ],
   }));
   const uncategorized = label("uncategorized");
-  groups.find((group) => group.value === "income")?.items.push({ kind: "category", value: "uncategorized", label: uncategorized });
+  if (txType === "income") {
+    groups.find((group) => group.value === "income")?.items.push({ kind: "category", value: "uncategorized", label: uncategorized });
+  }
   if (txType === undefined || txType === "expense") {
     groups.push({ value: "uncategorized", label: uncategorized, items: [{ kind: "group", value: "uncategorized", label: uncategorized }] });
   }
   return groups;
+}
+
+/** The option the URL names: its category, else its group. A category the list lacks falls back to
+ * its group only for "uncategorized" (the uncategorized group's page links with that category too);
+ * any other, such as a hand-edited one, selects nothing rather than "All of <group>". */
+export function selectedFilter(groups: FilterGroup[], level1?: string, category?: string): FilterOption | null {
+  const options = groups.flatMap((group) => group.items);
+  const exact = options.find((option) => option.kind === "category" && option.value === category);
+  if (exact) return exact;
+  if (category !== undefined && category !== "uncategorized") return null;
+  return options.find((option) => option.kind === "group" && option.value === level1) ?? null;
 }

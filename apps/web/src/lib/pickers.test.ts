@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 
 import type { Schemas } from "./api";
 import type { TxType } from "./params";
-import { directionOf, filterGroups, fitsDirection, pickerGroups } from "./pickers";
+import { directionOf, filterGroups, fitsDirection, pickerGroups, selectedFilter } from "./pickers";
 
 const categories: Schemas["CategoryOut"][] = [
   { slug: "groceries", tx_type: "expense", level1: "shopping" },
@@ -90,11 +90,36 @@ describe("filterGroups", () => {
     // Money out: a group of its own, for expenses and for all types.
     expect(filterGroups(categories, "expense").at(-1)).toEqual(group);
     expect(filterGroups(categories).at(-1)).toEqual(group);
-    // Money in: a category of Income, for income and for all types.
+    // Money in: a category of Income, for income only.
     expect(incomeTail("income")).toEqual(option);
-    expect(incomeTail()).toEqual(option);
+    // All types list it once: the group matches the rows without a category in both directions.
+    expect(incomeTail()).toEqual({ kind: "category", value: "refunds", label: "Refunds" });
+    const labels = filterGroups(categories).flatMap((g) => g.items.map((item) => item.label));
+    expect(labels.filter((text) => text === "Uncategorized")).toHaveLength(1);
     // Transfers have neither.
     expect(filterGroups(categories, "transfer").map((g) => g.value)).toEqual(["transfer"]);
     expect(filterGroups(categories, "transfer")[0].items.map((item) => item.value)).toEqual(["transfer", "own_accounts"]);
+  });
+});
+
+describe("selectedFilter", () => {
+  const expense = filterGroups(categories, "expense");
+
+  it("selects the category the URL names, else its group", () => {
+    expect(selectedFilter(expense, "shopping", "fashion")).toEqual({ kind: "category", value: "fashion", label: "Fashion" });
+    expect(selectedFilter(expense, "shopping")).toEqual({ kind: "group", value: "shopping", label: "All of Shopping" });
+    expect(selectedFilter(expense)).toBeNull();
+  });
+
+  it("falls back to the group only for the rows without a category", () => {
+    // The uncategorized group's page links with level1 and category both "uncategorized".
+    expect(selectedFilter(expense, "uncategorized", "uncategorized")).toEqual({
+      kind: "group",
+      value: "uncategorized",
+      label: "Uncategorized",
+    });
+    expect(selectedFilter(filterGroups(categories), "uncategorized", "uncategorized")?.kind).toBe("group");
+    // A hand-edited category never shows as "All of <group>", which would not be the filter applied.
+    expect(selectedFilter(expense, "shopping", "zztest_unknown")).toBeNull();
   });
 });

@@ -13,7 +13,7 @@ import {
 } from "@/components/ui/combobox";
 import type { Schemas } from "@/lib/api";
 import type { TxType } from "@/lib/params";
-import { filterGroups, type FilterGroup, type FilterOption } from "@/lib/pickers";
+import { filterGroups, selectedFilter, type FilterGroup, type FilterOption } from "@/lib/pickers";
 
 type Props = {
   categories: Schemas["CategoryOut"][];
@@ -26,13 +26,7 @@ type Props = {
 /** "Group or category" in one picker (spec 7.3), following the type filter. */
 export function CategoryFilter({ categories, txType, level1, category, onChange }: Props) {
   const groups = filterGroups(categories, txType);
-  const options = groups.flatMap((group) => group.items);
-  // The category the URL names, else its group: the uncategorized group's link also names the
-  // category "uncategorized", which only Income lists.
-  const value =
-    options.find((option) => option.kind === "category" && option.value === category) ??
-    options.find((option) => option.kind === "group" && option.value === level1) ??
-    null;
+  const value = selectedFilter(groups, level1, category);
   return (
     <Combobox
       items={groups}
