@@ -2,6 +2,7 @@
  * strings. Days arrive as YYYY-MM-DD and are formatted in UTC, so a browser west of Greenwich
  * never shows the day before. */
 
+import { plural } from "./labels";
 import type { Filters } from "./params";
 
 const LOCALE = "en-IE";
@@ -111,9 +112,11 @@ export function rangeLabel(period: PeriodLike): string {
 }
 
 /** What a delta compares with (spec 2.6: the previous period of the same length), "by the same
- * day" when the data ends inside the period: "vs Jul", "vs Jul by the same day". */
+ * day" when the data ends inside the period: "vs Jul", "vs Jul by the same day". Year to date
+ * already compares "the same dates", which says it. */
 export function previousLabel(period: PeriodLike, style: "short" | "long" = "short"): string {
-  return `${previousName(period, style)}${endsInside(period) ? " by the same day" : ""}`;
+  const sameDay = endsInside(period) && period.name !== "ytd";
+  return `${previousName(period, style)}${sameDay ? " by the same day" : ""}`;
 }
 
 function previousName(period: PeriodLike, style: "short" | "long"): string {
@@ -123,7 +126,7 @@ function previousName(period: PeriodLike, style: "short" | "long"): string {
   if (period.name === "ytd") return "vs the same dates last year";
   // The whole range before: it ends the day before this one starts. `previous_end` comes
   // earlier when the data ends inside the period (the suffix says so).
-  return `vs the ${daysIn(period.previous_start, dayAt(period.start, -1))} days before`;
+  return `vs the ${plural(daysIn(period.previous_start, dayAt(period.start, -1)), "day", "days")} before`;
 }
 
 /** The two series of a cumulative chart: "August" and "July", or this and the previous period. */

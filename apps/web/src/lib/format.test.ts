@@ -156,6 +156,17 @@ describe("period labels", () => {
     expect(previousLabel({ ...cut, latest_day: "2026-08-01" })).toBe("vs Jul by the same day");
   });
 
+  it("leaves the suffix off year to date, whose label already names the same dates", () => {
+    const ytd = { ...august, name: "ytd", start: "2026-01-01", previous_start: "2025-01-01", previous_end: "2025-08-10" };
+    expect(previousLabel({ ...ytd, latest_day: "2026-08-10" })).toBe("vs the same dates last year");
+    expect(previousLabel({ ...august, previous_end: "2026-07-10", latest_day: "2026-08-10" })).toBe("vs Jul by the same day");
+  });
+
+  it("counts one day in the singular", () => {
+    const oneDay = { name: "custom", start: "2026-08-04", end: "2026-08-04", previous_start: "2026-08-03", previous_end: "2026-08-03" };
+    expect(previousLabel({ ...oneDay, latest_day: "2026-08-31" })).toBe("vs the 1 day before");
+  });
+
   it("keeps the plain label when the data covers the period whole", () => {
     expect(previousLabel({ ...august, latest_day: "2026-08-31" })).toBe("vs Jul");
     expect(previousLabel({ ...august, latest_day: "2026-09-20" })).toBe("vs Jul");

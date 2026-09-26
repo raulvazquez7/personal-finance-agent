@@ -131,10 +131,12 @@ function PanelForm({ tx, categories, merchants, onClose, onSaved }: Omit<Props, 
         toast.error(error instanceof ApiError && error.detail ? error.detail : "Could not save this transaction.");
         return;
       }
+      // The part that failed, and the API's reason when it gave one.
       toast.error(
         step === "note"
           ? "Saved, but not the note: open the transaction to add it again."
           : `Saved this transaction only, not the other transactions of ${merchant?.name ?? "this merchant"}.`,
+        { description: error instanceof ApiError && error.detail ? error.detail : undefined },
       );
     } finally {
       setPending(null);
