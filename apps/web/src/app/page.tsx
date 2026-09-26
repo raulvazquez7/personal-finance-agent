@@ -32,7 +32,11 @@ export default async function OverviewPage({ searchParams }: PageProps<"/">) {
 
   const { period, kpis, previous_kpis: before } = overview;
   const versus = previousLabel(period);
-  const spent = atSameDay(overview.cumulative);
+  // Decision G: a period without data shows "—" in the tiles, never €0. The API sends a line of
+  // zeros for such a period, so its spending line is dropped too: no data, never 0 (spec 2.6).
+  const hasData = periodHasData(overview.months, period);
+  const cumulative = hasData ? overview.cumulative : { ...overview.cumulative, current: [] };
+  const spent = atSameDay(cumulative);
   const context: BreakdownContext = { categories, slots: overview.group_slots, filters, good: "down", type: "expense" };
   const views = {
     // Every group with spend has its own row (spec 7.2). A group whose rows net to zero in the
@@ -42,8 +46,6 @@ export default async function OverviewPage({ searchParams }: PageProps<"/">) {
     merchant: breakdownItems(overview.by_merchant, "merchant", context),
   };
   const subscriptions = overview.subscriptions;
-  // Decision G: a period without data shows "—" in the tiles, never €0.
-  const hasData = periodHasData(overview.months, period);
   return (
     <>
       <h1 className="sr-only">Overview, {rangeLabel(period)}</h1>
@@ -86,7 +88,7 @@ export default async function OverviewPage({ searchParams }: PageProps<"/">) {
       <Card>
         <CardHeader>
           <CardTitle>
-            {/* An empty current series (the period starts after the latest imported day) is no data, never €0. */}
+            {/* An empty current series (no data in the period, or it starts after the latest imported day) is no data, never €0. */}
             {spent.current === null ? "No data" : `${moneyWhole(spent.current)} spent`}{" "}
             {period.name === "month" ? `in ${periodNames(period).current}` : "in this period"}
           </CardTitle>
@@ -97,7 +99,7 @@ export default async function OverviewPage({ searchParams }: PageProps<"/">) {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <CumulativeChart cumulative={overview.cumulative} period={period} />
+          <CumulativeChart cumulative={cumulative} period={period} />
         </CardContent>
       </Card>
       <Card>

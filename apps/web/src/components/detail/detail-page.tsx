@@ -17,7 +17,7 @@ import { Card, CardAction, CardContent, CardDescription, CardHeader, CardTitle }
 import type { Schemas } from "@/lib/api";
 import { breakdownItems, type BreakdownContext } from "@/lib/breakdown";
 import { rampColor } from "@/lib/colors";
-import { delta, type Good } from "@/lib/delta";
+import { delta, periodHasData, type Good } from "@/lib/delta";
 import { money, previousLabel, rangeLabel } from "@/lib/format";
 import { plural } from "@/lib/labels";
 import type { Filters } from "@/lib/params";
@@ -61,7 +61,11 @@ export function DetailPage({ detail, categories, filters, title, crumbs, childDi
   const tiles = children
     .filter((item) => Number(item.amount) > 0)
     .map((item, index) => ({ name: item.name, value: Number(item.amount), share: item.share, fill: rampColor(index), href: item.href }));
-  const total = Number(detail.total);
+  // Spec 2.6, Decision G: a period without data reads "—" with no delta, never €0. The API sends
+  // zeros for it (a total and a line), so "has data" comes from the months.
+  const hasData = periodHasData(detail.months, detail.period);
+  const total = hasData ? Number(detail.total) : null;
+  const cumulative = hasData ? detail.cumulative : { ...detail.cumulative, current: [] };
   const previous = detail.previous_total === null ? null : Number(detail.previous_total);
   const change = delta(total, previous, good, "euro");
   const versus = previousLabel(detail.period, "long");
@@ -87,18 +91,24 @@ export function DetailPage({ detail, categories, filters, title, crumbs, childDi
         <h1 className="text-sm text-muted-foreground">
           {title} · {rangeLabel(detail.period)}
         </h1>
-        <p className="text-4xl font-semibold tracking-tight">{money(total)}</p>
+        <p className="text-4xl font-semibold tracking-tight">{total === null ? "—" : money(total)}</p>
         <p className="text-sm text-muted-foreground">
-          <DeltaText value={change} /> <DeltaText value={delta(total, previous, good, "percent")} arrow={false} parens />{" "}
-          {change.kind !== "hidden" && `${versus} · `}
-          {plural(detail.count, "transaction", "transactions")}
+          {total === null ? (
+            "No data in this period"
+          ) : (
+            <>
+              <DeltaText value={change} /> <DeltaText value={delta(total, previous, good, "percent")} arrow={false} parens />{" "}
+              {change.kind !== "hidden" && `${versus} · `}
+              {plural(detail.count, "transaction", "transactions")}
+            </>
+          )}
         </p>
       </header>
       <SpendingCard
         title={`${title} per month`}
         months={detail.months}
         series={series}
-        cumulative={detail.cumulative}
+        cumulative={cumulative}
         period={detail.period}
         split={childDimension === "category" && series.length > 1}
         defaultView={defaultView}
