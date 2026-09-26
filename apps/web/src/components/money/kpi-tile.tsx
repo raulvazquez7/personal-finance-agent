@@ -16,13 +16,14 @@ type Props = {
   delta: Delta;
   versus: string;
   href?: string;
+  /** The value is income above zero: green (spec 7.2), like the income detail's headline. */
   income?: boolean;
   hasData?: boolean;
 };
 
 /** One of the four overview numbers (spec 7.1): the value, its change against the previous period
- * and an ⓘ with its definition. Income is green with a "+" (spec 7.2). A period without data
- * reads "—" with no delta, never 0 (spec 2.6, Decision G). */
+ * and an ⓘ with its definition. Income above zero is green with a "+" (spec 7.2). A period
+ * without data reads "—" with no delta, never 0 (spec 2.6, Decision G). */
 export function KpiTile({ label, definition, value, delta, versus, href, income = false, hasData = true }: Props) {
   return (
     <Card size="sm">

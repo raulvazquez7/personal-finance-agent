@@ -60,7 +60,7 @@ export default async function OverviewPage({ searchParams }: PageProps<"/">) {
           label="Income"
           definition={DEFINITIONS.income}
           value={signedMoneyWhole(kpis.income)}
-          income
+          income={Number(kpis.income) > 0}
           hasData={hasData}
           delta={delta(amount(kpis.income), amount(before?.income), "up", "percent")}
           versus={versus}
