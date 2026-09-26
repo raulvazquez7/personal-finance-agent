@@ -57,8 +57,9 @@ then `finance categorize`.
 ## Verifying the web app
 
 Use `agent-browser` (global CLI and skill; `brew install agent-browser`) to
-check the UI as a user would. Run the API and web first; pages live at
-`http://localhost:3000` (`/imports`, `/transactions`).
+check the UI as a user would.
+Run the API and web first; pages live at `http://localhost:3000` (`/`, `/spending/<group>`,
+`/income`, `/merchants/<id>`, `/transactions`, `/subscriptions`, `/review`, `/imports`, `/settings`).
 
 - Before claiming a task or PR that touches `apps/web` is done: check the
   affected flow with `agent-browser skills get core` (open, snapshot, act,
@@ -71,6 +72,9 @@ check the UI as a user would. Run the API and web first; pages live at
 - Use a named session, stay on localhost, and `close` when done. Screenshots
   show real bank data: `dogfood-output/` is git-ignored, never commit captures.
 - CI stays lint, type-check and build; Playwright smoke tests are v2.
+- Checks that write data (labels, notes, merchant defaults, renames, imports) run on a scratch
+  copy of the database, never on the real one: the recipe is "R2" in
+  `docs/superpowers/plans/2026-09-25-slice-3b-interface.md`.
 
 ## Boundaries
 
