@@ -150,7 +150,9 @@
 
 @layer base {
   * {
-    @apply border-border outline-ring/50;
+    /* Full strength: the browser's focus outline on links and plain buttons is 6.29:1 on white
+       (at /50 it was 2.3:1, below WCAG 1.4.11). */
+    @apply border-border outline-ring;
   }
   body {
     @apply bg-background text-foreground tabular-nums;

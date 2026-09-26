@@ -24,7 +24,8 @@ const ITEMS: Item[] = [
 ];
 
 /** The top navigation with a pill for the active item (spec 7.2). The pages that the period and
- * account filters scope keep them in their links. On phones the row scrolls sideways. */
+ * account filters scope keep them in their links. On phones the row scrolls sideways; its padding
+ * (cancelled by the negative margin) keeps the scroll box from clipping a link's focus ring. */
 export function NavLinks({ pending }: { pending: number | null }) {
   const pathname = usePathname();
   const search = useSearchParams();
@@ -32,7 +33,7 @@ export function NavLinks({ pending }: { pending: number | null }) {
   return (
     <nav
       aria-label="Main"
-      className="order-last -mx-1 flex w-full items-center gap-1 overflow-x-auto px-1 text-sm sm:order-none sm:w-auto sm:flex-1"
+      className="order-last -m-1 flex w-full items-center gap-1 overflow-x-auto p-1 text-sm sm:order-none sm:w-auto sm:flex-1"
     >
       {ITEMS.map((item) => {
         const active = item.active(pathname);
