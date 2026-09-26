@@ -73,7 +73,7 @@
   --primary-foreground: #ffffff;
   --secondary: #f7f7f9; /* pills on the white page */
   --secondary-foreground: #0b0b0f;
-  --muted: #ececf1; /* segmented-control track, avatars, hovers */
+  --muted: #efeff3; /* segmented-control track, avatars, hovers; the mockup's #ececf1 left muted text at 4.48:1 */
   --muted-foreground: #6b6b75; /* Decision B: the mockup's #8a8a94 fails WCAG AA for small text */
   --accent: #eef0ff;
   --accent-foreground: #0b0b0f;
@@ -100,10 +100,10 @@
   --chart-previous: #c9c9d1;
   --chart-grid: #e6e6eb;
   /* Money: income is green with a "+"; otherwise green and red are only for deltas. Text colours:
-     Decision B darkens the mockup's #16a34a for WCAG AA. */
+     Decision B darkens the mockup's #16a34a and #e11d48 for WCAG AA. */
   --income: #15803d;
   --good: #15803d;
-  --bad: #e11d48;
+  --bad: #dc1a45; /* 4.59:1 on the surface; the mockup's #e11d48 is 4.39:1 */
   --sidebar: oklch(0.985 0 0);
   --sidebar-foreground: oklch(0.145 0 0);
   --sidebar-primary: oklch(0.205 0 0);
