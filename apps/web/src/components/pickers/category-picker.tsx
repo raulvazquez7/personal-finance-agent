@@ -58,7 +58,15 @@ export function CategoryPicker({
       }}
       itemToStringLabel={(category: Category) => label(category.slug)}
     >
-      <ComboboxInput id={id} placeholder="Category" aria-label={ariaLabel} aria-describedby={ariaDescribedBy} className="w-full" />
+      {/* Selecting the text on focus lets typing replace the current category instead of adding to it. */}
+      <ComboboxInput
+        id={id}
+        placeholder="Category"
+        aria-label={ariaLabel}
+        aria-describedby={ariaDescribedBy}
+        onFocus={(event) => event.currentTarget.select()}
+        className="w-full"
+      />
       <ComboboxContent>
         <ComboboxEmpty>No category found.</ComboboxEmpty>
         <ComboboxList>

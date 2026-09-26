@@ -78,6 +78,8 @@ export function MerchantPicker({
         placeholder="Merchant"
         aria-label={ariaLabel}
         aria-describedby={ariaDescribedBy}
+        // Typing replaces the current merchant instead of adding to its name.
+        onFocus={(event) => event.currentTarget.select()}
         showClear={showClear}
         className="w-full"
       />

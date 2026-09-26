@@ -37,7 +37,14 @@ export function CategoryFilter({ categories, txType, level1, category, onChange 
       itemToStringLabel={(option: FilterOption) => option.label}
       isItemEqualToValue={(a: FilterOption, b: FilterOption) => a.kind === b.kind && a.value === b.value}
     >
-      <ComboboxInput placeholder="Group or category" aria-label="Group or category filter" showClear className="w-full sm:w-56" />
+      {/* Selecting the text on focus lets typing replace the current filter instead of adding to it. */}
+      <ComboboxInput
+        placeholder="Group or category"
+        aria-label="Group or category filter"
+        onFocus={(event) => event.currentTarget.select()}
+        showClear
+        className="w-full sm:w-56"
+      />
       <ComboboxContent>
         <ComboboxEmpty>No category found.</ComboboxEmpty>
         <ComboboxList>
