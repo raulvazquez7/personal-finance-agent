@@ -53,6 +53,14 @@ describe("money", () => {
     expect(rate(-0.052)).toBe("−5.2%");
   });
 
+  it("never writes a minus before a number that rounds to zero", () => {
+    // Savings a few cents below zero, and a rate just below zero, show nothing to subtract.
+    expect(moneyWhole("-0.40")).toBe("€0");
+    expect(money("-0.004")).toBe("€0.00");
+    expect(compactMoney(-0.01)).toBe("€0");
+    expect(rate(-0.0004)).toBe("0.0%");
+  });
+
   it("formats shares and rates", () => {
     expect(percent(0.3799)).toBe("38%");
     // A refund after its purchase month makes an entry's net negative: shares leave 0-100%.

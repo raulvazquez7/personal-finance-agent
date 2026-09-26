@@ -5,7 +5,9 @@
 import type { Filters } from "./params";
 
 const LOCALE = "en-IE";
-const EUR = { style: "currency", currency: "EUR" } as const;
+// "negative" leaves the sign off a value that rounds to zero ("€0", never "−€0"); the default
+// "auto" keeps it. The signed formatters' "exceptZero" leaves it off as well.
+const EUR = { style: "currency", currency: "EUR", signDisplay: "negative" } as const;
 const NO_CENTS = { minimumFractionDigits: 0, maximumFractionDigits: 0 } as const;
 const DAY_MS = 86_400_000;
 
@@ -14,6 +16,12 @@ const whole = new Intl.NumberFormat(LOCALE, { ...EUR, ...NO_CENTS });
 const signedCents = new Intl.NumberFormat(LOCALE, { ...EUR, signDisplay: "exceptZero" });
 const signedWhole = new Intl.NumberFormat(LOCALE, { ...EUR, ...NO_CENTS, signDisplay: "exceptZero" });
 const compact = new Intl.NumberFormat(LOCALE, { ...EUR, notation: "compact", maximumFractionDigits: 1 });
+const oneDecimalPercent = new Intl.NumberFormat(LOCALE, {
+  style: "percent",
+  minimumFractionDigits: 1,
+  maximumFractionDigits: 1,
+  signDisplay: "negative",
+});
 
 type Amount = string | number | null | undefined;
 
@@ -32,7 +40,7 @@ export const compactMoney = (value: number) => minus(compact.format(value)); // 
 /** A share under half a percent reads "<1%": a row that is not zero never reads as nothing. */
 export const percent = (share: number) => (share > 0 && share < 0.005 ? "<1%" : minus(`${Math.round(share * 100)}%`));
 /** The savings rate; empty without income (docs/money-rules.md). */
-export const rate = (value: number | null) => (value === null ? "—" : minus(`${(value * 100).toFixed(1)}%`));
+export const rate = (value: number | null) => (value === null ? "—" : minus(oneDecimalPercent.format(value)));
 
 const utc = (day: string) => new Date(`${day.slice(0, 10)}T00:00:00Z`);
 const dates = (options: Intl.DateTimeFormatOptions) =>
