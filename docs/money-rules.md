@@ -80,5 +80,7 @@ Rows flagged as a subscription are grouped by merchant, with these rules:
 
 Every change is shown against the previous period of the same length: August against July,
 a quarter against the quarter before. Year to date is compared with the same dates a year
-earlier. When the previous period has no imported data, no change is shown. A month without
-imported data is drawn as "no data", never as zero.
+earlier. When your statements end before the period does, the previous period stops after as
+many days: August up to the 10th is compared with 1-10 July, not with all of July. When the
+previous period has no imported data, no change is shown. A month without imported data is
+drawn as "no data", never as zero.

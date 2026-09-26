@@ -153,6 +153,10 @@ total.
   (August vs July, a quarter vs the quarter before). When the previous period
   has no data, the delta is hidden. When the previous value is 0, it reads
   "new".
+- When the selected accounts' data ends inside the period (`latest_day` before
+  its end), the API cuts the previous period at as many days: August up to the
+  10th against 1-10 July. The KPI tiles, the change columns, the same-day card
+  and the previous cumulative line then compare like with like.
 - A month "has data" when at least one transaction of the selected accounts
   is booked in it. Months without data are drawn as "no data", never as 0.
   Per-account import coverage is v2.

@@ -110,9 +110,10 @@ describe("period labels", () => {
     expect(rangeLabel({ ...august, name: "last_12_months", start: "2025-09-01" })).toBe("1 Sept 2025 – 31 Aug 2026");
     expect(previousLabel({ ...august, name: "last_3_months" })).toBe("vs the 3 months before");
     expect(previousLabel({ ...august, name: "ytd" })).toBe("vs the same dates last year");
-    expect(previousLabel({ ...august, name: "custom", previous_start: "2026-07-31", previous_end: "2026-08-09" })).toBe(
-      "vs the 10 days before",
-    );
+    const tenDays = { name: "custom", start: "2026-08-10", end: "2026-08-19", previous_start: "2026-07-31", previous_end: "2026-08-09" };
+    expect(previousLabel(tenDays)).toBe("vs the 10 days before");
+    // Data that ends on 15 August cuts the previous range at as many days (the API): still the 10 days before.
+    expect(previousLabel({ ...tenDays, previous_end: "2026-08-05" })).toBe("vs the 10 days before");
     expect(periodNames({ ...august, name: "ytd" })).toEqual({ current: "This period", previous: "Previous period" });
   });
 });

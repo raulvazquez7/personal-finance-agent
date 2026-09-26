@@ -1,3 +1,4 @@
+from datetime import date
 from uuid import uuid4
 
 import pytest
@@ -5,7 +6,7 @@ from fastapi.testclient import TestClient
 
 from finance.api.deps import db
 from finance.api.main import app
-from tests.money_month import money_month
+from tests.money_month import IBAN, money_month
 
 pytestmark = pytest.mark.integration
 
@@ -63,9 +64,21 @@ def test_a_category_page_lists_merchants_and_income_works_the_same(client, db_co
 
 def test_february_shows_a_negative_total_against_january(client, db_conn, make_tx):
     account = money_month(db_conn, make_tx)
+    # Data up to February's last day: the whole of January is the comparison.
+    make_tx("-10.00", "ZZTEST LAST DAY", iban=IBAN, booked_at=date(1999, 2, 28))
     body = _detail(client, account, level1="shopping", month="1999-02")
     assert (body["total"], body["previous_total"]) == ("-30.00", "120.00")
     assert body["cumulative"]["current"][-1]["total"] == "-30.00"
+
+
+def test_a_detail_page_whose_data_ends_early_compares_with_as_many_days_before(
+    client, db_conn, make_tx
+):
+    account = money_month(db_conn, make_tx)  # February's data ends on the 2nd
+    body = _detail(client, account, level1="shopping", month="1999-02")
+    assert body["period"]["previous_end"] == "1999-01-02"
+    assert body["previous_total"] == "0"  # the January purchase came on the 3rd
+    assert len(body["cumulative"]["previous"]) == len(body["cumulative"]["current"]) == 2
 
 
 def test_a_child_seen_only_in_earlier_months_folds_into_a_listed_other(client, db_conn, make_tx):

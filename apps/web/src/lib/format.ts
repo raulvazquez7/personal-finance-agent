@@ -96,7 +96,9 @@ export function previousLabel(period: PeriodLike, style: "short" | "long" = "sho
   if (period.name === "last_3_months") return "vs the 3 months before";
   if (period.name === "last_12_months") return "vs the 12 months before";
   if (period.name === "ytd") return "vs the same dates last year";
-  return `vs the ${daysIn(period.previous_start, period.previous_end)} days before`;
+  // The whole range before: it ends the day before this one starts. `previous_end` can come
+  // earlier, when the data ends inside the period (the API then compares as many days).
+  return `vs the ${daysIn(period.previous_start, dayAt(period.start, -1))} days before`;
 }
 
 /** The two series of a cumulative chart: "August" and "July", or this and the previous period. */

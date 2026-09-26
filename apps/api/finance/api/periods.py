@@ -10,7 +10,7 @@ from psycopg import Connection
 
 from finance.dashboard.filters import has_data, latest_day
 from finance.dashboard.models import PeriodOut
-from finance.dashboard.periods import Period, PeriodName, previous, resolve
+from finance.dashboard.periods import Period, PeriodName, previous, resolve, until_same_day
 
 
 @dataclass(frozen=True)
@@ -60,7 +60,8 @@ def resolve_request(conn: Connection, request: PeriodRequest) -> Resolved:
         )
     except ValueError as error:
         raise HTTPException(status_code=422, detail=str(error)) from error
-    before = previous(request.name, current)
+    # One previous period for the whole page: tiles, change columns and the same-day card agree.
+    before = until_same_day(previous(request.name, current), current, latest)
     out = PeriodOut(
         name=request.name,
         start=current.start,

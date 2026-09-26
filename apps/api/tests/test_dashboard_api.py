@@ -7,7 +7,7 @@ from fastapi.testclient import TestClient
 
 from finance.api.deps import db
 from finance.api.main import app
-from tests.money_month import money_month
+from tests.money_month import IBAN, money_month
 
 pytestmark = pytest.mark.integration
 
@@ -81,11 +81,26 @@ def test_the_overview_returns_every_expense_group(client, db_conn, make_tx):
 
 def test_february_compares_with_january(client, db_conn, make_tx):
     account = money_month(db_conn, make_tx)
+    # Data up to February's last day: the whole of January is the comparison.
+    make_tx("-10.00", "ZZTEST LAST DAY", iban=IBAN, booked_at=date(1999, 2, 28))
     body = _overview(client, account, period="month", month="1999-02")
     assert body["period"]["has_previous"] is True
     assert body["previous_kpis"]["expenses"] == "455.00"
     assert body["kpis"]["savings_rate"] is None  # no income in February
     assert body["cumulative"]["previous"][-1]["total"] == "455.00"
+
+
+def test_data_that_ends_early_compares_with_as_many_days_before(client, db_conn, make_tx):
+    # The fixture's February ends on the 2nd: every comparison reads 1-2 January, never all of it.
+    account = money_month(db_conn, make_tx)
+    body = _overview(client, account, period="month", month="1999-02")
+    period = body["period"]
+    assert (period["end"], period["latest_day"]) == ("1999-02-28", "1999-02-02")
+    assert (period["previous_start"], period["previous_end"]) == ("1999-01-01", "1999-01-02")
+    assert body["previous_kpis"]["expenses"] == "175.00"  # the card settlement on 2 January
+    assert [p["total"] for p in body["cumulative"]["previous"]] == ["0", "175.00"]
+    [shopping] = [row for row in body["by_group"] if row["key"] == "shopping"]
+    assert shopping["previous"] == "0"  # the January purchase came on the 3rd
 
 
 def test_an_account_without_rows_returns_an_empty_overview(client):

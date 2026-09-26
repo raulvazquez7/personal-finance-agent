@@ -69,6 +69,15 @@ def previous(name: PeriodName, period: Period) -> Period:
     return Period(start=period.start - timedelta(days=days), end=period.start - timedelta(days=1))
 
 
+def until_same_day(before: Period, period: Period, latest: date | None) -> Period:
+    """When the data ends inside the period (`latest`: statements arrive in batches), the
+    previous period stops after as many days, so every change compares like with like: data to
+    10 August against 1-10 July. It never runs past its own end (a short February)."""
+    if latest is None or not period.start <= latest < period.end:
+        return before
+    return Period(start=before.start, end=min(before.end, before.start + (latest - period.start)))
+
+
 def months_between(start: date, end: date) -> list[str]:
     out, cursor = [], start.replace(day=1)
     while cursor <= end:
