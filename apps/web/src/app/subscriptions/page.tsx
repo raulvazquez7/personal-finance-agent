@@ -9,7 +9,7 @@ import { dayLong, money } from "@/lib/format";
 
 export const dynamic = "force-dynamic";
 
-const CADENCE: Record<string, string> = { monthly: "Monthly", yearly: "Yearly" };
+const CADENCE: Record<Schemas["SubscriptionOut"]["cadence"], string> = { monthly: "Monthly", yearly: "Yearly" };
 
 /** Every active subscription with its amount, cadence, monthly equivalent and last charge, and
  * the monthly and yearly totals (spec 7.1). "Active" is relative to the latest import. */
@@ -21,8 +21,10 @@ export default async function SubscriptionsPage() {
         <h1 className="text-xl font-semibold tracking-tight">Subscriptions</h1>
         <p className="max-w-prose text-sm text-muted-foreground">
           Charges you marked as subscriptions that are still running: charged within 45 days (monthly) or 400 days
-          (yearly) of your latest imported transaction. A subscription charged only once counts as monthly until its
-          second charge. Subscriptions paid by credit card do not appear, because card statements are not imported.
+          (yearly) of your latest imported transaction. A yearly subscription counts as a twelfth of its typical amount
+          per month, and the yearly total is twelve times the monthly one. A subscription charged only once counts as
+          monthly until its second charge. Subscriptions paid by credit card do not appear, because card statements are
+          not imported.
         </p>
       </header>
       <section aria-label="Totals" className="grid grid-cols-1 gap-3 sm:grid-cols-3">
@@ -45,7 +47,8 @@ export default async function SubscriptionsPage() {
       ) : (
         <Card>
           <CardContent>
-            {/* Below sm, Cadence and Amount are hidden so the table fits a phone without scrolling. */}
+            {/* Below sm, Cadence and Amount are hidden so the table fits a phone without scrolling; long names
+                wrap, and a yearly row says so under its name. */}
             <Table>
               <TableHeader>
                 <TableRow className="hover:bg-transparent">
@@ -59,14 +62,15 @@ export default async function SubscriptionsPage() {
               <TableBody>
                 {items.map((item) => (
                   <TableRow key={item.merchant_id}>
-                    <TableCell className="font-medium">
+                    <TableCell className="max-w-72 font-medium whitespace-normal wrap-anywhere">
                       <Link href={`/merchants/${item.merchant_id}`} className="hover:underline">
                         {item.merchant_name}
                       </Link>
+                      {item.cadence === "yearly" && (
+                        <p className="text-xs font-normal text-muted-foreground sm:hidden">{CADENCE.yearly}</p>
+                      )}
                     </TableCell>
-                    <TableCell className="hidden text-muted-foreground sm:table-cell">
-                      {CADENCE[item.cadence] ?? item.cadence}
-                    </TableCell>
+                    <TableCell className="hidden text-muted-foreground sm:table-cell">{CADENCE[item.cadence]}</TableCell>
                     <TableCell className="hidden text-right sm:table-cell">{money(item.typical_amount)}</TableCell>
                     <TableCell className="text-right font-semibold">{money(item.monthly_equivalent)}</TableCell>
                     <TableCell className="text-right text-muted-foreground">{dayLong(item.last_charge)}</TableCell>
