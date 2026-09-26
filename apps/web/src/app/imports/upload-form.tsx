@@ -78,8 +78,10 @@ export function UploadForm() {
         {messages.length > 0 && (
           // A long file name without spaces wraps instead of running past the card on a phone.
           <ul className="text-sm wrap-anywhere text-muted-foreground">
-            {messages.map((message) => (
-              <li key={message}>{message}</li>
+            {/* By position: two picked files with the same name and outcome give the same message. The
+                list is replaced whole on each import, never reordered. */}
+            {messages.map((message, index) => (
+              <li key={index}>{message}</li>
             ))}
           </ul>
         )}
