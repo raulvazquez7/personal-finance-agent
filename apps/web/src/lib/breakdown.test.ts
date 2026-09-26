@@ -43,7 +43,7 @@ describe("breakdownItems", () => {
       amount: "268.40",
     });
     expect(groceries.delta).toMatchObject({ tone: "good", text: "−4%" });
-    expect(other).toMatchObject({ name: "Other", hint: "2 categories", href: null, color: "var(--chart-other)" });
+    expect(other).toMatchObject({ name: "Other categories", hint: "2 categories", href: null, color: "var(--chart-other)" });
   });
 
   it("opens a merchant with its type and leaves a row without a merchant unlinked", () => {

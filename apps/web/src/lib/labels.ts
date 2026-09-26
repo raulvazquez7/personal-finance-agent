@@ -28,9 +28,12 @@ export function groupHint(level1: string, categories: Category[]): string {
   return names.length > 3 ? `${text}…` : text;
 }
 
+/** The folded row names its dimension ("Other groups", "Other categories", "Other 12 merchants"),
+ * so it never reads like the expense group "other" ("Other"). */
 export function rowName(row: Row, dimension: Dimension): string {
   if (row.key === "_other") {
-    return dimension === "merchant" ? `Other ${plural(row.folded ?? 0, "merchant", "merchants")}` : "Other";
+    if (dimension === "merchant") return `Other ${plural(row.folded ?? 0, "merchant", "merchants")}`;
+    return dimension === "group" ? "Other groups" : "Other categories";
   }
   // A merchant row without a merchant is keyed "category:<slug>" and reads as its category.
   return dimension === "merchant" ? (row.label ?? label(row.category_slug)) : label(row.key);

@@ -54,7 +54,10 @@ describe("labels", () => {
 
   it("names rows, including the folded ones and merchants without a merchant", () => {
     expect(rowName(row({ key: "_other", folded: 12 }), "merchant")).toBe("Other 12 merchants");
-    expect(rowName(row({ key: "_other", folded: 3 }), "group")).toBe("Other");
+    // The folded row names its dimension, so it never reads like the real expense group "other".
+    expect(rowName(row({ key: "_other", folded: 3 }), "group")).toBe("Other groups");
+    expect(rowName(row({ key: "_other", folded: 4 }), "category")).toBe("Other categories");
+    expect(rowName(row({ key: "other", level1: "other" }), "group")).toBe("Other");
     expect(rowName(row({ key: "category:credit_card_spending", category_slug: "credit_card_spending" }), "merchant")).toBe(
       "Credit card spending",
     );
