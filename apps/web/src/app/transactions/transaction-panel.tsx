@@ -88,13 +88,23 @@ function PanelForm({ tx, categories, merchants, onClose, onSaved }: Omit<Props, 
 
   async function save(toMerchant: boolean) {
     setPending("save");
+    const finalNote = note.trim() || null;
+    const subscription = isSubscription && canSubscribe;
+    // Money in has no subscription switch, so a default set from it gives no answer (null): the
+    // merchant keeps its flag and every row its own mark. This row itself is never one.
+    const defaultSubscription = direction === "in" ? null : subscription;
+    // What the loaded rows show afterwards: each part once it is saved.
+    const change: LabelChange = {
+      id: tx.id,
+      categorySlug: labelChanged ? categorySlug : null,
+      isSubscription: subscription,
+      merchant: merchantChanged ? merchant : null,
+      note: tx.note,
+      defaultFor: null,
+    };
+    // In order: label, note, merchant default. When the API refuses the label (a 422), nothing is saved.
+    let step: "label" | "note" | "default" = "label";
     try {
-      const finalNote = note.trim() || null;
-      const subscription = isSubscription && canSubscribe;
-      // Money in has no subscription switch, so a default set from it gives no answer (null): the
-      // merchant keeps its flag and every row its own mark. This row itself is never one.
-      const defaultSubscription = direction === "in" ? null : subscription;
-      // The label first: when the API refuses it (a 422), the note is not saved either.
       if (labelChanged) {
         await apiPost(`/transactions/${tx.id}/label`, {
           category_slug: categorySlug,
@@ -103,29 +113,38 @@ function PanelForm({ tx, categories, merchants, onClose, onSaved }: Omit<Props, 
           new_merchant_name: merchant && merchant.id === null ? merchant.name : null,
         });
       }
+      step = "note";
       if (noteChanged) await apiPatch(`/transactions/${tx.id}`, { note: finalNote });
+      change.note = finalNote;
+      step = "default";
       if (toMerchant && merchant?.id) {
         // The merchant's default: its other rows (not the user's own labels) and future imports.
         await apiPost(`/merchants/${merchant.id}/review`, { category_slug: categorySlug, is_subscription: defaultSubscription });
+        change.isSubscription = defaultSubscription;
+        change.defaultFor = merchant.id;
       }
-      onSaved({
-        id: tx.id,
-        categorySlug: labelChanged ? categorySlug : null,
-        isSubscription: toMerchant ? defaultSubscription : subscription,
-        merchant: merchantChanged ? merchant : null,
-        note: finalNote,
-        defaultFor: toMerchant && merchant?.id ? merchant.id : null,
-      });
       // Not "every transaction": rows you or a rule labelled keep theirs, as the dialog says.
       toast.success(toMerchant && merchant ? `${merchant.name} now uses ${label(categorySlug)}` : "Saved");
-      router.refresh();
-      onClose();
     } catch (error) {
-      toast.error(error instanceof ApiError && error.detail ? error.detail : "Could not save this transaction.");
+      if (step === "label" || !labelChanged) {
+        // Nothing was saved: the panel stays open to try again.
+        toast.error(error instanceof ApiError && error.detail ? error.detail : "Could not save this transaction.");
+        return;
+      }
+      toast.error(
+        step === "note"
+          ? "Saved, but not the note: open the transaction to add it again."
+          : `Saved this transaction only, not the other transactions of ${merchant?.name ?? "this merchant"}.`,
+      );
     } finally {
       setPending(null);
       setAsking(false);
     }
+    // After a full save, or a partial one: the rows show what was saved, and the panel closes, so
+    // the row opens again with its saved label and trying again never sends that label twice.
+    onSaved(change);
+    router.refresh();
+    onClose();
   }
 
   async function clearDefault() {
