@@ -61,7 +61,7 @@ export function CategoryPicker({
       {/* Selecting the text on focus lets typing replace the current category instead of adding to it. */}
       <ComboboxInput
         id={id}
-        placeholder="Category"
+        placeholder="Category…"
         aria-label={ariaLabel}
         aria-describedby={ariaDescribedBy}
         onFocus={(event) => event.currentTarget.select()}

@@ -162,7 +162,7 @@ export function ReviewList({ initialItems, categories, merchants, uncategorized 
           <p className="text-sm text-muted-foreground">
             {plural(uncategorized, "transaction is", "transactions are")} not categorized yet. Each import starts a
             categorization run in the background: give it a minute and reload this page before starting another run.
-            If they stay, the API console says why (&quot;jev skipped&quot; when no jev key is set).
+            If they stay, the API console says why (“jev skipped” when no jev key is set).
           </p>
         )}
         {total > 0 && <Progress value={(done / total) * 100} />}

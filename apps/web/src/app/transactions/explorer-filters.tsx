@@ -72,7 +72,7 @@ export function ExplorerFilters({ search, explorer, categories, merchants }: Pro
               value={q}
               onChange={(event) => setQ(event.target.value)}
               maxLength={100}
-              placeholder="Merchant, description or note"
+              placeholder="Merchant, description or note…"
               aria-label="Search transactions"
             />
           </InputGroup>

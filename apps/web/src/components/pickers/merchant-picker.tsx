@@ -75,7 +75,7 @@ export function MerchantPicker({
     >
       <ComboboxInput
         id={id}
-        placeholder="Merchant"
+        placeholder="Merchant…"
         aria-label={ariaLabel}
         aria-describedby={ariaDescribedBy}
         // Typing replaces the current merchant instead of adding to its name.
@@ -88,7 +88,7 @@ export function MerchantPicker({
         <ComboboxList>
           {(merchant: MerchantChoice) => (
             <ComboboxItem key={merchant.id ?? `new-${merchant.name}`} value={merchant}>
-              {merchant.id ? merchant.name : `Create "${merchant.name}"`}
+              {merchant.id ? merchant.name : `Create “${merchant.name}”`}
             </ComboboxItem>
           )}
         </ComboboxList>

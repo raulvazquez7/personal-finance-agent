@@ -211,7 +211,7 @@ function PanelForm({ tx, categories, merchants, onClose, onSaved }: Omit<Props, 
               aria-describedby="panel-note-help"
             />
             <FieldDescription id="panel-note-help">
-              What did you buy or what was it for? For example &apos;AirPods Pro&apos;. The AI uses it to answer your questions.
+              What did you buy or what was it for? For example ‘AirPods Pro’. The AI uses it to answer your questions.
             </FieldDescription>
           </Field>
           {tx.merchant_id && (

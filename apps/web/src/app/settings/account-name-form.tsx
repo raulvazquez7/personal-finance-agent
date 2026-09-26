@@ -70,7 +70,7 @@ export function AccountNameForm({ account }: { account: Schemas["Account"] }) {
           </Button>
         </div>
         <FieldDescription id={`${id}-help`}>
-          The name shown in lists and in the account filter, for example &quot;Joint account&quot;.
+          The name shown in lists and in the account filter, for example “Joint account”.
         </FieldDescription>
       </Field>
     </form>
