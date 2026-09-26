@@ -3,7 +3,12 @@
 import { useState } from "react";
 
 import {
-  Combobox, ComboboxContent, ComboboxEmpty, ComboboxInput, ComboboxItem, ComboboxList,
+  Combobox,
+  ComboboxContent,
+  ComboboxEmpty,
+  ComboboxInput,
+  ComboboxItem,
+  ComboboxList,
 } from "@/components/ui/combobox";
 import type { Schemas } from "@/lib/api";
 
@@ -14,9 +19,22 @@ type Props = {
   merchants: Schemas["MerchantOut"][];
   value: MerchantChoice | null;
   onChange: (merchant: MerchantChoice | null) => void;
+  /** A label may create a merchant from a typed name; a filter only picks existing ones. */
+  allowCreate?: boolean;
+  showClear?: boolean;
+  id?: string;
+  ariaLabel?: string;
 };
 
-export function MerchantPicker({ merchants, value, onChange }: Props) {
+export function MerchantPicker({
+  merchants,
+  value,
+  onChange,
+  allowCreate = true,
+  showClear = false,
+  id,
+  ariaLabel = "Merchant",
+}: Props) {
   const [query, setQuery] = useState(value?.name ?? "");
   // The value can change from outside (Merge picks the suggested merchant): show its name.
   const [shownName, setShownName] = useState(value?.name);
@@ -28,7 +46,7 @@ export function MerchantPicker({ merchants, value, onChange }: Props) {
   const exists = merchants.some((m) => m.name.toLowerCase() === typed.toLowerCase());
   const items: MerchantChoice[] = [
     ...merchants.map((m) => ({ id: m.id, name: m.name })),
-    ...(typed && !exists ? [{ id: null, name: typed }] : []),
+    ...(allowCreate && typed && !exists ? [{ id: null, name: typed }] : []),
   ];
 
   return (
@@ -41,7 +59,7 @@ export function MerchantPicker({ merchants, value, onChange }: Props) {
       itemToStringLabel={(merchant: MerchantChoice) => merchant.name}
       isItemEqualToValue={(a: MerchantChoice, b: MerchantChoice) => a.id === b.id && a.name === b.name}
     >
-      <ComboboxInput placeholder="Merchant" className="w-full" />
+      <ComboboxInput id={id} placeholder="Merchant" aria-label={ariaLabel} showClear={showClear} className="w-full" />
       <ComboboxContent>
         <ComboboxEmpty>No merchant found.</ComboboxEmpty>
         <ComboboxList>
