@@ -87,9 +87,10 @@ export function ReviewRow({ item, categories, merchants, onConfirm, onLabelOne, 
             onChange={setCategorySlug}
             ariaDescribedBy={HELP_ID.category}
           />
+          {/* jev's confidence in its own suggestion, as text (the "How to review" block explains it). */}
           {showConfidence && (
-            <span className="text-xs text-muted-foreground" title="jev confidence">
-              ·{Math.round((suggestion.confidence ?? 0) * 100)}
+            <span className="shrink-0 text-xs whitespace-nowrap text-muted-foreground">
+              {`jev ${Math.round((suggestion.confidence ?? 0) * 100)}%`}
             </span>
           )}
         </div>
