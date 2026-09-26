@@ -77,7 +77,12 @@ export function ReviewRow({ item, categories, merchants, onConfirm, onLabelOne, 
       </button>
 
       <div className="grid gap-3 md:grid-cols-[1fr_1fr_7rem_auto_auto] md:items-center">
-        <MerchantPicker merchants={merchants} value={merchant} onChange={setMerchant} ariaDescribedBy={HELP_ID.merchant} />
+        <MerchantPicker
+          merchants={merchants}
+          value={merchant}
+          onChange={setMerchant}
+          ariaDescribedBy={item.kind === "merchant" ? HELP_ID.merchant : HELP_ID.merchantOne}
+        />
         <div className="flex items-center gap-2">
           <CategoryPicker
             categories={categories}

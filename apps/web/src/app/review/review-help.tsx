@@ -5,6 +5,7 @@ import type { Schemas } from "@/lib/api";
  * and every card's fields point here with aria-describedby. */
 export const HELP_ID = {
   merchant: "review-help-merchant",
+  merchantOne: "review-help-merchant-one",
   category: "review-help-category",
   subscription: "review-help-subscription",
   line: "review-help-line",
@@ -16,10 +17,19 @@ type Item = Schemas["ReviewItem"];
 type Line = { id: string; field: string; text: string; when?: (items: Item[]) => boolean };
 
 const LINES: Line[] = [
+  // One line per card kind: a merchant's card renames or merges the merchant, while a transaction
+  // reviewed on its own (with or without a merchant) only takes a merchant for itself.
   {
     id: HELP_ID.merchant,
     field: "Merchant",
-    text: "who the money went to or came from; type a name to rename the merchant, or pick an existing one to merge them. For a transaction without a merchant, a name you type creates one and a pick assigns it.",
+    text: "who the money went to or came from; type a name to rename the merchant, or pick another one to merge them.",
+    when: (items) => items.some((item) => item.kind === "merchant"),
+  },
+  {
+    id: HELP_ID.merchantOne,
+    field: "Merchant of a transaction reviewed on its own",
+    text: "a name you type creates a merchant for it, and a pick assigns an existing one.",
+    when: (items) => items.some((item) => item.kind === "transaction"),
   },
   {
     id: HELP_ID.category,
