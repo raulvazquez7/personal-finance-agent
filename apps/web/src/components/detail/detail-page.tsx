@@ -43,7 +43,9 @@ type Props = {
 export function DetailPage({ detail, categories, filters, title, crumbs, childDimension, seeAllHref, defaultView = "monthly" }: Props) {
   const good: Good = detail.type === "expense" ? "down" : "up";
   const context: BreakdownContext = { categories, slots: null, filters, good, type: detail.type };
-  const children = childDimension ? breakdownItems(detail.children, childDimension, context) : [];
+  const rows = childDimension ? breakdownItems(detail.children, childDimension, context) : [];
+  // A category's hint names its group, which is this page's own scope (mockup 03: no hint).
+  const children = childDimension === "category" ? rows.map((item) => ({ ...item, hint: "" })) : rows;
   const merchants = breakdownItems(detail.top_merchants, "merchant", context);
   const names = new Map(children.map((item) => [item.key, item.name]));
   // The bars only stack by category, so the folded series reads like the table's folded row.
@@ -94,7 +96,7 @@ export function DetailPage({ detail, categories, filters, title, crumbs, childDi
         series={series}
         cumulative={detail.cumulative}
         period={detail.period}
-        split={childDimension === "category"}
+        split={childDimension === "category" && series.length > 1}
         defaultView={defaultView}
       />
       {childDimension && (
@@ -132,11 +134,13 @@ export function DetailPage({ detail, categories, filters, title, crumbs, childDi
         <Card>
           <CardHeader>
             <CardTitle>Transactions</CardTitle>
-            <CardAction>
-              <Link href={seeAllHref} className="text-sm font-medium text-primary">
-                See all {detail.count} in Transactions →
-              </Link>
-            </CardAction>
+            {detail.count > 0 && (
+              <CardAction>
+                <Link href={seeAllHref} className="text-sm font-medium text-primary">
+                  See all {detail.count} in Transactions →
+                </Link>
+              </CardAction>
+            )}
           </CardHeader>
           <CardContent>
             {detail.latest.length > 0 ? (

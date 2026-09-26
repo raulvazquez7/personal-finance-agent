@@ -11,7 +11,7 @@ type Props = { value: Delta; arrow?: boolean; parens?: boolean };
  * meaning; green or red only add to it. Nothing when the previous period has no data. */
 export function DeltaText({ value, arrow = true, parens = false }: Props) {
   if (value.kind === "hidden") return null;
-  if (value.kind === "new") return <span className="text-muted-foreground">new</span>;
+  if (value.kind === "new") return <span className="text-muted-foreground">{parens ? "(new)" : "new"}</span>;
   return (
     <span className={cn(TONES[value.tone])}>
       {arrow && (
