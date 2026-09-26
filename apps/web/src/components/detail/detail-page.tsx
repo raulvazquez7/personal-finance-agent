@@ -18,7 +18,7 @@ import type { Schemas } from "@/lib/api";
 import { breakdownItems, type BreakdownContext } from "@/lib/breakdown";
 import { rampColor } from "@/lib/colors";
 import { delta, periodHasData, type Good } from "@/lib/delta";
-import { money, previousLabel, rangeLabel } from "@/lib/format";
+import { money, previousLabel, rangeLabel, signedMoney } from "@/lib/format";
 import { plural } from "@/lib/labels";
 import type { Filters } from "@/lib/params";
 import { cn } from "@/lib/utils";
@@ -41,7 +41,8 @@ type Props = {
 /** One template for every level (mockup page map): the total and its delta, a per-month chart,
  * the next level as chart + table, top merchants, and the latest transactions with "See all". */
 export function DetailPage({ detail, categories, filters, title, crumbs, childDimension, seeAllHref, defaultView = "monthly" }: Props) {
-  const good: Good = detail.type === "expense" ? "down" : "up";
+  const income = detail.type === "income";
+  const good: Good = income ? "up" : "down";
   const context: BreakdownContext = { categories, slots: null, filters, good, type: detail.type };
   const rows = childDimension ? breakdownItems(detail.children, childDimension, context) : [];
   // A child's hint names its parent, which is this page's own scope: a category shows none
@@ -91,7 +92,10 @@ export function DetailPage({ detail, categories, filters, title, crumbs, childDi
         <h1 className="text-sm text-muted-foreground">
           {title} · {rangeLabel(detail.period)}
         </h1>
-        <p className="text-4xl font-semibold tracking-tight">{total === null ? "—" : money(total)}</p>
+        {/* Spec 7.2: income is green with a "+"; expenses are neutral. */}
+        <p className={cn("text-4xl font-semibold tracking-tight", income && total !== null && total > 0 && "text-income")}>
+          {total === null ? "—" : income ? signedMoney(total) : money(total)}
+        </p>
         <p className="text-sm text-muted-foreground">
           {total === null ? (
             "No data in this period"
