@@ -62,6 +62,8 @@ function ComboboxInput({
   showClear?: boolean
 }) {
   // The buttons take the field's name, so a page with several pickers has no two "Show options".
+  // Without an aria-label they keep a generic name: ComboboxClear spreads its props after its own
+  // "Clear", so an undefined label would erase it.
   const field = props["aria-label"]
   const named = field ? field.charAt(0).toLowerCase() + field.slice(1) : null
   return (
@@ -85,7 +87,7 @@ function ComboboxInput({
         {showClear && (
           <ComboboxClear
             disabled={disabled}
-            aria-label={named ? `Clear ${named}` : undefined}
+            aria-label={named ? `Clear ${named}` : "Clear"}
           />
         )}
       </InputGroupAddon>
