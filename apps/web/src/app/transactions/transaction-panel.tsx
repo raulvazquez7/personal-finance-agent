@@ -113,7 +113,8 @@ function PanelForm({ tx, categories, merchants, onClose, onSaved }: Omit<Props, 
         note: finalNote,
         defaultFor: toMerchant && merchant?.id ? merchant.id : null,
       });
-      toast.success(toMerchant && merchant ? `Saved for every ${merchant.name} transaction` : "Saved");
+      // Not "every transaction": rows you or a rule labelled keep theirs, as the dialog says.
+      toast.success(toMerchant && merchant ? `${merchant.name} now uses ${label(categorySlug)}` : "Saved");
       router.refresh();
       onClose();
     } catch (error) {
