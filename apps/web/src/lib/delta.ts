@@ -30,6 +30,8 @@ export function delta(current: number | null, previous: number | null | undefine
   if (unit === "percent") {
     if (previous === 0) return current === 0 ? flat("0%") : { kind: "new" };
     change = Math.round(((current - previous) / Math.abs(previous)) * 100);
+    // −100% means "down to nothing": an amount that is not zero stops at −99%.
+    if (change === -100 && current !== 0) change = -99;
     text = `${Math.abs(change)}%`;
   } else if (unit === "euro") {
     change = Math.round(current - previous);

@@ -50,6 +50,10 @@ describe("money", () => {
     // A refund after its purchase month makes an entry's net negative: shares leave 0-100%.
     expect(percent(1.25)).toBe("125%");
     expect(percent(-0.1)).toBe("−10%");
+    // A row that is not zero never reads as nothing.
+    expect(percent(0.003)).toBe("<1%");
+    expect(percent(0.005)).toBe("1%");
+    expect(percent(0)).toBe("0%");
     expect(rate(0.328)).toBe("32.8%");
     expect(rate(null)).toBe("—");
   });

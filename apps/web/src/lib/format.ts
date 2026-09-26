@@ -29,7 +29,8 @@ export const moneyWhole = (value: Amount) => minus(whole.format(toNumber(value))
 export const signedMoney = (value: Amount) => minus(signedCents.format(toNumber(value)));
 export const signedMoneyWhole = (value: Amount) => minus(signedWhole.format(toNumber(value)));
 export const compactMoney = (value: number) => minus(compact.format(value)); // €2.4K, for axis ticks
-export const percent = (share: number) => minus(`${Math.round(share * 100)}%`);
+/** A share under half a percent reads "<1%": a row that is not zero never reads as nothing. */
+export const percent = (share: number) => (share > 0 && share < 0.005 ? "<1%" : minus(`${Math.round(share * 100)}%`));
 /** The savings rate; empty without income (docs/money-rules.md). */
 export const rate = (value: number | null) => (value === null ? "—" : minus(`${(value * 100).toFixed(1)}%`));
 

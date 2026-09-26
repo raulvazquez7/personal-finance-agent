@@ -25,6 +25,11 @@ describe("delta", () => {
     expect(delta(0, 0, "down", "percent")).toEqual({ kind: "change", direction: "flat", tone: "neutral", text: "0%" });
   });
 
+  it("never reads a fall to an amount that is not zero as −100%", () => {
+    expect(delta(2, 1000, "down", "percent")).toEqual({ kind: "change", direction: "down", tone: "good", text: "−99%" });
+    expect(delta(0, 1000, "down", "percent")).toMatchObject({ text: "−100%" });
+  });
+
   it("compares with a negative month (refunds only) by its size", () => {
     expect(delta(120, -30, "down", "percent")).toMatchObject({ direction: "up", tone: "bad", text: "+500%" });
   });
