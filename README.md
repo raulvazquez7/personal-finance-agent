@@ -6,8 +6,10 @@ with your finances through an LLM agent over a semantic layer.
 
 ## Status
 
-Slice 1 (ingestion) and slice 2 (categorization with jev and the `/review`
-inbox) are complete. Dashboards and the chat agent come next. Design:
+Slice 1 (ingestion), slice 2 (categorization with jev and the `/review`
+inbox) and slice 3 (the dashboards: an overview, spending, income and merchant
+pages, a transactions explorer and subscriptions, next to the review and import
+pages) are complete. The chat agent comes next. Design:
 `docs/superpowers/specs/`. Plans: `docs/superpowers/plans/`.
 
 ## How jev categorizes transactions
