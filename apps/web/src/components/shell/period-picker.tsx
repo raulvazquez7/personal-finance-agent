@@ -68,7 +68,13 @@ export function PeriodPicker({ latestDay }: { latestDay: string | null }) {
       <PopoverContent align="end" className="w-72 gap-1 p-1">
         <div className="flex flex-col">
           {presets.map(({ label, choice }) => (
-            <Button key={label} variant="ghost" className="justify-between" onClick={() => go(choice)}>
+            <Button
+              key={label}
+              variant="ghost"
+              className="justify-between"
+              aria-pressed={selected(choice)}
+              onClick={() => go(choice)}
+            >
               {label}
               {selected(choice) && <Check data-icon="inline-end" />}
             </Button>
