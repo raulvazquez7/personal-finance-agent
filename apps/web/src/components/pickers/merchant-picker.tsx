@@ -12,6 +12,10 @@ import {
 } from "@/components/ui/combobox";
 import type { Schemas } from "@/lib/api";
 
+/** Every merchant is loaded (up to 5000), but only this many options are rendered: typing narrows
+ * the list. */
+const SHOWN = 50;
+
 /** An existing merchant (id) or a new name typed by the user (id null). */
 export type MerchantChoice = { id: string | null; name: string };
 
@@ -55,6 +59,7 @@ export function MerchantPicker({
   return (
     <Combobox
       items={items}
+      limit={SHOWN}
       value={value}
       // Base UI still reports the change it canceled below (Escape on a label): skip it.
       onValueChange={(merchant: MerchantChoice | null, details) => {
