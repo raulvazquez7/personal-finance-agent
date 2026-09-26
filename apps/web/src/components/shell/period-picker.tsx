@@ -90,7 +90,17 @@ export function PeriodPicker({ latestDay }: { latestDay: string | null }) {
         >
           <Field>
             <FieldLabel htmlFor="period-month">One month</FieldLabel>
-            <Input id="period-month" type="month" value={month} max={latestMonth} onChange={(event) => setMonth(event.target.value)} />
+            {/* Firefox and desktop Safari have no month picker: there the field is a text box, and the
+                placeholder and pattern give it the format (Chrome ignores both). */}
+            <Input
+              id="period-month"
+              type="month"
+              placeholder="YYYY-MM…"
+              pattern="[0-9]{4}-[0-9]{2}"
+              value={month}
+              max={latestMonth}
+              onChange={(event) => setMonth(event.target.value)}
+            />
           </Field>
           <Button type="submit" size="sm" disabled={!month}>
             Show month
