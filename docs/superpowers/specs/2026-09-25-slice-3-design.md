@@ -227,7 +227,7 @@ Every read takes the same filter parameters: `start`, `end` (or `period`) and
 
 | Method and path | Returns |
 |---|---|
-| `GET /dashboard/overview` | 4 KPIs for the period and the previous one (with `has_previous`); cumulative daily spend for both; a 12-month series of income, expenses and savings with `has_data`; breakdowns by group, category and merchant (top 5 + other, each with its previous value); a subscriptions summary |
+| `GET /dashboard/overview` | 4 KPIs for the period and the previous one (with `has_previous`); cumulative daily spend for both; a 12-month series of income, expenses and savings with `has_data`; breakdowns by group (every group), category and merchant (top 5 + other), each with its previous value; a subscriptions summary |
 | `GET /spending/detail?type=expense\|income&level1=&category=&merchant_id=` | the scope's total and previous total; monthly series (total and by child); cumulative daily series; the next-level breakdown; top merchants; the 5 latest rows |
 | `GET /transactions` | filters: period, `q` (merchant, description, note), `tx_type`, `level1`, `category`, `merchant_id`, `account_id`, `is_subscription`, `category_source`, `needs_review`, `saved=unpaired_own\|refunds`. Pages of 100 with a cursor; totals for the whole filtered set |
 | `PATCH /transactions/{id}` | the note (no label history: a note is not a label) |

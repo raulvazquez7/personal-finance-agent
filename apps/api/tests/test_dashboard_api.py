@@ -51,6 +51,34 @@ def test_overview_kpis_and_breakdowns_follow_the_money_rules(client, db_conn, ma
     assert (last["day"], last["total"]) == (31, "455.00")
 
 
+SEVEN_GROUPS = {  # expense group -> one of its categories (supabase/seed/categories.yaml)
+    "home": "rent",
+    "shopping": "groceries",
+    "leisure": "restaurants_bars",
+    "transport": "fuel",
+    "travel": "flights",
+    "health": "pharmacy",
+    "education": "courses",
+}
+
+
+def test_the_overview_returns_every_expense_group(client, db_conn, make_tx):
+    # The web colours groups by all-time slots, so a slotted group ranked 6th or lower in the
+    # period must keep its own row: by_group is never folded into "_other".
+    iban = "ES0000000000000000000078"
+    for n, slug in enumerate(SEVEN_GROUPS.values(), start=1):
+        tx = make_tx(f"-{n * 10}.00", f"ZZTEST SHOP {n}", iban=iban, booked_at=date(1999, 3, n))
+        db_conn.execute(
+            "update transactions t set category_slug = c.slug, tx_type = c.tx_type,"
+            " category_source = 'user' from categories c where c.slug = %s and t.id = %s",
+            (slug, tx),
+        )
+    account = db_conn.execute("select id from accounts where iban = %s", (iban,)).fetchone()["id"]
+    by_group = _overview(client, account, period="month", month="1999-03")["by_group"]
+    assert len(by_group) == 7
+    assert {r["key"] for r in by_group} == set(SEVEN_GROUPS)  # none is keyed "_other"
+
+
 def test_february_compares_with_january(client, db_conn, make_tx):
     account = money_month(db_conn, make_tx)
     body = _overview(client, account, period="month", month="1999-02")

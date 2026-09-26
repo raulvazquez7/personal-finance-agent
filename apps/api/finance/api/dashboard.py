@@ -34,7 +34,8 @@ def overview(conn: Db, query: PeriodQuery) -> Overview:
             previous=cumulative(conn, spend, before, "spend") if before else None,
         ),
         months=month_series(conn, scope, resolved.current.end),
-        by_group=breakdown(conn, "group", "spend", spend, resolved.current, before),
+        # Every group: the web colours groups by group_slots and folds the unslotted ones itself.
+        by_group=breakdown(conn, "group", "spend", spend, resolved.current, before, top=None),
         by_category=breakdown(conn, "category", "spend", spend, resolved.current, before),
         by_merchant=breakdown(conn, "merchant", "spend", spend, resolved.current, before),
         group_slots=group_slots(conn),
