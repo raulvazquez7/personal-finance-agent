@@ -7,7 +7,7 @@ import { ChartContainer, ChartTooltip, ChartTooltipContent, type ChartConfig } f
 import type { Schemas } from "@/lib/api";
 import { compactMoney, dayAt, dayShort, daysIn, periodNames } from "@/lib/format";
 
-import { LegendButtons } from "./legend-buttons";
+import { LegendButtons, type LegendItem } from "./legend-buttons";
 import { dayTooltipLabel, moneyRow } from "./money-tooltip";
 
 /** `title` names the chart for screen readers: Recharts makes it a focusable application. */
@@ -29,19 +29,17 @@ export function CumulativeChart({ cumulative, period, title }: Props) {
     previous: cumulative.previous?.[index] ? Number(cumulative.previous[index].total) : null,
   }));
   const dayLabel = (day: number) => dayShort(dayAt(period.start, day - 1));
-  const lines = cumulative.previous ? `${names.current} against ${names.previous}` : names.current;
+  // Only the series with points: a period without data has an empty current line, which must not
+  // be listed or shown alone (an empty chart). A series isolated before it emptied shows all again.
+  const legend: LegendItem[] = [];
+  if (cumulative.current.length > 0) legend.push({ key: "current", label: names.current, color: config.current.color, shape: "line" });
+  if (cumulative.previous?.length) legend.push({ key: "previous", label: names.previous, color: config.previous.color, shape: "line" });
+  const shown = legend.some((item) => item.key === isolated) ? isolated : null;
+  const lines = legend.map((item) => item.label).join(" against ") || "no data";
   return (
     <div className="flex flex-col gap-3">
-      {cumulative.previous && (
-        <LegendButtons
-          chart={title}
-          isolated={isolated}
-          onIsolate={setIsolated}
-          items={[
-            { key: "current", label: names.current, color: config.current.color, shape: "line" },
-            { key: "previous", label: names.previous, color: config.previous.color, shape: "line" },
-          ]}
-        />
+      {cumulative.previous && legend.length > 0 && (
+        <LegendButtons chart={title} isolated={shown} onIsolate={setIsolated} items={legend} />
       )}
       <ChartContainer config={config} className="aspect-auto h-56 w-full">
         <AreaChart
@@ -74,7 +72,7 @@ export function CumulativeChart({ cumulative, period, title }: Props) {
             fill="transparent"
             dot={false}
             activeDot={false}
-            hide={isolated === "current"}
+            hide={shown === "current"}
           />
           <Area
             dataKey="current"
@@ -85,7 +83,7 @@ export function CumulativeChart({ cumulative, period, title }: Props) {
             fillOpacity={0.1}
             dot={false}
             activeDot={{ r: 4 }}
-            hide={isolated === "previous"}
+            hide={shown === "previous"}
           />
         </AreaChart>
       </ChartContainer>

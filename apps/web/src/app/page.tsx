@@ -98,11 +98,14 @@ export default async function OverviewPage({ searchParams }: PageProps<"/">) {
                 never €0. One string: Chrome drops a lone space between server-rendered text parts from a heading's name. */}
             {`${spent.current === null ? "No data" : `${moneyWhole(spent.current)} spent`} ${period.name === "month" ? `in ${periodNames(period).current}` : "in this period"}`}
           </CardTitle>
-          <CardDescription>
-            <DeltaText value={delta(spent.current, spent.previous, "down", "euro")} />{" "}
-            <DeltaText value={delta(spent.current, spent.previous, "down", "percent")} arrow={false} parens />{" "}
-            {spent.previous !== null && `${previousLabel(period, "long")}${period.name === "month" ? " by the same day" : ""}`}
-          </CardDescription>
+          {/* Only with a comparison: without data or a previous period it would be empty. */}
+          {spent.current !== null && spent.previous !== null && (
+            <CardDescription>
+              <DeltaText value={delta(spent.current, spent.previous, "down", "euro")} />{" "}
+              <DeltaText value={delta(spent.current, spent.previous, "down", "percent")} arrow={false} parens />{" "}
+              {`${previousLabel(period, "long")}${period.name === "month" ? " by the same day" : ""}`}
+            </CardDescription>
+          )}
         </CardHeader>
         <CardContent>
           <CumulativeChart cumulative={cumulative} period={period} title="Spending so far, day by day" />
