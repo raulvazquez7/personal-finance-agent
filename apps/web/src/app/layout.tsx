@@ -26,9 +26,16 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html lang="en" className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}>
       <body className="flex min-h-full flex-col">
+        {/* The first Tab stop: past the logo, the navigation and the filters (WCAG 2.4.1). */}
+        <a
+          href="#main"
+          className="sr-only rounded-full bg-foreground text-sm font-medium text-background focus:not-sr-only focus:fixed focus:top-2 focus:left-4 focus:z-50 focus:px-3 focus:py-1.5"
+        >
+          Skip to content
+        </a>
         <TooltipProvider>
           <TopBar />
-          <main className="mx-auto flex w-full max-w-6xl flex-1 flex-col gap-4 px-4 py-5 sm:px-6">{children}</main>
+          <main id="main" className="mx-auto flex w-full max-w-6xl flex-1 flex-col gap-4 px-4 py-5 sm:px-6">{children}</main>
         </TooltipProvider>
         {/* Light mode only in slice 3: the toaster must not follow a dark system theme. */}
         <Toaster position="bottom-center" theme="light" />
