@@ -915,13 +915,13 @@ describe("colours", () => {
       [
         row("home", "830.00", 0.38, "800.00"),
         row("health", "100.00", 0.05, "90.00"),
-        row("shopping", "481.20", 0.22, "500.00"),
-        row("_other", "94.80", 0.04, "100.00", 3),
+        row("shopping", "480.00", 0.22, "500.00"),
+        row("_other", "90.00", 0.04, "100.00", 3),
       ],
       slots,
     );
     expect(folded.map((r) => r.key)).toEqual(["home", "shopping", "_other"]);
-    expect(folded[2]).toMatchObject({ amount: "194.80", share: 0.09, previous: "190.00", folded: 4, count: 2 });
+    expect(folded[2]).toMatchObject({ amount: "190.00", share: 0.09, previous: "190.00", folded: 4, count: 2 });
   });
 
   it("leaves the rows alone when every group has a colour", () => {
