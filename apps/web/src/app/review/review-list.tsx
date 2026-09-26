@@ -8,6 +8,7 @@ import { toast } from "sonner";
 import { Progress } from "@/components/ui/progress";
 import { apiPost, type Schemas } from "@/lib/api";
 import { plural } from "@/lib/labels";
+import { directionOf } from "@/lib/pickers";
 
 import { ReviewHelp } from "./review-help";
 import { ReviewRow, type Decision } from "./review-row";
@@ -117,7 +118,8 @@ export function ReviewList({ initialItems, categories, merchants, uncategorized 
       const mergeInto = d.merchant?.id && d.merchant.id !== merchantId ? d.merchant.id : null;
       const body = {
         category_slug: d.categorySlug,
-        is_subscription: d.isSubscription,
+        // Money in has no subscription switch: null keeps the merchant's flag and its rows' marks.
+        is_subscription: directionOf(item.transactions.map((t) => t.amount)) === "in" ? null : d.isSubscription,
         name: d.merchant && d.merchant.id === null ? d.merchant.name : null,
         merge_into_id: mergeInto,
       };

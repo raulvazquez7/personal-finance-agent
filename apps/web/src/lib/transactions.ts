@@ -25,11 +25,12 @@ export function groupByDay(items: Tx[]): Day[] {
 
 /** What the side panel saved (spec 7.3). `categorySlug` is null when only the note changed;
  * `merchant` is set when the merchant changed; `defaultFor` is the merchant whose default the
- * change became ("Apply to all transactions of this merchant?" → yes). */
+ * change became ("Apply to all transactions of this merchant?" → yes). `isSubscription` is null
+ * when that default came from money in, which has no subscription switch: every row keeps its own. */
 export type LabelChange = {
   id: string;
   categorySlug: string | null;
-  isSubscription: boolean;
+  isSubscription: boolean | null;
   merchant: { id: string | null; name: string } | null;
   note: string | null;
   defaultFor: string | null;
@@ -53,8 +54,8 @@ export function applyChange(rows: Tx[], change: LabelChange, categories: Categor
           tx_type: category.tx_type as Tx["tx_type"],
           category_source: source,
           needs_review: false,
-          // Only money going out is a subscription (spec 6).
-          is_subscription: change.isSubscription && category.tx_type === "expense" && Number(row.amount) < 0,
+          // Only money going out is a subscription (spec 6), as in labels._SUBSCRIPTION.
+          is_subscription: (change.isSubscription ?? row.is_subscription) && category.tx_type === "expense" && Number(row.amount) < 0,
         }
       : row;
   return rows.map((row) => {

@@ -92,6 +92,9 @@ function PanelForm({ tx, categories, merchants, onClose, onSaved }: Omit<Props, 
     try {
       const finalNote = note.trim() || null;
       const subscription = isSubscription && canSubscribe;
+      // Money in has no subscription switch, so a default set from it gives no answer (null): the
+      // merchant keeps its flag and every row its own mark. This row itself is never one.
+      const defaultSubscription = direction === "in" ? null : subscription;
       if (noteChanged) await apiPatch(`/transactions/${tx.id}`, { note: finalNote });
       if (labelChanged) {
         await apiPost(`/transactions/${tx.id}/label`, {
@@ -103,12 +106,12 @@ function PanelForm({ tx, categories, merchants, onClose, onSaved }: Omit<Props, 
       }
       if (toMerchant && merchant?.id) {
         // The merchant's default: its other rows (not the user's own labels) and future imports.
-        await apiPost(`/merchants/${merchant.id}/review`, { category_slug: categorySlug, is_subscription: subscription });
+        await apiPost(`/merchants/${merchant.id}/review`, { category_slug: categorySlug, is_subscription: defaultSubscription });
       }
       onSaved({
         id: tx.id,
         categorySlug: labelChanged ? categorySlug : null,
-        isSubscription: subscription,
+        isSubscription: toMerchant ? defaultSubscription : subscription,
         merchant: merchantChanged ? merchant : null,
         note: finalNote,
         defaultFor: toMerchant && merchant?.id ? merchant.id : null,

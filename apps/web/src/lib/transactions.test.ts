@@ -110,6 +110,44 @@ describe("applyChange", () => {
     ]);
   });
 
+  it("gives the merchant's money out its subscription answer, and its money in never", () => {
+    const rows = [
+      tx("1", "2026-08-26", "-1.00", { merchant_id: "m" }),
+      tx("2", "2026-08-26", "-2.00", { merchant_id: "m", category_source: "jev" }),
+      tx("3", "2026-08-26", "80.00", { merchant_id: "m", category_source: "jev" }),
+    ];
+    const out = applyChange(
+      rows,
+      { id: "1", categorySlug: "fashion", isSubscription: true, merchant: null, note: null, defaultFor: "m" },
+      categories,
+    );
+    expect(out.map((row) => [row.id, row.category_slug, row.is_subscription])).toEqual([
+      ["1", "fashion", true],
+      ["2", "fashion", true],
+      ["3", "fashion", false],
+    ]);
+  });
+
+  it("keeps every row's own subscription mark when a default set from money in has no answer", () => {
+    const rows = [
+      tx("1", "2026-08-26", "80.00", { merchant_id: "m" }),
+      tx("2", "2026-08-26", "-2.00", { merchant_id: "m", category_source: "jev", is_subscription: true }),
+      tx("3", "2026-08-26", "-3.00", { merchant_id: "m", category_source: "merchant" }),
+      tx("4", "2026-08-26", "100.00", { merchant_id: "m", category_source: "jev" }),
+    ];
+    const out = applyChange(
+      rows,
+      { id: "1", categorySlug: "fashion", isSubscription: null, merchant: null, note: null, defaultFor: "m" },
+      categories,
+    );
+    expect(out.map((row) => [row.id, row.category_source, row.category_slug, row.is_subscription])).toEqual([
+      ["1", "user", "fashion", false],
+      ["2", "merchant", "fashion", true],
+      ["3", "merchant", "fashion", false],
+      ["4", "merchant", "fashion", false],
+    ]);
+  });
+
   it("never makes money in a subscription, and a note-only change keeps the label", () => {
     const [refund] = applyChange(
       [tx("1", "2026-08-26", "80.00")],
