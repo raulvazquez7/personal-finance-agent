@@ -165,7 +165,7 @@ export function ReviewList({ initialItems, categories, merchants, uncategorized 
             If they stay, the API console says why (“jev skipped” when no jev key is set).
           </p>
         )}
-        {total > 0 && <Progress value={(done / total) * 100} />}
+        {total > 0 && <Progress aria-label="Review progress" value={(done / total) * 100} />}
       </header>
 
       {items.length === 0 ? (
