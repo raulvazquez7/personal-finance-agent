@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { NoData } from "@/components/money/no-data";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { apiGet, type Schemas } from "@/lib/api";
 import { dateTime, dayRange } from "@/lib/format";
@@ -59,7 +60,7 @@ export default async function ImportsPage() {
                       {row.filename}
                     </TableCell>
                     <TableCell className="hidden whitespace-normal md:table-cell">
-                      {row.period_start && row.period_end ? dayRange(row.period_start, row.period_end) : "—"}
+                      {row.period_start && row.period_end ? dayRange(row.period_start, row.period_end) : <NoData />}
                     </TableCell>
                     <TableCell className="hidden text-right sm:table-cell">{row.rows_total}</TableCell>
                     <TableCell className="text-right">{row.rows_new}</TableCell>

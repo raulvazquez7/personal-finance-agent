@@ -3,6 +3,7 @@
 import { ArrowDownLeft, ArrowUpRight, Check, ChevronRight } from "lucide-react";
 import { useId, useState } from "react";
 
+import { NoData } from "@/components/money/no-data";
 import { CategoryPicker } from "@/components/pickers/category-picker";
 import { MerchantPicker, type MerchantChoice } from "@/components/pickers/merchant-picker";
 import { Badge } from "@/components/ui/badge";
@@ -102,7 +103,7 @@ export function ReviewRow({ item, categories, merchants, onConfirm, onLabelOne, 
               </span>
             )}
           </div>
-          <span className="truncate text-sm text-muted-foreground">{level1 ? label(level1) : "—"}</span>
+          <span className="truncate text-sm text-muted-foreground">{level1 ? label(level1) : <NoData />}</span>
           <label className="flex items-center gap-2 text-sm text-muted-foreground">
             <Switch
               checked={subscription}

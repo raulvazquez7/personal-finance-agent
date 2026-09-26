@@ -11,7 +11,8 @@ import { NoData } from "./no-data";
 type Props = {
   label: string;
   definition: string;
-  value: string;
+  /** null: this number has no value (a savings rate without income), read as "No data". */
+  value: string | null;
   delta: Delta;
   versus: string;
   href?: string;
@@ -42,7 +43,7 @@ export function KpiTile({ label, definition, value, delta, versus, href, income 
       </CardHeader>
       <CardContent className="flex flex-col gap-1">
         <p className={cn("text-2xl font-semibold tracking-tight", income && hasData && "text-income")}>
-          {hasData ? value : <NoData />}
+          {hasData && value !== null ? value : <NoData />}
         </p>
         <p className="min-h-4 text-xs text-muted-foreground">
           {hasData && delta.kind !== "hidden" && (

@@ -85,7 +85,8 @@ export default async function OverviewPage({ searchParams }: PageProps<"/">) {
         <KpiTile
           label="Savings rate"
           definition={DEFINITIONS.savingsRate}
-          value={rate(kpis.savings_rate)}
+          // No income, no rate (Review Focus 3): "—", read as "No data".
+          value={kpis.savings_rate === null ? null : rate(kpis.savings_rate)}
           hasData={hasData}
           delta={delta(kpis.savings_rate, before?.savings_rate, "up", "points")}
           versus={versus}
