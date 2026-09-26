@@ -160,4 +160,16 @@
   html {
     @apply font-sans;
   }
+  /* Reduced motion: overlays, toggles and toasts appear and change without sliding, zooming or
+     fading. One rule for all of them, because the overlays' data-open animations outrank a
+     motion-reduce utility. A spinner then shows as a still icon; it keeps its "Loading" label. */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    ::before,
+    ::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
 }
