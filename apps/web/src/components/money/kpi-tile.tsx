@@ -28,8 +28,9 @@ export function KpiTile({ label, definition, value, delta, versus, href, income 
       <CardHeader>
         <CardDescription className="text-xs tracking-wide uppercase">
           {href ? (
+            // The arrow shows that the label is a link, like the app's other text links.
             <Link href={href} className="hover:text-foreground">
-              {label}
+              {label} <span aria-hidden>→</span>
             </Link>
           ) : (
             label
