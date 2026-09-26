@@ -25,7 +25,7 @@ expense:
     electronics:
       what: electronics, computers, phones, appliances, photo and video game shops
     home_goods:
-      what: furniture, decoration, household items, hardware and DIY stores, cleaning products
+      what: furniture, decoration, household items, hardware and DIY stores, cleaning products; anything bought at IKEA, including IKEA FOOD
     beauty_perfumery:
       what: perfumeries, cosmetics and make-up shops, drugstores
       not_for: hairdressers and beauty services
@@ -33,14 +33,15 @@ expense:
       what: music instruments, sports equipment, crafts, books, stationery, toys and hobby shops
       not_for: school textbooks and course materials
     tobacco:
-      what: tobacco shops (estanco), tobacco and vaping products
+      what: tobacco shops (estanco, estanc, expendeduría or EXPENDEDURIA in the bank text), tobacco and vaping products
     other_shopping:
       what: online marketplaces, department stores, bazaars and any other retail purchase that fits no specific
         shop
   leisure:
     restaurants_bars:
       what: restaurants, bars, cafes, fast food, ice cream shops, food delivery and its memberships (Uber Eats,
-        Uber One, Glovo Prime)
+        Uber One, Glovo Prime); the bank usually files these card payments as RESTAURANTES Y CAFETERIAS
+      not_for: card payments the bank files as GASOLINERAS, IKEA FOOD
     entertainment:
       what: streaming services, music and video apps, video games bought online
       not_for: software, AI and productivity tools
@@ -53,7 +54,8 @@ expense:
       what: lottery, betting, casinos, lottery administrations
   transport:
     fuel:
-      what: petrol stations, fuel, EV charging
+      what: petrol stations, fuel, EV charging; every card payment the bank files as GASOLINERAS, even when the merchant text names a bar or
+        a shop
     public_transport:
       what: metro, bus, tram and commuter train tickets and passes, bike and scooter sharing
       not_for: long-distance trains and trips away from home
