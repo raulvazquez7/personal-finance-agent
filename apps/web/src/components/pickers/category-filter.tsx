@@ -26,12 +26,13 @@ type Props = {
 /** "Group or category" in one picker (spec 7.3), following the type filter. */
 export function CategoryFilter({ categories, txType, level1, category, onChange }: Props) {
   const groups = filterGroups(categories, txType);
+  const options = groups.flatMap((group) => group.items);
+  // The category the URL names, else its group: the uncategorized group's link also names the
+  // category "uncategorized", which only Income lists.
   const value =
-    groups
-      .flatMap((group) => group.items)
-      .find((option) =>
-        category ? option.kind === "category" && option.value === category : option.kind === "group" && option.value === level1,
-      ) ?? null;
+    options.find((option) => option.kind === "category" && option.value === category) ??
+    options.find((option) => option.kind === "group" && option.value === level1) ??
+    null;
   return (
     <Combobox
       items={groups}

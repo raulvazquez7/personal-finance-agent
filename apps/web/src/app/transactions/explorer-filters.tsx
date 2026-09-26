@@ -3,7 +3,7 @@
 import { Search, SlidersHorizontal } from "lucide-react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import type { FormEvent } from "react";
+import { useState, type FormEvent } from "react";
 
 import { CategoryFilter } from "@/components/pickers/category-filter";
 import { MerchantPicker } from "@/components/pickers/merchant-picker";
@@ -15,7 +15,8 @@ import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectVa
 import { Switch } from "@/components/ui/switch";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import type { Schemas } from "@/lib/api";
-import { clearedExplorer, replaceParams, type ExplorerFilters as Explorer } from "@/lib/params";
+import { sourceLabel } from "@/lib/labels";
+import { clearedExplorer, replaceParams, SOURCES, type ExplorerFilters as Explorer } from "@/lib/params";
 
 type Props = { search: string; explorer: Explorer; categories: Schemas["CategoryOut"][]; merchants: Schemas["MerchantOut"][] };
 
@@ -24,14 +25,7 @@ const SUBSCRIPTION = [
   { value: "true", label: "Subscriptions only" },
   { value: "false", label: "Not subscriptions" },
 ];
-const SOURCE = [
-  { value: null, label: "Any" },
-  { value: "rule", label: "Rule" },
-  { value: "merchant", label: "Merchant" },
-  { value: "jev", label: "AI (jev)" },
-  { value: "user", label: "You" },
-  { value: "none", label: "Pending" },
-];
+const SOURCE = [{ value: null, label: "Any" }, ...SOURCES.map((value) => ({ value, label: sourceLabel(value) }))];
 
 /** The explorer's filters (spec 7.3): search, type, group or category, merchant visible; the
  * account and period are in the top bar; subscription, source and needs review under "More
@@ -41,28 +35,35 @@ export function ExplorerFilters({ search, explorer, categories, merchants }: Pro
   const pathname = usePathname();
   const go = (changes: Record<string, string | undefined>) =>
     router.push(`${pathname}?${replaceParams(search, changes)}`, { scroll: false });
-  const more = [explorer.is_subscription, explorer.category_source, explorer.needs_review].filter(Boolean).length;
+  // The switch shows only needs_review=true, so only that counts.
+  const more = [explorer.is_subscription, explorer.category_source, explorer.needs_review === "true"].filter(Boolean).length;
   const merchant = merchants.find((m) => m.id === explorer.merchant_id);
   const cleared = clearedExplorer(search);
+  // The box follows the URL ("Clear filters", Back) without remounting, so it keeps focus after Enter.
+  const [q, setQ] = useState(explorer.q ?? "");
+  const [urlQ, setUrlQ] = useState(explorer.q);
+  if (explorer.q !== urlQ) {
+    setUrlQ(explorer.q);
+    setQ(explorer.q ?? "");
+  }
 
   function onSearch(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    const q = String(new FormData(event.currentTarget).get("q") ?? "").trim();
-    go({ q: q || undefined });
+    go({ q: q.trim() || undefined });
   }
 
   return (
     <div className="flex flex-col gap-3">
       <div className="flex flex-wrap items-center gap-2">
-        {/* Keyed by the search, so "Clear filters" also empties the box. */}
-        <form key={explorer.q ?? ""} role="search" onSubmit={onSearch} className="w-full sm:w-72">
+        <form role="search" onSubmit={onSearch} className="w-full sm:w-72">
           <InputGroup>
             <InputGroupAddon>
               <Search />
             </InputGroupAddon>
             <InputGroupInput
               name="q"
-              defaultValue={explorer.q}
+              value={q}
+              onChange={(event) => setQ(event.target.value)}
               maxLength={100}
               placeholder="Merchant, description or note"
               aria-label="Search transactions"
@@ -74,9 +75,10 @@ export function ExplorerFilters({ search, explorer, categories, merchants }: Pro
           size="sm"
           aria-label="Type"
           value={[explorer.tx_type ?? "all"]}
-          onValueChange={(value: string[]) =>
-            go({ tx_type: value[0] && value[0] !== "all" ? value[0] : undefined, level1: undefined, category: undefined })
-          }
+          onValueChange={(value: string[]) => {
+            if (!value[0]) return; // pressing the pressed item sends []: the type did not change
+            go({ tx_type: value[0] !== "all" ? value[0] : undefined, level1: undefined, category: undefined });
+          }}
         >
           <ToggleGroupItem value="all">All</ToggleGroupItem>
           <ToggleGroupItem value="expense">Expenses</ToggleGroupItem>

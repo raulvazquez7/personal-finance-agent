@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import type { Schemas } from "./api";
+import type { TxType } from "./params";
 import { directionOf, filterGroups, fitsDirection, pickerGroups } from "./pickers";
 
 const categories: Schemas["CategoryOut"][] = [
@@ -65,9 +66,35 @@ describe("filterGroups", () => {
           { kind: "group", value: "income", label: "All of Income" },
           { kind: "category", value: "salary", label: "Salary" },
           { kind: "category", value: "refunds", label: "Refunds" },
+          { kind: "category", value: "uncategorized", label: "Uncategorized" },
         ],
       },
     ]);
-    expect(filterGroups(categories).map((group) => group.value)).toEqual(["shopping", "home", "income", "transfer"]);
+    expect(filterGroups(categories).map((group) => group.value)).toEqual([
+      "shopping",
+      "home",
+      "income",
+      "transfer",
+      "uncategorized",
+    ]);
+  });
+
+  it("offers the rows without a category the way the detail pages link to them (knownGroup, knownCategory)", () => {
+    const group = {
+      value: "uncategorized",
+      label: "Uncategorized",
+      items: [{ kind: "group", value: "uncategorized", label: "Uncategorized" }],
+    };
+    const option = { kind: "category", value: "uncategorized", label: "Uncategorized" };
+    const incomeTail = (txType?: TxType) => filterGroups(categories, txType).find((g) => g.value === "income")?.items.at(-1);
+    // Money out: a group of its own, for expenses and for all types.
+    expect(filterGroups(categories, "expense").at(-1)).toEqual(group);
+    expect(filterGroups(categories).at(-1)).toEqual(group);
+    // Money in: a category of Income, for income and for all types.
+    expect(incomeTail("income")).toEqual(option);
+    expect(incomeTail()).toEqual(option);
+    // Transfers have neither.
+    expect(filterGroups(categories, "transfer").map((g) => g.value)).toEqual(["transfer"]);
+    expect(filterGroups(categories, "transfer")[0].items.map((item) => item.value)).toEqual(["transfer", "own_accounts"]);
   });
 });

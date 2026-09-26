@@ -50,10 +50,11 @@ export type FilterOption = { kind: "group" | "category"; value: string; label: s
 export type FilterGroup = { value: string; label: string; items: FilterOption[] };
 
 /** The explorer's "group or category" filter follows its type filter; each group starts with
- * "All of <group>". */
+ * "All of <group>". Rows without a category are "uncategorized", as the detail pages link to them
+ * (knownGroup, knownCategory): money out as a group of its own, money in as a category of Income. */
 export function filterGroups(categories: Category[], txType?: TxType): FilterGroup[] {
   const shown = txType ? categories.filter((category) => category.tx_type === txType) : categories;
-  return byLevel1(shown).map((group) => ({
+  const groups: FilterGroup[] = byLevel1(shown).map((group) => ({
     value: group.value,
     label: group.label,
     items: [
@@ -61,4 +62,10 @@ export function filterGroups(categories: Category[], txType?: TxType): FilterGro
       ...group.items.map((category): FilterOption => ({ kind: "category", value: category.slug, label: label(category.slug) })),
     ],
   }));
+  const uncategorized = label("uncategorized");
+  groups.find((group) => group.value === "income")?.items.push({ kind: "category", value: "uncategorized", label: uncategorized });
+  if (txType === undefined || txType === "expense") {
+    groups.push({ value: "uncategorized", label: uncategorized, items: [{ kind: "group", value: "uncategorized", label: uncategorized }] });
+  }
+  return groups;
 }

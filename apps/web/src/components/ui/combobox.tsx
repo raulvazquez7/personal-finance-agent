@@ -41,6 +41,7 @@ function ComboboxClear({ className, ...props }: ComboboxPrimitive.Clear.Props) {
     <ComboboxPrimitive.Clear
       data-slot="combobox-clear"
       render={<InputGroupButton variant="ghost" size="icon-xs" />}
+      aria-label="Clear"
       className={cn(className)}
       {...props}
     >
@@ -72,6 +73,7 @@ function ComboboxInput({
             size="icon-xs"
             variant="ghost"
             render={<ComboboxTrigger />}
+            aria-label="Show options"
             data-slot="input-group-button"
             className="group-has-data-[slot=combobox-clear]/input-group:hidden data-pressed:bg-transparent"
             disabled={disabled}
