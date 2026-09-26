@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import type { Schemas } from "./api";
+import { SOURCES } from "./params";
 import {
   DIGITS_SEPARATOR,
   accountDigits,
@@ -74,6 +75,8 @@ describe("labels", () => {
   it("labels sources and account selections", () => {
     expect(sourceLabel("jev")).toBe("AI (jev)");
     expect(sourceLabel("none")).toBe("Pending");
+    // The explorer's "Categorized by" filter lists every source by its name.
+    expect(SOURCES.map(sourceLabel)).toEqual(["Rule", "Merchant", "AI (jev)", "You", "Pending"]);
     const accounts = [{ id: "a", name: "Main" }, { id: "b", name: "Savings" }];
     expect(accountsLabel([], accounts)).toBe("All accounts");
     expect(accountsLabel(["b"], accounts)).toBe("Savings");

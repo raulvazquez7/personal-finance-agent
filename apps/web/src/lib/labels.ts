@@ -2,7 +2,7 @@
  * (supabase/seed/categories.yaml), so their names come from their slugs. */
 
 import type { Schemas } from "./api";
-import type { TxType } from "./params";
+import type { Source, TxType } from "./params";
 
 type Category = Schemas["CategoryOut"];
 type Row = Schemas["BreakdownRow"];
@@ -51,10 +51,11 @@ export function rowHint(row: Row, dimension: Dimension, categories: Category[]):
   return `${label(row.category_slug)} · ${plural(row.count, "transaction", "transactions")}`;
 }
 
-const SOURCES: Record<string, string> = { rule: "Rule", merchant: "Merchant", jev: "AI (jev)", user: "You", none: "Pending" };
+// Keyed by params.ts's SOURCES, the one list of sources: a source without a name fails the build.
+const SOURCE_LABELS: Record<Source, string> = { rule: "Rule", merchant: "Merchant", jev: "AI (jev)", user: "You", none: "Pending" };
 
 /** Who categorized a row (spec 7.3). */
-export const sourceLabel = (source: string) => SOURCES[source] ?? source;
+export const sourceLabel = (source: Source) => SOURCE_LABELS[source];
 
 export function accountsLabel(ids: string[], accounts: { id: string; name: string }[]): string {
   if (ids.length === 0) return "All accounts";

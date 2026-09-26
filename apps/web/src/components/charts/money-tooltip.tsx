@@ -6,8 +6,9 @@ import { dayAt, dayShort, money, monthLabel } from "@/lib/format";
 type Item = { color?: string; payload?: unknown };
 
 /** Tooltip rows: a short line key in the series colour, the series name, and the value in euros
- * as the strong element (dataviz: values lead, labels follow). A month without data reads
- * "no data", never €0.00. */
+ * as the strong element (dataviz: values lead, labels follow). A month without data never gets a
+ * row: Recharts' Tooltip drops null values (`filterNull`) and ChartTooltipContent skips undefined
+ * ones, so the dashed "no data" box labels such months. */
 export function moneyRow(config: ChartConfig) {
   return function MoneyRow(value: unknown, name: unknown, item: Item): ReactNode {
     const key = String(name);
@@ -16,9 +17,7 @@ export function moneyRow(config: ChartConfig) {
       <div className="flex w-full items-center gap-2">
         <span aria-hidden className="h-0.5 w-3 shrink-0 rounded-full" style={{ background: item.color ?? fill }} />
         <span className="text-muted-foreground">{config[key]?.label ?? key}</span>
-        <span className="ml-auto pl-3 font-medium text-foreground">
-          {value === null || value === undefined ? "no data" : money(Number(value))}
-        </span>
+        <span className="ml-auto pl-3 font-medium text-foreground">{money(Number(value))}</span>
       </div>
     );
   };
