@@ -21,10 +21,17 @@ describe("pickerGroups", () => {
     expect(slugs(groups)).toEqual([["groceries", "fashion"], ["rent"], ["own_accounts"]]);
   });
 
-  it("offers income first, then refunds of a purchase, then transfers for money in", () => {
+  it("offers income first, then refunds of a purchase per expense group, then transfers for money in", () => {
     const groups = pickerGroups(categories, "in");
-    expect(groups.map((group) => group.label)).toEqual(["Income", "Refund of a purchase", "Transfer"]);
-    expect(slugs(groups)).toEqual([["salary", "refunds"], ["groceries", "fashion", "rent"], ["own_accounts"]]);
+    expect(groups.map((group) => group.label)).toEqual([
+      "Income",
+      "Refund of a purchase · Shopping",
+      "Refund of a purchase · Home",
+      "Transfer",
+    ]);
+    expect(slugs(groups)).toEqual([["salary", "refunds"], ["groceries", "fashion"], ["rent"], ["own_accounts"]]);
+    // The picker keys its groups by value.
+    expect(new Set(groups.map((group) => group.value)).size).toBe(groups.length);
   });
 
   it("keeps only the suggestions that fit the direction", () => {

@@ -28,19 +28,20 @@ export function byLevel1(categories: Category[]): PickerGroup[] {
   return [...groups].map(([value, items]) => ({ value, label: label(value), items }));
 }
 
-/** Money out: expense groups, then transfers. Money in: income first, then every expense category
- * as "Refund of a purchase", then transfers. Suggestions (jev's top scores) come first when they
- * fit the direction. */
+/** Money out: expense groups, then transfers. Money in: income first, then the expense categories
+ * as "Refund of a purchase · <group>", one group per expense group, then transfers. Suggestions
+ * (jev's top scores) come first when they fit the direction. */
 export function pickerGroups(categories: Category[], direction: Direction, suggested: string[] = []): PickerGroup[] {
   const of = (type: string) => categories.filter((category) => category.tx_type === type);
+  const refunds = byLevel1(of("expense")).map((group) => ({
+    ...group,
+    value: `refund-${group.value}`,
+    label: `Refund of a purchase · ${group.label}`,
+  }));
   const main =
     direction === "out"
       ? [...byLevel1(of("expense")), ...byLevel1(of("transfer"))]
-      : [
-          ...byLevel1(of("income")),
-          { value: "refund", label: "Refund of a purchase", items: of("expense") },
-          ...byLevel1(of("transfer")),
-        ];
+      : [...byLevel1(of("income")), ...refunds, ...byLevel1(of("transfer"))];
   const allowed = new Map(main.flatMap((group) => group.items).map((category) => [category.slug, category]));
   const top = suggested.flatMap((slug) => allowed.get(slug) ?? []);
   return top.length ? [{ value: "suggested", label: "Suggested", items: top }, ...main] : main;

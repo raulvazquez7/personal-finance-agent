@@ -18,7 +18,7 @@ const LINES = [
   {
     id: HELP_ID.category,
     field: "Category",
-    text: 'money out lists expenses and transfers; money in lists income first, then refunds under "Refund of a purchase", then transfers.',
+    text: "money out lists expenses and transfers; money in lists income first, then refunds under “Refund of a purchase · <group>”, then transfers.",
   },
   { id: HELP_ID.subscription, field: "Subscription", text: "a recurring charge; only money out can be one." },
   { id: HELP_ID.line, field: "Category for this transaction", text: "expand a merchant to label one transaction on its own." },
