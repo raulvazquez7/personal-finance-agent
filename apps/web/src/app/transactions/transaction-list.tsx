@@ -9,15 +9,26 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Empty, EmptyDescription, EmptyHeader, EmptyTitle } from "@/components/ui/empty";
 import { Spinner } from "@/components/ui/spinner";
 import { apiGet, type Schemas } from "@/lib/api";
+import { applyChange } from "@/lib/transactions";
 
-type Props = { initial: Schemas["TransactionPage"]; search: string };
+import { TransactionPanel } from "./transaction-panel";
 
-/** The explorer's rows, grouped by day, 100 at a time (spec 7.3). The next pages are fetched
- * by the browser with the page's own query plus the cursor. */
-export function TransactionList({ initial, search }: Props) {
+type Tx = Schemas["Transaction"];
+
+type Props = {
+  initial: Schemas["TransactionPage"];
+  search: string;
+  categories: Schemas["CategoryOut"][];
+  merchants: Schemas["MerchantOut"][];
+};
+
+/** The explorer's rows, grouped by day, 100 at a time (spec 7.3); clicking a row opens the side
+ * panel. The next pages are fetched by the browser with the page's own query plus the cursor. */
+export function TransactionList({ initial, search, categories, merchants }: Props) {
   const [items, setItems] = useState(initial.items);
   const [cursor, setCursor] = useState(initial.next_cursor);
   const [loading, setLoading] = useState(false);
+  const [selected, setSelected] = useState<Tx | null>(null);
 
   async function loadMore() {
     if (!cursor) return;
@@ -49,7 +60,7 @@ export function TransactionList({ initial, search }: Props) {
     <>
       <Card>
         <CardContent>
-          <TransactionTable items={items} showSource />
+          <TransactionTable items={items} showSource onOpen={setSelected} />
         </CardContent>
       </Card>
       <div className="flex flex-col items-center gap-2 text-sm text-muted-foreground">
@@ -63,6 +74,13 @@ export function TransactionList({ initial, search }: Props) {
           </Button>
         )}
       </div>
+      <TransactionPanel
+        tx={selected}
+        categories={categories}
+        merchants={merchants}
+        onClose={() => setSelected(null)}
+        onSaved={(change) => setItems((rows) => applyChange(rows, change, categories))}
+      />
     </>
   );
 }

@@ -11,21 +11,40 @@ export async function apiGet<T>(path: string, init: { signal?: AbortSignal } = {
   return (await response.json()) as T;
 }
 
-export async function apiPost(
-  path: string,
-  body?: unknown,
-  init: { keepalive?: boolean } = {},
-): Promise<void> {
-  const response = await fetch(`${API_URL}${path}`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: body === undefined ? undefined : JSON.stringify(body),
-    keepalive: init.keepalive,
-  });
-  if (!response.ok) {
-    throw new Error(`POST ${path} failed with ${response.status}`);
+/** A failed write: the HTTP status, and FastAPI's `detail` when it is a sentence (for example
+ * the 422 for an income category on money going out). */
+export class ApiError extends Error {
+  status: number;
+  detail: string | null;
+
+  constructor(status: number, detail: string | null, message: string) {
+    super(message);
+    this.status = status;
+    this.detail = detail;
   }
 }
+
+async function send<T>(method: "POST" | "PATCH" | "DELETE", path: string, body?: unknown, keepalive?: boolean): Promise<T> {
+  const response = await fetch(`${API_URL}${path}`, {
+    method,
+    headers: body === undefined ? undefined : { "Content-Type": "application/json" },
+    body: body === undefined ? undefined : JSON.stringify(body),
+    keepalive,
+  });
+  if (!response.ok) {
+    const detail = await response.json().then(
+      (json: { detail?: unknown }) => (typeof json.detail === "string" ? json.detail : null),
+      () => null,
+    );
+    throw new ApiError(response.status, detail, `${method} ${path} failed with ${response.status}`);
+  }
+  return (response.status === 204 ? undefined : await response.json()) as T;
+}
+
+export const apiPost = (path: string, body?: unknown, init: { keepalive?: boolean } = {}) =>
+  send<void>("POST", path, body, init.keepalive);
+export const apiPatch = <T = void>(path: string, body: unknown) => send<T>("PATCH", path, body);
+export const apiDelete = (path: string) => send<void>("DELETE", path);
 
 /** Pending review items for the navigation badge; null when the API is unreachable or slow. */
 export async function reviewCount(): Promise<number | null> {

@@ -8,8 +8,8 @@ import { TransactionList } from "./transaction-list";
 
 export const dynamic = "force-dynamic";
 
-/** The explorer (spec 7.3): any row can be found, understood and, in Task 10, corrected. The page
- * URL and the API take the same params, so one sanitized query string serves both. */
+/** The explorer (spec 7.3): any row can be found, understood and corrected in the side panel.
+ * The page URL and the API take the same params, so one sanitized query string serves both. */
 export default async function TransactionsPage({ searchParams }: PageProps<"/transactions">) {
   const query = await searchParams;
   const explorer = parseExplorer(query);
@@ -31,7 +31,7 @@ export default async function TransactionsPage({ searchParams }: PageProps<"/tra
         </p>
       </header>
       <ExplorerFilters search={search} explorer={explorer} categories={categories} merchants={merchants} />
-      <TransactionList key={search} initial={page} search={search} />
+      <TransactionList key={search} initial={page} search={search} categories={categories} merchants={merchants} />
     </>
   );
 }
