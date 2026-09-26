@@ -46,6 +46,9 @@ export default async function OverviewPage({ searchParams }: PageProps<"/">) {
     merchant: breakdownItems(overview.by_merchant, "merchant", context),
   };
   const subscriptions = overview.subscriptions;
+  const expensesChange = delta(amount(kpis.expenses), amount(before?.expenses), "down", "percent");
+  // "vs <previous>" only where a comparison shows (the donut and the table's change column).
+  const compared = hasData && expensesChange.kind !== "hidden";
   return (
     <>
       <h1 className="sr-only">Overview, {rangeLabel(period)}</h1>
@@ -65,7 +68,7 @@ export default async function OverviewPage({ searchParams }: PageProps<"/">) {
           definition={DEFINITIONS.expenses}
           value={moneyWhole(kpis.expenses)}
           hasData={hasData}
-          delta={delta(amount(kpis.expenses), amount(before?.expenses), "down", "percent")}
+          delta={expensesChange}
           versus={versus}
         />
         <KpiTile
@@ -95,7 +98,7 @@ export default async function OverviewPage({ searchParams }: PageProps<"/">) {
           <CardDescription>
             <DeltaText value={delta(spent.current, spent.previous, "down", "euro")} />{" "}
             <DeltaText value={delta(spent.current, spent.previous, "down", "percent")} arrow={false} parens />{" "}
-            {spent.previous !== null && `${previousLabel(period, "long")} at the same day`}
+            {spent.previous !== null && `${previousLabel(period, "long")}${period.name === "month" ? " by the same day" : ""}`}
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -114,9 +117,9 @@ export default async function OverviewPage({ searchParams }: PageProps<"/">) {
       <WhereMoneyWent
         views={views}
         total={hasData ? kpis.expenses : null}
-        change={delta(amount(kpis.expenses), amount(before?.expenses), "down", "percent")}
+        change={expensesChange}
         versus={versus}
-        subtitle={`${rangeLabel(period)} · ${previousLabel(period, "long")} · colour = group`}
+        subtitle={`${rangeLabel(period)} · ${compared ? `${previousLabel(period, "long")} · ` : ""}colour = group`}
       />
       <Card size="sm">
         <CardHeader>
