@@ -55,7 +55,9 @@ export function ExplorerFilters({ search, explorer, categories, merchants }: Pro
   return (
     <div className="flex flex-col gap-3">
       <div className="flex flex-wrap items-center gap-2">
-        <form role="search" onSubmit={onSearch} className="w-full sm:w-72">
+        {/* From sm the search box takes the room the other filters leave (12-18 rem), so at desktop
+            width "More filters" stays on the same line. */}
+        <form role="search" onSubmit={onSearch} className="w-full sm:w-auto sm:min-w-48 sm:max-w-72 sm:flex-1">
           <InputGroup>
             <InputGroupAddon>
               <Search />
