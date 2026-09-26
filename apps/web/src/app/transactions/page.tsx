@@ -1,54 +1,37 @@
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { apiGet, euro, type Schemas } from "@/lib/api";
+import { apiGet, type Schemas } from "@/lib/api";
+import { rangeLabel, signedMoney } from "@/lib/format";
+import { plural } from "@/lib/labels";
+import { explorerParams, parseExplorer, parseFilters } from "@/lib/params";
+
+import { ExplorerFilters } from "./explorer-filters";
+import { TransactionList } from "./transaction-list";
 
 export const dynamic = "force-dynamic";
 
-type Props = { searchParams: Promise<{ month?: string }> };
-
-export default async function TransactionsPage({ searchParams }: Props) {
-  const { month } = await searchParams;
-  const query = new URLSearchParams({ period: "month", ...(month ? { month } : {}) });
-  const page = await apiGet<Schemas["TransactionPage"]>(`/transactions?${query}`);
-
+/** The explorer (spec 7.3): any row can be found, understood and, in Task 10, corrected. The page
+ * URL and the API take the same params, so one sanitized query string serves both. */
+export default async function TransactionsPage({ searchParams }: PageProps<"/transactions">) {
+  const query = await searchParams;
+  const explorer = parseExplorer(query);
+  const search = explorerParams(parseFilters(query), explorer).toString();
+  const [page, categories, merchants] = await Promise.all([
+    apiGet<Schemas["TransactionPage"]>(`/transactions?${search}`),
+    apiGet<Schemas["CategoryOut"][]>("/categories"),
+    apiGet<Schemas["MerchantOut"][]>("/merchants?limit=5000"),
+  ]);
   return (
-    <div className="flex flex-col gap-6">
-      <form method="get" className="flex items-center gap-2">
-        {/* Keyed: the top bar now changes `month` without a reload, and Base UI warns when a default changes. */}
-        <Input key={month} type="month" name="month" aria-label="Month" defaultValue={month} className="w-48" />
-        <Button type="submit" variant="secondary">Filter</Button>
-      </form>
-      {page.next_cursor && (
+    <>
+      <header className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
+        <h1 className="text-xl font-semibold tracking-tight">Transactions</h1>
+        {/* nowrap: a narrow screen may break between "+" and "€", splitting the sign from its amount. */}
         <p className="text-sm text-muted-foreground">
-          Showing the latest 100 transactions of {page.count}.
+          {rangeLabel(page.period)} · {plural(page.count, "transaction", "transactions")} ·{" "}
+          <span className="whitespace-nowrap text-income">{signedMoney(page.money_in)}</span> in ·{" "}
+          <span className="whitespace-nowrap">{signedMoney(-Number(page.money_out))}</span> out
         </p>
-      )}
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead>Date</TableHead>
-            <TableHead>Account</TableHead>
-            <TableHead>Description</TableHead>
-            <TableHead>Type</TableHead>
-            <TableHead className="text-right">Amount</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {page.items.map((tx) => (
-            <TableRow key={tx.id}>
-              <TableCell>{tx.booked_at}</TableCell>
-              <TableCell>{tx.account_name}</TableCell>
-              <TableCell>{tx.merchant_name ?? tx.bank_merchant_text ?? tx.description_raw}</TableCell>
-              <TableCell><Badge variant="outline">{tx.tx_type}</Badge></TableCell>
-              <TableCell className={`text-right ${Number(tx.amount) < 0 ? "" : "text-green-700"}`}>
-                {euro.format(Number(tx.amount))}
-              </TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
-    </div>
+      </header>
+      <ExplorerFilters search={search} explorer={explorer} categories={categories} merchants={merchants} />
+      <TransactionList key={search} initial={page} search={search} />
+    </>
   );
 }
