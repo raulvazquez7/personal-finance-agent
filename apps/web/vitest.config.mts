@@ -1,10 +1,9 @@
-import tsconfigPaths from "vite-tsconfig-paths";
 import { defineConfig } from "vitest/config";
 
 // Pure helpers only (src/lib). Components are checked in the browser with agent-browser, so
 // jsdom and React Testing Library from the Next.js guide are left out.
 export default defineConfig({
-  plugins: [tsconfigPaths()],
+  resolve: { tsconfigPaths: true },
   test: {
     environment: "node",
     include: ["src/**/*.test.ts"],
