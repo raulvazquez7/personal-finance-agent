@@ -95,7 +95,7 @@ export function PeriodPicker({ latestDay }: { latestDay: string | null }) {
             <Input
               id="period-month"
               type="month"
-              placeholder="YYYY-MM…"
+              placeholder="YYYY-MM"
               pattern="[0-9]{4}-[0-9]{2}"
               value={month}
               max={latestMonth}

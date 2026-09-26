@@ -1,6 +1,7 @@
 /** Changes against the previous period (spec 2.6): hidden when the previous period has no data,
- * "new" when the previous value was 0, and a tone that says whether the change is good. The
- * arrow and the sign carry the meaning, so it never depends on colour alone. */
+ * "new" when a percent change follows a 0 (a euro or points change stays a signed change), and a
+ * tone that says whether the change is good. The arrow and the sign carry the meaning, so it never
+ * depends on colour alone. */
 
 import { MINUS } from "./format";
 
