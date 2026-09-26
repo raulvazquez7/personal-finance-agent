@@ -75,7 +75,7 @@ export function TransactionRow({ tx, onOpen, showSource = false }: Props) {
       )}
       <TableCell className={cn("text-right font-medium", amount > 0 && "text-income")}>
         <span className="inline-flex items-center gap-1.5">
-          {tx.is_subscription && <Repeat aria-label="Subscription" className="size-3.5 text-muted-foreground" />}
+          {tx.is_subscription && <Repeat role="img" aria-label="Subscription" className="size-3.5 text-muted-foreground" />}
           {signedMoney(amount)}
         </span>
       </TableCell>
