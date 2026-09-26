@@ -48,7 +48,8 @@ export function MonthsChart({ months, range }: { months: Schemas["MonthPoint"][]
       <ChartContainer config={config} className="aspect-auto h-64 w-full">
         <ComposedChart
           accessibilityLayer
-          title={TITLE}
+          // aria-label, not title: an SVG <title> also shows as the browser's hover tooltip, over ours.
+          aria-label={TITLE}
           desc="Bars for income and expenses, a line for savings; months without imported data are marked. The left and right arrow keys move through the months."
           data={data}
           barGap={2}

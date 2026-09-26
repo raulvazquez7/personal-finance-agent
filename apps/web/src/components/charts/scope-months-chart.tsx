@@ -47,7 +47,8 @@ export function ScopeMonthsChart({ months, series, range, title }: Props) {
       <ChartContainer config={config} className="aspect-auto h-60 w-full">
         <BarChart
           accessibilityLayer
-          title={title}
+          // aria-label, not title: an SVG <title> also shows as the browser's hover tooltip, over ours.
+          aria-label={title}
           desc={`One bar per month${series.length > 0 ? ", split by category" : ""}; months without imported data are marked. The left and right arrow keys move through the months.`}
           data={data}
           stackOffset="sign"

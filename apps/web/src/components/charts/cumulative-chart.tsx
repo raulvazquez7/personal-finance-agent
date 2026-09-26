@@ -44,7 +44,8 @@ export function CumulativeChart({ cumulative, period, title }: Props) {
       <ChartContainer config={config} className="aspect-auto h-56 w-full">
         <AreaChart
           accessibilityLayer
-          title={title}
+          // aria-label, not title: an SVG <title> also shows as the browser's hover tooltip, over ours.
+          aria-label={title}
           desc={`A running total per day: ${lines}. The left and right arrow keys move through the days.`}
           data={data}
           margin={{ top: 8, right: 12, left: 0 }}

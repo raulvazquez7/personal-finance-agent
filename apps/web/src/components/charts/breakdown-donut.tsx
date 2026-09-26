@@ -23,7 +23,8 @@ export function BreakdownDonut({ slices, total, change, versus, title }: Props) 
   return (
     <div className="relative mx-auto size-52">
       <ChartContainer config={{}} className="aspect-square size-full">
-        <PieChart accessibilityLayer={false} title={title} desc="The table beside it lists the same rows.">
+        {/* aria-label, not title: an SVG <title> also shows as the browser's hover tooltip, over ours. */}
+        <PieChart accessibilityLayer={false} aria-label={title} desc="The table beside it lists the same rows.">
           <ChartTooltip content={<ChartTooltipContent hideLabel formatter={moneyRow({})} />} />
           <Pie
             data={slices}
