@@ -26,10 +26,11 @@ export function WhereMoneyWent({ views, total, change, versus, subtitle }: Props
     .map((item) => ({ name: item.name, value: Number(item.amount), fill: item.color ?? OTHER_COLOR }));
   return (
     <Card>
-      <CardHeader>
+      {/* Below sm the switch goes under the title: beside it, the title wrapped to four lines. */}
+      <CardHeader className="max-sm:has-data-[slot=card-action]:grid-cols-1">
         <CardTitle>Where your money went</CardTitle>
         <CardDescription>{subtitle}</CardDescription>
-        <CardAction>
+        <CardAction className="max-sm:col-start-1 max-sm:row-span-1 max-sm:row-start-auto max-sm:justify-self-start">
           <ToggleGroup
             variant="segment"
             size="sm"

@@ -30,9 +30,10 @@ export function SpendingCard({ name, months, series, cumulative, period, split, 
     view === "monthly" ? `${name} per month` : `${name} so far${cumulative.previous ? ` ${previousLabel(period, "long")}` : ""}`;
   return (
     <Card>
-      <CardHeader>
+      {/* Below sm the switches go under the title: beside them, the title wrapped to three lines. */}
+      <CardHeader className="max-sm:has-data-[slot=card-action]:grid-cols-1">
         <CardTitle>{title}</CardTitle>
-        <CardAction className="flex flex-wrap justify-end gap-2">
+        <CardAction className="flex flex-wrap justify-end gap-2 max-sm:col-start-1 max-sm:row-span-1 max-sm:row-start-auto max-sm:justify-self-start max-sm:justify-start">
           {split && view === "monthly" && (
             <ToggleGroup
               variant="segment"
