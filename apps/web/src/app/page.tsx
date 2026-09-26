@@ -11,7 +11,6 @@ import { Card, CardAction, CardContent, CardDescription, CardHeader, CardTitle }
 import { Empty, EmptyContent, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from "@/components/ui/empty";
 import { apiGet, type Schemas } from "@/lib/api";
 import { breakdownItems, type BreakdownContext } from "@/lib/breakdown";
-import { foldBySlot } from "@/lib/colors";
 import { DEFINITIONS } from "@/lib/definitions";
 import { atSameDay, delta, periodHasData } from "@/lib/delta";
 import { money, moneyWhole, periodNames, previousLabel, rangeLabel, rate, signedMoneyWhole } from "@/lib/format";
@@ -36,7 +35,9 @@ export default async function OverviewPage({ searchParams }: PageProps<"/">) {
   const spent = atSameDay(overview.cumulative);
   const context: BreakdownContext = { categories, slots: overview.group_slots, filters, good: "down", type: "expense" };
   const views = {
-    group: breakdownItems(foldBySlot(overview.by_group, overview.group_slots), "group", context),
+    // Every group with spend has its own row (spec 7.2). A group whose rows net to zero in the
+    // period (a purchase and its refund) has nothing to show.
+    group: breakdownItems(overview.by_group.filter((row) => Number(row.amount) !== 0), "group", context),
     category: breakdownItems(overview.by_category, "category", context),
     merchant: breakdownItems(overview.by_merchant, "merchant", context),
   };

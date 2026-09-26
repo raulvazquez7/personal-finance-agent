@@ -275,10 +275,12 @@ contract, and the pixel values are indicative.
   black. Green and red are reserved for deltas and never used for a series.
 - **Group palette** (validated with the dataviz validator, light surface):
   `#4F46E5`, `#EB6834`, `#1BAF7A`, `#EDA100`, `#E87BA4`, other `#D4D4DC`.
-  Five groups get a colour and the rest fold into "Other". Colour follows the
-  group, never the rank. Slots are assigned by all-time spend, so a period
-  filter never repaints them, and the Categories and Merchants views paint
-  each slice with its group's colour.
+  Five groups get a colour; every other group is drawn in the "other" grey.
+  The overview's Groups view gives every group with spend in the period its
+  own row and slice, so a large group without a colour is never hidden.
+  Colour follows the group, never the rank. Slots are assigned by all-time
+  spend, so a period filter never repaints them, and the Categories and
+  Merchants views paint each slice with its group's colour.
 - **One-hue ramp** for categories inside a group page: `#4F46E5` → `#DAD8FB`
   (darkest = largest). It is used by the "By category" stacked bars and the
   treemap. Hover shows the name and amount, and clicking a legend item

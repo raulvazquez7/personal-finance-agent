@@ -28,8 +28,9 @@ export function groupHint(level1: string, categories: Category[]): string {
   return names.length > 3 ? `${text}…` : text;
 }
 
-/** The folded row names its dimension ("Other groups", "Other categories", "Other 12 merchants"),
- * so it never reads like the expense group "other" ("Other"). */
+/** The API's folded row names its dimension ("Other groups", "Other categories", "Other 12
+ * merchants"), so it never reads like the expense group "other" ("Other"). The overview's Groups
+ * view has no folded row; any dimension may still send one. */
 export function rowName(row: Row, dimension: Dimension): string {
   if (row.key === "_other") {
     if (dimension === "merchant") return `Other ${plural(row.folded ?? 0, "merchant", "merchants")}`;

@@ -15,7 +15,8 @@ const HEADERS: Record<Dimension, string> = { group: "Group", category: "Category
 
 type Props = { views: Record<Dimension, BreakdownItem[]>; total: string | null; change: Delta; versus: string; subtitle: string };
 
-/** "Where your money went" (spec 7.1): donut + table, Groups by default. The Categories and
+/** "Where your money went" (spec 7.1): donut + table, Groups by default. The Groups view gives
+ * every group with spend its own row and slice, grey without a colour slot; the Categories and
  * Merchants views paint each slice and row with its group's colour (spec 7.2). */
 export function WhereMoneyWent({ views, total, change, versus, subtitle }: Props) {
   const [dimension, setDimension] = useState<Dimension>("group");
