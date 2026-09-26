@@ -53,25 +53,32 @@ export default async function SettingsPage() {
           </CardDescription>
         </CardHeader>
         <CardContent className="flex flex-col gap-6">
-          {TYPES.map(({ type, title }) => (
-            <section key={type} className="flex flex-col gap-3">
-              <h3 className="text-sm font-medium">{title}</h3>
-              <dl className="grid gap-4 sm:grid-cols-2">
-                {byLevel1(categories.filter((category) => category.tx_type === type)).map((group) => (
-                  <div key={group.value} className="flex flex-col gap-1.5">
-                    <dt className="text-xs tracking-wide text-muted-foreground uppercase">{group.label}</dt>
-                    <dd className="flex flex-wrap gap-1">
-                      {group.items.map((category) => (
-                        <Badge key={category.slug} variant="outline">
-                          {label(category.slug)}
-                        </Badge>
-                      ))}
-                    </dd>
-                  </div>
-                ))}
-              </dl>
-            </section>
-          ))}
+          {TYPES.map(({ type, title }) => {
+            const groups = byLevel1(categories.filter((category) => category.tx_type === type));
+            return (
+              <section key={type} className="flex flex-col gap-3">
+                <h3 className="text-sm font-medium">{title}</h3>
+                {groups.length === 0 ? (
+                  <p className="text-sm text-muted-foreground">No categories of this type yet.</p>
+                ) : (
+                  <dl className="grid gap-4 sm:grid-cols-2">
+                    {groups.map((group) => (
+                      <div key={group.value} className="flex flex-col gap-1.5">
+                        <dt className="text-xs tracking-wide text-muted-foreground uppercase">{group.label}</dt>
+                        <dd className="flex flex-wrap gap-1">
+                          {group.items.map((category) => (
+                            <Badge key={category.slug} variant="outline">
+                              {label(category.slug)}
+                            </Badge>
+                          ))}
+                        </dd>
+                      </div>
+                    ))}
+                  </dl>
+                )}
+              </section>
+            );
+          })}
         </CardContent>
       </Card>
     </>

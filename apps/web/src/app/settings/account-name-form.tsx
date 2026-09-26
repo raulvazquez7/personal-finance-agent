@@ -51,6 +51,9 @@ export function AccountNameForm({ account }: { account: Schemas["Account"] }) {
             id={id}
             value={name}
             maxLength={NAME_MAX}
+            // Locked while saving, so the saved name cannot overwrite what is typed meanwhile. Read-only,
+            // not disabled: a disabled field would drop the keyboard focus after Enter.
+            readOnly={busy}
             aria-describedby={`${id}-help`}
             onChange={(event) => setName(event.target.value)}
           />
