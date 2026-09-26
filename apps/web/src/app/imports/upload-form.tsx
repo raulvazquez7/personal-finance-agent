@@ -67,7 +67,7 @@ export function UploadForm() {
           />
           <Button type="submit" disabled={busy}>
             {busy && <Spinner data-icon="inline-start" />}
-            Import
+            {busy ? "Importing…" : "Import"}
           </Button>
         </div>
         <FieldDescription id="statements-help">

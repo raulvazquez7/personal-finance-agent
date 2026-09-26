@@ -66,7 +66,7 @@ export function AccountNameForm({ account }: { account: Schemas["Account"] }) {
             disabled={busy || !trimmed || trimmed === saved}
           >
             {busy && <Spinner data-icon="inline-start" />}
-            Save
+            {busy ? "Saving…" : "Save"}
           </Button>
         </div>
         <FieldDescription id={`${id}-help`}>

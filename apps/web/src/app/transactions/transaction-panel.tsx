@@ -69,7 +69,9 @@ function PanelForm({ tx, categories, merchants, onClose, onSaved }: Omit<Props, 
   const [note, setNote] = useState(tx.note ?? "");
   const [asking, setAsking] = useState(false);
   const [clearing, setClearing] = useState(false);
-  const [busy, setBusy] = useState(false);
+  // The request running, if any: its button says so, and every button waits for it.
+  const [pending, setPending] = useState<"save" | "clear" | null>(null);
+  const busy = pending !== null;
 
   const category = categories.find((c) => c.slug === categorySlug);
   const canSubscribe = direction === "out" && category?.tx_type === "expense";
@@ -85,7 +87,7 @@ function PanelForm({ tx, categories, merchants, onClose, onSaved }: Omit<Props, 
   }
 
   async function save(toMerchant: boolean) {
-    setBusy(true);
+    setPending("save");
     try {
       const finalNote = note.trim() || null;
       const subscription = isSubscription && canSubscribe;
@@ -121,7 +123,7 @@ function PanelForm({ tx, categories, merchants, onClose, onSaved }: Omit<Props, 
     } catch (error) {
       toast.error(error instanceof ApiError && error.detail ? error.detail : "Could not save this transaction.");
     } finally {
-      setBusy(false);
+      setPending(null);
       setAsking(false);
     }
   }
@@ -129,14 +131,14 @@ function PanelForm({ tx, categories, merchants, onClose, onSaved }: Omit<Props, 
   async function clearDefault() {
     if (!tx.merchant_id) return;
     // Busy until the answer, so a double click sends one DELETE.
-    setBusy(true);
+    setPending("clear");
     try {
       await apiDelete(`/merchants/${tx.merchant_id}/default`);
       toast.success(`${tx.merchant_name ?? "This merchant"} has no default category now.`);
     } catch {
       toast.error("Could not clear the merchant default.");
     } finally {
-      setBusy(false);
+      setPending(null);
       setClearing(false);
     }
   }
@@ -239,8 +241,8 @@ function PanelForm({ tx, categories, merchants, onClose, onSaved }: Omit<Props, 
           Cancel
         </Button>
         <Button onClick={onSave} disabled={busy || (!labelChanged && !noteChanged) || (labelChanged && !categorySlug)}>
-          {busy && <Spinner data-icon="inline-start" />}
-          Save
+          {pending === "save" && <Spinner data-icon="inline-start" />}
+          {pending === "save" ? "Saving…" : "Save"}
         </Button>
       </SheetFooter>
       <AlertDialog open={asking} onOpenChange={setAsking}>
@@ -276,8 +278,8 @@ function PanelForm({ tx, categories, merchants, onClose, onSaved }: Omit<Props, 
           <AlertDialogFooter>
             <AlertDialogCancel disabled={busy}>Back</AlertDialogCancel>
             <AlertDialogAction disabled={busy} onClick={clearDefault}>
-              {busy && <Spinner data-icon="inline-start" />}
-              {busy ? "Clearing…" : "Clear default"}
+              {pending === "clear" && <Spinner data-icon="inline-start" />}
+              {pending === "clear" ? "Clearing…" : "Clear default"}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

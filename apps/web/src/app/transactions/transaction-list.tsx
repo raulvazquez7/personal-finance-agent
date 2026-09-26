@@ -72,7 +72,7 @@ export function TransactionList({ initial, search, categories, merchants }: Prop
         {cursor && (
           <Button variant="secondary" onClick={loadMore} disabled={loading}>
             {loading && <Spinner data-icon="inline-start" />}
-            Load more
+            {loading ? "Loading…" : "Load more"}
           </Button>
         )}
       </div>
