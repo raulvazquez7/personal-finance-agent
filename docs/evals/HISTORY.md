@@ -28,3 +28,4 @@ comparable with the previous one:
 | 2026-09-26 | eval | jev-1.13.0 | 684 | 86.0% | 88.5% | 98.2% | 302 | 50/51 · 50/60 | baseline before prompt hints (expendeduria, restaurants, petrol stations, IKEA) |
 | 2026-09-26 | eval | jev-1.13.0 | 684 | 85.8% | 88.0% | 98.0% | 290 | 50/51 · 50/60 | prompt hints: expendeduria, RESTAURANTES Y CAFETERIAS, GASOLINERAS, IKEA |
 | 2026-09-26 | eval | jev-1.13.0 | 684 | 86.8% | 89.2% | 98.5% | 291 | 50/51 · 50/60 | prompt hints v2: stronger GASOLINERAS and IKEA wording |
+| 2026-09-27 | eval | jev-1.13.0 | 684 | 87.0% | 89.2% | 98.2% | 287 | 50/51 · 50/60 | restaurants not_for: Amazon and Prime Video |
