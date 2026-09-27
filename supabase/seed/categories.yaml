@@ -41,7 +41,7 @@ expense:
     restaurants_bars:
       what: restaurants, bars, cafes, fast food, ice cream shops, food delivery and its memberships (Uber Eats,
         Uber One, Glovo Prime); the bank usually files these card payments as RESTAURANTES Y CAFETERIAS
-      not_for: card payments the bank files as GASOLINERAS, IKEA FOOD
+      not_for: card payments the bank files as GASOLINERAS, IKEA FOOD, Amazon and Prime Video charges
     entertainment:
       what: streaming services, music and video apps, video games bought online
       not_for: software, AI and productivity tools
