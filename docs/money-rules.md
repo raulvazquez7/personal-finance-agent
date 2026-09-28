@@ -65,6 +65,12 @@ credit card in each of the next three months.
 - **A Bizum you receive is income; a Bizum you send is an expense.** When a friend pays you
   back their share of a dinner, you can give that Bizum the dinner's category
   (restaurants): it then subtracts, exactly like a refund.
+- **A Bizum between two of your imported accounts is a transfer**, like any other movement
+  between them: the same amount leaving one account and arriving in the other within two
+  days is paired and counts as neither spending nor income. A Bizum to or from one of your
+  accounts that is not imported looks like any other Bizum (a CaixaBank statement does not
+  name the recipient), so label it `own_accounts` yourself. A label you set is never
+  overwritten by pairing: labelling both sides `own_accounts` pairs them.
 
 ## Subscriptions
 
