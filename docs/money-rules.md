@@ -50,6 +50,14 @@ expense in its own group, **Credit card**, whose detail is unknown, just like a 
 withdrawal. When card statements are imported (a later version), the settlement becomes a
 transfer and the card's purchases carry the categories.
 
+**A bill moved onto the card is counted once.** Some banks let you pay a bill in instalments
+with the card: the bill is charged to the account, and a few days later the same amount comes
+back (CaixaBank calls it `TARJ.FINANC.RECIBO`) and moves to the card. That money coming back
+takes the category `credit_card_spending`, so it cancels the bill, and the card's instalments
+count as spending when they are paid. Example: a €390 insurance bill paid in three instalments
+shows €390 of insurance and −€390 of credit card in the month of the bill, then €130 of
+credit card in each of the next three months.
+
 ## Transfers and Bizum
 
 - **Transfers between your own accounts are neutral.** Both sides are transfers, whether or
@@ -57,6 +65,12 @@ transfer and the card's purchases carry the categories.
 - **A Bizum you receive is income; a Bizum you send is an expense.** When a friend pays you
   back their share of a dinner, you can give that Bizum the dinner's category
   (restaurants): it then subtracts, exactly like a refund.
+- **A Bizum between two of your imported accounts is a transfer**, like any other movement
+  between them: the same amount leaving one account and arriving in the other within two
+  days is paired and counts as neither spending nor income. A Bizum to or from one of your
+  accounts that is not imported looks like any other Bizum (a CaixaBank statement does not
+  name the recipient), so label it `own_accounts` yourself. A label you set is never
+  overwritten by pairing: labelling both sides `own_accounts` pairs them.
 
 ## Subscriptions
 

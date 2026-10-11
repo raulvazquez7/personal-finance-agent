@@ -24,6 +24,8 @@ FIXTURES = [
         "outgoing",
         "credit_card_spending",
     ),
+    ("caixabank", None, "TARJ.FINANC.RECIBO", "incoming", "credit_card_spending"),
+    ("caixabank", None, "TARJ.FINANC.RECIBO", "outgoing", None),
     ("bbva", "ABONO POR DISPOSICION DE PRESTAMO/CREDITO", None, "incoming", "loan_received"),
     ("bbva", "CARGO POR AMORTIZACION DE PRESTAMO/CREDITO", None, "outgoing", "loan_payment"),
     ("bbva", "PAGO CON TARJETA EN MODA", "ZZTEST SHOP", "incoming", None),

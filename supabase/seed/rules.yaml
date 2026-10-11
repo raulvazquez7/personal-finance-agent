@@ -11,6 +11,9 @@
 - {name: bizum_received_text, match_field: merchant, pattern: '^(BIZUM\b|RECIBIDO:)', direction: incoming, category_slug: payments_from_people}
 - {name: own_transfer_text, match_field: merchant, pattern: '^TRASPASO PROPIO\b', direction: any, category_slug: own_accounts}
 - {name: card_instalment_concept, match_field: bank_concept, pattern: '^CARGO POR OPERACION FINANCIADA CON TARJETA', direction: outgoing, category_slug: credit_card_spending}
+# A bill the bank moves onto the card to pay in instalments comes back to the account: it cancels
+# the bill, and the card's instalments carry the spending (docs/money-rules.md).
+- {name: card_financed_bill_text, bank: caixabank, match_field: merchant, pattern: '^TARJ\.FINANC\.RECIBO', direction: incoming, category_slug: credit_card_spending}
 - {name: loan_disbursement_concept, match_field: bank_concept, pattern: '^ABONO POR DISPOSICION DE PRESTAMO', direction: incoming, category_slug: loan_received}
 - {name: loan_repayment_concept, match_field: bank_concept, pattern: '^CARGO POR AMORTIZACION DE PRESTAMO', direction: outgoing, category_slug: loan_payment}
 # Refund rules name no category: a card purchase coming back is a refund, so jev picks among
