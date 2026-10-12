@@ -24,6 +24,11 @@ from finance.agent.prompt import SUMMARY_PROMPT, system_message
 from finance.settings import ChatSettings
 
 INFRA_MESSAGE = "I can't reach your database right now. Try again in a moment."
+# What the user reads when ModelCallLimitMiddleware ends a turn (its own text names the limit).
+LIMIT_MESSAGE = (
+    "I stopped before finishing: this question needed more steps than one answer allows. "
+    "Try a narrower question."
+)
 CANCELLED = "Cancelled: the user stopped the answer before this query returned."
 CLEARED = "[result cleared: run the query again if you need these numbers]"
 # Middleware nodes whose AI messages the user must see (stream adapter).

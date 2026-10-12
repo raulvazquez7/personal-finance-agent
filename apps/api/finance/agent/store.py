@@ -47,7 +47,7 @@ async def get_thread(pool: AsyncConnectionPool, thread_id: UUID) -> Thread | Non
 async def rename_thread(pool: AsyncConnectionPool, thread_id: UUID, title: str) -> Thread | None:
     async with pool.connection() as conn:
         cursor = await conn.execute(
-            "update chat_threads set title = %s, title_source = 'user', updated_at = now()"
+            "update chat_threads set title = %s, title_source = 'user'"
             f" where id = %s returning {_THREAD}",
             (title, thread_id),
         )

@@ -119,6 +119,7 @@ def test_a_message_streams_in_the_ai_sdk_protocol_and_lands_in_the_history():
     assert {
         "type": "data-title",
         "data": {"threadId": thread["id"], "title": "Movement count"},
+        "transient": True,
     } in events
     assert [(m["role"], m["content"]) for m in history] == [
         ("user", "How many movements?"),
@@ -135,10 +136,11 @@ def test_threads_can_be_renamed_and_deleted_and_unknown_ones_are_404():
         renamed = await client.patch(f"/chat/threads/{thread['id']}", json={"title": " Trips "})
         deleted = await client.delete(f"/chat/threads/{thread['id']}")
         missing = await client.get(f"/chat/threads/{thread['id']}/messages")
-        return renamed.json(), deleted.status_code, missing.status_code
+        return thread, renamed.json(), deleted.status_code, missing.status_code
 
-    renamed, deleted, missing = _run(scripted_models([]), body)
+    thread, renamed, deleted, missing = _run(scripted_models([]), body)
     assert (renamed["title"], renamed["title_source"]) == ("Trips", "user")
+    assert renamed["updated_at"] == thread["updated_at"]  # renaming is not activity
     assert (deleted, missing) == (204, 404)
 
 
