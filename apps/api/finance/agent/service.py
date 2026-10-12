@@ -83,8 +83,12 @@ class ChatService:
     async def delete_thread(self, thread_id: UUID) -> bool:
         if thread_id in self.active:
             raise ThreadBusy(thread_id)
-        deleted = await store.delete_thread(self.pool, thread_id)
-        await self.checkpointer.adelete_thread(str(thread_id))
+        self.active.add(thread_id)  # a send during the delete gets ThreadBusy, not a new turn
+        try:
+            deleted = await store.delete_thread(self.pool, thread_id)
+            await self.checkpointer.adelete_thread(str(thread_id))
+        finally:
+            self.active.discard(thread_id)
         return deleted
 
     async def _relay(

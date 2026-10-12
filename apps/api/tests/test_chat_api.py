@@ -1,6 +1,7 @@
 import asyncio
 import json
-from uuid import UUID
+from types import SimpleNamespace
+from uuid import UUID, uuid4
 
 import httpx
 import pytest
@@ -11,6 +12,7 @@ from langchain_core.messages import AIMessage
 from finance.agent import store
 from finance.agent.graph import ChatModels
 from finance.agent.runtime import open_chat
+from finance.api import chat as chat_api
 from finance.api.main import app
 from finance.settings import get_settings
 from tests.fakes import HoldingChatModel, ScriptedChatModel, scripted_models, title_call, tool_call
@@ -29,6 +31,39 @@ def test_chat_routes_answer_503_when_the_chat_is_not_configured():
     finally:
         app.state.chat = previous
     assert response.status_code == 503 and "XAI_API_KEY" in response.json()["detail"]
+
+
+def test_feedback_sends_one_langfuse_score_per_answer(monkeypatch):
+    message_id = uuid4()
+    scores = []
+
+    async def set_feedback(pool, message, value):
+        assert (message, value) == (message_id, "down")
+        return "trace-1"
+
+    monkeypatch.setattr(chat_api.store, "set_feedback", set_feedback)
+    monkeypatch.setattr(
+        chat_api, "langfuse", lambda: SimpleNamespace(create_score=lambda **k: scores.append(k))
+    )
+    previous = getattr(app.state, "chat", None)
+    app.state.chat = SimpleNamespace(pool=None)
+    try:
+        response = TestClient(app).post(
+            f"/chat/messages/{message_id}/feedback", json={"value": "down", "comment": "Wrong."}
+        )
+    finally:
+        app.state.chat = previous
+    assert response.status_code == 204
+    assert scores == [
+        {
+            "trace_id": "trace-1",
+            "score_id": f"{message_id}-feedback",
+            "name": "user-feedback",
+            "value": 0.0,
+            "data_type": "BOOLEAN",
+            "comment": "Wrong.",
+        }
+    ]
 
 
 def _run(models, body):

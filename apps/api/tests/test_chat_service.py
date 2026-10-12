@@ -144,6 +144,33 @@ def test_deleting_a_thread_removes_its_checkpoint_and_history():
     assert had_checkpoint and after is None and messages == []
 
 
+def test_a_thread_being_deleted_refuses_a_new_turn(monkeypatch):
+    """A send that arrives while the delete awaits the database must not start a turn whose
+    checkpoint the delete then removes."""
+    held, release = asyncio.Event(), asyncio.Event()
+    delete_rows = store.delete_thread
+
+    async def slow_delete(pool, thread_id):
+        held.set()
+        await release.wait()
+        return await delete_rows(pool, thread_id)
+
+    monkeypatch.setattr(store, "delete_thread", slow_delete)
+
+    async def body(chat, thread):
+        deleting = asyncio.create_task(chat.delete_thread(thread.id))
+        await held.wait()
+        try:
+            with pytest.raises(ThreadBusy):
+                chat.stream_turn(thread, "hello")
+        finally:
+            release.set()
+            deleted = await deleting
+        return deleted, thread.id in chat.active
+
+    assert _scenario(scripted_models([AIMessage("Hi.")]), body) == (True, False)
+
+
 def test_a_turn_nobody_reads_still_finishes_saves_and_frees_the_thread():
     models = scripted_models([AIMessage("Saved anyway.")])
 
