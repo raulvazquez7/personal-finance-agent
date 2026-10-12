@@ -1,7 +1,8 @@
 """The agent's instructions and the system message built on every model call (spec section 7.1).
 
-The instructions name no table or column: the data model arrives as the data context, so a change
-to the views never touches this text, and a prompt change never breaks a stored thread.
+The instructions name no table and only the money columns spend, income and amount: the data model
+arrives as the data context, so a change to the views rarely touches this text, and a prompt change
+never breaks a stored thread.
 """
 
 from hashlib import sha256

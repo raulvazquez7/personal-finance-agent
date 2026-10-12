@@ -48,7 +48,8 @@
 - question: How much did the trip to Rome cost?
   teaches: >
     Notes are the user's own words. Read the distinct notes first and pick the ones that mean the
-    trip, then list those movements with their notes and the total.
+    trip, then list those movements with their notes and the total. When 50 notes come back there
+    may be more: read the next ones with OFFSET 50 before deciding nothing matches.
   sql:
     - |
       SELECT note, COUNT(*) AS movements, MIN(booked_at) AS first_day, MAX(booked_at) AS last_day,
@@ -57,7 +58,7 @@
       WHERE note IS NOT NULL
       GROUP BY note
       ORDER BY last_day DESC
-      LIMIT 200
+      LIMIT 50
     - |
       SELECT booked_at, merchant, category, spend, note, SUM(spend) OVER () AS total
       FROM transactions
@@ -156,7 +157,7 @@
   sql:
     - |
       SELECT merchant, COUNT(*) AS purchases, SUM(spend) AS spend,
-             STRING_AGG(DISTINCT note, ' | ') AS notes
+             STRING_AGG(DISTINCT note, '; ') AS notes
       FROM transactions
       WHERE category = 'electronics' AND booked_at >= '2026-01-01'
       GROUP BY merchant
