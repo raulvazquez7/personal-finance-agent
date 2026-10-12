@@ -1,10 +1,13 @@
 """Scripted jev and chat models for unit tests: no network, deterministic answers."""
 
+import threading
+
 from langchain_core.language_models import BaseChatModel
 from langchain_core.messages import AIMessage, BaseMessage
 from langchain_core.outputs import ChatGeneration, ChatResult
-from pydantic import Field
+from pydantic import ConfigDict, Field
 
+from finance.agent.graph import ChatModels
 from finance.categorization.jev_client import JevAnswer, JevResult
 
 
@@ -85,3 +88,37 @@ def tool_call(sql: str, call_id: str) -> AIMessage:
     return AIMessage(
         content="", tool_calls=[{"name": "run_sql", "args": {"sql": sql}, "id": call_id}]
     )
+
+
+def title_call(title: str) -> AIMessage:
+    """A scripted title model turn: with_structured_output(ChatTitle) parses this tool call."""
+    return AIMessage(
+        content="", tool_calls=[{"name": "ChatTitle", "args": {"title": title}, "id": "title"}]
+    )
+
+
+def scripted_models(agent: list[BaseMessage], title: str = "Test title") -> ChatModels:
+    """Scripted models for open_chat: the agent (also the summarizer) and a title model."""
+    model = ScriptedChatModel(responses=agent)
+    return ChatModels(
+        agent=model, summary=model, title=ScriptedChatModel(responses=[title_call(title)])
+    )
+
+
+class HoldingChatModel(ScriptedChatModel):
+    """Holds the scripted answer whose text is `hold` until `release` is set, so a test can stop
+    a turn while the model is writing. It takes its answer before waiting: the cancelled call
+    keeps it, and the next turn gets the next one."""
+
+    model_config = ConfigDict(arbitrary_types_allowed=True)
+    hold: str
+    started: threading.Event = Field(default_factory=threading.Event)
+    release: threading.Event = Field(default_factory=threading.Event)
+
+    def _generate(self, messages, stop=None, run_manager=None, **kwargs) -> ChatResult:
+        self.calls.append(list(messages))
+        response = self.responses.pop(0)
+        if response.content == self.hold:
+            self.started.set()
+            self.release.wait(5)
+        return ChatResult(generations=[ChatGeneration(message=response)])
