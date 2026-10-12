@@ -10,7 +10,7 @@
 
 **Spec:** `docs/superpowers/specs/2026-10-12-slice-4-chat-design.md`. Read sections 1-9, 11-16 and the "Plan 4a amendments" in section 16 before starting. The v1 spec (`2026-09-22-personal-finance-agent-v1-design.md`) and the slice 3 spec are the baseline it amends.
 
-**How this plan was validated:** every file below was written and run on 2026-10-12 in a copy of the repo against a scratch Supabase Postgres 17.6 container with the pinned libraries (langchain 1.4.4, langgraph 1.2.14, langgraph-checkpoint-postgres 3.1.2, langchain-xai 1.3.0, sqlglot 30.22, langfuse 4.17): 326 unit and 127 integration tests passed, ruff clean, and one live turn with `grok-4.7` answered correctly end to end. Copy the code as written; if a library behaves differently, stop and report instead of improvising.
+**How this plan was validated:** every file below was written and run on 2026-10-12 in a copy of the repo against a scratch Supabase Postgres 17.6 container with the pinned libraries (langchain 1.4.4, langgraph 1.2.14, langgraph-checkpoint-postgres 3.1.2, langchain-xai 1.3.0, sqlglot 30.22, langfuse 4.17): 329 unit and 131 integration tests passed, ruff clean, and one live turn with `grok-4.7` answered correctly end to end. Plan 4b's validation then drove this API from a real browser and found a Stop defect over real HTTP and a too-low recursion backstop; both are fixed here and pinned by tests (Tasks 8 and 12). Copy the code as written; if a library behaves differently, stop and report instead of improvising.
 
 ## Global Constraints
 
@@ -155,7 +155,9 @@ class ChatSettings(BaseModel):
     clear_tool_results_keep: int = Field(default=4, ge=1)
     max_sql_calls_per_turn: int = Field(default=8, ge=1, le=30)
     max_model_calls_per_turn: int = Field(default=12, ge=2, le=60)
-    recursion_limit: int = Field(default=60, ge=10, le=500, description="Backstop only")
+    # A query costs about 7 graph steps (model, tools and the middleware nodes around them):
+    # 120 stays a backstop above max_model_calls_per_turn, never the limit a turn meets first.
+    recursion_limit: int = Field(default=120, ge=10, le=500, description="Backstop only")
     sql_timeout_seconds: int = Field(default=10, ge=1, le=60)
     sql_row_limit: int = Field(default=200, ge=1, le=5_000)
     sql_rows_shown: int = Field(default=50, ge=1, le=500)
@@ -2518,6 +2520,15 @@ def test_the_system_message_is_never_stored_in_the_thread():
     _ask(agent, "hello")
     state = asyncio.run(agent.aget_state(CONFIG))
     assert not any(isinstance(m, SystemMessage) for m in state.values["messages"])
+
+
+def test_the_query_limit_is_reached_before_the_recursion_backstop():
+    chat = ChatSettings()
+    calls = [tool_call(f"SELECT {n}", f"c{n}") for n in range(chat.max_sql_calls_per_turn)]
+    model = ScriptedChatModel(responses=[*calls, AIMessage("All done.")])
+    config = {"configurable": {"thread_id": "deep"}, "recursion_limit": chat.recursion_limit}
+    result = _ask(_agent(model), "q", config)
+    assert result["messages"][-1].content == "All done."
 ```
 
 - [ ] **Step 3: Run them to see them fail**
@@ -2694,7 +2705,7 @@ Facts this relies on (checked against langchain 1.4.4): `before_agent`/`before_m
 - [ ] **Step 5: Run the tests**
 
 Run: `uv run pytest tests/test_agent_graph.py -q && uv run task test`
-Expected: 6 passed, then the whole unit suite passes.
+Expected: 7 passed, then the whole unit suite passes.
 
 - [ ] **Step 6: Commit**
 
@@ -3228,11 +3239,11 @@ git commit -m "feat: chat threads, messages and titles"
 - Produces:
   - `service.ThreadBusy`, `ERROR_TEXT`, `turn_scores(record, status) -> dict[str, tuple[float, str]]`, `ChatService(pool, agent, checkpointer, layer, columns, layer_version, title_model, chat, active)` with `data_context(today=None) -> str`, `stream_turn(thread, text) -> AsyncIterator[dict]` (claims the thread at once or raises `ThreadBusy`; parts start with `start` (`messageId` = the saved answer's id) and end with `finish`; `data-title` on the first turn; `error` with `ERROR_TEXT` on failure), `delete_thread(thread_id) -> bool` (raises `ThreadBusy`).
   - `runtime.open_chat(settings, models=None)` async context manager → `ChatService | None`.
-  - `tests/fakes.py`: `title_call(title) -> AIMessage`, `scripted_models(agent_responses, title="Test title") -> ChatModels`.
+  - `tests/fakes.py`: `title_call(title) -> AIMessage`, `scripted_models(agent_responses, title="Test title") -> ChatModels`, `HoldingChatModel(hold=<text>, responses=[...])` with `started` and `release` events.
 
 - [ ] **Step 1: Extend `tests/fakes.py`**
 
-Add `from finance.agent.graph import ChatModels` to the imports, above `from finance.categorization.jev_client import ...`, and append:
+Add `import threading` at the top of the imports, change `from pydantic import Field` to `from pydantic import ConfigDict, Field`, add `from finance.agent.graph import ChatModels` above `from finance.categorization.jev_client import ...`, and append:
 
 ```python
 def title_call(title: str) -> AIMessage:
@@ -3248,6 +3259,25 @@ def scripted_models(agent: list[BaseMessage], title: str = "Test title") -> Chat
     return ChatModels(
         agent=model, summary=model, title=ScriptedChatModel(responses=[title_call(title)])
     )
+
+
+class HoldingChatModel(ScriptedChatModel):
+    """Holds the scripted answer whose text is `hold` until `release` is set, so a test can stop
+    a turn while the model is writing. It takes its answer before waiting: the cancelled call
+    keeps it, and the next turn gets the next one."""
+
+    model_config = ConfigDict(arbitrary_types_allowed=True)
+    hold: str
+    started: threading.Event = Field(default_factory=threading.Event)
+    release: threading.Event = Field(default_factory=threading.Event)
+
+    def _generate(self, messages, stop=None, run_manager=None, **kwargs) -> ChatResult:
+        self.calls.append(list(messages))
+        response = self.responses.pop(0)
+        if response.content == self.hold:
+            self.started.set()
+            self.release.wait(5)
+        return ChatResult(generations=[ChatGeneration(message=response)])
 ```
 
 - [ ] **Step 2: Write the failing tests**
@@ -3256,18 +3286,16 @@ Create `apps/api/tests/test_chat_service.py`:
 
 ```python
 import asyncio
-import threading
 
 import pytest
 from langchain_core.messages import AIMessage
-from langchain_core.outputs import ChatGeneration, ChatResult
 
 from finance.agent import store
 from finance.agent.graph import ChatModels
 from finance.agent.runtime import open_chat
 from finance.agent.service import ERROR_TEXT, ThreadBusy
 from finance.settings import get_settings
-from tests.fakes import ScriptedChatModel, scripted_models, title_call, tool_call
+from tests.fakes import HoldingChatModel, ScriptedChatModel, scripted_models, title_call, tool_call
 
 pytestmark = pytest.mark.integration
 
@@ -3330,25 +3358,10 @@ def test_a_second_turn_while_answering_is_refused():
     assert _scenario(models, body)
 
 
-STARTED, GATE = threading.Event(), threading.Event()
-
-
-class SlowLateAnswer(ScriptedChatModel):
-    """Holds the 'late' answer until the test has stopped the turn. It takes its answer before
-    waiting, so the cancelled call keeps 'late' and the next turn gets the next answer."""
-
-    def _generate(self, messages, stop=None, run_manager=None, **kwargs):
-        self.calls.append(list(messages))
-        response = self.responses.pop(0)
-        if response.content == "late":
-            STARTED.set()
-            GATE.wait(5)
-        return ChatResult(generations=[ChatGeneration(message=response)])
-
-
 def test_a_stopped_answer_is_saved_as_stopped_and_the_thread_keeps_working():
-    agent = SlowLateAnswer(
-        responses=[tool_call("SELECT 1 AS n", "c1"), AIMessage("late"), AIMessage("Next answer.")]
+    agent = HoldingChatModel(
+        hold="late",
+        responses=[tool_call("SELECT 1 AS n", "c1"), AIMessage("late"), AIMessage("Next answer.")],
     )
     models = ChatModels(
         agent=agent, summary=agent, title=ScriptedChatModel(responses=[title_call("t")])
@@ -3359,9 +3372,9 @@ def test_a_stopped_answer_is_saved_as_stopped_and_the_thread_keeps_working():
         async for part in parts:
             if part["type"] == "tool-output-available":
                 break
-        await asyncio.to_thread(STARTED.wait, 5)  # the answer is being written
+        await asyncio.to_thread(agent.started.wait, 5)  # the answer is being written
         await parts.aclose()  # what a client disconnect does
-        GATE.set()
+        agent.release.set()
         refreshed = await store.get_thread(chat.pool, thread.id)
         await _collect(chat.stream_turn(refreshed, "next question"))
         return await store.list_messages(chat.pool, thread.id)
@@ -3431,7 +3444,7 @@ def test_a_turn_nobody_reads_still_finishes_saves_and_frees_the_thread():
     assert not busy and messages[-1].content == "Saved anyway."
 ```
 
-The stop test cancels while the second model call is in progress; the scripted model takes its answer before blocking, so the cancelled call keeps `late` and the next turn deterministically gets `Next answer.`.
+The stop test cancels while the second model call is in progress (`HoldingChatModel` holds `late`), so the cancelled call keeps `late` and the next turn deterministically gets `Next answer.`. Closing the generator does not reproduce a browser's Stop over HTTP; Task 12 has that test.
 
 - [ ] **Step 3: Run them to see them fail**
 
@@ -3543,7 +3556,9 @@ class ChatService:
         finally:  # the client left or stopped: cancel the turn, which saves it as stopped
             if not task.done():
                 task.cancel()
-            await asyncio.gather(task, return_exceptions=True)
+            # The server cancels this generator when the client leaves; shield the wait so that
+            # cancellation does not reach the turn a second time, inside its save.
+            await asyncio.shield(asyncio.gather(task, return_exceptions=True))
 
     async def _turn(
         self, thread: Thread, text: str, message_id: UUID, queue: asyncio.Queue
@@ -3767,13 +3782,16 @@ from uuid import UUID
 
 import httpx
 import pytest
+import uvicorn
 from fastapi.testclient import TestClient
 from langchain_core.messages import AIMessage
 
+from finance.agent import store
+from finance.agent.graph import ChatModels
 from finance.agent.runtime import open_chat
 from finance.api.main import app
 from finance.settings import get_settings
-from tests.fakes import scripted_models, tool_call
+from tests.fakes import HoldingChatModel, ScriptedChatModel, scripted_models, title_call, tool_call
 
 
 def _events(body: str) -> list:
@@ -3909,9 +3927,60 @@ def test_a_chat_cannot_be_deleted_while_it_answers():
             chat.active.clear()
 
     assert _run(scripted_models([]), body) == 409
+
+
+@pytest.mark.integration
+def test_a_request_closed_mid_answer_saves_the_stopped_answer_over_real_http():
+    """The browser's Stop aborts the request; the server then cancels the response while it waits
+    for the turn, and that must not cancel the turn's save too. Only real HTTP shows this."""
+    agent = HoldingChatModel(
+        hold="late",
+        responses=[tool_call("SELECT 1 AS n", "c1"), AIMessage("late"), AIMessage("Next.")],
+    )
+    models = ChatModels(
+        agent=agent, summary=agent, title=ScriptedChatModel(responses=[title_call("t")])
+    )
+
+    async def go():
+        async with open_chat(get_settings(), models) as chat:
+            previous = getattr(app.state, "chat", None)
+            app.state.chat = chat
+            server = uvicorn.Server(
+                uvicorn.Config(app, host="127.0.0.1", port=0, lifespan="off", log_level="warning")
+            )
+            serving = asyncio.create_task(server.serve())
+            while not server.started:
+                await asyncio.sleep(0.01)
+            port = server.servers[0].sockets[0].getsockname()[1]
+            thread = await store.create_thread(chat.pool)
+            try:
+                async with httpx.AsyncClient(base_url=f"http://127.0.0.1:{port}") as client:
+                    url = f"/chat/threads/{thread.id}/messages"
+                    async with client.stream("POST", url, json={"text": "slow"}) as response:
+                        async for line in response.aiter_lines():
+                            if "tool-output-available" in line:
+                                break
+                        await asyncio.to_thread(agent.started.wait, 5)
+                    # leaving the block closes the connection: what the browser's Stop does
+                for _ in range(100):
+                    if thread.id not in chat.active:
+                        break
+                    await asyncio.sleep(0.05)
+                agent.release.set()
+                return await store.list_messages(chat.pool, thread.id)
+            finally:
+                app.state.chat = previous
+                server.should_exit = True
+                await serving
+                await chat.delete_thread(thread.id)
+
+    messages = asyncio.run(go())
+    assert [(m.role, m.status) for m in messages] == [("user", "ok"), ("assistant", "stopped")]
 ```
 
-The integration tests use `httpx.ASGITransport` inside the same event loop as the chat's async pool (`TestClient` runs the app on another loop, where the pool cannot be used). The transport does not run the lifespan, so the test sets `app.state.chat` itself.
+`test_a_request_closed_mid_answer_saves_the_stopped_answer_over_real_http` runs uvicorn in the test's event loop and closes a streaming request mid-answer, as the browser's Stop does. Without the `asyncio.shield` in `ChatService._relay` (Task 11) the server's cancellation reaches the turn inside its save and only the question is stored; `ASGITransport` and closing the generator do not show this.
+
+The other integration tests use `httpx.ASGITransport` inside the same event loop as the chat's async pool (`TestClient` runs the app on another loop, where the pool cannot be used). The transport does not run the lifespan, so the test sets `app.state.chat` itself.
 
 - [ ] **Step 2: Run them to see them fail**
 
@@ -4031,6 +4100,7 @@ async def send_feedback(message_id: UUID, body: FeedbackBody, chat: Chat) -> Res
     if trace_id:
         langfuse().create_score(
             trace_id=trace_id,
+            score_id=f"{message_id}-feedback",  # one score per answer: a new click replaces it
             name="user-feedback",
             value=1.0 if body.value == "up" else 0.0,
             data_type="BOOLEAN",
@@ -4110,7 +4180,7 @@ The stream uses Starlette's `StreamingResponse` with explicit headers: FastAPI's
 - [ ] **Step 4: Run the tests**
 
 Run: `uv run pytest tests/test_chat_api.py -q -m "not integration" && uv run pytest tests/test_chat_api.py -q -m integration && uv run task test`
-Expected: 1 passed, 5 passed, then the whole unit suite passes (existing tests use `TestClient(app)` without a context manager, so the lifespan does not run in them).
+Expected: 1 passed, 6 passed, then the whole unit suite passes (existing tests use `TestClient(app)` without a context manager, so the lifespan does not run in them).
 
 - [ ] **Step 5: Smoke the running API**
 

@@ -484,7 +484,7 @@ reasoning efforts are a `Literal["low", "medium", "high", "xhigh"]`.
 | `max_retries` | 2 |
 | `summary_trigger_tokens`, `summary_keep_messages` | 150000, 20 |
 | `clear_tool_results_trigger_tokens`, `clear_tool_results_keep` | 15000, 4 |
-| `max_sql_calls_per_turn`, `max_model_calls_per_turn`, `recursion_limit` | 8, 12, 60 |
+| `max_sql_calls_per_turn`, `max_model_calls_per_turn`, `recursion_limit` | 8, 12, 120 |
 | `sql_timeout_seconds`, `sql_row_limit`, `sql_rows_shown`, `sql_max_chars` | 10, 200, 50, 8000 |
 | `title_max_chars` | 60 |
 | `user_id` | `local` |
@@ -583,6 +583,10 @@ Found while validating the plan's code against the libraries and a scratch datab
   `EventSourceResponse` drops the AI SDK header.
 - Section 10: no AI Elements (Radix) on a Base UI app; own components with `useChat`,
   `streamdown` and `use-stick-to-bottom`.
+- Section 12: `recursion_limit` defaults to 120 (a query costs about 7 graph steps; 60 ended a
+  turn of 8 queries before the query limit).
+- Section 8: a stop over real HTTP must still save the stopped answer (the relay shields its
+  wait for the turn); feedback is one Langfuse score per answer (`score_id`).
 
 ## 17. References
 
