@@ -1,7 +1,8 @@
 import asyncio
+from dataclasses import dataclass
 
 import pytest
-from langchain_core.messages import AIMessage
+from langchain_core.messages import AIMessage, ToolMessage
 
 from finance.agent import runtime, store
 from finance.agent.graph import ChatModels
@@ -195,3 +196,29 @@ def test_a_database_outage_ends_the_turn_saves_it_as_error_and_the_thread_keeps_
     assert messages[1].queries[0].infra_error
     assert messages[3].content == "Back again."
     assert not busy
+
+
+@dataclass
+class Unexpected:
+    """A type no checkpoint of ours holds: strict loading must not revive it."""
+
+    value: int
+
+
+def test_checkpoints_load_only_allowlisted_types():
+    async def go():
+        async with open_chat(get_settings(), scripted_models([])) as chat:
+            serde = chat.checkpointer.serde
+            state = {
+                "messages": [
+                    AIMessage("Hi."),
+                    ToolMessage("rows: 1", tool_call_id="c1", artifact={"sql": "SELECT 1"}),
+                ],
+                "other": Unexpected(1),
+            }
+            return serde.loads_typed(serde.dumps_typed(state))
+
+    loaded = asyncio.run(go())
+    assert loaded["messages"][0] == AIMessage("Hi.")
+    assert loaded["messages"][1].artifact == {"sql": "SELECT 1"}
+    assert loaded["other"] == {"value": 1}  # blocked: the raw fields, not an Unexpected

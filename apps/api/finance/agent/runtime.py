@@ -10,6 +10,7 @@ from contextlib import asynccontextmanager
 from functools import partial
 
 from langgraph.checkpoint.postgres.aio import AsyncPostgresSaver
+from langgraph.checkpoint.serde.jsonplus import JsonPlusSerializer
 
 from finance.agent.catalog import validate_layer
 from finance.agent.graph import ChatModels, build_agent, chat_models
@@ -44,12 +45,14 @@ async def open_chat(
             yield None
             return
         models = chat_models(chat)
-    # The checkpointer README: refuse to deserialize unexpected types from the database.
-    os.environ.setdefault("LANGGRAPH_STRICT_MSGPACK", "true")
     async with async_pool() as pool:
         layer = load_semantic_layer()
         columns = await validate_layer(pool, layer)  # fails loudly on a mismatch
-        checkpointer = AsyncPostgresSaver(pool)
+        # Strict msgpack: refuse to revive unexpected types from the database (only langgraph's
+        # SAFE_MSGPACK_TYPES, which include the message classes).
+        checkpointer = AsyncPostgresSaver(
+            pool, serde=JsonPlusSerializer(allowed_msgpack_modules=None)
+        )
         await checkpointer.setup()
         run = partial(
             run_query, pool, row_limit=chat.sql_row_limit, timeout_seconds=chat.sql_timeout_seconds
