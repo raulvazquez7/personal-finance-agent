@@ -122,9 +122,11 @@ SET LOCAL statement_timeout = '<chat.sql_timeout_seconds>s';
 ```
 
 This is the pattern Supabase itself uses (one login, a role switched per request). There is
-no second login, password or URL: `SUPABASE_DB_URL_READONLY` leaves `.env.example`. The guard
-in section 7.2 rejects `set_config`, the only way to change role from a `SELECT`; if the guard
-failed anyway, the transaction is still read-only.
+no second login, password or URL: `SUPABASE_DB_URL_READONLY` leaves `.env.example`. A
+`SELECT` can reset the role with `set_config`, or with a built-in that runs SQL from a string
+(`query_to_xml`, `ts_stat`), so the guard in section 7.2 rejects `set_config` and every function
+it does not recognise unless allowlisted; if the guard failed anyway, the transaction is still
+read-only.
 
 ### 4.3 Setup for a new user
 
@@ -166,10 +168,10 @@ how it relates to other columns.
 
 | `kind` | Meaning for the agent |
 |---|---|
-| `measure` | a number to aggregate; never in `GROUP BY` |
+| `measure` | a number to aggregate in totals (shown as is when listing); never in `GROUP BY` |
 | `dimension` | a value to group or filter by; with allowed values use them as they are, without them look up the exact stored values first |
 | `time` | a date or period to filter and group by |
-| `text` | free text to search and read; never grouped |
+| `text` | free text to search and read; grouped only to list its distinct values, never as an answer's breakdown |
 | `flag` | a boolean filter |
 
 **Allowed values** only for what the app defines, so nobody maintains lists of user data:
@@ -211,7 +213,7 @@ transfers included; never spending).
 9. Active subscriptions and their monthly cost.
 10. Loans: money received, instalments, paying account and total repaid.
 11. The share of a period that is uncategorized or pending review.
-12. Grouped totals that carry the notes of their rows (`string_agg(DISTINCT note, ' | ')`).
+12. Grouped totals that carry the notes of their rows (`string_agg(DISTINCT note, '; ')`).
 
 ### 5.3 Loading and validation
 
@@ -236,8 +238,9 @@ silently drop attributes (it happened in Simon).
 
 ## 6. Instructions
 
-`apps/api/finance/agent/prompts/system.md` is static and names no table or column: it says
-how to work. The draft reviewed in the brainstorm is Appendix A. Its sections:
+`apps/api/finance/agent/prompts/system.md` is static and names no table and only the money
+columns spend, income and amount: it says how to work. The draft reviewed in the brainstorm is
+Appendix A. Its sections:
 
 - **Role and scope**: answers questions about the user's own bank data with `run_sql`.
   Greetings get one line; anything else (advice, general knowledge, changing data) gets one
@@ -306,7 +309,9 @@ over `transactions` and `subscriptions`, for lookups and for final queries.
    tree, not only the root, contains read nodes only (any write, DDL, `SET` or `COPY`
    anywhere, CTEs included, is rejected); table references are `transactions`,
    `subscriptions` or CTE names, without a schema; functions `set_config`, `pg_sleep*`,
-   `dblink*`, `pg_read*` and `lo_*` are rejected. No keyword regex on the raw text (it would
+   `dblink*`, `pg_read*` and `lo_*` are rejected, and so is any function `sqlglot` does not
+   recognise unless it is in a short allowlist of pure built-ins (`age`, `make_date`) and has
+   no schema. No keyword regex on the raw text (it would
    reject literals such as `'%drop%'`). The query is wrapped in `LIMIT <row_limit + 1>` to
    detect truncation.
 2. **Execution** as in section 4.2.
@@ -487,6 +492,7 @@ reasoning efforts are a `Literal["low", "medium", "high", "xhigh"]`.
 | `max_sql_calls_per_turn`, `max_model_calls_per_turn`, `recursion_limit` | 8, 12, 120 |
 | `sql_timeout_seconds`, `sql_row_limit`, `sql_rows_shown`, `sql_max_chars` | 10, 200, 50, 8000 |
 | `title_max_chars` | 60 |
+| `pool_timeout_seconds` (wait for a database connection) | 5 |
 | `user_id` | `local` |
 
 `.env.example` documents the `CHAT__*` overrides (commented out) and drops
@@ -640,8 +646,8 @@ Out of scope: everything else, including financial advice, general knowledge and
 3. Resolve every filter value:
    - Column with allowed values: map the user's words to stored values through their meanings.
    - Column without allowed values: run a separate lookup first
-     (SELECT DISTINCT <column>, COUNT(*) ... WHERE <column> ILIKE '%term%' ... LIMIT 20), try
-     variants (accents, short brand name, singular), then filter with the exact values found.
+     (SELECT <column>, COUNT(*) ... WHERE <column> ILIKE '%term%' GROUP BY <column> ... LIMIT 20),
+     try variants (accents, short brand name, singular), then filter with the exact values found.
      Never look up and aggregate in the same query.
    - Notes: the user's words rarely match literally. List the distinct notes (with counts and
      dates) and choose by meaning.
@@ -649,7 +655,7 @@ Out of scope: everything else, including financial advice, general knowledge and
 4. Write one query that answers the question. Totals, shares, averages and deltas are computed in
    SQL, never in your head. When listing movements, include the note.
 5. Check before running: every column exists in that model, every filter is resolved, measures
-   are aggregated and never grouped, the period is explicit, listings have a LIMIT.
+   are aggregated in totals and never grouped, the period is explicit, listings have a LIMIT.
 6. On an error, read the message and its hint and fix it with a different approach. After two
    failed attempts at the same query, stop: say what you could not do and offer a related
    question you can answer. Never resend a query that failed.
@@ -697,9 +703,10 @@ other. Then say plainly what you searched and offer a next step.
 
 # Reading the data context
 - The data model is the only source of tables and columns. Each column has a kind:
-  measure (aggregate it, never group by it), dimension (group or filter; with allowed values use
-  them as they are, without them look up first), time (filter and group periods), text (search it,
-  read it, never group by it), flag (true or false filter).
+  measure (aggregate it in totals, show it as it is when listing movements; never group by it),
+  dimension (group or filter; with allowed values use them as they are, without them look up
+  first), time (filter and group periods), text (search it and read it; group by it only to list
+  its distinct values, never as the breakdown of an answer), flag (true or false filter).
 - Metrics: use their definitions exactly.
 - Query examples: patterns to adapt, not templates to copy.
 ```
@@ -772,12 +779,14 @@ attributes:
       spending: a refund comes in and still belongs to spending. Use tx_type for that.
     allowed_values:
       - value: incoming
-        meaning: money in (amount > 0)
+        meaning: money in (amount >= 0)
       - value: outgoing
         meaning: money out (amount < 0)
   - attribute: tx_type
     kind: dimension
-    description: What the movement counts as. It follows the category, not the sign.
+    description: >
+      What the movement counts as. It follows the category; a movement without a category follows
+      its sign.
     allowed_values:
       - value: expense
         meaning: counts in spending, including refunds of purchases (negative spend)
@@ -823,10 +832,10 @@ attributes:
   - attribute: bank_text
     kind: text
     description: >
-      The movement's text from the statement, cleaned: upper case, card numbers and references
-      removed. It holds the shop as the bank prints it, the concept typed in a Bizum and the
-      reference of a transfer. Search it with ILIKE when merchant is NULL or does not match what
-      the user means. Do not group by it, because one business has many spellings.
+      The movement's text from the statement, cleaned: upper case, card numbers and most
+      references removed. It holds the shop as the bank prints it, the concept typed in a Bizum
+      and the reference of a transfer. Search it with ILIKE when merchant is NULL or does not
+      match what the user means. Do not total by it, because one business has many spellings.
   - attribute: bank_operation
     kind: dimension
     description: >

@@ -1,0 +1,28 @@
+# Metric definitions: how the money rules (docs/money-rules.md) add up in SQL. Every entry is
+# checked with EXPLAIN as `SELECT <sql> FROM <model>` when the API starts.
+- name: expenses
+  model: transactions
+  description: Total spending, net of refunds. Income and transfer rows add 0.
+  sql: SUM(spend)
+- name: income
+  model: transactions
+  description: Total income. It never includes transfers or loan money received.
+  sql: SUM(income)
+- name: savings
+  model: transactions
+  description: >
+    Income minus expenses. Money moved to the user's own savings or investment accounts counts
+    as saved.
+  sql: SUM(income) - SUM(spend)
+- name: savings_rate
+  model: transactions
+  description: >
+    Share of income saved, computed after summing every account and month of the period; never
+    sum or average rates. Empty without income, and it can be negative.
+  sql: (SUM(income) - SUM(spend)) / NULLIF(SUM(income), 0)
+- name: net_cash_flow
+  model: transactions
+  description: >
+    Money in minus money out of the selected accounts, transfers included: how much they grew or
+    shrank. Never a measure of spending.
+  sql: SUM(amount)

@@ -1,0 +1,164 @@
+# Query examples, from easy to complex. Each teaches a pattern; merchants and notes are made up.
+# Every step must pass the SQL guard and EXPLAIN as agent_reader (checked when the API starts).
+- question: How much did I spend in July 2026?
+  teaches: Spending is SUM(spend). A whole month filters on month.
+  sql:
+    - SELECT SUM(spend) AS expenses FROM transactions WHERE month = '2026-07'
+- question: Where did my money go in the third quarter of 2026, by group?
+  teaches: >
+    Rank groups by spending and compute each share with a window function over the grouped sums.
+  sql:
+    - |
+      SELECT category_group, SUM(spend) AS spend,
+             ROUND(100 * SUM(spend) / NULLIF(SUM(SUM(spend)) OVER (), 0), 1) AS share_pct
+      FROM transactions
+      WHERE booked_at >= '2026-07-01' AND booked_at < '2026-10-01' AND tx_type = 'expense'
+      GROUP BY category_group
+      ORDER BY spend DESC
+- question: How much did I save each month this year, and at what rate?
+  teaches: >
+    Income, expenses, savings and savings rate per month. The rate is computed after summing. Mark
+    a month the coverage does not reach to its end as partial in the answer.
+  sql:
+    - |
+      SELECT month, SUM(income) AS income, SUM(spend) AS expenses,
+             SUM(income) - SUM(spend) AS savings,
+             ROUND(100 * (SUM(income) - SUM(spend)) / NULLIF(SUM(income), 0), 1) AS savings_rate_pct
+      FROM transactions
+      WHERE booked_at >= '2026-01-01'
+      GROUP BY month
+      ORDER BY month
+- question: How much have I spent at Acme this year?
+  teaches: >
+    Merchant names are not in the data context: look up the exact name first, then filter on it.
+    Refunds lower the total but are not charges.
+  sql:
+    - |
+      SELECT merchant, COUNT(*) AS movements
+      FROM transactions
+      WHERE merchant ILIKE '%acme%'
+      GROUP BY merchant
+      ORDER BY movements DESC
+      LIMIT 20
+    - |
+      SELECT SUM(spend) AS spend, COUNT(*) FILTER (WHERE spend > 0) AS charges,
+             ROUND(AVG(spend) FILTER (WHERE spend > 0), 2) AS average_ticket
+      FROM transactions
+      WHERE merchant = 'Acme Market' AND booked_at >= '2026-01-01' AND tx_type = 'expense'
+- question: How much did the trip to Rome cost?
+  teaches: >
+    Notes are the user's own words. Read the distinct notes first and pick the ones that mean the
+    trip, then list those movements with their notes and the total. When 50 notes come back there
+    may be more: read the next ones with OFFSET 50 before deciding nothing matches.
+  sql:
+    - |
+      SELECT note, COUNT(*) AS movements, MIN(booked_at) AS first_day, MAX(booked_at) AS last_day,
+             SUM(spend) AS spend
+      FROM transactions
+      WHERE note IS NOT NULL
+      GROUP BY note
+      ORDER BY last_day DESC, note
+      LIMIT 50
+    - |
+      SELECT booked_at, merchant, category, spend, note, SUM(spend) OVER () AS total
+      FROM transactions
+      WHERE note IN ('Rome trip', 'hotel Rome')
+      ORDER BY booked_at
+- question: How is my spending by group this month compared with the same days of last month?
+  teaches: >
+    This month is partial: cut last month after the same day (the latest imported date, here 12
+    October 2026, not today) so both sides cover the same days. Show both values, the absolute
+    change and the % change, all in SQL. No % on a zero baseline.
+  sql:
+    - |
+      WITH by_period AS (
+        SELECT category_group,
+               COALESCE(SUM(spend) FILTER (WHERE booked_at >= '2026-10-01'), 0) AS this_month,
+               COALESCE(SUM(spend) FILTER (WHERE booked_at < '2026-10-01'), 0) AS last_month
+        FROM transactions
+        WHERE tx_type = 'expense'
+          AND ((booked_at >= '2026-10-01' AND booked_at < '2026-10-13')
+            OR (booked_at >= '2026-09-01' AND booked_at < '2026-09-13'))
+        GROUP BY category_group
+      )
+      SELECT category_group, this_month, last_month, this_month - last_month AS change,
+             ROUND(100 * (this_month - last_month) / NULLIF(last_month, 0), 1) AS change_pct
+      FROM by_period
+      ORDER BY change DESC
+- question: What do I spend in a normal month?
+  teaches: >
+    Average complete months only: leave out a month the coverage does not reach to its end.
+  sql:
+    - |
+      SELECT ROUND(AVG(expenses), 2) AS average_monthly_spend, COUNT(*) AS months
+      FROM (
+        SELECT month, SUM(spend) AS expenses
+        FROM transactions
+        WHERE month BETWEEN '2026-01' AND '2026-07'
+        GROUP BY month
+      ) AS monthly
+- question: Which restaurants do I spend the most at?
+  teaches: >
+    Category values come from the data context. Rank merchants inside a category with their
+    share.
+  sql:
+    - |
+      SELECT COALESCE(merchant, '(no business named)') AS merchant, COUNT(*) AS visits,
+             SUM(spend) AS spend,
+             ROUND(100 * SUM(spend) / NULLIF(SUM(SUM(spend)) OVER (), 0), 1) AS share_pct
+      FROM transactions
+      WHERE category = 'restaurants_bars' AND booked_at >= '2026-01-01'
+      GROUP BY 1
+      ORDER BY spend DESC
+      LIMIT 10
+- question: What subscriptions am I paying, and how much a month?
+  teaches: >
+    Use subscriptions for the list and its cadence. The monthly cost sums monthly_equivalent over
+    active rows.
+  sql:
+    - |
+      SELECT merchant, cadence, typical_amount, monthly_equivalent, last_charge,
+             SUM(monthly_equivalent) OVER () AS monthly_total
+      FROM subscriptions
+      WHERE active
+      ORDER BY monthly_equivalent DESC
+- question: What loans do I have, and how much have I repaid?
+  teaches: >
+    Money received from a loan is loan_received (a transfer, never income); the instalments are
+    loan_payment (spending). Group by the loan's merchant.
+  sql:
+    - |
+      SELECT merchant,
+             SUM(amount) FILTER (WHERE category = 'loan_received') AS received,
+             COUNT(*) FILTER (WHERE category = 'loan_payment') AS instalments,
+             SUM(spend) FILTER (WHERE category = 'loan_payment') AS repaid,
+             STRING_AGG(DISTINCT account, ', ') FILTER (WHERE category = 'loan_payment') AS paid_from,
+             MAX(booked_at) FILTER (WHERE category = 'loan_payment') AS last_instalment
+      FROM transactions
+      WHERE category IN ('loan_received', 'loan_payment')
+      GROUP BY merchant
+      ORDER BY merchant
+- question: How much of September 2026's spending is still uncategorized or pending review?
+  teaches: >
+    Measure how much of a total rests on unconfirmed categories, and say so when it matters.
+  sql:
+    - |
+      SELECT SUM(spend) AS spend,
+             COALESCE(SUM(spend) FILTER (WHERE category = 'uncategorized'), 0) AS uncategorized,
+             COALESCE(SUM(spend) FILTER (WHERE needs_review), 0) AS pending_review,
+             ROUND(100 * COALESCE(SUM(spend) FILTER (
+               WHERE category = 'uncategorized' OR needs_review), 0) / NULLIF(SUM(spend), 0), 1)
+               AS unconfirmed_pct
+      FROM transactions
+      WHERE month = '2026-09'
+- question: What did I buy at electronics shops this year?
+  teaches: >
+    When grouping, carry the notes of the grouped rows so you can read what was bought.
+  sql:
+    - |
+      SELECT merchant, COUNT(*) AS purchases, SUM(spend) AS spend,
+             STRING_AGG(DISTINCT note, '; ') AS notes
+      FROM transactions
+      WHERE category = 'electronics' AND booked_at >= '2026-01-01'
+      GROUP BY merchant
+      ORDER BY spend DESC

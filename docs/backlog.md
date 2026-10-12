@@ -55,3 +55,36 @@ the review page.
   account and not the others.
 - Coverage should come from statement periods, not transaction dates: a month
   without movements is still covered.
+
+## 5. Account balances in the chat
+
+The agent cannot answer "how much do I have in my account" yet: `balance_after` is stored but
+the order of movements within a day is not, so "the balance on a date" could pick the wrong
+row. Store each movement's position in its statement at import, then expose the balance per
+account and date in the `agent` schema. (Slice 4 spec, section 15.)
+
+## 6. Chat evals
+
+A golden set of questions with reference SQL, run against the agent with repeats (consistent,
+flaky, failing), to measure prompt, semantic-layer and model changes. Start from Langfuse
+traces of real use (a dataset per version). Include the money rules a model gets wrong, such as
+a category total that nets a refund against its purchase.
+
+## 7. Loan instalments recognised by their contract
+
+Some banks print only the loan's contract number on an instalment, with no merchant and no
+bank concept, so no rule can catch it and each new instalment arrives uncategorized. Once a
+loan is known (a merchant linked to its contract), any new movement that carries the same
+contract number should become that loan's instalment (`loan_payment`, same merchant) before
+jev runs. It extends what `link_loans` already does for rows that are categorized as a loan.
+
+## 8. Numbers the chat agent can be trusted with
+
+A live test showed the agent can state an amount that no query of the turn returned: it ran
+only the lookups and skipped the final query, or copied a result wrongly. Small prompt edits
+changed how often it happened (a rule against text between queries made it much worse), so a
+prompt is not a guarantee. Add a deterministic check: every amount in the final answer must
+appear in a query result of the turn; if one does not, nudge the model once to run the query,
+otherwise show a warning. Measure with repeated runs of the same questions (with backlog 6).
+The same work can fix two format slips seen live: the "How I counted it" heading left in
+English in Spanish answers, and a category slug shown in an answer.

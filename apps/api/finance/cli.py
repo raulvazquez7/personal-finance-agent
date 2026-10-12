@@ -1,10 +1,13 @@
 """Command line entry point: `finance import statement.pdf`."""
 
+import asyncio
 from datetime import date
 from pathlib import Path
+from uuid import UUID
 
 import typer
 
+from finance.agent.cli import chat_session
 from finance.categorization.seed import seed as seed_database
 from finance.categorization.store import run_categorization
 from finance.db import connection
@@ -115,3 +118,24 @@ def labels_import(path: Path = typer.Argument(..., exists=True, readable=True)) 
         typer.echo(error, err=True)
     if result.errors:
         raise typer.Exit(code=1)
+
+
+def _read_question() -> str | None:
+    try:
+        question = input("> ").strip()
+    except EOFError:
+        return None
+    return question or None
+
+
+@app.command("chat")
+def chat_command(
+    question: str | None = typer.Argument(
+        None, help="Ask once; without it, ask until an empty line"
+    ),
+    thread: UUID | None = typer.Option(None, help="Continue this chat id"),
+) -> None:
+    """Ask questions about your data: the web chat's agent, in the terminal."""
+    questions = [question] if question else _read_question
+    code = asyncio.run(chat_session(questions, thread, lambda text: typer.echo(text, nl=False)))
+    raise typer.Exit(code=code)
