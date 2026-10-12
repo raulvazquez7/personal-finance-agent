@@ -69,3 +69,11 @@ A golden set of questions with reference SQL, run against the agent with repeats
 flaky, failing), to measure prompt, semantic-layer and model changes. Start from Langfuse
 traces of real use (a dataset per version). Include the money rules a model gets wrong, such as
 a category total that nets a refund against its purchase.
+
+## 7. Loan instalments recognised by their contract
+
+Some banks print only the loan's contract number on an instalment, with no merchant and no
+bank concept, so no rule can catch it and each new instalment arrives uncategorized. Once a
+loan is known (a merchant linked to its contract), any new movement that carries the same
+contract number should become that loan's instalment (`loan_payment`, same merchant) before
+jev runs. It extends what `link_loans` already does for rows that are categorized as a loan.
