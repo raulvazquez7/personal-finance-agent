@@ -1,12 +1,13 @@
 import asyncio
+from hashlib import sha256
 
 from langchain_core.messages import AIMessage, HumanMessage, SystemMessage, ToolMessage
 from langgraph.checkpoint.memory import InMemorySaver
 
 from finance.agent.graph import AgentContext, ChatModels, build_agent
-from finance.agent.middleware import CANCELLED, CLEARED, INFRA_MESSAGE
+from finance.agent.middleware import CANCELLED, CLEARED, INFRA_MESSAGE, NOTICE_NODES
 from finance.agent.models import QueryResult
-from finance.agent.prompt import INSTRUCTIONS
+from finance.agent.prompt import INSTRUCTIONS, PROMPT_VERSION, SUMMARY_PROMPT
 from finance.agent.tools import make_run_sql
 from finance.settings import ChatSettings
 from tests.fakes import ScriptedChatModel, tool_call
@@ -105,3 +106,13 @@ def test_the_query_limit_is_reached_before_the_recursion_backstop():
     config = {"configurable": {"thread_id": "deep"}, "recursion_limit": chat.recursion_limit}
     result = _ask(_agent(model), "q", config)
     assert result["messages"][-1].content == "All done."
+
+
+def test_the_prompt_version_changes_with_the_instructions_or_the_summary_prompt():
+    both = sha256("\0".join([INSTRUCTIONS, SUMMARY_PROMPT]).encode()).hexdigest()[:12]
+    assert PROMPT_VERSION == both
+
+
+def test_the_nodes_whose_notices_reach_the_user_exist_in_the_agent():
+    agent = _agent(ScriptedChatModel(responses=[]))
+    assert NOTICE_NODES <= set(agent.get_graph().nodes)

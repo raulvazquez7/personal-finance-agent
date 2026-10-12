@@ -54,3 +54,24 @@ def test_a_cli_session_answers_and_keeps_its_thread():
     finally:
         messages = asyncio.run(cleanup())  # always delete the thread, even if the check fails
     assert [m.role for m in messages] == ["user", "assistant"]
+
+
+@pytest.mark.integration
+def test_a_chat_deleted_from_the_web_mid_session_ends_the_session(monkeypatch):
+    async def deleted(pool, thread_id):
+        return None  # what the reload finds once the web deleted the chat
+
+    async def cleanup(thread_id):
+        async with open_chat(get_settings(), scripted_models([])) as chat:
+            await chat.delete_thread(thread_id)
+
+    written: list[str] = []
+    models = scripted_models([AIMessage("One."), AIMessage("Two.")])
+    monkeypatch.setattr(store, "get_thread", deleted)
+    try:
+        code = asyncio.run(chat_session(["first", "second"], None, written.append, models))
+    finally:
+        monkeypatch.undo()  # the real get_thread again, then always delete the thread
+        thread_id = UUID(written[0].removeprefix("chat ").strip())
+        asyncio.run(cleanup(thread_id))
+    assert code == 1 and written[-1] == f"chat {thread_id} not found\n"

@@ -56,5 +56,9 @@ async def chat_session(
             async for part in chat.stream_turn(thread, question):
                 if (text := render(part)) is not None:
                     write(text)
-            thread = await store.get_thread(chat.pool, thread.id)  # it may have a title now
+            thread_id = thread.id
+            thread = await store.get_thread(chat.pool, thread_id)  # it may have a title now
+            if thread is None:  # deleted from the web meanwhile
+                write(f"chat {thread_id} not found\n")
+                return 1
     return 0

@@ -13,7 +13,8 @@ from langchain_core.messages import SystemMessage
 PROMPTS_DIR = Path(__file__).parent / "prompts"
 INSTRUCTIONS = (PROMPTS_DIR / "system.md").read_text(encoding="utf-8")
 SUMMARY_PROMPT = (PROMPTS_DIR / "summary.md").read_text(encoding="utf-8")
-PROMPT_VERSION = sha256(INSTRUCTIONS.encode()).hexdigest()[:12]
+# Both texts shape the answers, so a change to either shows in the traces.
+PROMPT_VERSION = sha256("\0".join([INSTRUCTIONS, SUMMARY_PROMPT]).encode()).hexdigest()[:12]
 
 
 def system_message(data_context: str) -> SystemMessage:

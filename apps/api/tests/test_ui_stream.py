@@ -65,6 +65,13 @@ def test_the_infrastructure_notice_reaches_the_user():
     assert record.text == INFRA_MESSAGE and record.infra_error
 
 
+def test_the_model_call_limit_notice_reaches_the_user():
+    calls = [tool_call(f"SELECT {n}", f"c{n}") for n in range(3)]
+    parts, record = _parts(calls, max_sql_calls_per_turn=1, max_model_calls_per_turn=2)
+    assert parts[-1]["type"] == "text-end"
+    assert record.texts[-1].startswith("Model call limits exceeded")
+
+
 def test_reaching_the_query_limit_is_recorded():
     calls = [tool_call(f"SELECT {n}", f"c{n}") for n in range(3)]
     _, record = _parts([*calls, AIMessage("Done.")], max_sql_calls_per_turn=2)
