@@ -6,7 +6,7 @@ import pytest
 from psycopg import errors
 from psycopg_pool import PoolTimeout
 
-from finance.agent.sql_runner import cell, failed
+from finance.agent.sql_runner import cell, failed, is_connection_error
 
 
 def test_cells_read_as_plain_text():
@@ -62,3 +62,35 @@ def test_an_unreachable_database_is_an_infrastructure_failure():
     for error in (psycopg.OperationalError("connection refused"), PoolTimeout("no connection")):
         result = failed("SELECT 1", error, 10)
         assert result.infra_error and result.hint is None
+
+
+@pytest.mark.parametrize(
+    "error",
+    [
+        errors.ProgramLimitExceeded("too many columns"),
+        errors.InsufficientResources("out of shared memory"),
+        errors.LockNotAvailable("could not obtain lock"),
+    ],
+)
+def test_a_query_that_needs_too_much_is_a_sql_error_not_an_outage(error):
+    result = failed("SELECT 1", error, 10)
+    assert not result.infra_error
+    assert result.hint == "The query needs too many resources: aggregate more or narrow the period."
+
+
+@pytest.mark.parametrize(
+    ("error", "expected"),
+    [
+        (psycopg.OperationalError("connection refused"), True),
+        (PoolTimeout("no connection"), True),
+        (errors.ConnectionFailure("connection lost"), True),
+        (errors.AdminShutdown("terminating connection"), True),
+        (errors.CannotConnectNow("the database system is starting up"), True),
+        (errors.QueryCanceled("canceling statement"), False),
+        (errors.ProgramLimitExceeded("too many columns"), False),
+        (errors.UndefinedColumn("no such column"), False),
+        (RuntimeError("something else"), False),
+    ],
+)
+def test_only_a_lost_or_refused_connection_is_a_connection_error(error, expected):
+    assert is_connection_error(error) is expected

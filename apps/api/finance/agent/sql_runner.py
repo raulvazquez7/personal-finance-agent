@@ -32,6 +32,11 @@ _HINTS: list[tuple[type[psycopg.Error], str]] = [
     (errors.SyntaxError, "Fix the syntax: write one PostgreSQL SELECT."),
     (errors.DivisionByZero, "Protect divisions with NULLIF(denominator, 0)."),
     (errors.DataError, "Check literal values and casts; dates are 'YYYY-MM-DD'."),
+    # Not a connection error (see is_connection_error): limits, resources or locks of the query.
+    (
+        psycopg.OperationalError,
+        "The query needs too many resources: aggregate more or narrow the period.",
+    ),
 ]
 
 
@@ -61,6 +66,17 @@ def cell(value: object) -> str | None:
     return str(value)
 
 
+def is_connection_error(error: BaseException) -> bool:
+    """The database cannot be reached: no connection from the pool, a refused or lost connection
+    (no SQLSTATE, or class 08), or a server shutting down or starting (57P). Other operational
+    errors (53 resources, 54 limits, 55 locks) come from the query itself."""
+    if isinstance(error, PoolTimeout):
+        return True
+    if not isinstance(error, psycopg.OperationalError):
+        return False
+    return error.sqlstate is None or error.sqlstate.startswith(("08", "57P"))
+
+
 def failed(sql: str, error: Exception, timeout_seconds: int) -> QueryResult:
     """The result for a query that did not run: an error the model can act on, or infra."""
     if isinstance(error, errors.QueryCanceled):
@@ -70,7 +86,7 @@ def failed(sql: str, error: Exception, timeout_seconds: int) -> QueryResult:
             hint="Aggregate more or narrow the period.",
         )
     first_line = str(error).splitlines()[0] if str(error) else type(error).__name__
-    if isinstance(error, psycopg.OperationalError | PoolTimeout):
+    if is_connection_error(error):
         return QueryResult(sql=sql, error=first_line, infra_error=True)
     hint = next((h for kind, h in _HINTS if isinstance(error, kind)), "Try a simpler query.")
     return QueryResult(sql=sql, error=first_line, hint=hint)
