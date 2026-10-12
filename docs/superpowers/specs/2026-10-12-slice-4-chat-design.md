@@ -54,7 +54,7 @@ No golden dataset or eval harness is built in this slice (section 15).
 | Models | `xai:grok-4.7` with reasoning `high` (agent) and `medium` (summaries); `xai:grok-4.20-non-reasoning` for chat titles |
 | Context management | `SummarizationMiddleware` at 150,000 tokens; `ClearToolUsesEdit` for old query results |
 | Persistence | LangGraph `AsyncPostgresSaver` (agent memory), `chat_threads`, `chat_messages` (what the user sees) |
-| Streaming | AI SDK UI message stream protocol from FastAPI; the web uses `useChat` and AI Elements |
+| Streaming | AI SDK UI message stream protocol from FastAPI; the web uses `useChat` with its own small components on the existing Base UI kit |
 | Observability | Langfuse trace per turn, session per thread, versions, scores, user feedback |
 | Settings | A nested `chat` group in the existing `Settings` |
 
@@ -149,7 +149,7 @@ statements work); the transaction pooler would break the API's existing pool. Ex
 |---|---|
 | `transactions.yaml`, `subscriptions.yaml` | one model each: knowledge and attributes (Appendix B) |
 | `metrics.yaml` | metric definitions: name, description, SQL expression, model |
-| `examples.yaml` | query examples from easy to complex: question, what it teaches, SQL |
+| `examples.yaml` | query examples from easy to complex: question, what it teaches, and the SQL as a list of steps (a lookup comes before the final query) |
 
 The shape follows Simon's `client_data_models`, simplified: the fields that only served its
 router (intent signals, example questions per model) are gone, and its `metric`,
@@ -220,8 +220,9 @@ from `information_schema`, and fails loudly when:
 
 - an attribute is not a column of its view, or a view column has no attribute;
 - a `kind` or `allowed_values` source is unknown;
-- a metric or an example does not compile: each runs as `EXPLAIN` under `agent_reader`, so a
-  changed view can never leave the agent with broken patterns.
+- a metric or an example step does not pass the SQL guard or does not compile: each runs as
+  `EXPLAIN` under `agent_reader`, so a changed view can never leave the agent with broken
+  patterns.
 
 ### 5.4 The data context
 
@@ -229,7 +230,7 @@ Built at the start of every turn: the loaded YAML plus two small queries (taxono
 with coverage) plus today's date. Rendered as compact text, in this order: data model
 (knowledge and attributes with their values; each account value carries its coverage) →
 metrics → query examples → now (today with its weekday, and the latest imported date).
-Expected size about 4,500 tokens. A snapshot
+About 6,000 tokens on the real taxonomy (measured on 2026-10-12). A snapshot
 test fixes the rendered text for a fake taxonomy and fake accounts, so a rendering bug cannot
 silently drop attributes (it happened in Simon).
 
@@ -373,7 +374,7 @@ one setting.
 |---|---|---|
 | `AsyncPostgresSaver` (tables created by `setup()` at startup) | the agent's memory: every message of the thread, tool calls included | what the agent reads to continue; `thread_id` is the chat id |
 | `chat_threads` | `id`, `title`, `title_source` (`model`, `fallback`, `user`), `created_at`, `updated_at` | open-source LangGraph has no thread listing |
-| `chat_messages` | `id`, `thread_id`, `role`, `content`, `queries` (SQL with row count or error), `status` (`ok`, `error`, `stopped`), `langfuse_trace_id`, `created_at` | summarization rewrites the checkpoint; the history the user sees never shrinks, does not depend on LangGraph's internal format, and links each answer to its trace |
+| `chat_messages` | `id`, `thread_id`, `role`, `content`, `queries` (SQL with row count or error), `status` (`ok`, `error`, `stopped`), `feedback` (`up`, `down`), `langfuse_trace_id`, `created_at` | summarization rewrites the checkpoint; the history the user sees never shrinks, does not depend on LangGraph's internal format, and links each answer to its trace |
 
 The checkpointer gets its own async pool (`autocommit`, `dict_row`, `prepare_threshold=0`,
 opened in the API lifespan); `run_sql` and the data-context queries use the same pool with
@@ -406,8 +407,10 @@ explicit transactions. The existing sync pool keeps serving the rest of the API.
 
 Pydantic models at every boundary; the existing CORS, trusted-host and `Origin` checks apply.
 
-The answer streams with FastAPI's `EventSourceResponse` (FastAPI ≥ 0.135; the pin moves from
-0.115) in the AI SDK UI message stream protocol (header `x-vercel-ai-ui-message-stream: v1`).
+The answer streams as `text/event-stream` through Starlette's `StreamingResponse` with explicit
+headers, in the AI SDK UI message stream protocol (header `x-vercel-ai-ui-message-stream: v1`).
+FastAPI's own `EventSourceResponse` drops custom headers (checked on 2026-10-12), so it is not
+used and the FastAPI pin stays.
 The adapter reads `agent.astream(stream_mode=["messages", "updates"], version="v2")` (the
 stable API; `astream_events` v3 is beta):
 
@@ -430,13 +433,16 @@ the web list.
 
 ## 10. Web `/chat` (plan 4b)
 
-- `useChat` (`@ai-sdk/react`) with a transport that sends only the new message and the chat
-  id, since the API holds the history.
-- AI Elements components (shadcn registry, `npx ai-elements@latest add ...`):
-  `Conversation` (auto-scroll), `Message` with `MessageResponse` (markdown while streaming),
-  `Tool` as the collapsible query disclosure, `PromptInput` with stop, `Actions` for
-  feedback.
-- A sidebar of chats: list, new, rename, delete; the title arrives live.
+- `useChat` (`@ai-sdk/react`) with a transport that sends only the new message's text to the
+  chat's endpoint, since the API holds the history.
+- AI Elements is not used: its components are built on Radix, while the web app's shadcn setup
+  uses Base UI (`style: base-nova`); several of them (`PromptInput`, message actions, `Tool`)
+  rely on Radix-only props such as `asChild`. Decided with Raul on 2026-10-12: own small
+  components on the existing kit, with the two libraries AI Elements wraps: `streamdown`
+  (markdown while streaming) and `use-stick-to-bottom` (auto-scroll).
+- Components: the conversation, a message (markdown), the query disclosure (SQL and its rows),
+  the input with send and stop, feedback buttons, and a sidebar of chats (list, new, rename,
+  delete; the title arrives live).
 - An entry in the navigation. Detailed layout and copy are decided in the 4b plan.
 
 ## 11. Observability
@@ -454,7 +460,8 @@ the web list.
 - Deterministic scores per turn: `sql_calls`, `sql_errors` (numeric), `hit_sql_limit`,
   `stopped`, `infra_error` (boolean).
 - User feedback becomes a `user-feedback` score on the answer's trace.
-- Infrastructure failures and reached limits are marked `ERROR` on their observation.
+- A failed turn (infrastructure or model error) is marked `ERROR` on its observation, and a turn
+  that reached the query limit `WARNING` (it still answered).
 - Flushed on API shutdown and at the end of `finance chat`. Without keys nothing is recorded.
 - Prompts stay in git, versioned by hash; Langfuse prompt management is not used.
 - Setup note: Langfuse needs a model definition with `grok-4.7` prices to compute cost.
@@ -522,7 +529,7 @@ validation and data context; instructions; `run_sql`; agent and middleware; pers
 stop and title; API, stream adapter and feedback; Langfuse; settings and `.env.example`;
 `finance chat`; README (setup, how the chat works, the jev section without the router) and
 `docs/backlog.md` (section 15). New dependencies: `langchain`, `langgraph`,
-`langgraph-checkpoint-postgres`, `langchain-xai`, `sqlglot`; `fastapi>=0.135`.
+`langgraph-checkpoint-postgres`, `langchain-xai`, `sqlglot`.
 
 **4b — web.** The `/chat` page in section 10, the navigation entry, an `agent-browser` core
 check of the chat flows and one dogfood pass before merge.
@@ -560,9 +567,22 @@ Open decisions:
 | 9 Chat agent | the jev router (9.1) and `describe_schema` (9.2) are dropped; one `create_agent` loop with `grok-4.7`, middleware and the `run_sql` contract in section 7 |
 | 9.3 Streaming | AI SDK UI message stream protocol (section 9) |
 | 10 API | the endpoints in section 9 |
-| 11 Web | `/chat` with AI Elements (section 10) |
+| 11 Web | `/chat` with `useChat` and own components (section 10) |
 | 13 Observability | the per-turn trace, scores and feedback (section 11); the `chat` settings group (section 12) |
 | 14 Slices | slice 4 is delivered as two plans (section 14) |
+
+### Plan 4a amendments (2026-10-12)
+
+Found while validating the plan's code against the libraries and a scratch database:
+
+- Section 5: each query example holds its SQL as a list of steps, and every step passes the
+  SQL guard and `EXPLAIN`.
+- Section 5.4: the data context is about 6,000 tokens on the real taxonomy.
+- Section 8: `chat_messages.feedback` stores the thumbs, so the UI shows them on reload.
+- Section 9: the stream uses `StreamingResponse` with explicit headers; FastAPI's
+  `EventSourceResponse` drops the AI SDK header.
+- Section 10: no AI Elements (Radix) on a Base UI app; own components with `useChat`,
+  `streamdown` and `use-stick-to-bottom`.
 
 ## 17. References
 
@@ -680,80 +700,95 @@ other. Then say plainly what you searched and offer a next step.
 - Query examples: patterns to adapt, not templates to copy.
 ```
 
-## Appendix B. Semantic layer draft
+## Appendix B. Semantic layer
+
+The validated files are in plan 4a (Task 5); `transactions.yaml` as built:
 
 `transactions.yaml`:
 
 ```yaml
 model: transactions
 description: >
-  Every money movement of every imported bank account, one row each, with the household's
-  money rules already applied: each row says whether it counts as spending, income or a
-  transfer, and how much it adds to each total. All accounts belong to one household and all
-  amounts are in euros. This is the source for every amount.
+  Every money movement of every imported bank account, one row each, with the household's money
+  rules already applied: each row says whether it counts as spending, income or a transfer, and
+  how much it adds to each total. All accounts belong to one household and all amounts are in
+  euros. This is the source for every amount.
 grain: >
   One row per movement printed on a bank statement. A transfer between two imported accounts
   appears twice, once leaving and once arriving, both with tx_type = 'transfer'.
 use_for:
   - Spending, income and savings for any period, account, category group, category or merchant.
   - What something cost or why money moved, through the user's notes.
-  - Listing, counting and ranking movements: largest charges, most frequent merchants, average ticket.
-  - Loans: money received, instalments, paying account and total repaid.
+  - Listing, counting and ranking movements, such as the largest charges, the most frequent
+    merchants or the average ticket.
+  - Loans, with the money received, the instalments, the paying account and the total repaid.
   - Comparisons between periods, accounts, categories or merchants.
 not_for:
-  - Subscription cadence, typical charge or whether a subscription is still active (use subscriptions).
-  - Account balances: the balance after each movement is not available.
-  - What was bought inside a credit card bill: card statements are not imported, so each monthly
+  - Subscription cadence, typical charge or whether a subscription is still active (use
+    subscriptions).
+  - Account balances, because the balance after each movement is not available.
+  - What was bought inside a credit card bill. Card statements are not imported, so each monthly
     settlement is one movement in category credit_card_spending.
 attributes:
   - attribute: booked_at
     kind: time
     description: >
       Date the bank booked the movement. Use it for exact date ranges with a half-open interval:
-      booked_at >= '2026-07-01' AND booked_at < '2026-08-01'. A card purchase can be booked a
-      day or two after it was made.
+      booked_at >= '2026-07-01' AND booked_at < '2026-08-01'. A card purchase can be booked a day
+      or two after it was made.
   - attribute: month
     kind: time
     description: >
       booked_at as 'YYYY-MM' text (for example '2026-07'). Use it to group by month and to filter
-      whole months (month = '2026-07', month BETWEEN '2026-01' AND '2026-03'); it sorts
+      whole months (month = '2026-07', month BETWEEN '2026-01' AND '2026-03'). It sorts
       chronologically as text.
   - attribute: account
     kind: dimension
     description: Name of the bank account as the user sees it in the app.
-    allowed_values: accounts          # read from the database: name, bank, statement coverage
+    allowed_values: accounts
   - attribute: bank
     kind: dimension
     description: Bank that holds the account.
-    allowed_values: [{value: bbva, meaning: BBVA}, {value: caixabank, meaning: CaixaBank}]
+    allowed_values:
+      - value: bbva
+        meaning: BBVA
+      - value: caixabank
+        meaning: CaixaBank
   - attribute: amount
     kind: measure
     description: >
       Signed amount as printed on the statement: positive is money in, negative is money out. Use
       it to show single movements and for cash-flow questions (money in and out of an account,
-      transfers included). Never SUM it for spending or income: transfers and refunds would
-      distort the total; use spend and income.
+      transfers included). Never SUM it for spending or income, because transfers and refunds
+      would distort the total; use spend and income.
   - attribute: direction
     kind: dimension
     description: >
       Whether money came in or went out (the sign of amount). It does not say whether a row is
       spending: a refund comes in and still belongs to spending. Use tx_type for that.
     allowed_values:
-      - {value: incoming, meaning: money in (amount > 0)}
-      - {value: outgoing, meaning: money out (amount < 0)}
+      - value: incoming
+        meaning: money in (amount > 0)
+      - value: outgoing
+        meaning: money out (amount < 0)
   - attribute: tx_type
     kind: dimension
     description: What the movement counts as. It follows the category, not the sign.
     allowed_values:
-      - {value: expense, meaning: counts in spending, including refunds of purchases (negative spend)}
-      - {value: income, meaning: counts in income}
-      - {value: transfer, meaning: counts in no total (own accounts, savings or investments, loan money received)}
+      - value: expense
+        meaning: counts in spending, including refunds of purchases (negative spend)
+      - value: income
+        meaning: counts in income
+      - value: transfer
+        meaning: >-
+          counts in no total (between own accounts, to savings or investments, loan money
+          received)
   - attribute: spend
     kind: measure
     description: >
-      Money spent: -amount for expense rows, 0 for income and transfer rows. A refund of a purchase
-      is negative and lowers spending. SUM(spend) is total spending ("expenses") for any filter;
-      transfers are already out.
+      Money spent: -amount for expense rows, 0 for income and transfer rows. A refund of a
+      purchase is negative and lowers spending. SUM(spend) is total spending ("expenses") for any
+      filter; transfers are already out.
   - attribute: income
     kind: measure
     description: >
@@ -765,50 +800,50 @@ attributes:
       Category of the movement (level 2 of the taxonomy). 'uncategorized' when the movement has no
       category yet; such rows count by their sign until categorized. Different from
       uncategorized_expense, a category for expenses whose purpose is unknown.
-    allowed_values: categories        # read from the taxonomy: slug, group, type, what, not for
+    allowed_values: categories
   - attribute: category_group
     kind: dimension
     description: >
       Group of the category (level 1), for broad questions such as "how much on transport".
       'uncategorized' when the movement has no category.
-    allowed_values: category_groups   # read from the taxonomy: each group and its categories
+    allowed_values: category_groups
   - attribute: merchant
     kind: dimension
     description: >
       Business name chosen by the app, the same for every branch and spelling of a business (one
       name for "ACME 0042 MADRID" and "ACME FOODS"). NULL when the movement names no business:
       Bizum and transfers to people, cash withdrawals, bank fees, card settlements. A loan is a
-      merchant named 'Loan ····' plus the last digits of its contract. Names depend on the user's
-      data: find the exact stored name first (SELECT DISTINCT merchant ... WHERE merchant ILIKE
-      '%acme%'), then filter with merchant = '<exact name>'.
+      merchant named 'Loan ····' plus the last digits of its contract, unless the user renamed it.
+      Names depend on the user's data: find the exact stored name first (SELECT DISTINCT merchant
+      ... WHERE merchant ILIKE '%acme%'), then filter with merchant = '<exact name>'.
   - attribute: bank_text
     kind: text
     description: >
       The movement's text from the statement, cleaned: upper case, card numbers and references
-      removed. Holds the shop as the bank prints it, the concept typed in a Bizum, the reference of
-      a transfer. Search it with ILIKE when merchant is NULL or does not match what the user means.
-      Do not group by it: one business has many spellings.
+      removed. It holds the shop as the bank prints it, the concept typed in a Bizum and the
+      reference of a transfer. Search it with ILIKE when merchant is NULL or does not match what
+      the user means. Do not group by it, because one business has many spellings.
   - attribute: bank_operation
     kind: dimension
     description: >
       The bank's own label for the kind of operation (card payment, transfer sent, direct debit),
-      BBVA only; NULL on CaixaBank accounts. Values depend on the data: look them up with
-      SELECT DISTINCT.
+      BBVA only; NULL on CaixaBank accounts. Values depend on the data: look them up with SELECT
+      DISTINCT.
   - attribute: note
     kind: text
     description: >
-      The user's own note on this movement, written in the app, in their own words and any
-      language: one word ("móvil") or a phrase ("Rome trip with Ana"). NULL on most rows. It is the
-      most reliable account of what was bought or why; the bank text only names the shop. When
-      the user asks about an item, a trip, an event or a person, read the distinct notes and
+      The user's own note on this movement, written in the app in their own words and any
+      language: one word ("móvil") or a phrase ("Rome trip with Ana"). NULL on most rows. It is
+      the most reliable account of what was bought or why; the bank text only names the shop.
+      When the user asks about an item, a trip, an event or a person, read the distinct notes and
       choose the ones that mean it; do not guess a search word. Show the note when listing
       movements that have one.
   - attribute: is_subscription
     kind: flag
     description: >
       true for a charge of a cancellable recurring service: streaming, software, telecom, gym,
-      insurance, memberships. Utilities, rent, mortgage and loans recur but are not subscriptions.
-      For the subscription list, cadence and active status, use subscriptions.
+      insurance, memberships. Utilities, rent, mortgage and loans recur but are not
+      subscriptions. For the subscription list, cadence and active status, use subscriptions.
   - attribute: needs_review
     kind: flag
     description: >
