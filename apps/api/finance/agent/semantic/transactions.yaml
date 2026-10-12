@@ -1,0 +1,142 @@
+model: transactions
+description: >
+  Every money movement of every imported bank account, one row each, with the household's money
+  rules already applied: each row says whether it counts as spending, income or a transfer, and
+  how much it adds to each total. All accounts belong to one household and all amounts are in
+  euros. This is the source for every amount.
+grain: >
+  One row per movement printed on a bank statement. A transfer between two imported accounts
+  appears twice, once leaving and once arriving, both with tx_type = 'transfer'.
+use_for:
+  - Spending, income and savings for any period, account, category group, category or merchant.
+  - What something cost or why money moved, through the user's notes.
+  - Listing, counting and ranking movements, such as the largest charges, the most frequent
+    merchants or the average ticket.
+  - Loans, with the money received, the instalments, the paying account and the total repaid.
+  - Comparisons between periods, accounts, categories or merchants.
+not_for:
+  - Subscription cadence, typical charge or whether a subscription is still active (use
+    subscriptions).
+  - Account balances, because the balance after each movement is not available.
+  - What was bought inside a credit card bill. Card statements are not imported, so each monthly
+    settlement is one movement in category credit_card_spending.
+attributes:
+  - attribute: booked_at
+    kind: time
+    description: >
+      Date the bank booked the movement. Use it for exact date ranges with a half-open interval:
+      booked_at >= '2026-07-01' AND booked_at < '2026-08-01'. A card purchase can be booked a day
+      or two after it was made.
+  - attribute: month
+    kind: time
+    description: >
+      booked_at as 'YYYY-MM' text (for example '2026-07'). Use it to group by month and to filter
+      whole months (month = '2026-07', month BETWEEN '2026-01' AND '2026-03'). It sorts
+      chronologically as text.
+  - attribute: account
+    kind: dimension
+    description: Name of the bank account as the user sees it in the app.
+    allowed_values: accounts
+  - attribute: bank
+    kind: dimension
+    description: Bank that holds the account.
+    allowed_values:
+      - value: bbva
+        meaning: BBVA
+      - value: caixabank
+        meaning: CaixaBank
+  - attribute: amount
+    kind: measure
+    description: >
+      Signed amount as printed on the statement: positive is money in, negative is money out. Use
+      it to show single movements and for cash-flow questions (money in and out of an account,
+      transfers included). Never SUM it for spending or income, because transfers and refunds
+      would distort the total; use spend and income.
+  - attribute: direction
+    kind: dimension
+    description: >
+      Whether money came in or went out (the sign of amount). It does not say whether a row is
+      spending: a refund comes in and still belongs to spending. Use tx_type for that.
+    allowed_values:
+      - value: incoming
+        meaning: money in (amount > 0)
+      - value: outgoing
+        meaning: money out (amount < 0)
+  - attribute: tx_type
+    kind: dimension
+    description: What the movement counts as. It follows the category, not the sign.
+    allowed_values:
+      - value: expense
+        meaning: counts in spending, including refunds of purchases (negative spend)
+      - value: income
+        meaning: counts in income
+      - value: transfer
+        meaning: >-
+          counts in no total (between own accounts, to savings or investments, loan money
+          received)
+  - attribute: spend
+    kind: measure
+    description: >
+      Money spent: -amount for expense rows, 0 for income and transfer rows. A refund of a
+      purchase is negative and lowers spending. SUM(spend) is total spending ("expenses") for any
+      filter; transfers are already out.
+  - attribute: income
+    kind: measure
+    description: >
+      Money earned: amount for income rows, 0 otherwise. SUM(income) is total income; it never
+      includes transfers or loan money received.
+  - attribute: category
+    kind: dimension
+    description: >
+      Category of the movement (level 2 of the taxonomy). 'uncategorized' when the movement has no
+      category yet; such rows count by their sign until categorized. Different from
+      uncategorized_expense, a category for expenses whose purpose is unknown.
+    allowed_values: categories
+  - attribute: category_group
+    kind: dimension
+    description: >
+      Group of the category (level 1), for broad questions such as "how much on transport".
+      'uncategorized' when the movement has no category.
+    allowed_values: category_groups
+  - attribute: merchant
+    kind: dimension
+    description: >
+      Business name chosen by the app, the same for every branch and spelling of a business (one
+      name for "ACME 0042 MADRID" and "ACME FOODS"). NULL when the movement names no business:
+      Bizum and transfers to people, cash withdrawals, bank fees, card settlements. A loan is a
+      merchant named 'Loan ····' plus the last digits of its contract, unless the user renamed it.
+      Names depend on the user's data: find the exact stored name first (SELECT DISTINCT merchant
+      ... WHERE merchant ILIKE '%acme%'), then filter with merchant = '<exact name>'.
+  - attribute: bank_text
+    kind: text
+    description: >
+      The movement's text from the statement, cleaned: upper case, card numbers and references
+      removed. It holds the shop as the bank prints it, the concept typed in a Bizum and the
+      reference of a transfer. Search it with ILIKE when merchant is NULL or does not match what
+      the user means. Do not group by it, because one business has many spellings.
+  - attribute: bank_operation
+    kind: dimension
+    description: >
+      The bank's own label for the kind of operation (card payment, transfer sent, direct debit),
+      BBVA only; NULL on CaixaBank accounts. Values depend on the data: look them up with SELECT
+      DISTINCT.
+  - attribute: note
+    kind: text
+    description: >
+      The user's own note on this movement, written in the app in their own words and any
+      language: one word ("móvil") or a phrase ("Rome trip with Ana"). NULL on most rows. It is
+      the most reliable account of what was bought or why; the bank text only names the shop.
+      When the user asks about an item, a trip, an event or a person, read the distinct notes and
+      choose the ones that mean it; do not guess a search word. Show the note when listing
+      movements that have one.
+  - attribute: is_subscription
+    kind: flag
+    description: >
+      true for a charge of a cancellable recurring service: streaming, software, telecom, gym,
+      insurance, memberships. Utilities, rent, mortgage and loans recur but are not
+      subscriptions. For the subscription list, cadence and active status, use subscriptions.
+  - attribute: needs_review
+    kind: flag
+    description: >
+      true when the app was not confident about the category and the user has not confirmed it.
+      Totals include these rows; say so when they are a material part of an answer.

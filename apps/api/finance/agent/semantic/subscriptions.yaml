@@ -1,0 +1,46 @@
+model: subscriptions
+description: >
+  One row per merchant with at least one money-out charge flagged as a subscription, with the
+  cadence and active status the app computes from those charges.
+grain: One row per subscribed merchant.
+use_for:
+  - Which subscriptions exist and which are active.
+  - What subscriptions cost per month (SUM(monthly_equivalent) over active rows).
+  - When a subscription was last charged, and its typical amount.
+not_for:
+  - Single charges or spending totals (use transactions with is_subscription = true).
+  - Subscriptions paid by credit card. Card statements are not imported, so they are not
+    itemized.
+attributes:
+  - attribute: merchant
+    kind: dimension
+    description: >
+      Business name, the same names as transactions.merchant. Names depend on the user's data:
+      look them up before filtering.
+  - attribute: charges
+    kind: measure
+    description: Number of charges flagged as a subscription for this merchant.
+  - attribute: last_charge
+    kind: time
+    description: Date of the latest charge.
+  - attribute: typical_amount
+    kind: measure
+    description: The median charge, a positive amount in euros.
+  - attribute: cadence
+    kind: dimension
+    description: How often it charges, from the median gap between charges.
+    allowed_values:
+      - value: monthly
+        meaning: a median gap of 200 days or less, or a single charge so far
+      - value: yearly
+        meaning: a median gap over 200 days
+  - attribute: monthly_equivalent
+    kind: measure
+    description: >
+      The typical amount for a monthly subscription, a twelfth of it for a yearly one. Summed
+      over active rows, it is the monthly cost of subscriptions.
+  - attribute: active
+    kind: flag
+    description: >
+      true when charged within 45 days (monthly) or 400 days (yearly) of the latest imported
+      movement, not of today, so an old import does not make every subscription look cancelled.
