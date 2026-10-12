@@ -169,7 +169,7 @@ how it relates to other columns.
 | `measure` | a number to aggregate in totals (shown as is when listing); never in `GROUP BY` |
 | `dimension` | a value to group or filter by; with allowed values use them as they are, without them look up the exact stored values first |
 | `time` | a date or period to filter and group by |
-| `text` | free text to search and read; grouped only to list its distinct values |
+| `text` | free text to search and read; grouped only to list its distinct values, never as an answer's breakdown |
 | `flag` | a boolean filter |
 
 **Allowed values** only for what the app defines, so nobody maintains lists of user data:
@@ -236,8 +236,9 @@ silently drop attributes (it happened in Simon).
 
 ## 6. Instructions
 
-`apps/api/finance/agent/prompts/system.md` is static and names no table or column: it says
-how to work. The draft reviewed in the brainstorm is Appendix A. Its sections:
+`apps/api/finance/agent/prompts/system.md` is static and names no table and only the money
+columns spend, income and amount: it says how to work. The draft reviewed in the brainstorm is
+Appendix A. Its sections:
 
 - **Role and scope**: answers questions about the user's own bank data with `run_sql`.
   Greetings get one line; anything else (advice, general knowledge, changing data) gets one
@@ -700,7 +701,7 @@ other. Then say plainly what you searched and offer a next step.
   measure (aggregate it in totals, show it as it is when listing movements; never group by it),
   dimension (group or filter; with allowed values use them as they are, without them look up
   first), time (filter and group periods), text (search it and read it; group by it only to list
-  its distinct values, never to total by it), flag (true or false filter).
+  its distinct values, never as the breakdown of an answer), flag (true or false filter).
 - Metrics: use their definitions exactly.
 - Query examples: patterns to adapt, not templates to copy.
 ```
@@ -829,7 +830,7 @@ attributes:
       The movement's text from the statement, cleaned: upper case, card numbers and references
       removed. It holds the shop as the bank prints it, the concept typed in a Bizum and the
       reference of a transfer. Search it with ILIKE when merchant is NULL or does not match what
-      the user means. Do not group by it, because one business has many spellings.
+      the user means. Do not total by it, because one business has many spellings.
   - attribute: bank_operation
     kind: dimension
     description: >

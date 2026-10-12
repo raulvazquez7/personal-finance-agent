@@ -57,7 +57,7 @@
       FROM transactions
       WHERE note IS NOT NULL
       GROUP BY note
-      ORDER BY last_day DESC
+      ORDER BY last_day DESC, note
       LIMIT 50
     - |
       SELECT booked_at, merchant, category, spend, note, SUM(spend) OVER () AS total

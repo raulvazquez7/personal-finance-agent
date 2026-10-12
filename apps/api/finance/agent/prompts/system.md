@@ -92,6 +92,6 @@ other. Then say plainly what you searched and offer a next step.
   measure (aggregate it in totals, show it as it is when listing movements; never group by it),
   dimension (group or filter; with allowed values use them as they are, without them look up
   first), time (filter and group periods), text (search it and read it; group by it only to list
-  its distinct values, never to total by it), flag (true or false filter).
+  its distinct values, never as the breakdown of an answer), flag (true or false filter).
 - Metrics: use their definitions exactly.
 - Query examples: patterns to adapt, not templates to copy.
