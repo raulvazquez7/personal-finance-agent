@@ -77,3 +77,14 @@ bank concept, so no rule can catch it and each new instalment arrives uncategori
 loan is known (a merchant linked to its contract), any new movement that carries the same
 contract number should become that loan's instalment (`loan_payment`, same merchant) before
 jev runs. It extends what `link_loans` already does for rows that are categorized as a loan.
+
+## 8. Numbers the chat agent can be trusted with
+
+A live test showed the agent can state an amount that no query of the turn returned: it ran
+only the lookups and skipped the final query, or copied a result wrongly. Small prompt edits
+changed how often it happened (a rule against text between queries made it much worse), so a
+prompt is not a guarantee. Add a deterministic check: every amount in the final answer must
+appear in a query result of the turn; if one does not, nudge the model once to run the query,
+otherwise show a warning. Measure with repeated runs of the same questions (with backlog 6).
+The same work can fix two format slips seen live: the "How I counted it" heading left in
+English in Spanish answers, and a category slug shown in an answer.
