@@ -24,6 +24,10 @@ def test_trailing_semicolons_and_spaces_are_dropped():
     )
 
 
+def test_semicolons_separated_by_spaces_are_all_dropped():
+    assert check_query("SELECT 1 ; ; ") == "SELECT 1"
+
+
 REJECTED = [
     ("WITH d AS (DELETE FROM transactions RETURNING *) SELECT * FROM d", "DELETE is not allowed"),
     ("UPDATE transactions SET note = 'x'", "UPDATE is not a SELECT"),
@@ -38,6 +42,9 @@ REJECTED = [
     ("SET ROLE postgres", "COMMAND is not a SELECT"),
     ("COPY transactions TO STDOUT", "COPY is not a SELECT"),
     ("SELECT * FROM (", "does not parse"),
+    ("SELECT 'unterminated", "does not parse"),
+    ("SELECT 1 /* open comment", "does not parse"),
+    ("SELECT * INTO transactions FROM subscriptions", "INTO is not allowed"),
 ]
 
 

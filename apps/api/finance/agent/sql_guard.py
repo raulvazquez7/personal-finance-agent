@@ -8,7 +8,7 @@ keywords in the raw text, so a search for '%drop%' still works.
 
 import sqlglot
 from sqlglot import exp
-from sqlglot.errors import ParseError
+from sqlglot.errors import SqlglotError
 
 VIEWS = frozenset({"transactions", "subscriptions"})
 
@@ -25,6 +25,7 @@ _WRITES = (
     exp.Set,
     exp.Lock,
     exp.TruncateTable,
+    exp.Into,
 )
 # set_config is the only way to change role from a SELECT; the rest read files, sleep or reach
 # other servers.
@@ -40,10 +41,10 @@ class RejectedQuery(Exception):
 
 def check_query(sql: str) -> str:
     """Return the query without trailing semicolons, or raise RejectedQuery."""
-    cleaned = sql.strip().rstrip(";").strip()
+    cleaned = sql.strip().rstrip("; \t\r\n")
     try:
         statements = [s for s in sqlglot.parse(cleaned, read="postgres") if s is not None]
-    except ParseError as error:
+    except SqlglotError as error:
         first_line = str(error).splitlines()[0]
         raise RejectedQuery(
             f"the query does not parse: {first_line}", "Write one PostgreSQL SELECT."
