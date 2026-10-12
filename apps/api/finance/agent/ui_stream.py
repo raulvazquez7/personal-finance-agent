@@ -29,6 +29,7 @@ class TurnRecord:
     texts: list[str] = field(default_factory=list)
     queries: list[QueryResult] = field(default_factory=list)
     hit_sql_limit: bool = False
+    database_unreachable: bool = False  # the turn itself could not reach the database
 
     @property
     def text(self) -> str:
@@ -36,7 +37,7 @@ class TurnRecord:
 
     @property
     def infra_error(self) -> bool:
-        return any(q.infra_error for q in self.queries)
+        return self.database_unreachable or any(q.infra_error for q in self.queries)
 
 
 async def ui_parts(stream: AsyncIterator[dict], record: TurnRecord) -> AsyncIterator[dict]:

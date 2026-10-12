@@ -38,6 +38,12 @@ class ChatSettings(BaseModel):
     sql_row_limit: int = Field(default=200, ge=1, le=5_000)
     sql_rows_shown: int = Field(default=50, ge=1, le=500)
     sql_max_chars: int = Field(default=8_000, ge=500, le=100_000)
+    pool_timeout_seconds: int = Field(
+        default=5,
+        ge=1,
+        le=60,
+        description="Seconds a chat database call waits for a connection before it fails",
+    )
     title_max_chars: int = Field(default=60, ge=20, le=200)
     user_id: str = Field(default="local", description="Langfuse user id")
 

@@ -25,9 +25,11 @@ from finance.agent import store
 from finance.agent.catalog import read_catalog
 from finance.agent.data_context import render_data_context
 from finance.agent.graph import AgentContext
+from finance.agent.middleware import INFRA_MESSAGE
 from finance.agent.models import MessageStatus, Thread
 from finance.agent.prompt import PROMPT_VERSION
 from finance.agent.semantic_layer import SemanticLayer
+from finance.agent.sql_runner import is_connection_error
 from finance.agent.title import generate_title
 from finance.agent.ui_stream import TurnRecord, ui_parts
 from finance.settings import ChatSettings
@@ -141,10 +143,12 @@ class ChatService:
                 except asyncio.CancelledError:
                     status = "stopped"
                     raise
-                except Exception:
+                except Exception as error:
                     status = "error"
                     logger.exception("chat turn failed")
-                    await queue.put({"type": "error", "errorText": ERROR_TEXT})
+                    record.database_unreachable = is_connection_error(error)
+                    message = INFRA_MESSAGE if record.database_unreachable else ERROR_TEXT
+                    await queue.put({"type": "error", "errorText": message})
                 finally:
                     if status == "ok" and record.infra_error:
                         status = "error"

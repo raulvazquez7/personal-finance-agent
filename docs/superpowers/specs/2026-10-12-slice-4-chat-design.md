@@ -492,6 +492,7 @@ reasoning efforts are a `Literal["low", "medium", "high", "xhigh"]`.
 | `max_sql_calls_per_turn`, `max_model_calls_per_turn`, `recursion_limit` | 8, 12, 120 |
 | `sql_timeout_seconds`, `sql_row_limit`, `sql_rows_shown`, `sql_max_chars` | 10, 200, 50, 8000 |
 | `title_max_chars` | 60 |
+| `pool_timeout_seconds` (wait for a database connection) | 5 |
 | `user_id` | `local` |
 
 `.env.example` documents the `CHAT__*` overrides (commented out) and drops

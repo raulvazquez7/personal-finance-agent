@@ -3,6 +3,7 @@ from dataclasses import dataclass
 
 import pytest
 from langchain_core.messages import AIMessage, ToolMessage
+from psycopg_pool import PoolTimeout
 
 from finance.agent import runtime, store
 from finance.agent.graph import ChatModels
@@ -223,6 +224,38 @@ def test_a_database_outage_ends_the_turn_saves_it_as_error_and_the_thread_keeps_
     assert messages[1].queries[0].infra_error
     assert messages[3].content == "Back again."
     assert not busy
+
+
+def test_a_database_outage_before_the_agent_answers_with_the_fixed_message(monkeypatch):
+    """Saving the question is the first database call of a turn: when the pool has no
+    connection to give, the turn ends with the outage message, not the generic error."""
+    add_message = store.add_message
+    calls = []
+
+    async def add_message_after_an_outage(*args, **kwargs):
+        calls.append(args)
+        if len(calls) == 1:
+            raise PoolTimeout("couldn't get a connection after 5.00 sec")
+        return await add_message(*args, **kwargs)
+
+    monkeypatch.setattr(store, "add_message", add_message_after_an_outage)
+
+    async def body(chat, thread):
+        first = await _collect(chat.stream_turn(thread, "first question"))
+        busy = thread.id in chat.active
+        await _collect(chat.stream_turn(thread, "second question"))
+        return first, busy, chat.pool.timeout, await store.list_messages(chat.pool, thread.id)
+
+    first, busy, pool_timeout, messages = _scenario(scripted_models([AIMessage("Back.")]), body)
+    assert {"type": "error", "errorText": INFRA_MESSAGE} in first and first[-1]["type"] == "finish"
+    assert not busy
+    assert pool_timeout == get_settings().chat.pool_timeout_seconds
+    assert [(m.role, m.status) for m in messages] == [
+        ("assistant", "error"),
+        ("user", "ok"),
+        ("assistant", "ok"),
+    ]
+    assert messages[-1].content == "Back."
 
 
 @dataclass

@@ -45,7 +45,7 @@ async def open_chat(
             yield None
             return
         models = chat_models(chat)
-    async with async_pool() as pool:
+    async with async_pool(timeout=chat.pool_timeout_seconds) as pool:
         layer = load_semantic_layer()
         columns = await validate_layer(pool, layer)  # fails loudly on a mismatch
         # Strict msgpack: refuse to revive unexpected types from the database (only langgraph's

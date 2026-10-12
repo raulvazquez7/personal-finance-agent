@@ -31,6 +31,7 @@ def test_chat_defaults_follow_the_spec():
     assert (chat.summary_model, chat.summary_reasoning_effort) == ("xai:grok-4.7", "medium")
     assert chat.title_model == "xai:grok-4.20-non-reasoning"
     assert chat.summary_trigger_tokens == 150_000
+    assert chat.pool_timeout_seconds == 5
 
 
 def test_chat_settings_come_from_nested_env_variables(monkeypatch):
