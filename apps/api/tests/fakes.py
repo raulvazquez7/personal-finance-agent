@@ -1,4 +1,9 @@
-"""A scripted jev for unit tests: no network, deterministic answers."""
+"""Scripted jev and chat models for unit tests: no network, deterministic answers."""
+
+from langchain_core.language_models import BaseChatModel
+from langchain_core.messages import AIMessage, BaseMessage
+from langchain_core.outputs import ChatGeneration, ChatResult
+from pydantic import Field
 
 from finance.categorization.jev_client import JevAnswer, JevResult
 
@@ -54,3 +59,29 @@ class FakeJev:
         if isinstance(answer, Exception):
             raise answer
         return answer
+
+
+class ScriptedChatModel(BaseChatModel):
+    """A chat model that answers from a script and records every request. create_agent binds
+    tools to it; the script decides which tool calls it makes."""
+
+    responses: list[BaseMessage]
+    calls: list[list[BaseMessage]] = Field(default_factory=list)
+
+    def _generate(self, messages, stop=None, run_manager=None, **kwargs) -> ChatResult:
+        self.calls.append(list(messages))
+        return ChatResult(generations=[ChatGeneration(message=self.responses.pop(0))])
+
+    @property
+    def _llm_type(self) -> str:
+        return "scripted"
+
+    def bind_tools(self, tools, **kwargs) -> "ScriptedChatModel":
+        return self
+
+
+def tool_call(sql: str, call_id: str) -> AIMessage:
+    """A scripted model turn that calls run_sql once."""
+    return AIMessage(
+        content="", tool_calls=[{"name": "run_sql", "args": {"sql": sql}, "id": call_id}]
+    )
