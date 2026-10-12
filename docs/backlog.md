@@ -55,3 +55,17 @@ the review page.
   account and not the others.
 - Coverage should come from statement periods, not transaction dates: a month
   without movements is still covered.
+
+## 5. Account balances in the chat
+
+The agent cannot answer "how much do I have in my account" yet: `balance_after` is stored but
+the order of movements within a day is not, so "the balance on a date" could pick the wrong
+row. Store each movement's position in its statement at import, then expose the balance per
+account and date in the `agent` schema. (Slice 4 spec, section 15.)
+
+## 6. Chat evals
+
+A golden set of questions with reference SQL, run against the agent with repeats (consistent,
+flaky, failing), to measure prompt, semantic-layer and model changes. Start from Langfuse
+traces of real use (a dataset per version). Include the money rules a model gets wrong, such as
+a category total that nets a refund against its purchase.

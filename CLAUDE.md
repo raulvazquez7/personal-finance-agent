@@ -44,6 +44,7 @@ cd apps/api && uv run finance categorize [--all]              # pairing, rules, 
 cd apps/api && uv run finance categorize --all --rules-only   # pairing and rules only, no jev spend
 cd apps/api && uv run finance eval-categorization --note "..." # benchmark (jev spend)
 cd apps/api && uv run finance labels export|import            # golden set as CSV
+cd apps/api && uv run finance chat ["question"] [--thread ID]   # the chat agent in the terminal (xAI spend)
 supabase start && supabase db reset         # local Postgres with migrations
 cd apps/web && npm run dev                  # Next.js on :3000
 ```
@@ -84,9 +85,11 @@ Run the API and web first; pages live at `http://localhost:3000` (`/`, `/spendin
 - `data/raw/` holds real bank statements and is git-ignored. Read only headers
   and a few rows when inspecting; never copy contents into tests or docs. Test
   fixtures are short synthetic text with fake IBANs and names.
-- jev (`typesafe-sdk`) is used only where the spec says: transaction
-  categorization and the chat router. Deterministic code for dedup, transfer
-  pairing, SQL safety, aggregations.
+- jev (`typesafe-sdk`) is used only for transaction categorization; the chat
+  agent is an LLM (grok) over the semantic layer. Deterministic code for dedup,
+  transfer pairing, SQL safety, aggregations.
+- The chat agent reads only the `agent` schema, as `agent_reader` in a
+  read-only transaction; never widen its grants.
 - Pydantic models at every API boundary; SQL migrations in
   `supabase/migrations`; the agent's SQL tool uses the read-only role.
 - Langfuse tracing on every agent and jev call from the first implementation.

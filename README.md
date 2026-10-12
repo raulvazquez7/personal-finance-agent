@@ -9,7 +9,8 @@ with your finances through an LLM agent over a semantic layer.
 Slice 1 (ingestion), slice 2 (categorization with jev and the `/review`
 inbox) and slice 3 (the dashboards: an overview, spending, income and merchant
 pages, a transactions explorer and subscriptions, next to the review and import
-pages) are complete. The chat agent comes next. Design:
+pages) are complete. Slice 4a, the chat agent backend (its API and
+`finance chat`), is complete; the `/chat` page comes next (4b). Design:
 `docs/superpowers/specs/`. Plans: `docs/superpowers/plans/`.
 
 ## How jev categorizes transactions
@@ -87,16 +88,98 @@ pairing and system rules in front of jev, accepted 265 of 412 labelled
 transactions at 0.95 with 3 errors (98.9% precision) and sent 147 to review,
 against 97.2–97.6% and 158–164 for the jev-only spike runs, for about $0.04.
 
+## How the chat agent answers
+
+Ask "how much did I spend on groceries in March?" and an agent answers with a
+number it queried in that turn, plus a few words on how it counted it. The
+chat does not use jev: jev categorizes, and the chat is an LLM (xAI grok by
+default) over a semantic layer.
+
+- **One agent, one tool.** A ReAct loop built with LangChain's
+  [`create_agent`](https://docs.langchain.com/oss/python/langchain/agents) and
+  a single tool, `run_sql`, that runs one read-only `SELECT`. There is no
+  router: looking up an exact merchant name, reading the notes and the final
+  query are all `run_sql` calls.
+- **Read-only in three layers.** The agent sees only the `agent` schema: two
+  views, `transactions` and `subscriptions`, thin projections of the dashboard
+  views, so the money rules live in one place. They hold no ids, IBANs or raw
+  bank descriptions. Every query passes a `sqlglot` guard (one statement, read
+  nodes only, known tables, no `set_config`), then runs as the `agent_reader`
+  role (no login, set with `SET LOCAL ROLE`) in a read-only transaction with a
+  timeout. A SQL error goes back to the model with a hint; a database outage
+  ends the turn with a fixed message.
+- **The semantic layer** lives in `apps/api/finance/agent/semantic/`: one YAML
+  file per view with its knowledge (what a row is, what to use it for and what
+  not) and its attributes (a kind, such as measure, dimension or text, and a
+  description written for the agent), plus metric definitions and query
+  examples. Only values the app defines are listed (banks, categories from the
+  taxonomy, accounts with their statement coverage); merchants, bank texts and
+  notes are explored with lookup queries. Column types come from Postgres. When
+  the API or `finance chat` starts, the YAML is checked against the live views,
+  and every metric and example step goes through the SQL guard and an `EXPLAIN`
+  as `agent_reader`: a changed view fails loudly instead of leaving the agent
+  with broken patterns.
+- **Instructions and data context.** The instructions
+  (`apps/api/finance/agent/prompts/system.md`) are static: scope, workflow,
+  dates, comparisons, answer format. The data context is built every turn: the
+  semantic layer with its values, the metrics, the examples, today's date and
+  the latest imported date. Both are joined only when the model is called and
+  never stored in the chat, so changing either never breaks an existing chat.
+- **Notes.** A note you write on a movement is how the agent finds what was
+  bought or why. It reads the distinct notes and picks them by meaning instead
+  of guessing a search word.
+- **Middleware.** A long chat is summarized at 150,000 tokens; old query
+  results leave the request (their SQL stays); a turn makes at most 8 queries
+  and 12 model calls; a query left open by a stopped answer is closed on the
+  next turn.
+- **Persistence.** A LangGraph Postgres checkpointer holds the agent's memory
+  of each chat; checkpoints load with a strict msgpack allowlist, so only safe
+  types are revived from the database. `chat_threads` and `chat_messages` hold
+  what you see: titles, answers with their queries, a status (ok, error,
+  stopped) and your feedback. A stopped answer or a database outage leaves the
+  chat usable.
+- **Langfuse.** One trace per turn and one session per chat, tagged with the
+  prompt and semantic-layer versions and the model. Each turn gets scores
+  (queries, query errors, query limit reached, stopped, infrastructure error),
+  and a thumbs up or down becomes a `user-feedback` score on that answer's
+  trace.
+
+The model provider and Langfuse receive your questions, the SQL and its
+results (merchant names, amounts, dates, notes, account names), never IBANs or
+raw bank descriptions.
+
+```bash
+cd apps/api
+uv run finance chat                                # ask until an empty line (xAI spend)
+uv run finance chat "how much did I spend last month?"
+uv run finance chat "and the month before?" --thread <chat id>   # continue a chat; the id is printed first
+```
+
+Terminal chats are the same chats the API serves. The defaults (models,
+reasoning effort, limits) are in `ChatSettings` in
+`apps/api/finance/settings.py`; override any of them in `.env` with
+`CHAT__<FIELD>`, for example `CHAT__REASONING_EFFORT=medium`. Full design:
+[the slice 4 spec](docs/superpowers/specs/2026-10-12-slice-4-chat-design.md).
+
 ## Local setup
 
 Requirements: Docker, [uv](https://docs.astral.sh/uv/), Node 22, [Supabase CLI](https://supabase.com/docs/guides/cli).
 
 ```bash
-cp .env.example .env            # SUPABASE_DB_URL is required; TYPESAFE_API_KEY enables categorization, LANGFUSE_* tracing
+cp .env.example .env            # SUPABASE_DB_URL is required; TYPESAFE_API_KEY enables categorization, XAI_API_KEY the chat, LANGFUSE_* tracing
 supabase start                  # local Postgres; copy the DB URL into .env as SUPABASE_DB_URL
 supabase db reset               # apply migrations (export your labels first once you have some)
 (cd apps/api && uv run finance seed)   # load the category taxonomy and system rules
 ```
+
+`XAI_API_KEY` enables the chat. A database you already use gets new
+migrations with `supabase migration up` from the repo root; never run
+`supabase db reset` once it holds labels you care about.
+
+Start the API only after `supabase start` (and `supabase migration up` on an
+existing database): at startup it opens the chat and stops with an error if
+the database is unreachable or the semantic layer does not match the views.
+Without `XAI_API_KEY` the API still starts and the chat routes answer 503.
 
 ```bash
 # terminal 1, from the repo root
