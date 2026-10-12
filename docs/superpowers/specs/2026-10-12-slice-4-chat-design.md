@@ -61,7 +61,7 @@ No golden dataset or eval harness is built in this slice (section 15).
 ## 3. Architecture
 
 ```
-web /chat (useChat + AI Elements)          finance chat (CLI)
+web /chat (useChat, own components)        finance chat (CLI)
         │ POST /chat/threads/{id}/messages        │
         ▼                                         ▼
 FastAPI chat router ──▶ chat service ──▶ create_agent(model, [run_sql], middleware, checkpointer)
