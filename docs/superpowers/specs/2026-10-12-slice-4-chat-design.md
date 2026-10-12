@@ -832,10 +832,10 @@ attributes:
   - attribute: bank_text
     kind: text
     description: >
-      The movement's text from the statement, cleaned: upper case, card numbers and references
-      removed. It holds the shop as the bank prints it, the concept typed in a Bizum and the
-      reference of a transfer. Search it with ILIKE when merchant is NULL or does not match what
-      the user means. Do not total by it, because one business has many spellings.
+      The movement's text from the statement, cleaned: upper case, card numbers and most
+      references removed. It holds the shop as the bank prints it, the concept typed in a Bizum
+      and the reference of a transfer. Search it with ILIKE when merchant is NULL or does not
+      match what the user means. Do not total by it, because one business has many spellings.
   - attribute: bank_operation
     kind: dimension
     description: >

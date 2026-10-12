@@ -116,10 +116,11 @@ default) over a semantic layer.
   examples. Only values the app defines are listed (banks, categories from the
   taxonomy, accounts with their statement coverage); merchants, bank texts and
   notes are explored with lookup queries. Column types come from Postgres. When
-  the API or `finance chat` starts, the YAML is checked against the live views,
-  and every metric and example step goes through the SQL guard and an `EXPLAIN`
-  as `agent_reader`: a changed view fails loudly instead of leaving the agent
-  with broken patterns.
+  the chat is configured (`XAI_API_KEY` set) and the API or `finance chat`
+  starts, the YAML is checked against the live views, and every metric and
+  example step goes through the SQL guard and an `EXPLAIN` as `agent_reader`:
+  a changed view fails loudly instead of leaving the agent with broken
+  patterns.
 - **Instructions and data context.** The instructions
   (`apps/api/finance/agent/prompts/system.md`) are static: scope, workflow,
   dates, comparisons, answer format. The data context is built every turn: the
@@ -139,11 +140,11 @@ default) over a semantic layer.
   what you see: titles, answers with their queries, a status (ok, error,
   stopped) and your feedback. A stopped answer or a database outage leaves the
   chat usable.
-- **Langfuse.** One trace per turn and one session per chat, tagged with the
-  prompt and semantic-layer versions and the model. Each turn gets scores
-  (queries, query errors, query limit reached, stopped, infrastructure error),
-  and a thumbs up or down becomes a `user-feedback` score on that answer's
-  trace.
+- **Langfuse.** One trace per turn and one session per chat; each trace
+  records the prompt and semantic-layer versions and the model. Each turn gets
+  scores (queries, query errors, query limit reached, stopped, infrastructure
+  error), and a thumbs up or down becomes a `user-feedback` score on that
+  answer's trace.
 
 The model provider and Langfuse receive your questions, the SQL and its
 results (merchant names, amounts, dates, notes, account names), never IBANs or
