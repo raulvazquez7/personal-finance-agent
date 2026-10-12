@@ -6,13 +6,13 @@ export const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000
 export async function apiGet<T>(path: string, init: { signal?: AbortSignal } = {}): Promise<T> {
   const response = await fetch(`${API_URL}${path}`, { cache: "no-store", signal: init.signal });
   if (!response.ok) {
-    throw new Error(`GET ${path} failed with ${response.status}`);
+    throw await apiError(response, `GET ${path} failed with ${response.status}`);
   }
   return (await response.json()) as T;
 }
 
-/** A failed write: the HTTP status, and FastAPI's `detail` when it is a sentence (for example
- * the 422 for an income category on money going out). */
+/** A failed request: the HTTP status, and FastAPI's `detail` when it is a sentence (for example
+ * the 422 for an income category on money going out, or the chat's 503 when it is not set up). */
 export class ApiError extends Error {
   status: number;
   detail: string | null;
@@ -24,6 +24,14 @@ export class ApiError extends Error {
   }
 }
 
+async function apiError(response: Response, message: string): Promise<ApiError> {
+  const detail = await response.json().then(
+    (json: { detail?: unknown }) => (typeof json.detail === "string" ? json.detail : null),
+    () => null,
+  );
+  return new ApiError(response.status, detail, message);
+}
+
 async function send<T>(method: "POST" | "PATCH" | "DELETE", path: string, body?: unknown, keepalive?: boolean): Promise<T> {
   const response = await fetch(`${API_URL}${path}`, {
     method,
@@ -32,17 +40,13 @@ async function send<T>(method: "POST" | "PATCH" | "DELETE", path: string, body?:
     keepalive,
   });
   if (!response.ok) {
-    const detail = await response.json().then(
-      (json: { detail?: unknown }) => (typeof json.detail === "string" ? json.detail : null),
-      () => null,
-    );
-    throw new ApiError(response.status, detail, `${method} ${path} failed with ${response.status}`);
+    throw await apiError(response, `${method} ${path} failed with ${response.status}`);
   }
   return (response.status === 204 ? undefined : await response.json()) as T;
 }
 
-export const apiPost = (path: string, body?: unknown, init: { keepalive?: boolean } = {}) =>
-  send<void>("POST", path, body, init.keepalive);
+export const apiPost = <T = void>(path: string, body?: unknown, init: { keepalive?: boolean } = {}) =>
+  send<T>("POST", path, body, init.keepalive);
 export const apiPatch = <T = void>(path: string, body: unknown) => send<T>("PATCH", path, body);
 export const apiDelete = (path: string) => send<void>("DELETE", path);
 
