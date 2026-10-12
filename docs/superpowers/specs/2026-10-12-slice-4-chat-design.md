@@ -772,12 +772,14 @@ attributes:
       spending: a refund comes in and still belongs to spending. Use tx_type for that.
     allowed_values:
       - value: incoming
-        meaning: money in (amount > 0)
+        meaning: money in (amount >= 0)
       - value: outgoing
         meaning: money out (amount < 0)
   - attribute: tx_type
     kind: dimension
-    description: What the movement counts as. It follows the category, not the sign.
+    description: >
+      What the movement counts as. It follows the category; a movement without a category follows
+      its sign.
     allowed_values:
       - value: expense
         meaning: counts in spending, including refunds of purchases (negative spend)

@@ -31,6 +31,7 @@
 - question: How much have I spent at Acme this year?
   teaches: >
     Merchant names are not in the data context: look up the exact name first, then filter on it.
+    Refunds lower the total but are not charges.
   sql:
     - |
       SELECT merchant, COUNT(*) AS movements
@@ -40,8 +41,8 @@
       ORDER BY movements DESC
       LIMIT 20
     - |
-      SELECT SUM(spend) AS spend, COUNT(*) AS charges,
-             ROUND(SUM(spend) / NULLIF(COUNT(*), 0), 2) AS average_ticket
+      SELECT SUM(spend) AS spend, COUNT(*) FILTER (WHERE spend > 0) AS charges,
+             ROUND(AVG(spend) FILTER (WHERE spend > 0), 2) AS average_ticket
       FROM transactions
       WHERE merchant = 'Acme Market' AND booked_at >= '2026-01-01' AND tx_type = 'expense'
 - question: How much did the trip to Rome cost?
@@ -62,22 +63,26 @@
       FROM transactions
       WHERE note IN ('Rome trip', 'hotel Rome')
       ORDER BY booked_at
-- question: How did my spending by group change in August 2026 compared with July?
+- question: How is my spending by group this month compared with the same days of last month?
   teaches: >
-    Compute both sides, the absolute change and the % change in SQL. No % on a zero baseline.
+    This month is partial: cut last month after the same day (the latest imported date, here 12
+    October 2026, not today) so both sides cover the same days. Show both values, the absolute
+    change and the % change, all in SQL. No % on a zero baseline.
   sql:
     - |
-      WITH by_month AS (
+      WITH by_period AS (
         SELECT category_group,
-               COALESCE(SUM(spend) FILTER (WHERE month = '2026-08'), 0) AS august,
-               COALESCE(SUM(spend) FILTER (WHERE month = '2026-07'), 0) AS july
+               COALESCE(SUM(spend) FILTER (WHERE booked_at >= '2026-10-01'), 0) AS this_month,
+               COALESCE(SUM(spend) FILTER (WHERE booked_at < '2026-10-01'), 0) AS last_month
         FROM transactions
-        WHERE month IN ('2026-07', '2026-08') AND tx_type = 'expense'
+        WHERE tx_type = 'expense'
+          AND ((booked_at >= '2026-10-01' AND booked_at < '2026-10-13')
+            OR (booked_at >= '2026-09-01' AND booked_at < '2026-09-13'))
         GROUP BY category_group
       )
-      SELECT category_group, august, july, august - july AS change,
-             ROUND(100 * (august - july) / NULLIF(july, 0), 1) AS change_pct
-      FROM by_month
+      SELECT category_group, this_month, last_month, this_month - last_month AS change,
+             ROUND(100 * (this_month - last_month) / NULLIF(last_month, 0), 1) AS change_pct
+      FROM by_period
       ORDER BY change DESC
 - question: What do I spend in a normal month?
   teaches: >
