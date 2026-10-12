@@ -122,9 +122,11 @@ SET LOCAL statement_timeout = '<chat.sql_timeout_seconds>s';
 ```
 
 This is the pattern Supabase itself uses (one login, a role switched per request). There is
-no second login, password or URL: `SUPABASE_DB_URL_READONLY` leaves `.env.example`. The guard
-in section 7.2 rejects `set_config`, the only way to change role from a `SELECT`; if the guard
-failed anyway, the transaction is still read-only.
+no second login, password or URL: `SUPABASE_DB_URL_READONLY` leaves `.env.example`. A
+`SELECT` can reset the role with `set_config`, or with a built-in that runs SQL from a string
+(`query_to_xml`, `ts_stat`), so the guard in section 7.2 rejects `set_config` and every function
+it does not recognise unless allowlisted; if the guard failed anyway, the transaction is still
+read-only.
 
 ### 4.3 Setup for a new user
 
@@ -307,7 +309,9 @@ over `transactions` and `subscriptions`, for lookups and for final queries.
    tree, not only the root, contains read nodes only (any write, DDL, `SET` or `COPY`
    anywhere, CTEs included, is rejected); table references are `transactions`,
    `subscriptions` or CTE names, without a schema; functions `set_config`, `pg_sleep*`,
-   `dblink*`, `pg_read*` and `lo_*` are rejected. No keyword regex on the raw text (it would
+   `dblink*`, `pg_read*` and `lo_*` are rejected, and so is any function `sqlglot` does not
+   recognise unless it is in a short allowlist of pure built-ins (`age`, `make_date`) and has
+   no schema. No keyword regex on the raw text (it would
    reject literals such as `'%drop%'`). The query is wrapped in `LIMIT <row_limit + 1>` to
    detect truncation.
 2. **Execution** as in section 4.2.

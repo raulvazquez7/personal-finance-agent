@@ -74,3 +74,23 @@ def test_columns_with_the_same_name_are_all_kept():
 def test_a_query_ending_in_a_line_comment_still_runs():
     result = _run("SELECT 1 AS n -- a note")
     assert (result.rows, result.error) == ([["1"]], None)
+
+
+def test_a_function_that_runs_sql_from_a_string_never_reaches_the_database():
+    """query_to_xml runs its text as SQL, where set_config can reset the role to the session
+    user: the guard must reject it before it runs."""
+    result = _run(
+        "SELECT query_to_xml('select set_config(''role'',''none'',true)', true, false, '') AS a, "
+        "query_to_xml('select current_user', true, false, '') AS b"
+    )
+    assert result.error == "function query_to_xml is not allowed: only standard SQL functions are"
+    assert result.rows == [] and result.columns == [] and not result.infra_error
+
+
+def test_the_agent_session_runs_as_agent_reader():
+    async def go():
+        async with async_pool() as pool, agent_session(pool, 10) as conn:
+            cursor = await conn.execute("SELECT current_user AS name")
+            return await cursor.fetchone()
+
+    assert asyncio.run(go())["name"] == "agent_reader"

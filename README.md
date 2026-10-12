@@ -104,7 +104,8 @@ default) over a semantic layer.
   views, `transactions` and `subscriptions`, thin projections of the dashboard
   views, so the money rules live in one place. They hold no ids, IBANs or raw
   bank descriptions. Every query passes a `sqlglot` guard (one statement, read
-  nodes only, known tables, no `set_config`), then runs as the `agent_reader`
+  nodes only, known tables, no `set_config`, no function it does not recognise
+  unless allowlisted), then runs as the `agent_reader`
   role (no login, set with `SET LOCAL ROLE`) in a read-only transaction with a
   timeout. A SQL error goes back to the model with a hint; a database outage
   ends the turn with a fixed message.

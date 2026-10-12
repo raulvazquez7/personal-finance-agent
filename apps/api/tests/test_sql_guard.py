@@ -10,6 +10,12 @@ ALLOWED = [
     "SELECT merchant, string_agg(DISTINCT note, ' | ') FROM transactions GROUP BY 1",
     "SELECT m FROM generate_series(DATE '2026-01-01', DATE '2026-03-01', INTERVAL '1 month') AS m",
     "SELECT t.merchant FROM transactions t JOIN subscriptions s ON s.merchant = t.merchant",
+    # Functions sqlglot types pass; the allowlisted ones it does not type pass too.
+    "SELECT to_char(booked_at, 'YYYY-MM'), date_trunc('month', booked_at) FROM transactions",
+    "SELECT EXTRACT(YEAR FROM booked_at), ROUND(AVG(spend), 2) FROM transactions GROUP BY 1",
+    "SELECT COALESCE(SUM(spend), 0), NULLIF(COUNT(*), 0) FROM transactions",
+    "SELECT age(booked_at) FROM transactions",
+    "SELECT make_date(2026, 1, 1)",
 ]
 
 
@@ -45,6 +51,18 @@ REJECTED = [
     ("SELECT 'unterminated", "does not parse"),
     ("SELECT 1 /* open comment", "does not parse"),
     ("SELECT * INTO transactions FROM subscriptions", "INTO is not allowed"),
+    # Built-ins that run SQL from a string, where set_config can reset the role.
+    ("SELECT query_to_xml('select 1', true, false, '') FROM transactions", "query_to_xml"),
+    ("SELECT * FROM ts_stat('select 1')", "function ts_stat"),
+    ("SELECT ts_rewrite('a'::tsquery, 'select 1')", "function ts_rewrite"),
+    ("SELECT QUERY_TO_XML('select 1', true, false, '')", "function query_to_xml"),
+    ("SELECT * FROM transactions, LATERAL ts_stat('select 1') AS s", "function ts_stat"),
+    ("SELECT * FROM transactions ORDER BY query_to_xml('select 1', true, false, '')", "to_xml"),
+    ("SELECT pg_advisory_lock(1)", "function pg_advisory_lock"),
+    ("SELECT current_setting('role')", "function current_setting"),
+    ("SELECT pg_catalog.age(booked_at) FROM transactions", "function age has a schema"),
+    ("SELECT public.lower(note) FROM transactions", "function lower has a schema"),
+    ("SELECT * FROM pg_catalog.ts_stat('select 1')", "function ts_stat"),
 ]
 
 
@@ -54,3 +72,12 @@ def test_anything_but_one_read_is_rejected_with_a_hint(sql, reason):
         check_query(sql)
     assert reason in raised.value.reason
     assert raised.value.hint
+
+
+def test_an_unknown_function_is_named_with_functions_that_work():
+    with pytest.raises(RejectedQuery) as raised:
+        check_query("SELECT query_to_xml('select 1', true, false, '') FROM transactions")
+    assert raised.value.reason == (
+        "function query_to_xml is not allowed: only standard SQL functions are"
+    )
+    assert "SUM" in raised.value.hint and "date_trunc" in raised.value.hint
