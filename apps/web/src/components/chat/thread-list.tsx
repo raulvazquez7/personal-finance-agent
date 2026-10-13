@@ -24,7 +24,9 @@ export function ThreadList({ onNavigate }: { onNavigate?: () => void }) {
       {threads.length === 0 ? (
         <p className="px-3 text-sm text-muted-foreground">Your chats appear here.</p>
       ) : (
-        <ul className="-mx-1 flex min-h-0 flex-col gap-0.5 overflow-y-auto px-1 pb-1">
+        // The padding (cancelled by the negative margins) and the scroll padding keep the scroll
+        // box from clipping a focused chat's outline, at the edges and when focus scrolls the list.
+        <ul className="-m-1 flex min-h-0 scroll-py-1 flex-col gap-0.5 overflow-y-auto p-1">
           {threads.map((thread) => {
             const active = pathname === `/chat/${thread.id}`;
             return (
