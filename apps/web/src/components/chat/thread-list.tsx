@@ -1,20 +1,26 @@
 "use client";
 
+import { SquarePen } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
+import { buttonVariants } from "@/components/ui/button";
 import { threadTitle } from "@/lib/chat-threads";
 import { cn } from "@/lib/utils";
 
 import { useChats } from "./chats-provider";
 
-/** The saved chats, newest activity first (spec 10). In the sidebar on wide screens and in a
- * sheet on phones; `onNavigate` closes the sheet. */
+/** New chat and the saved chats, newest activity first (spec 10). In the sidebar on wide
+ * screens and in a sheet on phones; `onNavigate` closes the sheet. */
 export function ThreadList({ onNavigate }: { onNavigate?: () => void }) {
   const { threads } = useChats();
   const pathname = usePathname();
   return (
     <nav aria-label="Chats" className="flex min-h-0 flex-col gap-3">
+      <Link href="/chat" onClick={onNavigate} className={cn(buttonVariants({ variant: "outline" }), "justify-start")}>
+        <SquarePen data-icon="inline-start" />
+        New chat
+      </Link>
       {threads.length === 0 ? (
         <p className="px-3 text-sm text-muted-foreground">Your chats appear here.</p>
       ) : (

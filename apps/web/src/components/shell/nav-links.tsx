@@ -19,6 +19,7 @@ const ITEMS: Item[] = [
   },
   { href: "/transactions", label: "Transactions", keepsFilters: true, active: (path) => path.startsWith("/transactions") },
   { href: "/subscriptions", label: "Subscriptions", keepsFilters: false, active: (path) => path.startsWith("/subscriptions") },
+  { href: "/chat", label: "Chat", keepsFilters: false, active: (path) => path.startsWith("/chat") },
   { href: "/review", label: "Review", keepsFilters: false, active: (path) => path.startsWith("/review") },
   { href: "/imports", label: "Imports", keepsFilters: false, active: (path) => path.startsWith("/imports") },
   { href: "/settings", label: "Settings", keepsFilters: false, active: (path) => path.startsWith("/settings") },

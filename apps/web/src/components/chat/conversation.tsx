@@ -2,7 +2,7 @@
 
 import { useChat } from "@ai-sdk/react";
 import { ArrowDown } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { StickToBottom, useStickToBottomContext } from "use-stick-to-bottom";
 
 import { Button } from "@/components/ui/button";
@@ -24,6 +24,12 @@ export function Conversation({ threadId, history }: { threadId: string; history:
   const thread = threads.find((t) => t.id === threadId);
   const last = messages.at(-1);
   const thinking = answering && isThinking(messages);
+
+  useEffect(() => {
+    // A new chat arrives here from /chat while it answers; the box it was asked from is gone.
+    const answeringOnArrival = chat.status === "submitted" || chat.status === "streaming";
+    if (answeringOnArrival && document.activeElement === document.body) document.getElementById("chat-question")?.focus();
+  }, [chat]);
 
   async function send(text: string) {
     setDraft("");
