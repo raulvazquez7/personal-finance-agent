@@ -2,7 +2,7 @@
 
 import { MessagesSquare } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import { Empty, EmptyContent, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from "@/components/ui/empty";
@@ -28,6 +28,11 @@ export function NewChat() {
   const [draft, setDraft] = useState("");
   const [pending, setPending] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    // Arriving with focus nowhere (a deleted chat, a direct load): it goes to the box; a link keeps it.
+    if (document.activeElement === document.body) document.getElementById("chat-question")?.focus();
+  }, []);
 
   async function start(text: string) {
     setPending(true);

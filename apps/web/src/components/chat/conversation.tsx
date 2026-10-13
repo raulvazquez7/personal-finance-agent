@@ -7,12 +7,12 @@ import { StickToBottom, useStickToBottomContext } from "use-stick-to-bottom";
 
 import { Button } from "@/components/ui/button";
 import { chatErrorText, isThinking, unanswered, type ChatMessage } from "@/lib/chat";
-import { threadTitle } from "@/lib/chat-threads";
 
 import { ChatHeader } from "./chat-header";
 import { ChatMessageView } from "./chat-message";
 import { useChats } from "./chats-provider";
 import { Composer } from "./composer";
+import { ThreadHeader } from "./thread-header";
 
 /** One chat: its history, the streaming answer, and the question box (spec 10). */
 export function Conversation({ threadId, history }: { threadId: string; history: ChatMessage[] }) {
@@ -42,11 +42,21 @@ export function Conversation({ threadId, history }: { threadId: string; history:
     }
   }
 
+  function saveFeedback(messageId: string, value: "up" | "down") {
+    setMessages((all) =>
+      all.map((m) => (m.id === messageId && m.metadata ? { ...m, metadata: { ...m.metadata, feedback: value } } : m)),
+    );
+  }
+
   return (
     <div className="flex min-h-0 flex-1 flex-col gap-3">
-      <ChatHeader>
-        <h1 className="min-w-0 flex-1 truncate font-semibold tracking-tight">{thread ? threadTitle(thread) : "Chat"}</h1>
-      </ChatHeader>
+      {thread ? (
+        <ThreadHeader thread={thread} answering={answering} />
+      ) : (
+        <ChatHeader>
+          <h1 className="min-w-0 flex-1 truncate font-semibold tracking-tight">Chat</h1>
+        </ChatHeader>
+      )}
       <StickToBottom
         className="relative min-h-0 flex-1 rounded-xl outline-none focus-visible:ring-3 focus-visible:ring-ring/50"
         initial="instant"
@@ -58,7 +68,7 @@ export function Conversation({ threadId, history }: { threadId: string; history:
       >
         <StickToBottom.Content className="mx-auto flex w-full max-w-3xl flex-col gap-6 py-2">
           {messages.map((message) => (
-            <ChatMessageView key={message.id} message={message} live={answering && message === last} />
+            <ChatMessageView key={message.id} message={message} live={answering && message === last} onFeedback={saveFeedback} />
           ))}
           {thinking ? <p className="shimmer text-sm">Thinking…</p> : null}
           {error ? (
