@@ -25,7 +25,14 @@ export function Conversation({ threadId, history }: { threadId: string; history:
       <ChatHeader>
         <h1 className="min-w-0 flex-1 truncate font-semibold tracking-tight">{thread ? threadTitle(thread) : "Chat"}</h1>
       </ChatHeader>
-      <StickToBottom className="relative min-h-0 flex-1" initial="instant" resize="smooth" role="log" aria-label="Conversation">
+      <StickToBottom
+        className="relative min-h-0 flex-1 rounded-xl outline-none focus-visible:ring-3 focus-visible:ring-ring/50"
+        initial="instant"
+        resize="smooth"
+        role="log"
+        aria-label="Conversation"
+        tabIndex={-1}
+      >
         <StickToBottom.Content className="mx-auto flex w-full max-w-3xl flex-col gap-6 py-2">
           {messages.map((message) => (
             <ChatMessageView key={message.id} message={message} live={false} />
@@ -46,7 +53,12 @@ function ScrollToLatest() {
       size="icon"
       aria-label="Scroll to the latest message"
       className="absolute bottom-3 left-1/2 -translate-x-1/2 rounded-full shadow-sm"
-      onClick={() => void scrollToBottom()}
+      onClick={(event) => {
+        // The button disappears once the view is at the bottom: focus moves to the conversation
+        // first, so it never drops to the page.
+        event.currentTarget.closest<HTMLElement>("[role=log]")?.focus({ preventScroll: true });
+        void scrollToBottom();
+      }}
     >
       <ArrowDown />
     </Button>
