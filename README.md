@@ -9,8 +9,8 @@ with your finances through an LLM agent over a semantic layer.
 Slice 1 (ingestion), slice 2 (categorization with jev and the `/review`
 inbox) and slice 3 (the dashboards: an overview, spending, income and merchant
 pages, a transactions explorer and subscriptions, next to the review and import
-pages) are complete. Slice 4a, the chat agent backend (its API and
-`finance chat`), is complete; the `/chat` page comes next (4b). Design:
+pages) are complete. Slice 4, the chat agent (its API, `finance chat` and
+the `/chat` page), is complete. Design:
 `docs/superpowers/specs/`. Plans: `docs/superpowers/plans/`.
 
 ## How jev categorizes transactions
@@ -156,6 +156,12 @@ uv run finance chat                                # ask until an empty line (xA
 uv run finance chat "how much did I spend last month?"
 uv run finance chat "and the month before?" --thread <chat id>   # continue a chat; the id is printed first
 ```
+
+The web chat at `/chat` streams each answer with the AI SDK's
+[`useChat`](https://ai-sdk.dev/docs/reference/ai-sdk-ui/use-chat) straight
+from the API, shows the queries behind each answer (their SQL and the rows
+they returned), and keeps every chat: rename it, delete it, or rate an answer
+with a thumbs up or down.
 
 Terminal chats are the same chats the API serves. The defaults (models,
 reasoning effort, limits) are in `ChatSettings` in

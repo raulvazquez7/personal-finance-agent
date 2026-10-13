@@ -61,7 +61,8 @@ then `finance categorize`.
 Use `agent-browser` (global CLI and skill; `brew install agent-browser`) to
 check the UI as a user would.
 Run the API and web first; pages live at `http://localhost:3000` (`/`, `/spending/<group>`,
-`/income`, `/merchants/<id>`, `/transactions`, `/subscriptions`, `/review`, `/imports`, `/settings`).
+`/income`, `/merchants/<id>`, `/transactions`, `/subscriptions`, `/chat`, `/chat/<id>`, `/review`,
+`/imports`, `/settings`).
 
 - Before claiming a task or PR that touches `apps/web` is done: check the
   affected flow with `agent-browser skills get core` (open, snapshot, act,
@@ -77,6 +78,9 @@ Run the API and web first; pages live at `http://localhost:3000` (`/`, `/spendin
 - Checks that write data (labels, notes, merchant defaults, renames, imports) run on a scratch
   copy of the database, never on the real one: the recipe is "R2" in
   `docs/superpowers/plans/2026-09-25-slice-3b-interface.md`.
+- Chat checks run on scripted models, never on paid ones: the API from
+  `apps/api/tests/scripted_chat_server.py` on a scratch copy of the database, recipe "R3" in
+  `docs/superpowers/plans/2026-10-12-slice-4b-chat-web.md`.
 
 ## Boundaries
 
