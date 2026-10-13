@@ -88,7 +88,7 @@ export function ThreadHeader({ thread, answering }: { thread: Thread; answering:
               if (event.key === "Escape") stopEditing();
             }}
           />
-          <Button type="submit" variant="outline" disabled={busy || !title.trim()}>
+          <Button type="submit" variant="outline" disabled={busy || !title.trim()} focusableWhenDisabled className="data-disabled:opacity-50">
             Save
           </Button>
           <Button type="button" variant="ghost" onClick={stopEditing}>
@@ -125,7 +125,7 @@ export function ThreadHeader({ thread, answering }: { thread: Thread; answering:
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={onDelete} disabled={busy}>
+            <AlertDialogAction onClick={onDelete} disabled={busy} focusableWhenDisabled className="data-disabled:opacity-50">
               {busy ? "Deleting…" : "Delete"}
             </AlertDialogAction>
           </AlertDialogFooter>

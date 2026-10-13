@@ -51,6 +51,7 @@ export function FeedbackButtons({ messageId, value, onSaved }: { messageId: stri
         aria-pressed={value === "up"}
         disabled={busy}
         focusableWhenDisabled
+        className="data-disabled:opacity-50"
         onClick={() => save("up")}
       >
         <ThumbsUp className={value === "up" ? "fill-current" : undefined} />
@@ -71,7 +72,7 @@ export function FeedbackButtons({ messageId, value, onSaved }: { messageId: stri
               placeholder="A wrong number, a missed note…"
               onChange={(event) => setComment(event.target.value)}
             />
-            <Button type="submit" size="sm" className="self-end" disabled={busy} focusableWhenDisabled>
+            <Button type="submit" size="sm" className="self-end data-disabled:opacity-50" disabled={busy} focusableWhenDisabled>
               Send
             </Button>
           </form>
