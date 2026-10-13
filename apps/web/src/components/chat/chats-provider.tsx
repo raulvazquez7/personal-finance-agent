@@ -3,7 +3,7 @@
 import { Chat } from "@ai-sdk/react";
 import { createContext, useCallback, useContext, useMemo, useState, type ReactNode } from "react";
 
-import { toUIMessages, type ChatMessage, type ChatUIMessage, type Thread } from "@/lib/chat";
+import { toUIMessages, type ChatMessage, type ChatPart, type ChatUIMessage, type Thread } from "@/lib/chat";
 import { chatTransport } from "@/lib/chat-api";
 import { dropThread, moveFirst, patchThread, putFirst } from "@/lib/chat-threads";
 
@@ -45,9 +45,13 @@ export function ChatsProvider({ initialThreads, children }: { initialThreads: Th
         },
         onFinish: ({ message, isAbort, isError }) => {
           if (!chat.messages.some((m) => m.id === message.id)) return; // refused before any answer
-          // The answer is saved now: it can take feedback, and the thread moves to the top.
+          // The answer is saved now: it can take feedback, and the thread moves to the top. A stop
+          // drops the queries still running, as the API does when it saves the answer.
           const status = isAbort ? "stopped" : isError ? "error" : "ok";
-          chat.messages = chat.messages.map((m) => (m.id === message.id ? { ...m, metadata: { status, feedback: null } } : m));
+          const kept = (part: ChatPart) => !isAbort || part.type !== "tool-run_sql" || part.state === "output-available";
+          chat.messages = chat.messages.map((m) =>
+            m.id === message.id ? { ...m, parts: m.parts.filter(kept), metadata: { status, feedback: null } } : m,
+          );
           setThreads((all) => moveFirst(all, threadId));
         },
       });

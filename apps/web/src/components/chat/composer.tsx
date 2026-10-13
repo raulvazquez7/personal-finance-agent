@@ -1,7 +1,7 @@
 "use client";
 
 import { ArrowUp, Square } from "lucide-react";
-import type { KeyboardEvent } from "react";
+import { useRef, type KeyboardEvent } from "react";
 
 import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
@@ -24,10 +24,20 @@ type Props = {
 export function Composer({ value, onChange, onSend, answering, onStop, pending = false }: Props) {
   const text = value.trim();
   const canSend = text.length > 0 && !answering && !pending;
+  // Send and Stop share one button, which ends up disabled: focus goes back to the box instead
+  // of dropping to the page.
+  const box = useRef<HTMLTextAreaElement>(null);
 
   function submit(event: { preventDefault: () => void }) {
     event.preventDefault();
-    if (canSend) onSend(text);
+    if (!canSend) return;
+    onSend(text);
+    box.current?.focus();
+  }
+
+  function stop() {
+    onStop?.();
+    box.current?.focus();
   }
 
   function onKeyDown(event: KeyboardEvent<HTMLTextAreaElement>) {
@@ -42,6 +52,7 @@ export function Composer({ value, onChange, onSend, answering, onStop, pending =
       </label>
       <Textarea
         id="chat-question"
+        ref={box}
         value={value}
         maxLength={TEXT_MAX}
         rows={1}
@@ -51,7 +62,7 @@ export function Composer({ value, onChange, onSend, answering, onStop, pending =
         className="max-h-48 min-h-9 resize-none border-0 px-2 shadow-none focus-visible:ring-0"
       />
       {answering ? (
-        <Button type="button" size="icon" variant="secondary" onClick={onStop} aria-label="Stop the answer">
+        <Button type="button" size="icon" variant="secondary" onClick={stop} aria-label="Stop the answer">
           <Square />
         </Button>
       ) : (
