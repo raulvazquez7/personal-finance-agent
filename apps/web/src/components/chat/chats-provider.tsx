@@ -45,10 +45,10 @@ export function ChatsProvider({ initialThreads, children }: { initialThreads: Th
         },
         onFinish: ({ message, isAbort, isError }) => {
           if (!chat.messages.some((m) => m.id === message.id)) return; // refused before any answer
-          // The answer is saved now: it can take feedback, and the thread moves to the top. A stop
-          // drops the queries still running, as the API does when it saves the answer.
+          // The answer is saved now: it can take feedback, and the thread moves to the top. Queries
+          // without a result are dropped, however the answer ended, as the API does when it saves it.
           const status = isAbort ? "stopped" : isError ? "error" : "ok";
-          const kept = (part: ChatPart) => !isAbort || part.type !== "tool-run_sql" || part.state === "output-available";
+          const kept = (part: ChatPart) => part.type !== "tool-run_sql" || part.state === "output-available";
           chat.messages = chat.messages.map((m) =>
             m.id === message.id ? { ...m, parts: m.parts.filter(kept), metadata: { status, feedback: null } } : m,
           );

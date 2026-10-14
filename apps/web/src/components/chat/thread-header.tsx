@@ -20,7 +20,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ApiError } from "@/lib/api";
-import type { Thread } from "@/lib/chat";
+import { chatErrorText, type Thread } from "@/lib/chat";
 import { deleteThread, renameThread } from "@/lib/chat-api";
 import { threadTitle } from "@/lib/chat-threads";
 
@@ -62,12 +62,16 @@ export function ThreadHeader({ thread, answering }: { thread: Thread; answering:
     setBusy(true);
     try {
       await deleteThread(thread.id);
-      deleted(thread.id);
-      router.push("/chat");
     } catch (error) {
-      toast.error(error instanceof ApiError && error.detail ? error.detail : "Could not delete the chat.");
-      setBusy(false);
+      // A 404 means it is already deleted (in another tab): the outcome the user asked for.
+      if (!(error instanceof ApiError && error.status === 404)) {
+        toast.error(chatErrorText(error instanceof Error ? error : new Error(String(error))));
+        setBusy(false);
+        return;
+      }
     }
+    deleted(thread.id);
+    router.push("/chat");
   }
 
   if (editing) {
@@ -108,7 +112,8 @@ export function ThreadHeader({ thread, answering }: { thread: Thread; answering:
         size="icon"
         aria-label="Rename this chat"
         onClick={() => {
-          setTitle(threadTitle(thread));
+          // The stored title, not the "Untitled chat" placeholder, which Save would store.
+          setTitle(thread.title ?? "");
           setEditing(true);
         }}
       >
