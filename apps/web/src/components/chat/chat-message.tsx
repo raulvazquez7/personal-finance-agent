@@ -31,8 +31,14 @@ export function ChatMessageView({ message, live, onFeedback }: Props) {
             key={index}
             isAnimating={live && block.streaming}
             controls={false}
+            // No images: an image in an answer would make the browser send a request, and any data in
+            // its URL, to another host.
+            disallowedElements={["img"]}
+            // Tables show in full; on a phone they scroll sideways in their own box.
+            tableMaxHeight={Number.POSITIVE_INFINITY}
             // Headings stay small: an answer's "How I counted it" is a note, not a page title.
-            className="[&_:is(h1,h2,h3,h4)]:mt-4 [&_:is(h1,h2,h3,h4)]:text-base"
+            // Cells keep an amount on one line.
+            className="[&_:is(h1,h2,h3,h4)]:mt-4 [&_:is(h1,h2,h3,h4)]:text-base [&_:is(td,th)]:whitespace-nowrap"
           >
             {block.text}
           </Streamdown>
