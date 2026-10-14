@@ -65,8 +65,9 @@ class BreakdownRow(BaseModel):
 class SubscriptionOut(BaseModel):
     merchant_id: UUID
     merchant_name: str
-    cadence: Literal["monthly", "yearly"]
-    typical_amount: Decimal
+    cadence: Literal["monthly", "quarterly", "yearly"]
+    cadence_source: Literal["auto", "user"]
+    latest_amount: Decimal
     monthly_equivalent: Decimal
     last_charge: date
     charges: int

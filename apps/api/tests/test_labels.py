@@ -156,8 +156,8 @@ def test_a_name_without_a_match_key_is_refused(db_conn, make_tx, name):
 
 
 def test_merge_repoints_rows_and_keeps_the_target_default(db_conn, make_tx):
-    source = _merchant(db_conn, "ZZTEST ACME FOODS", category_slug="fashion")
-    target = _merchant(db_conn, "ZZTEST ACME", category_slug="groceries")
+    source = _merchant(db_conn, "ZZTEST ACME FOODS", category_slug="fashion", cadence="monthly")
+    target = _merchant(db_conn, "ZZTEST ACME", category_slug="groceries", cadence="yearly")
     tx = _tx(make_tx, "-9.90", "PAGO | ZZTEST ACME FOODS")
     _set(db_conn, tx, merchant_id=source)
 
@@ -165,8 +165,16 @@ def test_merge_repoints_rows_and_keeps_the_target_default(db_conn, make_tx):
 
     assert _row(db_conn, tx)["merchant_id"] == target
     assert db_conn.execute("select 1 from merchants where id = %s", (source,)).fetchone() is None
-    kept = db_conn.execute("select category_slug from merchants where id = %s", (target,))
-    assert kept.fetchone()["category_slug"] == "groceries"
+    kept = db_conn.execute(
+        "select category_slug, cadence from merchants where id = %s", (target,)
+    ).fetchone()
+    assert (kept["category_slug"], kept["cadence"]) == ("groceries", "yearly")
+
+    only_source = _merchant(db_conn, "ZZTEST ACME QUARTER", cadence="quarterly")
+    bare = _merchant(db_conn, "ZZTEST ACME BARE")
+    merge_merchants(db_conn, only_source, bare)
+    gained = db_conn.execute("select cadence from merchants where id = %s", (bare,)).fetchone()
+    assert gained["cadence"] == "quarterly"
 
 
 def test_renaming_to_an_existing_merchant_merges(db_conn, make_tx):

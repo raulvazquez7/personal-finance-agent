@@ -864,9 +864,14 @@ export interface components {
              * Cadence
              * @enum {string}
              */
-            cadence: "monthly" | "yearly";
-            /** Typical Amount */
-            typical_amount: string;
+            cadence: "monthly" | "quarterly" | "yearly";
+            /**
+             * Cadence Source
+             * @enum {string}
+             */
+            cadence_source: "auto" | "user";
+            /** Latest Amount */
+            latest_amount: string;
             /** Monthly Equivalent */
             monthly_equivalent: string;
             /**

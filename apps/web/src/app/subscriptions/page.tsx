@@ -12,7 +12,11 @@ import { dayLong, money } from "@/lib/format";
 export const dynamic = "force-dynamic";
 export const metadata: Metadata = { title: "Subscriptions" };
 
-const CADENCE: Record<Schemas["SubscriptionOut"]["cadence"], string> = { monthly: "Monthly", yearly: "Yearly" };
+const CADENCE: Record<Schemas["SubscriptionOut"]["cadence"], string> = {
+  monthly: "Monthly",
+  quarterly: "Every 3 months",
+  yearly: "Yearly",
+};
 
 /** Every active subscription with its amount, cadence, monthly equivalent and last charge, and
  * the monthly and yearly totals (spec 7.1). "Active" is relative to the latest import. */
@@ -74,7 +78,7 @@ export default async function SubscriptionsPage() {
                       )}
                     </TableCell>
                     <TableCell className="hidden text-muted-foreground sm:table-cell">{CADENCE[item.cadence]}</TableCell>
-                    <TableCell className="hidden text-right sm:table-cell">{money(item.typical_amount)}</TableCell>
+                    <TableCell className="hidden text-right sm:table-cell">{money(item.latest_amount)}</TableCell>
                     <TableCell className="text-right font-semibold">{money(item.monthly_equivalent)}</TableCell>
                     <TableCell className="text-right text-muted-foreground">{dayLong(item.last_charge)}</TableCell>
                   </TableRow>

@@ -9,8 +9,8 @@ from finance.dashboard.models import SubscriptionOut, Subscriptions, Subscriptio
 
 def active_subscriptions(conn: Connection) -> Subscriptions:
     rows = conn.execute(
-        "select merchant_id, merchant_name, cadence, typical_amount, monthly_equivalent,"
-        " last_charge, charges from v_subscriptions where active"
+        "select merchant_id, merchant_name, cadence, cadence_source, latest_amount,"
+        " monthly_equivalent, last_charge, charges from v_subscriptions where active"
         " order by monthly_equivalent desc, merchant_name"
     ).fetchall()
     items = [SubscriptionOut.model_validate(row) for row in rows]
