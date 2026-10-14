@@ -1,7 +1,7 @@
 "use client";
 
 import { ArrowUp, Square } from "lucide-react";
-import { useRef, type KeyboardEvent } from "react";
+import { useEffect, useRef, type KeyboardEvent } from "react";
 
 import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
@@ -27,6 +27,12 @@ export function Composer({ value, onChange, onSend, answering, onStop, pending =
   // Send and Stop share one button, which ends up disabled: focus goes back to the box instead
   // of dropping to the page.
   const box = useRef<HTMLTextAreaElement>(null);
+
+  useEffect(() => {
+    // Arriving with focus nowhere (a direct load, a deleted chat, a new chat moving to its page
+    // while it answers): it goes to the box. A focused link or the phone sheet's trigger keeps it.
+    if (document.activeElement === document.body) box.current?.focus();
+  }, []);
 
   function submit(event: { preventDefault: () => void }) {
     event.preventDefault();
