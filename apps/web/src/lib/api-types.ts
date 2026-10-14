@@ -263,6 +263,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/merchants/{merchant_id}/cadence": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Set Cadence */
+        patch: operations["set_cadence_merchants__merchant_id__cadence_patch"];
+        trace?: never;
+    };
     "/review": {
         parameters: {
             query?: never;
@@ -437,6 +454,11 @@ export interface components {
              * @default 0
              */
             folded: number;
+        };
+        /** CadenceUpdate */
+        CadenceUpdate: {
+            /** Cadence */
+            cadence: ("monthly" | "quarterly" | "yearly") | null;
         };
         /** CategoryOut */
         CategoryOut: {
@@ -886,6 +908,8 @@ export interface components {
         Subscriptions: {
             /** Items */
             items: components["schemas"]["SubscriptionOut"][];
+            /** Ended */
+            ended: components["schemas"]["SubscriptionOut"][];
             /** Monthly Total */
             monthly_total: string;
             /** Yearly Total */
@@ -1553,6 +1577,39 @@ export interface operations {
             cookie?: never;
         };
         requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    set_cadence_merchants__merchant_id__cadence_patch: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                merchant_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CadenceUpdate"];
+            };
+        };
         responses: {
             /** @description Successful Response */
             204: {

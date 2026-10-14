@@ -140,8 +140,8 @@ export default async function OverviewPage({ searchParams }: PageProps<"/">) {
           </CardTitle>
           {/* Decision I: "active" is relative to the latest import (spec 5, v_subscriptions). */}
           <CardDescription>
-            Active means charged within 45 days (monthly) or 400 days (yearly) of your latest imported transaction, not
-            of today.
+            Active means charged within 45 days (monthly), 120 days (every 3 months) or 400 days (yearly) of your latest
+            imported transaction, not of today.
           </CardDescription>
           <CardAction>
             <Link href="/subscriptions" className="text-sm font-medium text-primary">

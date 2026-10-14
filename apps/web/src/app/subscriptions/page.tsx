@@ -1,37 +1,30 @@
 import type { Metadata } from "next";
 
 import { Repeat } from "lucide-react";
-import Link from "next/link";
 
+import { SubscriptionTable } from "@/components/subscriptions/subscription-table";
 import { Card, CardContent, CardDescription, CardHeader } from "@/components/ui/card";
 import { Empty, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from "@/components/ui/empty";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { apiGet, type Schemas } from "@/lib/api";
-import { dayLong, money } from "@/lib/format";
+import { money } from "@/lib/format";
 
 export const dynamic = "force-dynamic";
 export const metadata: Metadata = { title: "Subscriptions" };
 
-const CADENCE: Record<Schemas["SubscriptionOut"]["cadence"], string> = {
-  monthly: "Monthly",
-  quarterly: "Every 3 months",
-  yearly: "Yearly",
-};
-
-/** Every active subscription with its amount, cadence, monthly equivalent and last charge, and
- * the monthly and yearly totals (spec 7.1). "Active" is relative to the latest import. */
+/** Active subscriptions and what they cost. Totals count the active list only. Ended rows sit below,
+ * collapsed, and use the same table. */
 export default async function SubscriptionsPage() {
-  const { items, monthly_total, yearly_total } = await apiGet<Schemas["Subscriptions"]>("/dashboard/subscriptions");
+  const { items, ended, monthly_total, yearly_total } = await apiGet<Schemas["Subscriptions"]>("/dashboard/subscriptions");
   return (
     <>
       <header className="flex flex-col gap-1">
         <h1 className="text-xl font-semibold tracking-tight">Subscriptions</h1>
         <p className="max-w-prose text-sm text-muted-foreground">
-          Charges you marked as subscriptions that are still running: charged within 45 days (monthly) or 400 days
-          (yearly) of your latest imported transaction. A yearly subscription counts as a twelfth of its typical amount
-          per month, and the yearly total is twelve times the monthly one. A subscription charged only once counts as
-          monthly until its second charge. Subscriptions paid by credit card do not appear, because card statements are
-          not imported.
+          Charges you marked as subscriptions that are still running: charged within 45 days (monthly), 120 days (every
+          3 months) or 400 days (yearly) of your latest imported transaction. The amount is the latest charge. A yearly
+          subscription counts as a twelfth of that amount per month, and one every 3 months as a third. The yearly total
+          is twelve times the monthly one. A subscription charged only once counts as monthly until its second charge.
+          Subscriptions paid by credit card do not appear, because card statements are not imported.
         </p>
       </header>
       <section aria-label="Totals" className="grid grid-cols-1 gap-3 sm:grid-cols-3">
@@ -54,39 +47,25 @@ export default async function SubscriptionsPage() {
       ) : (
         <Card>
           <CardContent>
-            {/* Below sm, Cadence and Amount are hidden so the table fits a phone without scrolling; long names
-                wrap, and a yearly row says so under its name. */}
-            <Table>
-              <TableHeader>
-                <TableRow className="hover:bg-transparent">
-                  <TableHead>Merchant</TableHead>
-                  <TableHead className="hidden sm:table-cell">Cadence</TableHead>
-                  <TableHead className="hidden text-right sm:table-cell">Amount</TableHead>
-                  <TableHead className="text-right">Per month</TableHead>
-                  <TableHead className="text-right">Last charge</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {items.map((item) => (
-                  <TableRow key={item.merchant_id}>
-                    <TableCell className="max-w-72 font-medium whitespace-normal wrap-anywhere">
-                      <Link href={`/merchants/${item.merchant_id}`} className="hover:underline">
-                        {item.merchant_name}
-                      </Link>
-                      {item.cadence === "yearly" && (
-                        <p className="text-xs font-normal text-muted-foreground sm:hidden">{CADENCE.yearly}</p>
-                      )}
-                    </TableCell>
-                    <TableCell className="hidden text-muted-foreground sm:table-cell">{CADENCE[item.cadence]}</TableCell>
-                    <TableCell className="hidden text-right sm:table-cell">{money(item.latest_amount)}</TableCell>
-                    <TableCell className="text-right font-semibold">{money(item.monthly_equivalent)}</TableCell>
-                    <TableCell className="text-right text-muted-foreground">{dayLong(item.last_charge)}</TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+            <SubscriptionTable items={items} />
           </CardContent>
         </Card>
+      )}
+      {ended.length > 0 && (
+        <details>
+          <summary className="w-fit cursor-pointer text-sm font-medium">Ended ({ended.length})</summary>
+          <div className="mt-3 flex flex-col gap-3">
+            <p className="max-w-prose text-sm text-muted-foreground">
+              These left the list because the last charge falls outside the cadence window. Changing the cadence can
+              bring one back.
+            </p>
+            <Card>
+              <CardContent>
+                <SubscriptionTable items={ended} />
+              </CardContent>
+            </Card>
+          </div>
+        </details>
       )}
     </>
   );
