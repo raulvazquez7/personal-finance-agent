@@ -26,7 +26,7 @@ def list_transactions(
     tx_type: Literal["expense", "income", "transfer"] | None = None,
     level1: str | None = None,
     category: str | None = None,
-    merchant_id: UUID | None = None,
+    merchant_id: str | None = None,
     is_subscription: bool | None = None,
     category_source: CategorySource | None = None,
     needs_review: bool | None = None,
@@ -39,12 +39,20 @@ def list_transactions(
     except ValueError as error:  # the pattern passes, the date or id does not parse
         raise HTTPException(status_code=422, detail=f"invalid cursor: {error}") from error
     resolved = resolve_request(conn, query)
+    no_merchant = merchant_id == "none"
+    merchant_uuid = None
+    if merchant_id is not None and not no_merchant:
+        try:
+            merchant_uuid = UUID(merchant_id)
+        except ValueError as error:
+            raise HTTPException(status_code=422, detail=f"invalid merchant_id: {error}") from error
     scope = Scope(
         accounts=query.accounts,
         tx_type=tx_type,
         level1=level1,
         category=category,
-        merchant_id=merchant_id,
+        merchant_id=merchant_uuid,
+        no_merchant=no_merchant,
     )
     filters = TransactionFilters(scope, q, is_subscription, category_source, needs_review, saved)
     return page(conn, filters, resolved, after, limit)

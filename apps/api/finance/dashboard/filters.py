@@ -14,7 +14,10 @@ and (cardinality(%(accounts)s::uuid[]) = 0 or account_id = any(%(accounts)s))
 and (%(tx_type)s::text is null or tx_type = %(tx_type)s)
 and (%(level1)s::text is null or coalesce(level1, 'uncategorized') = %(level1)s)
 and (%(category)s::text is null or coalesce(category_slug, 'uncategorized') = %(category)s)
-and (%(merchant_id)s::uuid is null or merchant_id = %(merchant_id)s)
+and (
+  (%(no_merchant)s and merchant_id is null)
+  or (not %(no_merchant)s and (%(merchant_id)s::uuid is null or merchant_id = %(merchant_id)s))
+)
 """
 
 _ACCOUNTS = "(cardinality(%(accounts)s::uuid[]) = 0 or account_id = any(%(accounts)s))"
@@ -27,6 +30,7 @@ class Scope:
     level1: str | None = None
     category: str | None = None
     merchant_id: UUID | None = None
+    no_merchant: bool = False
 
     def params(self, period: Period) -> dict:
         return {
@@ -37,6 +41,7 @@ class Scope:
             "level1": self.level1,
             "category": self.category,
             "merchant_id": self.merchant_id,
+            "no_merchant": self.no_merchant,
         }
 
 

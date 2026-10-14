@@ -60,6 +60,9 @@ class BreakdownRow(BaseModel):
     previous: Decimal | None  # None when the previous period has no data; 0 = "new"
     count: int
     folded: int = 0  # entries folded into "_other"
+    rows: list["BreakdownRow"] = []
+    category_count: int = 1
+    top_categories: list[str] = []
 
 
 class SubscriptionOut(BaseModel):
