@@ -17,8 +17,9 @@ export default async function IncomeCategoryPage({ params, searchParams }: PageP
   const [{ category }, query] = await Promise.all([params, searchParams]);
   if (!isSlug(category)) notFound();
   const filters = parseFilters(query);
-  const [categories, detail] = await Promise.all([
+  const [categories, merchants, detail] = await Promise.all([
     apiGet<Schemas["CategoryOut"][]>("/categories"),
+    apiGet<Schemas["MerchantOut"][]>("/merchants?limit=5000"),
     apiGet<Schemas["SpendingDetail"]>(withFilters("/spending/detail", filters, { type: "income", category })),
   ]);
   if (!knownCategory(category, categories, { type: "income" })) notFound();
@@ -26,6 +27,7 @@ export default async function IncomeCategoryPage({ params, searchParams }: PageP
     <DetailPage
       detail={detail}
       categories={categories}
+      merchants={merchants}
       filters={filters}
       title={label(category)}
       crumbs={[

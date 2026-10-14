@@ -5,7 +5,7 @@ import { BreakdownTable } from "@/components/breakdown/breakdown-table";
 import { CategoryTreemap } from "@/components/charts/category-treemap";
 import { DeltaText } from "@/components/money/delta-text";
 import { NoData } from "@/components/money/no-data";
-import { TransactionTable } from "@/components/transactions/transaction-table";
+import { TransactionBrowser } from "@/components/transactions/transaction-browser";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -31,6 +31,7 @@ export type Crumb = { label: string; href?: string };
 type Props = {
   detail: Schemas["SpendingDetail"];
   categories: Schemas["CategoryOut"][];
+  merchants: Schemas["MerchantOut"][];
   filters: Filters;
   title: string;
   crumbs: Crumb[];
@@ -41,7 +42,17 @@ type Props = {
 
 /** One template for every level (mockup page map): the total and its delta, a per-month chart,
  * the next level as chart + table, top merchants, and the latest transactions with "See all". */
-export function DetailPage({ detail, categories, filters, title, crumbs, childDimension, seeAllHref, defaultView = "monthly" }: Props) {
+export function DetailPage({
+  detail,
+  categories,
+  merchants,
+  filters,
+  title,
+  crumbs,
+  childDimension,
+  seeAllHref,
+  defaultView = "monthly",
+}: Props) {
   const income = detail.type === "income";
   const good: Good = income ? "up" : "down";
   const context: BreakdownContext = { categories, slots: null, filters, good, type: detail.type };
@@ -55,7 +66,7 @@ export function DetailPage({ detail, categories, filters, title, crumbs, childDi
     return { ...item, hint, rows: item.rows.map(withPageHint) };
   };
   const children = rows.map(withPageHint);
-  const merchants = breakdownItems(detail.top_merchants, "merchant", context);
+  const topMerchants = breakdownItems(detail.top_merchants, "merchant", context);
   const names = new Map(children.map((item) => [item.key, item.name]));
   // The bars only stack by category, so the folded series reads like the table's folded row.
   const series = detail.child_keys.map((key, index) => ({
@@ -137,15 +148,15 @@ export function DetailPage({ detail, categories, filters, title, crumbs, childDi
           </CardContent>
         </Card>
       )}
-      <div className={cn("grid items-start gap-4", merchants.length > 0 && "lg:grid-cols-[minmax(0,1fr)_minmax(0,1.25fr)]")}>
-        {merchants.length > 0 && (
+      <div className={cn("grid items-start gap-4", topMerchants.length > 0 && "lg:grid-cols-[minmax(0,1fr)_minmax(0,1.25fr)]")}>
+        {topMerchants.length > 0 && (
           <Card>
             {/* No link of its own: the Transactions card beside it opens the same list. */}
             <CardHeader>
               <CardTitle>Top merchants</CardTitle>
             </CardHeader>
             <CardContent>
-              <BreakdownTable items={merchants} nameHeader="Merchant" versus={versus} showShare={false} />
+              <BreakdownTable items={topMerchants} nameHeader="Merchant" versus={versus} showShare={false} />
             </CardContent>
           </Card>
         )}
@@ -163,7 +174,7 @@ export function DetailPage({ detail, categories, filters, title, crumbs, childDi
           </CardHeader>
           <CardContent>
             {detail.latest.length > 0 ? (
-              <TransactionTable items={detail.latest} />
+              <TransactionBrowser items={detail.latest} categories={categories} merchants={merchants} />
             ) : (
               <p className="text-sm text-muted-foreground">No transactions in this period.</p>
             )}

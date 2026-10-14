@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
 import { CategoryPicker } from "@/components/pickers/category-picker";
@@ -43,21 +43,86 @@ const NOTE_MAX = 500; // transactions.note: char_length(note) <= 500
 
 /** The side panel (spec 7.3): the category, merchant, subscription flag and note of one row. */
 export function TransactionPanel({ tx, categories, merchants, onClose, onSaved }: Props) {
+  const [dirty, setDirty] = useState(false);
+  const [discarding, setDiscarding] = useState(false);
+  // PanelForm remounts per transaction (`key={tx.id}`) and reports a clean form. Drop the previous
+  // row's dirty flag in the same render, before that report, so Escape cannot ask about the old row.
+  const txId = tx?.id ?? null;
+  const [seenTxId, setSeenTxId] = useState(txId);
+  if (seenTxId !== txId) {
+    setSeenTxId(txId);
+    setDirty(false);
+  }
+
+  function requestClose() {
+    if (dirty) setDiscarding(true);
+    else onClose();
+  }
+
+  function discard() {
+    setDirty(false);
+    setDiscarding(false);
+    onClose();
+  }
+
   return (
-    <Sheet
-      open={tx !== null}
-      onOpenChange={(open) => {
-        if (!open) onClose();
-      }}
-    >
-      <SheetContent className="data-[side=right]:w-full data-[side=right]:sm:max-w-md">
-        {tx && <PanelForm key={tx.id} tx={tx} categories={categories} merchants={merchants} onClose={onClose} onSaved={onSaved} />}
-      </SheetContent>
-    </Sheet>
+    <>
+      <Sheet
+        open={tx !== null}
+        onOpenChange={(open, eventDetails) => {
+          if (open) return;
+          // Base UI commits the close unless this event is canceled. Leaving `open` true keeps the
+          // form mounted; cancel stops the popup from closing underneath that.
+          if (dirty) {
+            eventDetails.cancel();
+            setDiscarding(true);
+            return;
+          }
+          onClose();
+        }}
+      >
+        <SheetContent className="data-[side=right]:w-full data-[side=right]:sm:max-w-md">
+          {tx && (
+            <PanelForm
+              key={tx.id}
+              tx={tx}
+              categories={categories}
+              merchants={merchants}
+              onClose={onClose}
+              onSaved={onSaved}
+              onDirtyChange={setDirty}
+              onCancel={requestClose}
+            />
+          )}
+        </SheetContent>
+      </Sheet>
+      <AlertDialog open={discarding} onOpenChange={setDiscarding}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Discard unsaved changes?</AlertDialogTitle>
+            <AlertDialogDescription>
+              The category, merchant, subscription or note you changed will not be saved.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Keep editing</AlertDialogCancel>
+            <AlertDialogAction onClick={discard}>Discard</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </>
   );
 }
 
-function PanelForm({ tx, categories, merchants, onClose, onSaved }: Omit<Props, "tx"> & { tx: Tx }) {
+function PanelForm({
+  tx,
+  categories,
+  merchants,
+  onClose,
+  onSaved,
+  onDirtyChange,
+  onCancel,
+}: Omit<Props, "tx"> & { tx: Tx; onDirtyChange: (dirty: boolean) => void; onCancel: () => void }) {
   const router = useRouter();
   const amount = Number(tx.amount);
   const direction: Direction = amount < 0 ? "out" : "in";
@@ -79,6 +144,15 @@ function PanelForm({ tx, categories, merchants, onClose, onSaved }: Omit<Props, 
   const labelChanged = categorySlug !== (tx.category_slug ?? "") || isSubscription !== tx.is_subscription || merchantChanged;
   const noteChanged = note.trim() !== (tx.note ?? "");
   const name = tx.merchant_name ?? tx.bank_merchant_text ?? tx.description_raw;
+  // Category, merchant and the subscription flag are `labelChanged`; the note is separate.
+  useEffect(() => {
+    onDirtyChange(labelChanged || noteChanged);
+  }, [labelChanged, noteChanged, onDirtyChange]);
+  const categorySentence =
+    direction === "out" ? "What this money went on." : "Income, or the category of the purchase this money refunds.";
+  const categoryDescription = category
+    ? `${label(category.level1)} › ${label(category.slug)}. ${categorySentence}`
+    : categorySentence;
 
   function onSave() {
     // Only an existing merchant can take a default; a new name is created by this label alone.
@@ -185,11 +259,14 @@ function PanelForm({ tx, categories, merchants, onClose, onSaved }: Omit<Props, 
               direction={direction}
               value={categorySlug}
               onChange={setCategorySlug}
-              ariaDescribedBy="panel-category-help"
+              ariaDescribedBy={tx.merchant_id ? "panel-category-help panel-category-scope" : "panel-category-help"}
             />
-            <FieldDescription id="panel-category-help">
-              {direction === "out" ? "What this money went on." : "Income, or the category of the purchase this money refunds."}
-            </FieldDescription>
+            <FieldDescription id="panel-category-help">{categoryDescription}</FieldDescription>
+            {tx.merchant_id && (
+              <FieldDescription id="panel-category-scope">
+                Saving can apply this category to every transaction of {tx.merchant_name}.
+              </FieldDescription>
+            )}
           </Field>
           <Field>
             <FieldLabel htmlFor="panel-merchant">Merchant</FieldLabel>
@@ -258,7 +335,7 @@ function PanelForm({ tx, categories, merchants, onClose, onSaved }: Omit<Props, 
         </FieldGroup>
       </div>
       <SheetFooter className="flex-row justify-end">
-        <Button variant="ghost" onClick={onClose}>
+        <Button variant="ghost" onClick={onCancel}>
           Cancel
         </Button>
         <Button onClick={onSave} disabled={busy || (!labelChanged && !noteChanged) || (labelChanged && !categorySlug)}>
