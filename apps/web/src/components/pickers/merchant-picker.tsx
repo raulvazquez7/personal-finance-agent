@@ -25,6 +25,8 @@ type Props = {
   onChange: (merchant: MerchantChoice | null) => void;
   /** A label may create a merchant from a typed name; a filter only picks existing ones. */
   allowCreate?: boolean;
+  /** The transactions filter can select rows that have no merchant. That option is not a create. */
+  allowNone?: boolean;
   showClear?: boolean;
   id?: string;
   ariaLabel?: string;
@@ -37,6 +39,7 @@ export function MerchantPicker({
   value,
   onChange,
   allowCreate = true,
+  allowNone = false,
   showClear = false,
   id,
   ariaLabel = "Merchant",
@@ -52,6 +55,7 @@ export function MerchantPicker({
   const typed = query.trim();
   const exists = merchants.some((m) => m.name.toLowerCase() === typed.toLowerCase());
   const items: MerchantChoice[] = [
+    ...(allowNone ? [{ id: "none", name: "No merchant" }] : []),
     ...merchants.map((m) => ({ id: m.id, name: m.name })),
     ...(allowCreate && typed && !exists ? [{ id: null, name: typed }] : []),
   ];

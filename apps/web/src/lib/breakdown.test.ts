@@ -6,11 +6,13 @@ import { breakdownItems } from "./breakdown";
 type Row = Schemas["BreakdownRow"];
 
 const M = "33333333-3333-4333-8333-333333333333";
+const A = "11111111-1111-4111-8111-111111111111";
 const categories: Schemas["CategoryOut"][] = [
   { slug: "groceries", tx_type: "expense", level1: "shopping" },
   { slug: "salary", tx_type: "income", level1: "income" },
 ];
 const august = { period: "month" as const, month: "2026-08", accounts: [] };
+const augustAccount = { period: "month" as const, month: "2026-08", accounts: [A] };
 const row = (fields: Partial<Row> & { key: string }): Row => ({
   label: null,
   level1: null,
@@ -21,6 +23,9 @@ const row = (fields: Partial<Row> & { key: string }): Row => ({
   previous: null,
   count: 1,
   folded: 0,
+  rows: [],
+  category_count: 1,
+  top_categories: [],
   ...fields,
 });
 
@@ -46,7 +51,7 @@ describe("breakdownItems", () => {
     expect(other).toMatchObject({ name: "Other categories", hint: "2 categories", href: null, color: "var(--chart-other)" });
   });
 
-  it("opens a merchant with its type and leaves a row without a merchant unlinked", () => {
+  it("opens a merchant with its type and links a row without a merchant to transactions", () => {
     const [employer, card] = breakdownItems(
       [
         row({ key: M, label: "ZZTEST EMPLOYER", merchant_id: M, category_slug: "salary", level1: "income", count: 2 }),
@@ -62,7 +67,34 @@ describe("breakdownItems", () => {
       count: 2,
     });
     expect(employer.color).toBeUndefined();
-    expect(card).toMatchObject({ name: "No merchant", hint: "Credit card spending · 1 transaction", href: null });
+    expect(card).toMatchObject({
+      name: "No merchant",
+      hint: "Credit card spending · 1 transaction",
+      href: "/transactions?month=2026-08&tx_type=income&category=credit_card_spending&merchant_id=none",
+    });
+  });
+
+  it("maps folded children and keeps each child's link, including a row with no merchant", () => {
+    const noMerchant = row({ key: "category:groceries", category_slug: "groceries", level1: "shopping" });
+    const context = { categories, slots: { shopping: 2 }, filters: augustAccount, good: "down" as const, type: "expense" as const };
+    const [other] = breakdownItems(
+      [row({ key: "_other", folded: 2, rows: [row({ key: M, label: "ZZTEST SHOP", merchant_id: M, category_slug: "groceries" }), noMerchant] })],
+      "merchant",
+      context,
+    );
+    expect(other.href).toBeNull();
+    expect(other.rows?.map((child) => child.href)).toEqual([
+      `/merchants/${M}?month=2026-08&account_id=${A}`,
+      `/transactions?month=2026-08&account_id=${A}&tx_type=expense&category=groceries&merchant_id=none`,
+    ]);
+    const [incomeOther] = breakdownItems([row({ key: "_other", folded: 1, rows: [noMerchant] })], "merchant", {
+      ...context,
+      good: "up",
+      type: "income",
+    });
+    expect(incomeOther.rows?.[0]?.href).toBe(
+      `/transactions?month=2026-08&account_id=${A}&tx_type=income&category=groceries&merchant_id=none`,
+    );
   });
 
   it("links a group to its page and an income category to the income pages", () => {

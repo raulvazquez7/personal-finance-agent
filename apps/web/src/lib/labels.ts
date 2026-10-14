@@ -48,6 +48,9 @@ export function rowHint(row: Row, dimension: Dimension, categories: Category[]):
   }
   if (dimension === "group") return groupHint(row.key, categories);
   if (dimension === "category") return label(row.level1);
+  if (row.category_count > 1) {
+    return `${plural(row.category_count, "category", "categories")} · ${plural(row.count, "transaction", "transactions")}`;
+  }
   return `${label(row.category_slug)} · ${plural(row.count, "transaction", "transactions")}`;
 }
 

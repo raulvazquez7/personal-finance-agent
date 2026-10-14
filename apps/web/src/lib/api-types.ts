@@ -454,6 +454,21 @@ export interface components {
              * @default 0
              */
             folded: number;
+            /**
+             * Rows
+             * @default []
+             */
+            rows: components["schemas"]["BreakdownRow"][];
+            /**
+             * Category Count
+             * @default 1
+             */
+            category_count: number;
+            /**
+             * Top Categories
+             * @default []
+             */
+            top_categories: string[];
         };
         /** CadenceUpdate */
         CadenceUpdate: {

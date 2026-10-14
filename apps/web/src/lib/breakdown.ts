@@ -19,6 +19,7 @@ export type BreakdownItem = {
   amount: string;
   count: number;
   delta: Delta;
+  rows: BreakdownItem[];
 };
 
 export type BreakdownContext = {
@@ -35,8 +36,13 @@ function hrefOf(row: Row, dimension: Dimension, { filters, type }: BreakdownCont
   if (dimension === "category") {
     return withFilters(type === "income" ? `/income/${row.key}` : `/spending/${row.level1 ?? "uncategorized"}/${row.key}`, filters);
   }
-  if (!row.merchant_id) return null;
-  return withFilters(`/merchants/${row.merchant_id}`, filters, { type: type === "income" ? "income" : undefined });
+  if (row.merchant_id) {
+    return withFilters(`/merchants/${row.merchant_id}`, filters, { type: type === "income" ? "income" : undefined });
+  }
+  // A category bucket is not a merchant page. The transactions list keeps the period, accounts and type.
+  const category = row.key.startsWith("category:") ? row.key.slice("category:".length) : row.category_slug;
+  if (!category) return null;
+  return withFilters("/transactions", filters, { tx_type: type, category, merchant_id: "none" });
 }
 
 export function breakdownItems(rows: Row[], dimension: Dimension, context: BreakdownContext): BreakdownItem[] {
@@ -52,5 +58,6 @@ export function breakdownItems(rows: Row[], dimension: Dimension, context: Break
     amount: row.amount,
     count: row.count,
     delta: delta(Number(row.amount), row.previous === null ? null : Number(row.previous), context.good, "percent"),
+    rows: breakdownItems(row.rows, dimension, context),
   }));
 }

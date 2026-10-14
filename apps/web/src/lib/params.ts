@@ -114,7 +114,7 @@ export function parseExplorer(params: SearchParams): ExplorerFilters {
     tx_type: oneOf(TX_TYPES, first(params.tx_type)),
     level1: isSlug(level1) ? level1 : undefined,
     category: isSlug(category) ? category : undefined,
-    merchant_id: isUuid(merchantId) ? merchantId : undefined,
+    merchant_id: merchantId === "none" || isUuid(merchantId) ? merchantId : undefined,
     is_subscription: oneOf(BOOLEANS, first(params.is_subscription)),
     category_source: oneOf(SOURCES, first(params.category_source)),
     needs_review: oneOf(BOOLEANS, first(params.needs_review)),

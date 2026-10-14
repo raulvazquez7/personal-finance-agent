@@ -36,6 +36,9 @@ const row = (fields: Partial<Row> & { key: string }): Row => ({
   previous: null,
   count: 1,
   folded: 0,
+  rows: [],
+  category_count: 1,
+  top_categories: [],
   ...fields,
 });
 
@@ -69,6 +72,9 @@ describe("labels", () => {
     expect(rowHint(row({ key: "fashion", level1: "shopping" }), "category", categories)).toBe("Shopping");
     expect(rowHint(row({ key: "m", category_slug: "groceries", count: 12 }), "merchant", categories)).toBe(
       "Groceries · 12 transactions",
+    );
+    expect(rowHint(row({ key: "m", category_slug: "groceries", category_count: 2, count: 4 }), "merchant", categories)).toBe(
+      "2 categories · 4 transactions",
     );
   });
 

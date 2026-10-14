@@ -37,7 +37,10 @@ export function ExplorerFilters({ search, explorer, categories, merchants }: Pro
     router.push(`${pathname}?${replaceParams(search, changes)}`, { scroll: false });
   // The switch shows only needs_review=true, so only that counts.
   const more = [explorer.is_subscription, explorer.category_source, explorer.needs_review === "true"].filter(Boolean).length;
-  const merchant = merchants.find((m) => m.id === explorer.merchant_id);
+  const merchant =
+    explorer.merchant_id === "none"
+      ? { id: "none", name: "No merchant" }
+      : merchants.find((m) => m.id === explorer.merchant_id);
   const cleared = clearedExplorer(search);
   // The box follows the URL ("Clear filters", Back) without remounting, so it keeps focus after Enter.
   const [q, setQ] = useState(explorer.q ?? "");
@@ -110,6 +113,7 @@ export function ExplorerFilters({ search, explorer, categories, merchants }: Pro
             value={merchant ? { id: merchant.id, name: merchant.name } : null}
             onChange={(choice) => go({ merchant_id: choice?.id ?? undefined })}
             allowCreate={false}
+            allowNone
             showClear
             ariaLabel="Merchant filter"
           />
