@@ -11,10 +11,11 @@ export type QueryResult = Schemas["QueryResult"];
 export type AnswerMeta = { status: ChatMessage["status"]; feedback: ChatMessage["feedback"] };
 
 /** `run_sql`'s output is a QueryResult, or only `{error}` when the per-turn query limit refused
- * the call (plan 4a, ui_stream.py). */
+ * the call (ui_parts in apps/api/finance/agent/ui_stream.py). */
 export type QueryOutput = QueryResult | { error: string };
 
-/** The messages useChat holds: the API's stream parts (plan 4a, Task 9) typed for this app. */
+/** The messages useChat holds: the API's stream parts (ui_parts in apps/api/finance/agent/ui_stream.py)
+ * typed for this app. */
 export type ChatUIMessage = UIMessage<
   AnswerMeta,
   { title: { threadId: string; title: string } },
@@ -104,7 +105,7 @@ export const isRefused = (output: QueryOutput): output is { error: string } => !
 const BUSY = "This chat is still answering. Wait for it or stop it first.";
 
 /** A failed turn or chat request in words. The API's own sentences come through: the stream's
- * `error` part (plan 4a, ERROR_TEXT) and the 409 detail. */
+ * `error` part (ERROR_TEXT in apps/api/finance/agent/service.py) and the 409 detail. */
 export function chatErrorText(error: Error): string {
   const refused = refusal(error);
   if (refused?.status === 409) return refused.detail ?? BUSY;

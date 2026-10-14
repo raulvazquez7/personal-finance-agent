@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
 import { Textarea } from "@/components/ui/textarea";
 
-const TEXT_MAX = 4000; // NewMessage.text: 1-4000 characters (plan 4a, Task 12)
+const TEXT_MAX = 4000; // NewMessage.text in apps/api/finance/api/chat.py: 1-4000 characters
 
 type Props = {
   value: string;

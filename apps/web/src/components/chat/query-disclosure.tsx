@@ -51,7 +51,7 @@ function QueryOutputView({ output }: { output: QueryOutput }) {
     <>
       {output.rows.length > 0 ? (
         // The kit's Table wraps itself in an overflow-x-auto box, which is the sticky header's scroll
-        // container: that box gets the height limit, so the header stays visible (found in 4b Task 3).
+        // container: that box gets the height limit, so the header stays visible.
         <div className="overflow-hidden rounded-lg bg-background *:data-[slot=table-container]:max-h-72">
           <Table>
             <TableHeader>

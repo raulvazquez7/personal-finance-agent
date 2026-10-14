@@ -27,7 +27,7 @@ import { threadTitle } from "@/lib/chat-threads";
 import { ChatHeader } from "./chat-header";
 import { useChats } from "./chats-provider";
 
-const TITLE_MAX = 200; // RenameThread.title: 1-200 characters (plan 4a, Task 12)
+const TITLE_MAX = 200; // RenameThread.title in apps/api/finance/api/chat.py: 1-200 characters
 
 /** The open chat's title, live as it arrives, with Rename and Delete (spec 8 and 10). Delete
  * waits for the answer to end: the API refuses it with 409 while the chat answers. */

@@ -1,4 +1,4 @@
-"""The API with a scripted chat, to check the web chat without model calls (plan 4b, recipe R3).
+"""The API with a scripted chat, to check the web chat without model calls.
 
     cd apps/api && CORS_ORIGINS='["http://localhost:3001"]' \
         uv run python -m tests.scripted_chat_server --port 8001 \
@@ -31,13 +31,13 @@ from langchain_core.messages import AIMessage, AIMessageChunk, HumanMessage, Too
 from langchain_core.outputs import ChatGeneration, ChatGenerationChunk, ChatResult
 from psycopg.conninfo import conninfo_to_dict
 
-ANSWER = """You spent **1,234.56 €** in the period, across 14 movements.
+ANSWER = """You spent **1,012.34 €** in the period, across 14 movements.
 
 | Group | Spent | Share |
 |---|---:|---:|
-| Housing | 700.00 € | 56.7% |
-| Shopping | 334.56 € | 27.1% |
-| Transport | 200.00 € | 16.2% |
+| Housing | 623.45 € | 61.6% |
+| Shopping | 271.13 € | 26.8% |
+| Transport | 117.76 € | 11.6% |
 
 ### How I counted it
 - Dates: the whole month.

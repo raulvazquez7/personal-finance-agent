@@ -11,7 +11,7 @@ import { sendFeedback } from "@/lib/chat-api";
 
 type Value = "up" | "down";
 
-const COMMENT_MAX = 1000; // FeedbackBody.comment (plan 4a, Task 12)
+const COMMENT_MAX = 1000; // FeedbackBody.comment in apps/api/finance/api/chat.py
 
 /** Thumbs on an answer (spec 8 and 11): up is sent at once; down asks for an optional comment
  * first, so one request carries both. The answer's trace in Langfuse gets the score. */

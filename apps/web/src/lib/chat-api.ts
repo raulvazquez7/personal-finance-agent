@@ -3,7 +3,7 @@ import { DefaultChatTransport } from "ai";
 import { API_URL, apiDelete, apiGet, apiPatch, apiPost } from "@/lib/api";
 import { newMessageBody, type ChatMessage, type ChatUIMessage, type Thread } from "@/lib/chat";
 
-/** The chat routes of plan 4a (Task 12). Every one answers 503 while the chat is not set up. */
+/** The chat routes in apps/api/finance/api/chat.py. Every one answers 503 while the chat is not set up. */
 export const listThreads = () => apiGet<Thread[]>("/chat/threads");
 export const listMessages = (threadId: string) => apiGet<ChatMessage[]>(`/chat/threads/${threadId}/messages`);
 export const createThread = () => apiPost<Thread>("/chat/threads");
