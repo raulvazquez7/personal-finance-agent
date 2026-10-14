@@ -25,9 +25,11 @@ import json
 import os
 import sys
 
+import psycopg
 from langchain_core.language_models import BaseChatModel
 from langchain_core.messages import AIMessage, AIMessageChunk, HumanMessage, ToolMessage
 from langchain_core.outputs import ChatGeneration, ChatGenerationChunk, ChatResult
+from psycopg.conninfo import conninfo_to_dict
 
 ANSWER = """You spent **1,234.56 €** in the period, across 14 movements.
 
@@ -82,6 +84,15 @@ def _reply(messages) -> tuple[AIMessage, float]:
     if keyword == "error":
         return AIMessage("I could not run that query: one of its columns does not exist."), 0.03
     return AIMessage(ANSWER), 0.03
+
+
+def is_scratch_database(url: str) -> bool:
+    """Whether the database psycopg would open for this URL is a scratch copy."""
+    try:
+        name = conninfo_to_dict(url).get("dbname") or ""
+    except psycopg.Error:
+        return False
+    return str(name).startswith("scratch_")
 
 
 class ScriptedAgent(BaseChatModel):
@@ -153,7 +164,7 @@ if __name__ == "__main__":
     parser.add_argument("--port", type=int, default=8001)
     parser.add_argument("--disabled", action="store_true", help="answer 503, as without a key")
     args = parser.parse_args()
-    if not args.db_url.rsplit("/", 1)[-1].startswith("scratch_"):
+    if not is_scratch_database(args.db_url):
         sys.exit("Refusing a database whose name does not start with scratch_ (see recipe R3).")
     # Before finance is imported: the settings and the Langfuse client read these once.
     os.environ["SUPABASE_DB_URL"] = args.db_url
