@@ -5,7 +5,7 @@ from langgraph.checkpoint.memory import InMemorySaver
 from langgraph.graph.message import REMOVE_ALL_MESSAGES
 
 from finance.agent.graph import AgentContext, ChatModels, build_agent
-from finance.agent.middleware import INFRA_MESSAGE
+from finance.agent.middleware import INFRA_MESSAGE, LIMIT_MESSAGE
 from finance.agent.models import QueryResult
 from finance.agent.tools import make_run_sql
 from finance.agent.ui_stream import TurnRecord, sse, ui_parts
@@ -69,7 +69,9 @@ def test_the_model_call_limit_notice_reaches_the_user():
     calls = [tool_call(f"SELECT {n}", f"c{n}") for n in range(3)]
     parts, record = _parts(calls, max_sql_calls_per_turn=1, max_model_calls_per_turn=2)
     assert parts[-1]["type"] == "text-end"
-    assert record.texts[-1].startswith("Model call limits exceeded")
+    assert record.texts[-1] == LIMIT_MESSAGE
+    deltas = [p["delta"] for p in parts if p["type"] == "text-delta"]
+    assert deltas[-1] == LIMIT_MESSAGE
 
 
 def test_reaching_the_query_limit_is_recorded():

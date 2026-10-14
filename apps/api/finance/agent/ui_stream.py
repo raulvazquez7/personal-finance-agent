@@ -12,7 +12,7 @@ from dataclasses import dataclass, field
 
 from langchain_core.messages import AIMessage, RemoveMessage, ToolMessage
 
-from finance.agent.middleware import NOTICE_NODES
+from finance.agent.middleware import LIMIT_MESSAGE, NOTICE_NODES
 from finance.agent.models import QueryResult
 
 UI_STREAM_HEADERS = {
@@ -50,12 +50,15 @@ async def ui_parts(stream: AsyncIterator[dict], record: TurnRecord) -> AsyncIter
                 continue  # the summarizer's own model call streams under its middleware node
             if not chunk.text:
                 continue
+            # The limit notice arrives whole, once (a node's output, not a model stream); the
+            # user reads our sentence, the checkpoint keeps LangChain's for the model.
+            text = LIMIT_MESSAGE if node == "ModelCallLimitMiddleware.before_model" else chunk.text
             if text_id is None:
                 text_id = f"text-{len(record.texts)}"
                 record.texts.append("")
                 yield {"type": "text-start", "id": text_id}
-            record.texts[-1] += chunk.text
-            yield {"type": "text-delta", "id": text_id, "delta": chunk.text}
+            record.texts[-1] += text
+            yield {"type": "text-delta", "id": text_id, "delta": text}
             continue
         for node, update in part["data"].items():
             messages = update.get("messages", []) if isinstance(update, dict) else []

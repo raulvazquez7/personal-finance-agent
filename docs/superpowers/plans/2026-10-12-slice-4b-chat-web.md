@@ -13,7 +13,7 @@
 **How this plan was validated:** on 2026-10-12, in a sandbox copy of the repo with plan 4a implemented and its tests passing, against a throwaway Postgres 17 holding the migrations, the seed and a synthetic month in 1999:
 
 - The 4a stream of seven scripted scenarios (an answer with a query, text only, a model failure, a failed query, 500 rows, two queries, the query limit), captured with curl, was parsed with `ai@7.0.137`'s own `parseJsonEventStream` and `uiMessageChunkSchema` (every part valid) and turned into messages with `readUIMessageStream`. The shapes are in "The stream as useChat sees it".
-- Every file below was written in a copy of `apps/web` and checked at the state each task leaves it in: `npm run lint`, `npx tsc --noEmit`, `npm test` (89 tests: 72 existing and 17 new) and `npm run build` all green. `apps/api/tests/scripted_chat_server.py` passes `ruff check` and `ruff format --check`.
+- Every file below was written in a copy of `apps/web` and checked at the state each task leaves it in: `npm run lint`, `npx tsc --noEmit`, `npm test` (89 tests: 72 existing and 17 new; 18 new after the isRefused amendment) and `npm run build` all green. `apps/api/tests/scripted_chat_server.py` passes `ruff check` and `ruff format --check`.
 - The flows were run with `agent-browser` against the 4a API on scripted models (the server of Task 2), in `next dev` (React's development double rendering included): a new chat from an example and from the box, the answer streaming across the move to `/chat/<id>` with the title arriving mid-answer, the query disclosure (two queries, a failed query, 500 rows cut at 200), Stop, a stream error, a 409 from a second turn, reload, leaving a chat mid-answer and coming back, rename (focus back on Rename), delete, thumbs up and thumbs down with a comment (stored, shown after reload), the 503 state, the API stopped, a 480 px tall window and a 390 px phone with the chats sheet.
 - Two 4a defects were found and reproduced (P1, P2 below); both are now fixed in plan 4a, with tests.
 
@@ -29,7 +29,7 @@ Validated with `ai` 7.0.137 on the 4a stream:
 | `tool-input-available` (`toolName: "run_sql"`) | a part `{ type: "tool-run_sql", toolCallId, state: "input-available", input: { sql } }` (a static tool: no `dynamic` flag, so the type is `tool-<name>`) |
 | `tool-output-available` | the same part with `state: "output-available"` and `output`: the `QueryResult` (`sql, columns, rows, row_count, truncated, duration_ms, error, hint, infra_error`), or `{error}` alone when the query limit refused the call |
 | `text-start/delta/end` (`text-0`, `text-1`…) | one `{ type: "text", text, state: "streaming" \| "done" }` part per text id, in order with the tool parts |
-| `data-title` `{data: {threadId, title}}` | the `onData` callback, and also a `{ type: "data-title", data }` part in the answer (4a sends no `transient` flag); the UI skips that part when rendering |
+| `data-title` `{data: {threadId, title}, transient: true}` | the `onData` callback only (Task 0 adds `transient`; before it, the part also landed in the answer's parts, which `answerBlocks` skips anyway) |
 | `error` `{errorText}` | useChat stops reading: `status` `"error"`, `error.message` = the API's `ERROR_TEXT`; the parts before it stay; `finish` and `[DONE]` are not read |
 | an HTTP refusal before the stream (404, 409, 422, 503) | an `APICallError` with `statusCode` and `responseBody` (FastAPI's JSON); the question stays in `messages`, with no answer |
 
@@ -52,6 +52,16 @@ Found while validating this plan against 4a's API in a browser, and fixed in pla
 - **D. A scripted chat server is committed** at `apps/api/tests/scripted_chat_server.py` (Task 2): every chat check runs on it (recipe R3) without model spend, now and in later slices. It refuses any database not named `scratch_*`.
 - **E. Navigation.** "Chat" sits between Subscriptions and Review. A thread without a title reads "Untitled chat", never "New chat", which names the button.
 - **F. Conflict to settle: shadcn's chat components.** `.claude/skills/shadcn/rules/chat.md` (installed with the shadcn skill) asks for shadcn's `message-scroller`, `message`, `bubble` and `marker`, which now exist for `base` too (`npx shadcn@latest add message-scroller message bubble marker --dry-run` lists them; they depend on `@shadcn/react` 0.3.1 and would overwrite the local `button.tsx`), and says not to use a stick-to-bottom hook. Spec 10, decided on 2026-10-12, chose `use-stick-to-bottom` and own components. This plan follows spec 10; switching later touches only `conversation.tsx` and `chat-message.tsx`.
+
+### Decided with Raul on 2026-10-12
+
+A to F as written. On the carry-overs from the 4a reviews:
+
+- **CORS:** no `expose_headers` (checked in `ai` 7.0.137: the transport never reads the header).
+- **`data-title` is transient:** the API sends it with `"transient": true`, so useChat passes it to `onData` only and it never enters an answer's parts (Task 0; checked in `ai` 7.0.137's `processUIMessageStream`).
+- **Limit copy:** the model-call limit notice reaches the user as `LIMIT_MESSAGE` (Task 0), not LangChain's text; a query the per-turn limit refused (`{error}` without `rows`) reads "Not run: this answer had already used its query limit." and counts as "not run", not "failed" (Tasks 1 and 3).
+- **Rename keeps the chat's place:** the list is ordered by activity; renaming does not touch `updated_at` (Task 0) and the provider patches the title in place (Task 3).
+- **Backlog 8:** nothing extra in the UI; the query disclosure is the visibility.
 
 ## Global Constraints
 
@@ -171,6 +181,70 @@ Expected: no errors; 72 tests pass.
 
 ---
 
+### Task 0: Backend carry-overs from the 4a reviews
+
+**Files:**
+- Modify: `apps/api/finance/agent/service.py`, `apps/api/finance/agent/ui_stream.py`, `apps/api/finance/agent/middleware.py`, `apps/api/finance/agent/store.py`
+- Test: `apps/api/tests/test_ui_stream.py`, `apps/api/tests/test_chat_api.py`
+
+**Interfaces:**
+- Produces: `data-title` parts carry `"transient": True`; `finance.agent.middleware.LIMIT_MESSAGE`; `PATCH /chat/threads/{id}` leaves `updated_at` unchanged.
+
+- [ ] **Step 1: Write the failing tests**
+
+In `apps/api/tests/test_ui_stream.py`, `test_the_model_call_limit_notice_reaches_the_user`: import `LIMIT_MESSAGE` from `finance.agent.middleware` and replace `assert record.texts[-1].startswith("Model call limits exceeded")` with:
+
+```python
+    assert record.texts[-1] == LIMIT_MESSAGE
+    deltas = [p["delta"] for p in parts if p["type"] == "text-delta"]
+    assert deltas[-1] == LIMIT_MESSAGE
+```
+
+In `apps/api/tests/test_chat_api.py`, the `data-title` part the first-turn test expects becomes:
+
+```python
+    assert {
+        "type": "data-title",
+        "data": {"threadId": thread["id"], "title": "Movement count"},
+        "transient": True,
+    } in events
+```
+
+and `test_threads_can_be_renamed_and_deleted_and_unknown_ones_are_404` returns the created `thread` too and asserts `renamed["updated_at"] == thread["updated_at"]` (renaming is not activity: the list keeps its order).
+
+Run: `cd apps/api && uv run pytest tests/test_ui_stream.py -q && uv run pytest -m integration tests/test_chat_api.py -q`
+Expected: the three changed assertions fail.
+
+- [ ] **Step 2: Make them pass**
+
+In `apps/api/finance/agent/middleware.py`, next to `INFRA_MESSAGE`:
+
+```python
+# What the user reads when ModelCallLimitMiddleware ends a turn (its own text names the limit).
+LIMIT_MESSAGE = (
+    "I stopped before finishing: this question needed more steps than one answer allows. "
+    "Try a narrower question."
+)
+```
+
+In `apps/api/finance/agent/ui_stream.py`, the text of a chunk from the node `"ModelCallLimitMiddleware.before_model"` is `LIMIT_MESSAGE` instead of `chunk.text` (both in what is streamed and in `record.texts`, so the saved answer and `finance chat` read the same sentence). The checkpoint keeps LangChain's message: the model may read it on the next turn.
+
+In `apps/api/finance/agent/service.py`, `_title` puts `{"type": "data-title", "data": {...}, "transient": True}` on the queue (AI SDK: a transient data part reaches `onData` only, never the message's parts).
+
+In `apps/api/finance/agent/store.py`, `rename_thread` sets only `title` and `title_source` (drop `, updated_at = now()`).
+
+Run the commands of Step 1, then `cd apps/api && uv run task lint && uv run task test && uv run task test-integration`.
+Expected: all pass.
+
+- [ ] **Step 3: Commit**
+
+```bash
+git add apps/api/finance/agent apps/api/tests/test_ui_stream.py apps/api/tests/test_chat_api.py
+git commit -m "fix: readable limit notice, transient chat title, rename keeps the chat's place"
+```
+
+---
+
 ### Task 1: Chat dependencies and the chat model in `src/lib`
 
 **Files:**
@@ -183,7 +257,7 @@ Expected: no errors; 72 tests pass.
 - Consumes: `Schemas` from `@/lib/api` (`Thread`, `ChatMessage`, `QueryResult`), `API_URL`, `apiGet`, `apiPatch`, `apiDelete`.
 - Produces:
   - `@/lib/api`: `apiGet` throws `ApiError(status, detail, message)` (it threw a plain `Error`; `ApiError` extends `Error` with the same message, so existing callers are unchanged); `apiPost<T = void>(path, body?, init?) → Promise<T>`.
-  - `@/lib/chat`: types `Thread`, `ChatMessage`, `QueryResult`, `AnswerMeta = { status, feedback }`, `QueryOutput = QueryResult | { error: string }`, `ChatUIMessage` (`UIMessage<AnswerMeta, { title: { threadId, title } }, { run_sql: { input: { sql }, output: QueryOutput } }>`), `ChatPart`, `QueryPart` (the `tool-run_sql` part), `Block`; functions `toUIMessages(history: ChatMessage[]): ChatUIMessage[]`, `newMessageBody(messages): { text: string }` (throws unless the last message is the user's), `unanswered(messages): string | null`, `answerBlocks(parts): Block[]`, `isThinking(messages): boolean`, `rowsLabel(result: QueryResult): string`, `chatErrorText(error: Error): string`.
+  - `@/lib/chat`: types `Thread`, `ChatMessage`, `QueryResult`, `AnswerMeta = { status, feedback }`, `QueryOutput = QueryResult | { error: string }`, `ChatUIMessage` (`UIMessage<AnswerMeta, { title: { threadId, title } }, { run_sql: { input: { sql }, output: QueryOutput } }>`), `ChatPart`, `QueryPart` (the `tool-run_sql` part), `Block`; functions `toUIMessages(history: ChatMessage[]): ChatUIMessage[]`, `newMessageBody(messages): { text: string }` (throws unless the last message is the user's), `unanswered(messages): string | null`, `answerBlocks(parts): Block[]`, `isThinking(messages): boolean`, `rowsLabel(result: QueryResult): string`, `isRefused(output: QueryOutput): output is { error: string }`, `chatErrorText(error: Error): string`.
   - `@/lib/chat-threads`: `threadTitle(thread)`, `putFirst(threads, thread)`, `patchThread(threads, id, patch)`, `moveFirst(threads, id)`, `dropThread(threads, id)`.
   - `@/lib/chat-api`: `listThreads()`, `listMessages(threadId)`, `createThread()`, `renameThread(threadId, title)`, `deleteThread(threadId)`, `sendFeedback(messageId, value, comment?)`, `chatTransport` (a `DefaultChatTransport<ChatUIMessage>`).
 
@@ -214,6 +288,7 @@ import { ApiError } from "./api";
 import {
   answerBlocks,
   chatErrorText,
+  isRefused,
   isThinking,
   newMessageBody,
   rowsLabel,
@@ -348,6 +423,14 @@ describe("rowsLabel", () => {
   });
 });
 
+describe("isRefused", () => {
+  it("tells a query the limit refused from one that ran or failed", () => {
+    expect(isRefused({ error: "Tool call limit exceeded." })).toBe(true);
+    expect(isRefused(query({ error: "column x does not exist" }))).toBe(false);
+    expect(isRefused(query())).toBe(false);
+  });
+});
+
 describe("chatErrorText", () => {
   const refused = (statusCode: number, responseBody: string) =>
     new APICallError({ message: responseBody, url: "http://localhost:8000/chat", requestBodyValues: {}, statusCode, responseBody });
@@ -398,7 +481,7 @@ describe("thread list", () => {
     expect([threadTitle(list[0]), threadTitle(list[1])]).toEqual(["Groceries", "Untitled chat"]);
   });
 
-  it("puts a new or renamed thread first, once", () => {
+  it("puts a new thread first, once", () => {
     expect(putFirst(list, thread("d")).map((t) => t.id)).toEqual(["d", "a", "b", "c"]);
     expect(putFirst(list, thread("c", "Holidays")).map((t) => [t.id, t.title])).toEqual([
       ["c", "Holidays"],
@@ -608,6 +691,9 @@ export function rowsLabel(result: QueryResult): string {
   return result.row_count === 1 ? "1 row" : `${result.row_count} rows`;
 }
 
+/** A query the per-turn limit refused: the API sends only `{error}`, without rows. */
+export const isRefused = (output: QueryOutput): output is { error: string } => !("rows" in output);
+
 const BUSY = "This chat is still answering. Wait for it or stop it first.";
 
 /** A failed turn or chat request in words. The API's own sentences come through: the stream's
@@ -644,8 +730,8 @@ import type { Thread } from "@/lib/chat";
  * "New chat", which names the button that starts one. */
 export const threadTitle = (thread: Thread) => thread.title ?? "Untitled chat";
 
-/** The sidebar's list, newest activity first like GET /chat/threads: a thread that is created,
- * renamed or has just answered moves to the top. */
+/** The sidebar's list, newest activity first like GET /chat/threads: a thread that is created
+ * or has just answered moves to the top (a rename keeps its place). */
 export const putFirst = (threads: Thread[], thread: Thread) => [thread, ...threads.filter((t) => t.id !== thread.id)];
 
 export const patchThread = (threads: Thread[], id: string, patch: Partial<Thread>) =>
@@ -693,10 +779,10 @@ export const chatTransport = new DefaultChatTransport<ChatUIMessage>({
 - [ ] **Step 8: Run the tests and the gate**
 
 Run: `cd apps/web && npx vitest run src/lib/chat.test.ts src/lib/chat-threads.test.ts`
-Expected: 17 passed.
+Expected: 18 passed.
 
 Run: `cd apps/web && npm run lint && npx next typegen && npx tsc --noEmit && npm test && npm run build`
-Expected: no errors; 89 tests pass.
+Expected: no errors; 90 tests pass.
 
 - [ ] **Step 9: Commit**
 
@@ -1043,7 +1129,7 @@ export function ChatsProvider({ initialThreads, children }: { initialThreads: Th
       threads,
       chatFor,
       added: (thread) => setThreads((all) => putFirst(all, thread)),
-      renamed: (thread) => setThreads((all) => putFirst(all, thread)),
+      renamed: (thread) => setThreads((all) => patchThread(all, thread.id, thread)),
       deleted: (threadId) => {
         live.delete(threadId);
         setThreads((all) => dropThread(all, threadId));
@@ -1118,21 +1204,32 @@ Create `apps/web/src/components/chat/chat-header.tsx`:
 "use client";
 
 import { PanelLeft } from "lucide-react";
-import { useState, type ReactNode } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 
 import { ThreadList } from "./thread-list";
 
+// Picking a chat in the sheet opens a page with a new header, and the old trigger goes with the
+// old page: the new trigger takes the focus, so it never drops to the page. Only when it did drop:
+// picking the open chat keeps this header, and the flag outlives it.
+let focusTriggerOnMount = false;
+
 /** The chat's title row: the page's heading and actions. Below md the sidebar is a sheet,
  * opened from here. */
 export function ChatHeader({ children }: { children: ReactNode }) {
   const [open, setOpen] = useState(false);
+  const trigger = useRef<HTMLButtonElement>(null);
+  useEffect(() => {
+    if (!focusTriggerOnMount) return;
+    focusTriggerOnMount = false;
+    if (document.activeElement === document.body) trigger.current?.focus();
+  }, []);
   return (
     <header className="flex min-h-9 shrink-0 items-center gap-2">
       <Sheet open={open} onOpenChange={setOpen}>
-        <SheetTrigger render={<Button variant="ghost" size="icon" className="md:hidden" aria-label="Chats" />}>
+        <SheetTrigger ref={trigger} render={<Button variant="ghost" size="icon" className="md:hidden" aria-label="Chats" />}>
           <PanelLeft />
         </SheetTrigger>
         <SheetContent side="left" className="data-[side=left]:w-72">
@@ -1140,7 +1237,12 @@ export function ChatHeader({ children }: { children: ReactNode }) {
             <SheetTitle>Chats</SheetTitle>
           </SheetHeader>
           <div className="flex min-h-0 flex-1 flex-col px-4 pb-4">
-            <ThreadList onNavigate={() => setOpen(false)} />
+            <ThreadList
+              onNavigate={() => {
+                focusTriggerOnMount = true;
+                setOpen(false);
+              }}
+            />
           </div>
         </SheetContent>
       </Sheet>
@@ -1162,7 +1264,7 @@ import { useStickToBottomContext } from "use-stick-to-bottom";
 
 import { Spinner } from "@/components/ui/spinner";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { rowsLabel, type QueryOutput, type QueryPart } from "@/lib/chat";
+import { isRefused, rowsLabel, type QueryOutput, type QueryPart } from "@/lib/chat";
 
 /** The queries behind an answer (spec 10): closed by default, each with its SQL and the rows it
  * returned, or its error. The answer itself never names tables or SQL (spec 6). */
@@ -1171,7 +1273,10 @@ export function QueryDisclosure({ queries }: { queries: QueryPart[] }) {
   // the user asked to read out of view. Scrolling back down (or the arrow) re-attaches.
   const { stopScroll } = useStickToBottomContext();
   const running = queries.some((query) => query.state !== "output-available");
-  const failed = queries.filter((query) => query.state === "output-available" && query.output.error).length;
+  const outputs = queries.flatMap((query) => (query.state === "output-available" ? [query.output] : []));
+  const failed = outputs.filter((output) => !isRefused(output) && output.error).length;
+  const notRun = outputs.filter(isRefused).length;
+  const notes = [failed ? `${failed} failed` : "", notRun ? `${notRun} not run` : ""].filter(Boolean).join(", ");
   const count = queries.length === 1 ? "1 query" : `${queries.length} queries`;
   return (
     <details className="group rounded-xl bg-card text-sm">
@@ -1180,7 +1285,7 @@ export function QueryDisclosure({ queries }: { queries: QueryPart[] }) {
         {running ? <Spinner /> : null}
         <span>
           {running ? "Running a query…" : `Ran ${count}`}
-          {failed ? ` (${failed} failed)` : null}
+          {notes ? ` (${notes})` : null}
         </span>
       </summary>
       <ol className="flex flex-col gap-4 px-3 pb-3">
@@ -1199,12 +1304,14 @@ export function QueryDisclosure({ queries }: { queries: QueryPart[] }) {
 }
 
 function QueryOutputView({ output }: { output: QueryOutput }) {
+  if (isRefused(output)) return <p className="text-muted-foreground">Not run: this answer had already used its query limit.</p>;
   if (output.error) return <p className="text-bad">This query failed: {output.error}</p>;
-  if (!("rows" in output)) return null;
   return (
     <>
       {output.rows.length > 0 ? (
-        <div className="max-h-72 overflow-auto rounded-lg bg-background">
+        // The kit's Table wraps itself in an overflow-x-auto box, which is the sticky header's scroll
+        // container: that box gets the height limit, so the header stays visible (found in 4b Task 3).
+        <div className="overflow-hidden rounded-lg bg-background *:data-[slot=table-container]:max-h-72">
           <Table>
             <TableHeader>
               <TableRow className="hover:bg-transparent">
@@ -1321,7 +1428,14 @@ export function Conversation({ threadId, history }: { threadId: string; history:
       <ChatHeader>
         <h1 className="min-w-0 flex-1 truncate font-semibold tracking-tight">{thread ? threadTitle(thread) : "Chat"}</h1>
       </ChatHeader>
-      <StickToBottom className="relative min-h-0 flex-1" initial="instant" resize="smooth" role="log" aria-label="Conversation">
+      <StickToBottom
+        className="relative min-h-0 flex-1 rounded-xl outline-none focus-visible:ring-3 focus-visible:ring-ring/50"
+        initial="instant"
+        resize="smooth"
+        role="log"
+        aria-label="Conversation"
+        tabIndex={-1}
+      >
         <StickToBottom.Content className="mx-auto flex w-full max-w-3xl flex-col gap-6 py-2">
           {messages.map((message) => (
             <ChatMessageView key={message.id} message={message} live={false} />
@@ -1342,7 +1456,12 @@ function ScrollToLatest() {
       size="icon"
       aria-label="Scroll to the latest message"
       className="absolute bottom-3 left-1/2 -translate-x-1/2 rounded-full shadow-sm"
-      onClick={() => void scrollToBottom()}
+      onClick={(event) => {
+        // The button disappears once the view is at the bottom: focus moves to the conversation
+        // first, so it never drops to the page.
+        event.currentTarget.closest<HTMLElement>("[role=log]")?.focus({ preventScroll: true });
+        void scrollToBottom();
+      }}
     >
       <ArrowDown />
     </Button>
@@ -1624,7 +1743,15 @@ export function Conversation({ threadId, history }: { threadId: string; history:
       <ChatHeader>
         <h1 className="min-w-0 flex-1 truncate font-semibold tracking-tight">{thread ? threadTitle(thread) : "Chat"}</h1>
       </ChatHeader>
-      <StickToBottom className="relative min-h-0 flex-1" initial="instant" resize="smooth" role="log" aria-label="Conversation" aria-busy={answering}>
+      <StickToBottom
+        className="relative min-h-0 flex-1 rounded-xl outline-none focus-visible:ring-3 focus-visible:ring-ring/50"
+        initial="instant"
+        resize="smooth"
+        role="log"
+        aria-label="Conversation"
+        aria-busy={answering}
+        tabIndex={-1}
+      >
         <StickToBottom.Content className="mx-auto flex w-full max-w-3xl flex-col gap-6 py-2">
           {messages.map((message) => (
             <ChatMessageView key={message.id} message={message} live={answering && message === last} />
@@ -1654,7 +1781,12 @@ function ScrollToLatest() {
       size="icon"
       aria-label="Scroll to the latest message"
       className="absolute bottom-3 left-1/2 -translate-x-1/2 rounded-full shadow-sm"
-      onClick={() => void scrollToBottom()}
+      onClick={(event) => {
+        // The button disappears once the view is at the bottom: focus moves to the conversation
+        // first, so it never drops to the page.
+        event.currentTarget.closest<HTMLElement>("[role=log]")?.focus({ preventScroll: true });
+        void scrollToBottom();
+      }}
     >
       <ArrowDown />
     </Button>
@@ -2227,7 +2359,7 @@ Replace `apps/web/src/components/chat/conversation.tsx` with:
 
 import { useChat } from "@ai-sdk/react";
 import { ArrowDown } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { StickToBottom, useStickToBottomContext } from "use-stick-to-bottom";
 
 import { Button } from "@/components/ui/button";
@@ -2249,6 +2381,12 @@ export function Conversation({ threadId, history }: { threadId: string; history:
   const thread = threads.find((t) => t.id === threadId);
   const last = messages.at(-1);
   const thinking = answering && isThinking(messages);
+
+  useEffect(() => {
+    // A new chat arrives here from /chat while it answers; the box it was asked from is gone.
+    const answeringOnArrival = chat.status === "submitted" || chat.status === "streaming";
+    if (answeringOnArrival && document.activeElement === document.body) document.getElementById("chat-question")?.focus();
+  }, [chat]);
 
   async function send(text: string) {
     setDraft("");
@@ -2276,7 +2414,15 @@ export function Conversation({ threadId, history }: { threadId: string; history:
           <h1 className="min-w-0 flex-1 truncate font-semibold tracking-tight">Chat</h1>
         </ChatHeader>
       )}
-      <StickToBottom className="relative min-h-0 flex-1" initial="instant" resize="smooth" role="log" aria-label="Conversation" aria-busy={answering}>
+      <StickToBottom
+        className="relative min-h-0 flex-1 rounded-xl outline-none focus-visible:ring-3 focus-visible:ring-ring/50"
+        initial="instant"
+        resize="smooth"
+        role="log"
+        aria-label="Conversation"
+        aria-busy={answering}
+        tabIndex={-1}
+      >
         <StickToBottom.Content className="mx-auto flex w-full max-w-3xl flex-col gap-6 py-2">
           {messages.map((message) => (
             <ChatMessageView key={message.id} message={message} live={answering && message === last} onFeedback={saveFeedback} />
@@ -2306,7 +2452,12 @@ function ScrollToLatest() {
       size="icon"
       aria-label="Scroll to the latest message"
       className="absolute bottom-3 left-1/2 -translate-x-1/2 rounded-full shadow-sm"
-      onClick={() => void scrollToBottom()}
+      onClick={(event) => {
+        // The button disappears once the view is at the bottom: focus moves to the conversation
+        // first, so it never drops to the page.
+        event.currentTarget.closest<HTMLElement>("[role=log]")?.focus({ preventScroll: true });
+        void scrollToBottom();
+      }}
     >
       <ArrowDown />
     </Button>
@@ -2327,7 +2478,7 @@ Set up R3. With the session `slice4b-scratch`, start a chat from `/chat` with `h
 
 1. Thumbs: under the answer, "Good answer" and "Bad answer" in a group "Rate this answer". Click Good answer: a toast "Thanks for the feedback" and `aria-pressed="true"` on it. Click Bad answer: a popover with the field "What was wrong? (optional)"; type `The total misses a refund`, click Send: the toast, Bad answer pressed, Good answer not. Reload: Bad answer still pressed. The database agrees: `PGPASSWORD=postgres psql -h 127.0.0.1 -p 54322 -U postgres scratch_review -tAc "select feedback from chat_messages where role = 'assistant' order by created_at desc limit 1"` prints `down`.
 2. No thumbs under a stopped or failed answer: ask `please fail`: "This answer did not finish." and no "Rate this answer" group under it.
-3. Rename: click "Rename this chat": a field "Chat name" holding the title, focused. Press Escape: the title is back and `eval "document.activeElement.getAttribute('aria-label')"` is `"Rename this chat"`. Rename again to `January spending`, press Enter: the h1 and the list show it, the chat moves to the top, and focus is on Rename again. Reload: the name stays.
+3. Rename: click "Rename this chat": a field "Chat name" holding the title, focused. Press Escape: the title is back and `eval "document.activeElement.getAttribute('aria-label')"` is `"Rename this chat"`. Rename again to `January spending`, press Enter: the h1 and the list show it, the chat keeps its place in the list, and focus is on Rename again. Reload: the name stays.
 4. Delete: ask `slow please`; while it streams, "Delete this chat" is disabled. Stop it. Click Delete this chat: a dialog "Delete this chat?" quoting “January spending”; Cancel closes it. Open it again and click Delete: `/chat`, and the chat is gone from the list. `open` its old URL: the 404 page.
 5. Screenshot `task6-feedback.png`. `errors` (none), `close`. Finish R3.
 
@@ -2416,6 +2567,6 @@ Expected: the spec's slice 4 "done" list for the web holds: `/chat` passed an `a
 
 ## Notes for the executor
 
-- **Order:** Before Task 1 → Tasks 1 to 7. Task 2 must come before Task 3 (every browser check uses its server). Tasks 3 to 6 each leave a working app: `/chat` itself and the "Chat" navigation entry arrive in Task 5, so Tasks 3 and 4 are checked on chats created with curl.
-- **Known gaps, accepted:** a chat continued in another tab or in `finance chat` shows those turns only after a reload; P3 (the title of a stopped first turn appears after a reload); P4 (one `user-feedback` score per click); the database-down notice (`INFRA_MESSAGE`) streams as a normal answer with thumbs, while the history stores it as `error` and shows "This answer did not finish." after a reload.
+- **Order:** Before Task 1 → Task 0 → Tasks 1 to 7. Task 2 must come before Task 3 (every browser check uses its server). Tasks 3 to 6 each leave a working app: `/chat` itself and the "Chat" navigation entry arrive in Task 5, so Tasks 3 and 4 are checked on chats created with curl.
+- **Known gaps, accepted:** a chat continued in another tab or in `finance chat` shows those turns only after a reload; P3 (the title of a stopped first turn appears after a reload); P4 (one `user-feedback` score per click); the database-down notice (`INFRA_MESSAGE`) streams as a normal answer with thumbs, while the history stores it as `error` and shows "This answer did not finish." after a reload; leaving `/chat` for another page while an answer streams: coming back shows the question without the answer until a reload, and a new question meanwhile gets 409; a query refused by the per-turn limit shows live as "not run" but is not saved, so after a reload the query count drops by one; a failed first turn may get no live title (4a never awaits the title task on failure).
 - **Not in this plan:** resuming an answer after a reload (the reload stops it, which saves it as stopped), editing or regenerating a question, charts in the chat, AI Elements (spec 10), shadcn's `message-scroller` (Decision F), dark mode, Playwright tests (v2).

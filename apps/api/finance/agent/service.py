@@ -190,9 +190,9 @@ class ChatService:
             self.title_model, text, self.chat.title_max_chars, config
         )
         if await store.set_generated_title(self.pool, thread.id, title, source):
-            await queue.put(
-                {"type": "data-title", "data": {"threadId": str(thread.id), "title": title}}
-            )
+            data = {"threadId": str(thread.id), "title": title}
+            # Transient: AI SDK hands it to onData only, never to the answer's parts.
+            await queue.put({"type": "data-title", "data": data, "transient": True})
 
     async def _save(
         self,
