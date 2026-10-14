@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useRef, useState } from "react";
+import { useLayoutEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -37,6 +37,8 @@ export function CadenceSelect({
 }) {
   const router = useRouter();
   const triggerRef = useRef<HTMLButtonElement>(null);
+  // Set only on a failed save. The trigger is disabled until pending clears, and a disabled button ignores focus().
+  const restoreFocus = useRef(false);
   // Auto while detection is in charge, or when nothing is detected yet. A user choice shows that value.
   const fromServer: Choice = source === "auto" || cadence === null ? "auto" : cadence;
   const [value, setValue] = useState(fromServer);
@@ -46,6 +48,12 @@ export function CadenceSelect({
     setSeen(fromServer);
     setValue(fromServer);
   }
+
+  useLayoutEffect(() => {
+    if (pending || !restoreFocus.current) return;
+    restoreFocus.current = false;
+    triggerRef.current?.focus();
+  }, [pending]);
 
   // The menu says "Auto". The trigger names the detected cadence, or plain "Auto" when there is none.
   const items = OPTIONS.map((option) =>
@@ -62,8 +70,7 @@ export function CadenceSelect({
     } catch (error) {
       setValue(previous);
       toast.error(error instanceof ApiError && error.detail ? error.detail : "Could not update the cadence.");
-      // The trigger stays mounted, so focus can return after the failed request re-enables it.
-      requestAnimationFrame(() => triggerRef.current?.focus());
+      restoreFocus.current = true;
       return;
     } finally {
       setPending(false);
