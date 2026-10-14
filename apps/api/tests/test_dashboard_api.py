@@ -1,4 +1,4 @@
-from datetime import date
+from datetime import date, timedelta
 from decimal import Decimal
 from uuid import uuid4
 
@@ -187,3 +187,56 @@ def test_a_subscription_is_active_relative_to_the_latest_import(client, db_conn,
     # Only the synthetic names: a failure never prints the real ledger's merchants.
     listed = {s["merchant_name"] for s in items if s["merchant_name"].startswith("ZZTEST")}
     assert listed == {"ZZTEST STREAM"}
+
+
+def test_ended_subscriptions_are_listed_apart_and_left_out_of_the_totals(client, db_conn, make_tx):
+    latest = db_conn.execute("select max(booked_at) as d from transactions").fetchone()["d"]
+    latest = latest or date(1999, 12, 31)
+    make_tx("-1.00", "ZZTEST ANCHOR", booked_at=latest)
+    # Every 91 days: quarterly. One last charged 80 days ago (running), one 130 days ago (ended).
+    plans = {"ZZTEST QRUN": (171, 80), "ZZTEST QGONE": (221, 130)}
+    for name, days in plans.items():
+        shop = db_conn.execute(
+            "insert into merchants (name, match_key) values (%s, %s) returning id",
+            (name, name.replace(" ", "")),
+        ).fetchone()["id"]
+        for back in days:
+            tx = make_tx("-90.00", name, booked_at=latest - timedelta(days=back))
+            db_conn.execute(
+                "update transactions set merchant_id = %s, is_subscription = true,"
+                " category_slug = 'entertainment', tx_type = 'expense' where id = %s",
+                (shop, tx),
+            )
+    body = client.get("/dashboard/subscriptions").json()
+
+    def names(rows):  # only the synthetic names: a failure never prints the real ledger's
+        return {r["merchant_name"] for r in rows if r["merchant_name"].startswith("ZZTEST")}
+
+    assert names(body["items"]) == {"ZZTEST QRUN"}
+    assert names(body["ended"]) == {"ZZTEST QGONE"}
+    [running] = [r for r in body["items"] if r["merchant_name"] == "ZZTEST QRUN"]
+    assert (running["cadence"], running["monthly_equivalent"]) == ("quarterly", "30.00")
+    # The ended plan's 30.00 a month is not in the totals.
+    monthly = Decimal(body["monthly_total"])
+    assert monthly == sum((Decimal(r["monthly_equivalent"]) for r in body["items"]), Decimal(0))
+    assert Decimal(body["yearly_total"]) == monthly * 12
+
+
+def test_patch_cadence_sets_and_clears(client, db_conn):
+    merchant = db_conn.execute(
+        "insert into merchants (name, match_key)"
+        " values ('ZZTEST CADENCE', 'ZZTESTCADENCE') returning id"
+    ).fetchone()["id"]
+    response = client.patch(f"/merchants/{merchant}/cadence", json={"cadence": "quarterly"})
+    assert response.status_code == 204
+    row = db_conn.execute("select cadence from merchants where id = %s", (merchant,)).fetchone()
+    assert row["cadence"] == "quarterly"
+    response = client.patch(f"/merchants/{merchant}/cadence", json={"cadence": None})
+    assert response.status_code == 204
+    row = db_conn.execute("select cadence from merchants where id = %s", (merchant,)).fetchone()
+    assert row["cadence"] is None
+    missing = "00000000-0000-0000-0000-000000000099"
+    response = client.patch(f"/merchants/{missing}/cadence", json={"cadence": "monthly"})
+    assert response.status_code == 404
+    response = client.patch(f"/merchants/{merchant}/cadence", json={"cadence": "weekly"})
+    assert response.status_code == 422

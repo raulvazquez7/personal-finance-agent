@@ -75,6 +75,7 @@ class SubscriptionOut(BaseModel):
 
 class Subscriptions(BaseModel):
     items: list[SubscriptionOut]
+    ended: list[SubscriptionOut]
     monthly_total: Decimal
     yearly_total: Decimal
 
