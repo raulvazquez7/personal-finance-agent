@@ -33,8 +33,6 @@ const SOURCE = [{ value: null, label: "Any" }, ...SOURCES.map((value) => ({ valu
 export function ExplorerFilters({ search, explorer, categories, merchants }: Props) {
   const router = useRouter();
   const pathname = usePathname();
-  const go = (changes: Record<string, string | undefined>) =>
-    router.push(`${pathname}?${replaceParams(search, changes)}`, { scroll: false });
   // The switch shows only needs_review=true, so only that counts.
   const more = [explorer.is_subscription, explorer.category_source, explorer.needs_review === "true"].filter(Boolean).length;
   const merchant =
@@ -49,28 +47,60 @@ export function ExplorerFilters({ search, explorer, categories, merchants }: Pro
   const [urlQ, setUrlQ] = useState(explorer.q);
   const [sent, setSent] = useState(explorer.q ?? "");
   const searchTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
-  // Latest query string for the delayed replace. The sent/setQ decision above does not read this.
-  const searchRef = useRef(search);
+  // The last query this component passed to the router, the address bar it was written on,
+  // and the server generation at that moment. A click during the search wait runs before
+  // the next server render, so the following navigation composes on that write while the
+  // bar and the generation are still the ones it started from. The sent/setQ decision
+  // above does not read this.
+  const writtenQuery = useRef<{ query: string; bar: string; gen: number } | null>(null);
+  const serverGen = useRef(0);
+  const seenSearch = useRef(search);
   if (explorer.q !== urlQ) {
     setUrlQ(explorer.q);
     if ((explorer.q ?? "") !== sent) setQ(explorer.q ?? "");
   }
 
+  // Bump when the server query changes (our navigation landed, Back, Clear filters).
+  // The count is not a query: commitQuery still composes on its own write or the address bar.
   useEffect(() => {
-    searchRef.current = search;
+    if (seenSearch.current === search) return;
+    seenSearch.current = search;
+    serverGen.current += 1;
   }, [search]);
 
   useEffect(() => {
     return () => clearTimeout(searchTimer.current);
   }, []);
 
+  function addressQuery(): string {
+    if (typeof window === "undefined") return search;
+    const raw = window.location.search;
+    return raw.startsWith("?") ? raw.slice(1) : raw;
+  }
+
+  function commitQuery(changes: Record<string, string | undefined>, history: "push" | "replace") {
+    const bar = addressQuery();
+    const pending = writtenQuery.current;
+    const inFlight = pending !== null && bar === pending.bar && serverGen.current === pending.gen;
+    const next = replaceParams(inFlight ? pending.query : bar, changes);
+    writtenQuery.current = inFlight
+      ? { query: next, bar: pending.bar, gen: pending.gen }
+      : { query: next, bar, gen: serverGen.current };
+    const href = `${pathname}?${next}`;
+    if (history === "replace") router.replace(href, { scroll: false });
+    else router.push(href, { scroll: false });
+  }
+
+  const go = (changes: Record<string, string | undefined>) => commitQuery(changes, "push");
+
   // Search rewrites the URL in place. push would leave one history entry per keystroke, so Back
-  // would walk the typed letters instead of the page the user came from. `search` is the query
-  // string from the latest render, so a filter changed during the wait is not dropped.
+  // would walk the typed letters instead of the page the user came from. The delayed replace
+  // composes on the latest query this component or the address bar already wrote, not on the
+  // server prop from the last render, so a filter changed during the wait is kept.
   function writeSearch(value: string) {
     const trimmed = value.trim();
     setSent(trimmed);
-    router.replace(`${pathname}?${replaceParams(searchRef.current, { q: trimmed || undefined })}`, { scroll: false });
+    commitQuery({ q: trimmed || undefined }, "replace");
   }
 
   function onSearch(event: FormEvent<HTMLFormElement>) {
