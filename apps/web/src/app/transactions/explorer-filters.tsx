@@ -43,27 +43,34 @@ export function ExplorerFilters({ search, explorer, categories, merchants }: Pro
       : merchants.find((m) => m.id === explorer.merchant_id);
   const cleared = clearedExplorer(search);
   // The box follows the URL ("Clear filters", Back) without remounting, so it keeps focus after Enter.
-  // `sent` is the trimmed q the box itself last wrote. A replace that lands while the user is still
-  // typing (URL "ab", box "abc") must not overwrite the box; a change from elsewhere still does.
+  // `sent` is the trimmed q this box last wrote. A missing `q` is `undefined` on the URL and `""`
+  // here, so a clear this box wrote is not treated as Back while a later keystroke is in the box.
   const [q, setQ] = useState(explorer.q ?? "");
   const [urlQ, setUrlQ] = useState(explorer.q);
   const [sent, setSent] = useState(explorer.q ?? "");
   const searchTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+  // Latest query string for the delayed replace. The sent/setQ decision above does not read this.
+  const searchRef = useRef(search);
   if (explorer.q !== urlQ) {
     setUrlQ(explorer.q);
-    if (explorer.q !== sent) setQ(explorer.q ?? "");
+    if ((explorer.q ?? "") !== sent) setQ(explorer.q ?? "");
   }
+
+  useEffect(() => {
+    searchRef.current = search;
+  }, [search]);
 
   useEffect(() => {
     return () => clearTimeout(searchTimer.current);
   }, []);
 
   // Search rewrites the URL in place. push would leave one history entry per keystroke, so Back
-  // would walk the typed letters instead of the page the user came from.
+  // would walk the typed letters instead of the page the user came from. `search` is the query
+  // string from the latest render, so a filter changed during the wait is not dropped.
   function writeSearch(value: string) {
     const trimmed = value.trim();
     setSent(trimmed);
-    router.replace(`${pathname}?${replaceParams(search, { q: trimmed || undefined })}`, { scroll: false });
+    router.replace(`${pathname}?${replaceParams(searchRef.current, { q: trimmed || undefined })}`, { scroll: false });
   }
 
   function onSearch(event: FormEvent<HTMLFormElement>) {
@@ -73,12 +80,12 @@ export function ExplorerFilters({ search, explorer, categories, merchants }: Pro
   }
 
   // An emptied box is no search: Escape, Chrome's × and deleting the text all clear it from the URL
-  // at once, so the box and the list never disagree (the URL is the state). Anything else waits 300 ms.
+  // at once, including when a non-empty replace was sent and has not landed. Anything else waits 300 ms.
   function onType(next: string) {
     setQ(next);
     clearTimeout(searchTimer.current);
     if (next === "") {
-      if (explorer.q) writeSearch("");
+      if (explorer.q || sent) writeSearch("");
       return;
     }
     searchTimer.current = setTimeout(() => writeSearch(next), 300);
