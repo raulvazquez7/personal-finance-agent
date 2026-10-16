@@ -44,6 +44,7 @@ const NOTE_MAX = 500; // transactions.note: char_length(note) <= 500
 /** The side panel (spec 7.3): the category, merchant, subscription flag and note of one row. */
 export function TransactionPanel({ tx, categories, merchants, onClose, onSaved }: Props) {
   const [dirty, setDirty] = useState(false);
+  const [saving, setSaving] = useState(false);
   const [discarding, setDiscarding] = useState(false);
   // PanelForm remounts per transaction (`key={tx.id}`) and reports a clean form. Drop the previous
   // row's dirty flag in the same render, before that report, so Escape cannot ask about the old row.
@@ -52,17 +53,25 @@ export function TransactionPanel({ tx, categories, merchants, onClose, onSaved }
   if (seenTxId !== txId) {
     setSeenTxId(txId);
     setDirty(false);
+    setSaving(false);
+    setDiscarding(false);
+  }
+
+  function closePanel() {
+    setDiscarding(false);
+    onClose();
   }
 
   function requestClose() {
+    // The request still finishes and closes the sheet itself. Asking now would leave the dialog up.
+    if (saving) return;
     if (dirty) setDiscarding(true);
-    else onClose();
+    else closePanel();
   }
 
   function discard() {
     setDirty(false);
-    setDiscarding(false);
-    onClose();
+    closePanel();
   }
 
   return (
@@ -73,12 +82,16 @@ export function TransactionPanel({ tx, categories, merchants, onClose, onSaved }
           if (open) return;
           // Base UI commits the close unless this event is canceled. Leaving `open` true keeps the
           // form mounted; cancel stops the popup from closing underneath that.
+          if (saving) {
+            eventDetails.cancel();
+            return;
+          }
           if (dirty) {
             eventDetails.cancel();
             setDiscarding(true);
             return;
           }
-          onClose();
+          closePanel();
         }}
       >
         <SheetContent className="data-[side=right]:w-full data-[side=right]:sm:max-w-md">
@@ -88,9 +101,10 @@ export function TransactionPanel({ tx, categories, merchants, onClose, onSaved }
               tx={tx}
               categories={categories}
               merchants={merchants}
-              onClose={onClose}
+              onClose={closePanel}
               onSaved={onSaved}
               onDirtyChange={setDirty}
+              onSavingChange={setSaving}
               onCancel={requestClose}
             />
           )}
@@ -121,8 +135,14 @@ function PanelForm({
   onClose,
   onSaved,
   onDirtyChange,
+  onSavingChange,
   onCancel,
-}: Omit<Props, "tx"> & { tx: Tx; onDirtyChange: (dirty: boolean) => void; onCancel: () => void }) {
+}: Omit<Props, "tx"> & {
+  tx: Tx;
+  onDirtyChange: (dirty: boolean) => void;
+  onSavingChange: (saving: boolean) => void;
+  onCancel: () => void;
+}) {
   const router = useRouter();
   const amount = Number(tx.amount);
   const direction: Direction = amount < 0 ? "out" : "in";
@@ -162,6 +182,7 @@ function PanelForm({
 
   async function save(toMerchant: boolean) {
     setPending("save");
+    onSavingChange(true);
     const finalNote = note.trim() || null;
     const subscription = isSubscription && canSubscribe;
     // Money in has no subscription switch, so a default set from it gives no answer (null): the
@@ -215,9 +236,11 @@ function PanelForm({
     } finally {
       setPending(null);
       setAsking(false);
+      onSavingChange(false);
     }
     // After a full save, or a partial one: the rows show what was saved, and the panel closes, so
     // the row opens again with its saved label and trying again never sends that label twice.
+    // `onClose` is the panel close, never the dirty-close prompt.
     onSaved(change);
     router.refresh();
     onClose();
@@ -335,7 +358,7 @@ function PanelForm({
         </FieldGroup>
       </div>
       <SheetFooter className="flex-row justify-end">
-        <Button variant="ghost" onClick={onCancel}>
+        <Button variant="ghost" onClick={onCancel} disabled={busy}>
           Cancel
         </Button>
         <Button onClick={onSave} disabled={busy || (!labelChanged && !noteChanged) || (labelChanged && !categorySlug)}>
