@@ -1,6 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useId, useState } from "react";
+
+import { Combobox as BaseCombobox } from "@base-ui/react/combobox";
 
 import {
   Combobox,
@@ -25,6 +27,8 @@ type Props = {
   onChange: (merchant: MerchantChoice | null) => void;
   /** A label may create a merchant from a typed name; a filter only picks existing ones. */
   allowCreate?: boolean;
+  /** The transactions filter can select rows that have no merchant. That option is not a create. */
+  allowNone?: boolean;
   showClear?: boolean;
   id?: string;
   ariaLabel?: string;
@@ -37,11 +41,17 @@ export function MerchantPicker({
   value,
   onChange,
   allowCreate = true,
+  allowNone = false,
   showClear = false,
   id,
   ariaLabel = "Merchant",
   ariaDescribedBy,
 }: Props) {
+  // The list's default filter is the plain collator `contains`. useFilter().contains (single
+  // selection) also matches every item when the query equals the selected value, so the count and
+  // the list share this function instead of the default.
+  const { contains } = BaseCombobox.useFilter();
+  const hintId = useId();
   const [query, setQuery] = useState(value?.name ?? "");
   // The value can change from outside (Merge picks the suggested merchant): show its name.
   const [shownName, setShownName] = useState(value?.name);
@@ -50,8 +60,12 @@ export function MerchantPicker({
     setQuery(value?.name ?? "");
   }
   const typed = query.trim();
+  const matchCount = typed ? merchants.filter((merchant) => contains(merchant.name, typed)).length : merchants.length;
+  const showHint = !allowCreate && matchCount > SHOWN;
+  const describedBy = [ariaDescribedBy, showHint ? hintId : undefined].filter(Boolean).join(" ") || undefined;
   const exists = merchants.some((m) => m.name.toLowerCase() === typed.toLowerCase());
   const items: MerchantChoice[] = [
+    ...(allowNone ? [{ id: "none", name: "No merchant" }] : []),
     ...merchants.map((m) => ({ id: m.id, name: m.name })),
     ...(allowCreate && typed && !exists ? [{ id: null, name: typed }] : []),
   ];
@@ -60,6 +74,7 @@ export function MerchantPicker({
     <Combobox
       items={items}
       limit={SHOWN}
+      filter={contains}
       value={value}
       // Base UI still reports the change it canceled below (Escape on a label): skip it.
       onValueChange={(merchant: MerchantChoice | null, details) => {
@@ -82,12 +97,17 @@ export function MerchantPicker({
         id={id}
         placeholder="Merchant…"
         aria-label={ariaLabel}
-        aria-describedby={ariaDescribedBy}
+        aria-describedby={describedBy}
         // Typing replaces the current merchant instead of adding to its name.
         onFocus={(event) => event.currentTarget.select()}
         showClear={showClear}
         className="w-full"
       />
+      {showHint ? (
+        <p id={hintId} className="pt-1 text-xs text-muted-foreground">
+          {`Showing ${SHOWN} of ${matchCount} · type to search`}
+        </p>
+      ) : null}
       <ComboboxContent>
         <ComboboxEmpty>No merchant found.</ComboboxEmpty>
         <ComboboxList>

@@ -117,7 +117,7 @@
     active rows.
   sql:
     - |
-      SELECT merchant, cadence, typical_amount, monthly_equivalent, last_charge,
+      SELECT merchant, cadence, cadence_source, latest_amount, monthly_equivalent, last_charge,
              SUM(monthly_equivalent) OVER () AS monthly_total
       FROM subscriptions
       WHERE active

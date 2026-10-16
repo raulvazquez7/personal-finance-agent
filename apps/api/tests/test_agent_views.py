@@ -30,8 +30,9 @@ SUBSCRIPTIONS = [
     "merchant",
     "charges",
     "last_charge",
-    "typical_amount",
+    "latest_amount",
     "cadence",
+    "cadence_source",
     "monthly_equivalent",
     "active",
 ]

@@ -1,5 +1,6 @@
 """Merchant autocomplete and the merchant-level review actions."""
 
+from typing import Literal
 from uuid import UUID
 
 from fastapi import APIRouter, HTTPException, Query, Response
@@ -16,6 +17,10 @@ from finance.categorization.labels import (
 from finance.categorization.review_queue import MerchantOut
 
 router = APIRouter(prefix="/merchants", tags=["merchants"])
+
+
+class CadenceUpdate(BaseModel):
+    cadence: Literal["monthly", "quarterly", "yearly"] | None
 
 
 class ConfirmMerchant(BaseModel):
@@ -73,4 +78,15 @@ def dismiss(merchant_id: UUID, conn: Db) -> Response:
         dismiss_merge(conn, merchant_id)
     except NotFound as error:
         raise HTTPException(status_code=404, detail=str(error)) from error
+    return Response(status_code=204)
+
+
+@router.patch("/{merchant_id}/cadence", status_code=204)
+def set_cadence(merchant_id: UUID, body: CadenceUpdate, conn: Db) -> Response:
+    row = conn.execute(
+        "update merchants set cadence = %s where id = %s returning id",
+        (body.cadence, merchant_id),
+    ).fetchone()
+    if row is None:
+        raise HTTPException(status_code=404, detail=f"merchant {merchant_id}")
     return Response(status_code=204)

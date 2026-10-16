@@ -34,6 +34,10 @@ export function delta(current: number | null, previous: number | null | undefine
     // −100% means "down to nothing": a positive amount after a positive one stops at −99%. A
     // negative amount (refunds only) on either side keeps its real change.
     if (change === -100 && current > 0 && previous > 0) change = -99;
+    // A jump past 999% (a euro after a cent) reads ">999%". The arrow still says the direction.
+    if (change > 999) {
+      return { kind: "change", direction: "up", tone: good === "up" ? "good" : "bad", text: ">999%" };
+    }
     text = `${Math.abs(change)}%`;
   } else if (unit === "euro") {
     change = Math.round(current - previous);

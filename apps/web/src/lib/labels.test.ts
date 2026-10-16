@@ -25,6 +25,9 @@ const categories: Schemas["CategoryOut"][] = [
   { slug: "home_goods", tx_type: "expense", level1: "shopping" },
   { slug: "credit_card_spending", tx_type: "expense", level1: "credit_card" },
   { slug: "salary", tx_type: "income", level1: "income" },
+  // Taxonomy order is parking then fuel. A group hint that ignores top_categories reads that order.
+  { slug: "parking_tolls", tx_type: "expense", level1: "transport" },
+  { slug: "fuel", tx_type: "expense", level1: "transport" },
 ];
 const row = (fields: Partial<Row> & { key: string }): Row => ({
   label: null,
@@ -36,6 +39,9 @@ const row = (fields: Partial<Row> & { key: string }): Row => ({
   previous: null,
   count: 1,
   folded: 0,
+  rows: [],
+  category_count: 1,
+  top_categories: [],
   ...fields,
 });
 
@@ -55,6 +61,14 @@ describe("labels", () => {
     expect(groupHint("unknown", categories)).toBe("");
   });
 
+  it("describes a group by the categories it spent on, in that order", () => {
+    expect(rowHint(row({ key: "transport", top_categories: ["fuel", "parking_tolls"] }), "group", categories)).toBe(
+      "Fuel, parking tolls",
+    );
+    // An empty list stays the taxonomy line (groupHint), not a blank.
+    expect(rowHint(row({ key: "shopping" }), "group", categories)).toBe("Groceries, fashion, electronics…");
+  });
+
   it("names rows, including the folded ones and merchants without a merchant", () => {
     expect(rowName(row({ key: "_other", folded: 12 }), "merchant")).toBe("Other 12 merchants");
     // The folded row names its dimension, so it never reads like the real expense group "other".
@@ -69,6 +83,9 @@ describe("labels", () => {
     expect(rowHint(row({ key: "fashion", level1: "shopping" }), "category", categories)).toBe("Shopping");
     expect(rowHint(row({ key: "m", category_slug: "groceries", count: 12 }), "merchant", categories)).toBe(
       "Groceries · 12 transactions",
+    );
+    expect(rowHint(row({ key: "m", category_slug: "groceries", category_count: 2, count: 4 }), "merchant", categories)).toBe(
+      "2 categories · 4 transactions",
     );
   });
 

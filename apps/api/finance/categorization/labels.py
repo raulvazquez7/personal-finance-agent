@@ -137,7 +137,8 @@ def merge_merchants(conn: Connection, source_id: UUID, into_id: UUID) -> None:
         )
         conn.execute(
             "update merchants i set category_slug = coalesce(i.category_slug, s.category_slug),"
-            " is_subscription = coalesce(i.is_subscription, s.is_subscription), confirmed = true"
+            " is_subscription = coalesce(i.is_subscription, s.is_subscription),"
+            " cadence = coalesce(i.cadence, s.cadence), confirmed = true"
             " from merchants s where i.id = %(into)s and s.id = %(src)s",
             ids,
         )

@@ -15,7 +15,7 @@ use_for:
   - Loans, with the money received, the instalments, the paying account and the total repaid.
   - Comparisons between periods, accounts, categories or merchants.
 not_for:
-  - Subscription cadence, typical charge or whether a subscription is still active (use
+  - Subscription cadence, latest charge or whether a subscription is still active (use
     subscriptions).
   - Account balances, because the balance after each movement is not available.
   - What was bought inside a credit card bill. Card statements are not imported, so each monthly

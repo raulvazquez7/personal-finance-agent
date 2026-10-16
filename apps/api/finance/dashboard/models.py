@@ -60,13 +60,17 @@ class BreakdownRow(BaseModel):
     previous: Decimal | None  # None when the previous period has no data; 0 = "new"
     count: int
     folded: int = 0  # entries folded into "_other"
+    rows: list["BreakdownRow"] = []
+    category_count: int = 1
+    top_categories: list[str] = []
 
 
 class SubscriptionOut(BaseModel):
     merchant_id: UUID
     merchant_name: str
-    cadence: Literal["monthly", "yearly"]
-    typical_amount: Decimal
+    cadence: Literal["monthly", "quarterly", "yearly"]
+    cadence_source: Literal["auto", "user"]
+    latest_amount: Decimal
     monthly_equivalent: Decimal
     last_charge: date
     charges: int
@@ -74,6 +78,7 @@ class SubscriptionOut(BaseModel):
 
 class Subscriptions(BaseModel):
     items: list[SubscriptionOut]
+    ended: list[SubscriptionOut]
     monthly_total: Decimal
     yearly_total: Decimal
 
@@ -124,6 +129,7 @@ class TransactionPage(BaseModel):
     count: int
     money_in: Decimal
     money_out: Decimal
+    transfers: Decimal
 
 
 class ScopeMonth(BaseModel):

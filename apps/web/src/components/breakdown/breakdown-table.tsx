@@ -1,11 +1,62 @@
 import Link from "next/link";
+import type { ReactNode } from "react";
 
+import { FoldedRows } from "@/components/breakdown/folded-rows";
 import { DeltaText } from "@/components/money/delta-text";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import type { BreakdownItem } from "@/lib/breakdown";
 import { money, percent } from "@/lib/format";
 
 type Props = { items: BreakdownItem[]; nameHeader: string; versus: string; showShare?: boolean };
+
+type RowProps = {
+  item: BreakdownItem;
+  showShare: boolean;
+  compared: boolean;
+  /** Indents a child of the folded row. Padding on the tr itself does not move a table cell. */
+  indent?: boolean;
+  extra?: ReactNode;
+};
+
+/** One row of the breakdown table. The folded row and its children share this, so the cells stay one copy. */
+export function BreakdownTableRow({ item, showShare, compared, indent = false, extra }: RowProps) {
+  return (
+    <TableRow className={indent ? "pl-6 [&>td:first-child]:pl-6" : undefined}>
+      {/* wrap-anywhere, not break-words: a long name without spaces must also shrink the column's
+          minimum width, or the table scrolls inside its card on a phone. */}
+      <TableCell className="max-w-72 whitespace-normal wrap-anywhere">
+        <div className="flex items-center gap-2.5">
+          {item.color && (
+            <span
+              aria-hidden
+              data-slot="series-dot"
+              className="size-2.5 shrink-0 rounded-[3px]"
+              style={{ background: item.color }}
+            />
+          )}
+          <div className="min-w-0">
+            {item.href ? (
+              <Link href={item.href} className="font-medium hover:underline">
+                {item.name}
+              </Link>
+            ) : (
+              <span className="font-medium">{item.name}</span>
+            )}
+            {item.hint && <p className="line-clamp-1 text-xs text-muted-foreground">{item.hint}</p>}
+            {extra}
+          </div>
+        </div>
+      </TableCell>
+      {showShare && <TableCell className="hidden text-right text-muted-foreground sm:table-cell">{percent(item.share)}</TableCell>}
+      <TableCell className="text-right font-semibold">{money(item.amount)}</TableCell>
+      {compared && (
+        <TableCell className="text-right">
+          <DeltaText value={item.delta} />
+        </TableCell>
+      )}
+    </TableRow>
+  );
+}
 
 /** Name (with its colour and a hint), share, amount and the change against the previous period.
  * Each name opens the next level (mockup: every click goes one level deeper). A negative amount
@@ -25,41 +76,13 @@ export function BreakdownTable({ items, nameHeader, versus, showShare = true }: 
         </TableRow>
       </TableHeader>
       <TableBody>
-        {items.map((item) => (
-          <TableRow key={item.key}>
-            {/* wrap-anywhere, not break-words: a long name without spaces must also shrink the column's
-                minimum width, or the table scrolls inside its card on a phone. */}
-            <TableCell className="max-w-72 whitespace-normal wrap-anywhere">
-              <div className="flex items-center gap-2.5">
-                {item.color && (
-                  <span
-                    aria-hidden
-                    data-slot="series-dot"
-                    className="size-2.5 shrink-0 rounded-[3px]"
-                    style={{ background: item.color }}
-                  />
-                )}
-                <div className="min-w-0">
-                  {item.href ? (
-                    <Link href={item.href} className="font-medium hover:underline">
-                      {item.name}
-                    </Link>
-                  ) : (
-                    <span className="font-medium">{item.name}</span>
-                  )}
-                  {item.hint && <p className="line-clamp-1 text-xs text-muted-foreground">{item.hint}</p>}
-                </div>
-              </div>
-            </TableCell>
-            {showShare && <TableCell className="hidden text-right text-muted-foreground sm:table-cell">{percent(item.share)}</TableCell>}
-            <TableCell className="text-right font-semibold">{money(item.amount)}</TableCell>
-            {compared && (
-              <TableCell className="text-right">
-                <DeltaText value={item.delta} />
-              </TableCell>
-            )}
-          </TableRow>
-        ))}
+        {items.map((item) =>
+          item.key === "_other" && item.rows.length > 0 ? (
+            <FoldedRows key={item.key} item={item} showShare={showShare} compared={compared} />
+          ) : (
+            <BreakdownTableRow key={item.key} item={item} showShare={showShare} compared={compared} />
+          ),
+        )}
       </TableBody>
     </Table>
   );

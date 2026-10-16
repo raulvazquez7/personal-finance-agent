@@ -25,8 +25,9 @@ export default async function MerchantPage({ params, searchParams }: PageProps<"
   if (!isUuid(id)) notFound();
   const filters = parseFilters(query);
   const type = detailType(query);
-  const [categories, detail] = await Promise.all([
+  const [categories, merchants, detail] = await Promise.all([
     apiGet<Schemas["CategoryOut"][]>("/categories"),
+    apiGet<Schemas["MerchantOut"][]>("/merchants?limit=5000"),
     apiGet<Schemas["SpendingDetail"]>(detailPath(id, query)),
   ]);
   if (detail.merchant_name === null) notFound();
@@ -34,6 +35,7 @@ export default async function MerchantPage({ params, searchParams }: PageProps<"
     <DetailPage
       detail={detail}
       categories={categories}
+      merchants={merchants}
       filters={filters}
       title={detail.merchant_name}
       crumbs={[{ label: "Overview", href: withFilters("/", filters) }, { label: detail.merchant_name }]}

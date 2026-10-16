@@ -78,15 +78,17 @@ Rows flagged as a subscription are grouped by merchant, with these rules:
 
 - **Only money going out counts.** A flagged refund or transfer never does.
 - **A flagged row needs a merchant.** Without one, it is not listed.
-- **The typical amount is the median charge.**
-- **The cadence is yearly** when the median gap between charges is over 200 days, otherwise
-  monthly. A yearly subscription's monthly equivalent is a twelfth of its typical amount.
-- **A merchant charged once counts as monthly** until a second charge gives a gap: a yearly
-  plan charged once shows its full price per month and, like any monthly charge, leaves the
-  list 45 days after that charge.
-- **A subscription is active** when it was charged within 45 days (monthly) or 400 days
-  (yearly) of the latest imported transaction, not of today, so an old import does not make
-  every subscription look cancelled.
+- **There are three cadences:** monthly, every 3 months, and yearly. Detection uses the
+  median gap between charges. A single charge has no gap and is monthly. Up to 60 days is
+  monthly, from 61 to 200 days is every 3 months, and over 200 days is yearly.
+- **A cadence you set wins.** Clearing it returns to detection.
+- **The amount is the latest charge.** Two charges on that day: the larger one. The monthly
+  equivalent is that amount divided by 1, 3 or 12, rounded to the cent. The yearly total is
+  twelve times the monthly total of the active subscriptions, so an every-3-months plan
+  counts as four charges a year.
+- **A subscription is active** when its last charge falls within 45 days (monthly), 120 days
+  (every 3 months) or 400 days (yearly) of the latest imported transaction, not of today, so
+  an old import does not make every subscription look cancelled.
 - **Subscriptions paid by credit card are not listed.** Card statements are not imported, so
   the card's charges are not itemized.
 

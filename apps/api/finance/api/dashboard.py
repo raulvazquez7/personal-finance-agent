@@ -8,11 +8,24 @@ from finance.api.deps import Db
 from finance.api.periods import PeriodQuery, resolve_request
 from finance.dashboard.breakdowns import breakdown, group_slots
 from finance.dashboard.filters import Scope
-from finance.dashboard.models import Cumulative, Overview, Subscriptions
+from finance.dashboard.models import BreakdownRow, Cumulative, Overview, Subscriptions
 from finance.dashboard.subscriptions import active_subscriptions, summary
 from finance.dashboard.totals import cumulative, month_series, totals
 
 router = APIRouter(prefix="/dashboard", tags=["dashboard"])
+
+
+def _fill_top_categories(groups: list[BreakdownRow], categories: list[BreakdownRow]) -> None:
+    """Top three category slugs per group, by amount descending then slug."""
+    by_level: dict[str, list[BreakdownRow]] = {}
+    for row in categories:
+        by_level.setdefault(row.level1 or "uncategorized", []).append(row)
+    for group in groups:
+        ranked = sorted(
+            by_level.get(group.key, []),
+            key=lambda row: (-row.amount, row.category_slug or row.key),
+        )
+        group.top_categories = [row.category_slug or row.key for row in ranked[:3]]
 
 
 @router.get("/overview")
@@ -22,6 +35,12 @@ def overview(conn: Db, query: PeriodQuery) -> Overview:
     spend = replace(scope, tx_type="expense")
     before = resolved.comparable
     latest = resolved.out.latest_day
+    # Every group: the web gives each its own row, coloured by group_slots (grey without one).
+    by_group = breakdown(conn, "group", "spend", spend, resolved.current, before, top=None)
+    _fill_top_categories(
+        by_group,
+        breakdown(conn, "category", "spend", spend, resolved.current, before, top=None),
+    )
     return Overview(
         period=resolved.out,
         kpis=totals(conn, scope, resolved.current),
@@ -37,8 +56,7 @@ def overview(conn: Db, query: PeriodQuery) -> Overview:
             previous=cumulative(conn, spend, resolved.previous, "spend") if before else None,
         ),
         months=month_series(conn, scope, resolved.current.end),
-        # Every group: the web gives each its own row, coloured by group_slots (grey without one).
-        by_group=breakdown(conn, "group", "spend", spend, resolved.current, before, top=None),
+        by_group=by_group,
         by_category=breakdown(conn, "category", "spend", spend, resolved.current, before),
         by_merchant=breakdown(conn, "merchant", "spend", spend, resolved.current, before),
         group_slots=group_slots(conn),

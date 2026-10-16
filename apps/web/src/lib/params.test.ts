@@ -100,6 +100,11 @@ describe("explorer filters", () => {
     expect(
       parseExplorer({ tx_type: "loan", category: "Robert'); DROP", merchant_id: "42", is_subscription: "maybe", q: "  " }),
     ).toEqual({});
+    expect(parseExplorer({ merchant_id: "nope" }).merchant_id).toBeUndefined();
+  });
+
+  it("keeps merchant_id=none", () => {
+    expect(parseExplorer({ merchant_id: "none" }).merchant_id).toBe("none");
   });
 
   it("adds the explorer filters after the period and clears them again", () => {

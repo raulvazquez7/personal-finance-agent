@@ -3,7 +3,7 @@
 import { Search, SlidersHorizontal } from "lucide-react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { useState, type FormEvent } from "react";
+import { useEffect, useRef, useState, type FormEvent } from "react";
 
 import { CategoryFilter } from "@/components/pickers/category-filter";
 import { MerchantPicker } from "@/components/pickers/merchant-picker";
@@ -33,30 +33,92 @@ const SOURCE = [{ value: null, label: "Any" }, ...SOURCES.map((value) => ({ valu
 export function ExplorerFilters({ search, explorer, categories, merchants }: Props) {
   const router = useRouter();
   const pathname = usePathname();
-  const go = (changes: Record<string, string | undefined>) =>
-    router.push(`${pathname}?${replaceParams(search, changes)}`, { scroll: false });
   // The switch shows only needs_review=true, so only that counts.
   const more = [explorer.is_subscription, explorer.category_source, explorer.needs_review === "true"].filter(Boolean).length;
-  const merchant = merchants.find((m) => m.id === explorer.merchant_id);
+  const merchant =
+    explorer.merchant_id === "none"
+      ? { id: "none", name: "No merchant" }
+      : merchants.find((m) => m.id === explorer.merchant_id);
   const cleared = clearedExplorer(search);
   // The box follows the URL ("Clear filters", Back) without remounting, so it keeps focus after Enter.
+  // `sent` is the trimmed q this box last wrote. A missing `q` is `undefined` on the URL and `""`
+  // here, so a clear this box wrote is not treated as Back while a later keystroke is in the box.
   const [q, setQ] = useState(explorer.q ?? "");
   const [urlQ, setUrlQ] = useState(explorer.q);
+  const [sent, setSent] = useState(explorer.q ?? "");
+  const searchTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+  // The last query this component passed to the router, the address bar it was written on,
+  // and the server generation at that moment. A click during the search wait runs before
+  // the next server render, so the following navigation composes on that write while the
+  // bar and the generation are still the ones it started from. The sent/setQ decision
+  // above does not read this.
+  const writtenQuery = useRef<{ query: string; bar: string; gen: number } | null>(null);
+  const serverGen = useRef(0);
+  const seenSearch = useRef(search);
   if (explorer.q !== urlQ) {
     setUrlQ(explorer.q);
-    setQ(explorer.q ?? "");
+    if ((explorer.q ?? "") !== sent) setQ(explorer.q ?? "");
+  }
+
+  // Bump when the server query changes (our navigation landed, Back, Clear filters).
+  // The count is not a query: commitQuery still composes on its own write or the address bar.
+  useEffect(() => {
+    if (seenSearch.current === search) return;
+    seenSearch.current = search;
+    serverGen.current += 1;
+  }, [search]);
+
+  useEffect(() => {
+    return () => clearTimeout(searchTimer.current);
+  }, []);
+
+  function addressQuery(): string {
+    if (typeof window === "undefined") return search;
+    const raw = window.location.search;
+    return raw.startsWith("?") ? raw.slice(1) : raw;
+  }
+
+  function commitQuery(changes: Record<string, string | undefined>, history: "push" | "replace") {
+    const bar = addressQuery();
+    const pending = writtenQuery.current;
+    const inFlight = pending !== null && bar === pending.bar && serverGen.current === pending.gen;
+    const next = replaceParams(inFlight ? pending.query : bar, changes);
+    writtenQuery.current = inFlight
+      ? { query: next, bar: pending.bar, gen: pending.gen }
+      : { query: next, bar, gen: serverGen.current };
+    const href = `${pathname}?${next}`;
+    if (history === "replace") router.replace(href, { scroll: false });
+    else router.push(href, { scroll: false });
+  }
+
+  const go = (changes: Record<string, string | undefined>) => commitQuery(changes, "push");
+
+  // Search rewrites the URL in place. push would leave one history entry per keystroke, so Back
+  // would walk the typed letters instead of the page the user came from. The delayed replace
+  // composes on the latest query this component or the address bar already wrote, not on the
+  // server prop from the last render, so a filter changed during the wait is kept.
+  function writeSearch(value: string) {
+    const trimmed = value.trim();
+    setSent(trimmed);
+    commitQuery({ q: trimmed || undefined }, "replace");
   }
 
   function onSearch(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    go({ q: q.trim() || undefined });
+    clearTimeout(searchTimer.current);
+    writeSearch(q);
   }
 
   // An emptied box is no search: Escape, Chrome's × and deleting the text all clear it from the URL
-  // at once, so the box and the list never disagree (the URL is the state).
+  // at once, including when a non-empty replace was sent and has not landed. Anything else waits 300 ms.
   function onType(next: string) {
     setQ(next);
-    if (next === "" && explorer.q) go({ q: undefined });
+    clearTimeout(searchTimer.current);
+    if (next === "") {
+      if (explorer.q || sent) writeSearch("");
+      return;
+    }
+    searchTimer.current = setTimeout(() => writeSearch(next), 300);
   }
 
   return (
@@ -110,6 +172,7 @@ export function ExplorerFilters({ search, explorer, categories, merchants }: Pro
             value={merchant ? { id: merchant.id, name: merchant.name } : null}
             onChange={(choice) => go({ merchant_id: choice?.id ?? undefined })}
             allowCreate={false}
+            allowNone
             showClear
             ariaLabel="Merchant filter"
           />

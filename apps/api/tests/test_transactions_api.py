@@ -31,6 +31,9 @@ def test_totals_cover_the_whole_filtered_set(client, db_conn, make_tx):
     body = _list(client, account)
     assert body["count"] == 11 and len(body["items"]) == 11
     assert (body["money_in"], body["money_out"]) == ("4590.00", "935.00")
+    # January transfers: |2400| loan in + |340| to savings + |50| from the old account.
+    # loan_payment stays an expense, so it is not in this sum.
+    assert body["transfers"] == "2790.00"
 
 
 def test_search_notes_and_saved_filters(client, db_conn, make_tx):
@@ -68,6 +71,40 @@ def test_cursor_paging_never_skips_rows_on_the_same_day(client, db_conn, make_tx
 )
 def test_a_cursor_that_does_not_parse_is_422(client, cursor):
     response = client.get("/transactions", params={"month": "1999-01", "cursor": cursor})
+    assert response.status_code == 422
+
+
+def test_merchant_id_none_returns_only_rows_without_a_merchant(client, db_conn, make_tx):
+    account = money_month(db_conn, make_tx)
+    merchant = db_conn.execute(
+        "insert into merchants (name, match_key) values ('ZZTEST NONE', 'zztest-none') returning id"
+    ).fetchone()["id"]
+    db_conn.execute(
+        "update transactions set merchant_id = %s"
+        " where account_id = %s and description_raw = 'ZZTEST SHOP'",
+        (merchant, account),
+    )
+    params = {
+        "account_id": str(account),
+        "period": "month",
+        "month": "1999-01",
+        "merchant_id": "none",
+    }
+    response = client.get("/transactions", params=params)
+    assert response.status_code == 200
+    body = response.json()
+    assert body["count"] == 10  # January's 11 rows, minus the one shop with a merchant
+    assert all(item["merchant_id"] is None for item in body["items"])
+    assert "ZZTEST SHOP" not in {item["description_raw"] for item in body["items"]}
+    one = client.get("/transactions", params={**params, "merchant_id": str(merchant)})
+    assert one.status_code == 200
+    assert [item["description_raw"] for item in one.json()["items"]] == ["ZZTEST SHOP"]
+
+
+def test_merchant_id_nope_is_422(client):
+    response = client.get(
+        "/transactions", params={"period": "month", "month": "1999-01", "merchant_id": "nope"}
+    )
     assert response.status_code == 422
 
 

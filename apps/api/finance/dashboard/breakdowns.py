@@ -27,7 +27,8 @@ def _query(dimension: Dimension, value: Value) -> str:
     return f"""
 select {KEYS[dimension]} as key, max(merchant_name) as label, max(level1) as level1,
        max(category_slug) as category_slug, max(merchant_id::text) as merchant_id,
-       sum({VALUES[value]}) as amount, count(*) as n
+       sum({VALUES[value]}) as amount, count(*) as n,
+       count(distinct coalesce(category_slug, 'uncategorized')) as category_count
 from v_transactions_enriched where {WHERE}
 group by 1
 """
@@ -69,6 +70,7 @@ def breakdown(
             share=_share(r["amount"], total),
             previous=before.get(r["key"], Decimal(0)) if previous else None,
             count=r["n"],
+            category_count=r["category_count"],
         )
         for r in rows
     ]
@@ -95,6 +97,8 @@ def breakdown(
             previous=other_previous,
             count=sum(row.count for row in tail),
             folded=len(tail),
+            rows=tail,
+            category_count=len({row.category_slug for row in tail}),
         )
     )
     return head

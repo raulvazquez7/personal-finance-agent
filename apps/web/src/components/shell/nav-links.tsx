@@ -7,9 +7,11 @@ import { useEffect, useRef } from "react";
 import { filterParams, parseFilters, toSearchParams } from "@/lib/params";
 import { cn } from "@/lib/utils";
 
+import { MobileNav } from "./mobile-nav";
+
 type Item = { href: string; label: string; keepsFilters: boolean; active: (path: string) => boolean };
 
-const ITEMS: Item[] = [
+export const ITEMS: Item[] = [
   {
     href: "/",
     label: "Overview",
@@ -26,8 +28,9 @@ const ITEMS: Item[] = [
 ];
 
 /** The top navigation with a pill for the active item (spec 7.2). The pages that the period and
- * account filters scope keep them in their links. On phones the row scrolls sideways; its padding
- * (cancelled by the negative margin) keeps the scroll box from clipping a link's focus ring. */
+ * account filters scope keep them in their links. Below `sm` a menu lists the same links. From
+ * `sm` the row scrolls sideways; its padding (cancelled by the negative margin) keeps the scroll
+ * box from clipping a link's focus ring. */
 export function NavLinks({ pending }: { pending: number | null }) {
   const pathname = usePathname();
   const search = useSearchParams();
@@ -35,8 +38,8 @@ export function NavLinks({ pending }: { pending: number | null }) {
   const activeLink = useRef<HTMLAnchorElement>(null);
 
   useEffect(() => {
-    // On phones the active pill can start off-screen: centre it in the row. Only the row scrolls,
-    // never the page (scrollIntoView would also scroll the window).
+    // The active pill can start off the desktop row: centre it. Only the row scrolls, never the
+    // page (scrollIntoView would also scroll the window).
     const link = activeLink.current;
     const row = link?.parentElement;
     if (!link || !row) return;
@@ -45,32 +48,35 @@ export function NavLinks({ pending }: { pending: number | null }) {
   }, [pathname]);
 
   return (
-    <nav
-      aria-label="Main"
-      className="order-last -m-1 flex w-full items-center gap-1 overflow-x-auto p-1 text-sm sm:order-none sm:w-auto sm:flex-1"
-    >
-      {ITEMS.map((item) => {
-        const active = item.active(pathname);
-        return (
-          <Link
-            key={item.href}
-            ref={active ? activeLink : undefined}
-            href={item.keepsFilters && query ? `${item.href}?${query}` : item.href}
-            aria-current={active ? "page" : undefined}
-            // The count alone would read "Review3": say what it counts.
-            aria-label={item.href === "/review" && pending ? `${item.label}, ${pending} to review` : undefined}
-            className={cn(
-              "shrink-0 rounded-full px-3 py-1.5 text-muted-foreground transition-colors hover:text-foreground",
-              active && "bg-foreground font-medium text-background hover:text-background",
-            )}
-          >
-            {item.label}
-            {item.href === "/review" && pending ? (
-              <span className={cn("ml-1.5", !active && "text-primary")}>{pending}</span>
-            ) : null}
-          </Link>
-        );
-      })}
-    </nav>
+    <>
+      <MobileNav pending={pending} />
+      <nav
+        aria-label="Main"
+        className="order-last -m-1 hidden w-full items-center gap-1 overflow-x-auto p-1 text-sm sm:order-none sm:flex sm:w-auto sm:flex-1"
+      >
+        {ITEMS.map((item) => {
+          const active = item.active(pathname);
+          return (
+            <Link
+              key={item.href}
+              ref={active ? activeLink : undefined}
+              href={item.keepsFilters && query ? `${item.href}?${query}` : item.href}
+              aria-current={active ? "page" : undefined}
+              // The count alone would read "Review3": say what it counts.
+              aria-label={item.href === "/review" && pending ? `${item.label}, ${pending} to review` : undefined}
+              className={cn(
+                "shrink-0 rounded-full px-3 py-1.5 text-muted-foreground transition-colors hover:text-foreground",
+                active && "bg-foreground font-medium text-background hover:text-background",
+              )}
+            >
+              {item.label}
+              {item.href === "/review" && pending ? (
+                <span className={cn("ml-1.5", !active && "text-primary")}>{pending}</span>
+              ) : null}
+            </Link>
+          );
+        })}
+      </nav>
+    </>
   );
 }

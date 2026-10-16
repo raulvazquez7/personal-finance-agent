@@ -17,8 +17,9 @@ export default async function CategoryPage({ params, searchParams }: PageProps<"
   const [{ group, category }, query] = await Promise.all([params, searchParams]);
   if (!isSlug(group) || !isSlug(category)) notFound();
   const filters = parseFilters(query);
-  const [categories, detail] = await Promise.all([
+  const [categories, merchants, detail] = await Promise.all([
     apiGet<Schemas["CategoryOut"][]>("/categories"),
+    apiGet<Schemas["MerchantOut"][]>("/merchants?limit=5000"),
     apiGet<Schemas["SpendingDetail"]>(withFilters("/spending/detail", filters, { type: "expense", level1: group, category })),
   ]);
   if (!knownCategory(category, categories, { type: "expense", level1: group })) notFound();
@@ -26,6 +27,7 @@ export default async function CategoryPage({ params, searchParams }: PageProps<"
     <DetailPage
       detail={detail}
       categories={categories}
+      merchants={merchants}
       filters={filters}
       title={label(category)}
       crumbs={[

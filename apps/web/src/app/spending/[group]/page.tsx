@@ -17,8 +17,9 @@ export default async function GroupPage({ params, searchParams }: PageProps<"/sp
   const [{ group }, query] = await Promise.all([params, searchParams]);
   if (!isSlug(group)) notFound();
   const filters = parseFilters(query);
-  const [categories, detail] = await Promise.all([
+  const [categories, merchants, detail] = await Promise.all([
     apiGet<Schemas["CategoryOut"][]>("/categories"),
+    apiGet<Schemas["MerchantOut"][]>("/merchants?limit=5000"),
     apiGet<Schemas["SpendingDetail"]>(withFilters("/spending/detail", filters, { type: "expense", level1: group })),
   ]);
   if (!knownGroup(group, categories)) notFound();
@@ -26,6 +27,7 @@ export default async function GroupPage({ params, searchParams }: PageProps<"/sp
     <DetailPage
       detail={detail}
       categories={categories}
+      merchants={merchants}
       filters={filters}
       title={label(group)}
       crumbs={[{ label: "Overview", href: withFilters("/", filters) }, { label: label(group) }]}

@@ -1,12 +1,12 @@
 model: subscriptions
 description: >
   One row per merchant with at least one money-out charge flagged as a subscription, with the
-  cadence and active status the app computes from those charges.
+  cadence, latest amount and active status the app computes from those charges.
 grain: One row per subscribed merchant.
 use_for:
   - Which subscriptions exist and which are active.
   - What subscriptions cost per month (SUM(monthly_equivalent) over active rows).
-  - When a subscription was last charged, and its typical amount.
+  - When a subscription was last charged, and its latest amount.
 not_for:
   - Single charges or spending totals (use transactions with is_subscription = true).
   - Subscriptions paid by credit card. Card statements are not imported, so they are not
@@ -23,24 +23,39 @@ attributes:
   - attribute: last_charge
     kind: time
     description: Date of the latest charge.
-  - attribute: typical_amount
+  - attribute: latest_amount
     kind: measure
-    description: The median charge, a positive amount in euros.
+    description: >
+      The latest charge, a positive amount in euros. When two charges share the latest day, the
+      larger one.
   - attribute: cadence
     kind: dimension
-    description: How often it charges, from the median gap between charges.
+    description: >
+      How often it charges. When cadence_source is user, the user set it in the app and it wins
+      over the gaps between charges; otherwise it comes from the median gap.
     allowed_values:
       - value: monthly
-        meaning: a median gap of 200 days or less, or a single charge so far
+        meaning: a median gap of 60 days or less, a single charge so far, or set by the user
+      - value: quarterly
+        meaning: every 3 months, a median gap of 61 to 200 days, or set by the user
       - value: yearly
-        meaning: a median gap over 200 days
+        meaning: a median gap over 200 days, or set by the user
+  - attribute: cadence_source
+    kind: dimension
+    description: Who decided the cadence.
+    allowed_values:
+      - value: auto
+        meaning: detected from the gaps between charges
+      - value: user
+        meaning: set by the user in the app; it wins over the gaps
   - attribute: monthly_equivalent
     kind: measure
     description: >
-      The typical amount for a monthly subscription, a twelfth of it for a yearly one. Summed
-      over active rows, it is the monthly cost of subscriptions.
+      The latest amount divided by 1 (monthly), 3 (quarterly) or 12 (yearly), rounded to the
+      cent. Summed over active rows, it is the monthly cost of subscriptions.
   - attribute: active
     kind: flag
     description: >
-      true when charged within 45 days (monthly) or 400 days (yearly) of the latest imported
-      movement, not of today, so an old import does not make every subscription look cancelled.
+      true when the last charge is within 45 days (monthly), 120 days (quarterly) or 400 days
+      (yearly) of the latest imported movement, not of today, so an old import does not make
+      every subscription look cancelled.

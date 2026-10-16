@@ -46,8 +46,18 @@ export function rowHint(row: Row, dimension: Dimension, categories: Category[]):
     const folded = row.folded ?? 0;
     return dimension === "group" ? plural(folded, "group", "groups") : plural(folded, "category", "categories");
   }
-  if (dimension === "group") return groupHint(row.key, categories);
+  if (dimension === "group") {
+    // The row's own top categories, in that order. The taxonomy line is only the fallback.
+    if (row.top_categories.length > 0) {
+      const names = row.top_categories.map((slug) => slug.replaceAll("_", " "));
+      return capitalize(names.join(", "));
+    }
+    return groupHint(row.key, categories);
+  }
   if (dimension === "category") return label(row.level1);
+  if (row.category_count > 1) {
+    return `${plural(row.category_count, "category", "categories")} · ${plural(row.count, "transaction", "transactions")}`;
+  }
   return `${label(row.category_slug)} · ${plural(row.count, "transaction", "transactions")}`;
 }
 
