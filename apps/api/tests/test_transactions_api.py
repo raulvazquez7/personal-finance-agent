@@ -31,6 +31,9 @@ def test_totals_cover_the_whole_filtered_set(client, db_conn, make_tx):
     body = _list(client, account)
     assert body["count"] == 11 and len(body["items"]) == 11
     assert (body["money_in"], body["money_out"]) == ("4590.00", "935.00")
+    # January transfers: |2400| loan in + |340| to savings + |50| from the old account.
+    # loan_payment stays an expense, so it is not in this sum.
+    assert body["transfers"] == "2790.00"
 
 
 def test_search_notes_and_saved_filters(client, db_conn, make_tx):

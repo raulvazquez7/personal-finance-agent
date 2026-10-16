@@ -129,6 +129,7 @@ class TransactionPage(BaseModel):
     count: int
     money_in: Decimal
     money_out: Decimal
+    transfers: Decimal
 
 
 class ScopeMonth(BaseModel):

@@ -1050,6 +1050,8 @@ export interface components {
             money_in: string;
             /** Money Out */
             money_out: string;
+            /** Transfers */
+            transfers: string;
         };
         /** ValidationError */
         ValidationError: {

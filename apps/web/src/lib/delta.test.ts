@@ -45,6 +45,18 @@ describe("delta", () => {
   it("compares with a negative month (refunds only) by its size", () => {
     expect(delta(120, -30, "down", "percent")).toMatchObject({ direction: "up", tone: "bad", text: "+500%" });
   });
+
+  it("caps a percent jump above 999 and leaves a zero base and a small fall alone", () => {
+    expect(delta(2000, 1, "down", "percent")).toMatchObject({ direction: "up", text: ">999%" });
+    expect(delta(5, 0, "down", "percent")).toEqual({ kind: "new" });
+    // 1 against 1000 is the existing −99% clamp, not the cap.
+    expect(delta(1, 1000, "down", "percent")).toEqual({
+      kind: "change",
+      direction: "down",
+      tone: "good",
+      text: "−99%",
+    });
+  });
 });
 
 describe("atSameDay", () => {

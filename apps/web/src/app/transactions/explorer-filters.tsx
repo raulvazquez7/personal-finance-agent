@@ -3,7 +3,7 @@
 import { Search, SlidersHorizontal } from "lucide-react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { useState, type FormEvent } from "react";
+import { useEffect, useRef, useState, type FormEvent } from "react";
 
 import { CategoryFilter } from "@/components/pickers/category-filter";
 import { MerchantPicker } from "@/components/pickers/merchant-picker";
@@ -43,23 +43,45 @@ export function ExplorerFilters({ search, explorer, categories, merchants }: Pro
       : merchants.find((m) => m.id === explorer.merchant_id);
   const cleared = clearedExplorer(search);
   // The box follows the URL ("Clear filters", Back) without remounting, so it keeps focus after Enter.
+  // `sent` is the trimmed q the box itself last wrote. A replace that lands while the user is still
+  // typing (URL "ab", box "abc") must not overwrite the box; a change from elsewhere still does.
   const [q, setQ] = useState(explorer.q ?? "");
   const [urlQ, setUrlQ] = useState(explorer.q);
+  const [sent, setSent] = useState(explorer.q ?? "");
+  const searchTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
   if (explorer.q !== urlQ) {
     setUrlQ(explorer.q);
-    setQ(explorer.q ?? "");
+    if (explorer.q !== sent) setQ(explorer.q ?? "");
+  }
+
+  useEffect(() => {
+    return () => clearTimeout(searchTimer.current);
+  }, []);
+
+  // Search rewrites the URL in place. push would leave one history entry per keystroke, so Back
+  // would walk the typed letters instead of the page the user came from.
+  function writeSearch(value: string) {
+    const trimmed = value.trim();
+    setSent(trimmed);
+    router.replace(`${pathname}?${replaceParams(search, { q: trimmed || undefined })}`, { scroll: false });
   }
 
   function onSearch(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    go({ q: q.trim() || undefined });
+    clearTimeout(searchTimer.current);
+    writeSearch(q);
   }
 
   // An emptied box is no search: Escape, Chrome's × and deleting the text all clear it from the URL
-  // at once, so the box and the list never disagree (the URL is the state).
+  // at once, so the box and the list never disagree (the URL is the state). Anything else waits 300 ms.
   function onType(next: string) {
     setQ(next);
-    if (next === "" && explorer.q) go({ q: undefined });
+    clearTimeout(searchTimer.current);
+    if (next === "") {
+      if (explorer.q) writeSearch("");
+      return;
+    }
+    searchTimer.current = setTimeout(() => writeSearch(next), 300);
   }
 
   return (

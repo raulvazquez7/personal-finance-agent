@@ -25,6 +25,9 @@ const categories: Schemas["CategoryOut"][] = [
   { slug: "home_goods", tx_type: "expense", level1: "shopping" },
   { slug: "credit_card_spending", tx_type: "expense", level1: "credit_card" },
   { slug: "salary", tx_type: "income", level1: "income" },
+  // Taxonomy order is parking then fuel. A group hint that ignores top_categories reads that order.
+  { slug: "parking_tolls", tx_type: "expense", level1: "transport" },
+  { slug: "fuel", tx_type: "expense", level1: "transport" },
 ];
 const row = (fields: Partial<Row> & { key: string }): Row => ({
   label: null,
@@ -56,6 +59,14 @@ describe("labels", () => {
     // Decision I: uncategorized rows never reach /review, so the hint does not send the user there.
     expect(groupHint("uncategorized", categories)).toBe("Not categorized yet");
     expect(groupHint("unknown", categories)).toBe("");
+  });
+
+  it("describes a group by the categories it spent on, in that order", () => {
+    expect(rowHint(row({ key: "transport", top_categories: ["fuel", "parking_tolls"] }), "group", categories)).toBe(
+      "Fuel, parking tolls",
+    );
+    // An empty list stays the taxonomy line (groupHint), not a blank.
+    expect(rowHint(row({ key: "shopping" }), "group", categories)).toBe("Groceries, fashion, electronics…");
   });
 
   it("names rows, including the folded ones and merchants without a merchant", () => {

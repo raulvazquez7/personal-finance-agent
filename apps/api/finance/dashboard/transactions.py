@@ -41,7 +41,8 @@ limit %(limit)s
 _TOTALS = f"""
 select count(*) as n,
        coalesce(sum(amount) filter (where amount > 0), 0) as money_in,
-       coalesce(-sum(amount) filter (where amount < 0), 0) as money_out
+       coalesce(-sum(amount) filter (where amount < 0), 0) as money_out,
+       coalesce(sum(abs(amount)) filter (where tx_type = 'transfer'), 0) as transfers
 from v_transactions_enriched where {_FILTERS}
 """
 
@@ -106,4 +107,5 @@ def page(
         count=total["n"],
         money_in=total["money_in"],
         money_out=total["money_out"],
+        transfers=total["transfers"],
     )
