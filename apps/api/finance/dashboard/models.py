@@ -98,7 +98,7 @@ class Overview(BaseModel):
     by_group: list[BreakdownRow]
     by_category: list[BreakdownRow]
     by_merchant: list[BreakdownRow]
-    group_slots: dict[str, int]  # level1 -> colour slot 1..5 by all-time spend
+    group_slots: dict[str, int]  # level1 -> colour slot 1..n, every expense group by all-time spend
     subscriptions: SubscriptionsSummary
 
 

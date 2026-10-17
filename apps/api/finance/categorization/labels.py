@@ -145,6 +145,34 @@ def merge_merchants(conn: Connection, source_id: UUID, into_id: UUID) -> None:
         conn.execute("delete from merchants where id = %(src)s", ids)
 
 
+def rename_merchant(
+    conn: Connection,
+    merchant_id: UUID,
+    name: str | None = None,
+    merge_into_id: UUID | None = None,
+) -> UUID:
+    """A name whose key another merchant has merges into it. No category, no user labels.
+    Returns the surviving merchant."""
+    with conn.transaction():
+        if merge_into_id is None:
+            name = (name or "").strip()
+            key = _key_of(name)
+            other = conn.execute(
+                "select id from merchants where match_key = %s and id <> %s", (key, merchant_id)
+            ).fetchone()
+            if other is None:
+                renamed = conn.execute(
+                    "update merchants set name = %s, match_key = %s where id = %s returning id",
+                    (name, key, merchant_id),
+                ).fetchone()
+                if renamed is None:
+                    raise NotFound(f"merchant {merchant_id}")
+                return merchant_id
+            merge_into_id = other["id"]
+        merge_merchants(conn, merchant_id, merge_into_id)
+    return merge_into_id
+
+
 def confirm_merchant(
     conn: Connection,
     merchant_id: UUID,
@@ -153,27 +181,15 @@ def confirm_merchant(
     name: str | None = None,
     merge_into_id: UUID | None = None,
 ) -> UUID:
-    """None keeps the merchant's subscription flag and each relabelled row's own mark."""
+    """None keeps the merchant's subscription flag and each relabelled row's own mark. A pending
+    duplicate suggestion stays: the category and the duplicate are separate questions."""
     with conn.transaction():
-        if name and merge_into_id is None:
-            key = _key_of(name)
-            other = conn.execute(
-                "select id from merchants where match_key = %s and id <> %s", (key, merchant_id)
-            ).fetchone()
-            if other:
-                merge_into_id = other["id"]
-            else:
-                conn.execute(
-                    "update merchants set name = %s, match_key = %s where id = %s",
-                    (name.strip(), key, merchant_id),
-                )
-        if merge_into_id is not None:
-            merge_merchants(conn, merchant_id, merge_into_id)
-            merchant_id = merge_into_id
+        if name or merge_into_id is not None:
+            merchant_id = rename_merchant(conn, merchant_id, name, merge_into_id)
         updated = conn.execute(
             "update merchants set category_slug = %s,"
-            " is_subscription = coalesce(%s::boolean, is_subscription), confirmed = true,"
-            " merge_candidate_id = null, merge_confidence = null where id = %s returning id",
+            " is_subscription = coalesce(%s::boolean, is_subscription), confirmed = true"
+            " where id = %s returning id",
             (category_slug, is_subscription, merchant_id),
         ).fetchone()
         if updated is None:

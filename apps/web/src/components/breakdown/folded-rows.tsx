@@ -12,15 +12,15 @@ import { cn } from "@/lib/utils";
 /** From this many children, the open list also ends with "Show less": the toggle is out of sight. */
 const LONG = 10;
 
-type Props = { item: BreakdownItem; showShare: boolean; compared: boolean };
+type Props = { item: BreakdownItem; showShare: boolean; compared: boolean; dotted: boolean };
 
 /** The folded subtotal as a tree row: its name, with a chevron, opens and closes the rows it holds,
  * which follow it indented. Open state stays here, off the donut. */
-export function FoldedRows({ item, showShare, compared }: Props) {
+export function FoldedRows({ item, showShare, compared, dotted }: Props) {
   const [open, setOpen] = useState(false);
   const toggle = useRef<HTMLButtonElement>(null);
   const columns = 2 + Number(showShare) + Number(compared);
-  const tree = treeIndent(Boolean(item.color));
+  const tree = treeIndent(dotted);
 
   function showLess() {
     setOpen(false);
@@ -35,6 +35,7 @@ export function FoldedRows({ item, showShare, compared }: Props) {
         item={item}
         showShare={showShare}
         compared={compared}
+        dotted={dotted}
         name={
           <button
             ref={toggle}
@@ -50,7 +51,7 @@ export function FoldedRows({ item, showShare, compared }: Props) {
       />
       {open &&
         item.rows.map((child) => (
-          <BreakdownTableRow key={child.key} item={child} showShare={showShare} compared={compared} indent />
+          <BreakdownTableRow key={child.key} item={child} showShare={showShare} compared={compared} dotted={dotted} indent />
         ))}
       {open && item.rows.length >= LONG && (
         <TableRow className="hover:bg-transparent">

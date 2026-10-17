@@ -13,19 +13,19 @@ import {
 } from "./pickers";
 
 const categories: Schemas["CategoryOut"][] = [
-  { slug: "groceries", tx_type: "expense", level1: "shopping" },
-  { slug: "fashion", tx_type: "expense", level1: "shopping" },
-  { slug: "rent", tx_type: "expense", level1: "home" },
-  { slug: "salary", tx_type: "income", level1: "income" },
-  { slug: "refunds", tx_type: "income", level1: "income" },
-  { slug: "own_accounts", tx_type: "transfer", level1: "transfer" },
+  { slug: "groceries", tx_type: "expense", level1: "shopping", name: "Groceries", group_name: "Shopping" },
+  { slug: "fashion", tx_type: "expense", level1: "shopping", name: "Fashion", group_name: "Shopping" },
+  { slug: "rent", tx_type: "expense", level1: "home", name: "Rent", group_name: "Home" },
+  { slug: "salary", tx_type: "income", level1: "income", name: "Salary", group_name: "Income" },
+  { slug: "refunds", tx_type: "income", level1: "income", name: "Refunds", group_name: "Income" },
+  { slug: "own_accounts", tx_type: "transfer", level1: "transfer", name: "Own accounts", group_name: "Transfers" },
 ];
 const slugs = (groups: { items: { slug: string }[] }[]) => groups.map((group) => group.items.map((item) => item.slug));
 
 describe("pickerGroups", () => {
   it("offers expense and transfer categories for money out", () => {
     const groups = pickerGroups(categories, "out");
-    expect(groups.map((group) => group.label)).toEqual(["Shopping", "Home", "Transfer"]);
+    expect(groups.map((group) => group.label)).toEqual(["Shopping", "Home", "Transfers"]);
     expect(slugs(groups)).toEqual([["groceries", "fashion"], ["rent"], ["own_accounts"]]);
   });
 
@@ -35,7 +35,7 @@ describe("pickerGroups", () => {
       "Income",
       "Refund of a purchase · Shopping",
       "Refund of a purchase · Home",
-      "Transfer",
+      "Transfers",
     ]);
     expect(slugs(groups)).toEqual([["salary", "refunds"], ["groceries", "fashion"], ["rent"], ["own_accounts"]]);
     // The picker keys its groups by value.

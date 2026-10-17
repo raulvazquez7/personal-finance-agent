@@ -3,10 +3,11 @@ import { Repeat, StickyNote } from "lucide-react";
 import { TableCell, TableRow } from "@/components/ui/table";
 import type { Schemas } from "@/lib/api";
 import { dayLong, signedMoney } from "@/lib/format";
-import { label, sourceLabel } from "@/lib/labels";
+import { categoryName, groupName, sourceLabel } from "@/lib/labels";
 import { cn } from "@/lib/utils";
 
 type Tx = Schemas["Transaction"];
+type Category = Schemas["CategoryOut"];
 
 // A small dot beside the source's name (spec 7.3); the text carries the meaning.
 const SOURCE_DOT: Record<string, string> = {
@@ -17,11 +18,11 @@ const SOURCE_DOT: Record<string, string> = {
   none: "bg-chart-other",
 };
 
-type Props = { tx: Tx; onOpen?: () => void; showSource?: boolean };
+type Props = { tx: Tx; categories: Category[]; onOpen?: () => void; showSource?: boolean };
 
 /** One transaction (mockup 03): the merchant with the note as a muted second line, group ·
  * category, account, amount, a subscription mark and, in the explorer, who categorized it. */
-export function TransactionRow({ tx, onOpen, showSource = false }: Props) {
+export function TransactionRow({ tx, categories, onOpen, showSource = false }: Props) {
   const name = tx.merchant_name ?? tx.bank_merchant_text ?? tx.description_raw;
   const amount = Number(tx.amount);
   return (
@@ -65,7 +66,7 @@ export function TransactionRow({ tx, onOpen, showSource = false }: Props) {
         </div>
       </TableCell>
       <TableCell className="hidden text-muted-foreground sm:table-cell">
-        {tx.level1 ? `${label(tx.level1)} · ${label(tx.category_slug)}` : "Uncategorized"}
+        {tx.level1 ? `${groupName(tx.level1, categories)} · ${categoryName(tx.category_slug, categories)}` : "Uncategorized"}
       </TableCell>
       <TableCell className="hidden text-xs text-muted-foreground md:table-cell">{tx.account_name}</TableCell>
       {showSource && (

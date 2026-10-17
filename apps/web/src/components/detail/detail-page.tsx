@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Fragment } from "react";
+import { Fragment, type ReactNode } from "react";
 
 import { BreakdownTable } from "@/components/breakdown/breakdown-table";
 import { CategoryTreemap } from "@/components/charts/category-treemap";
@@ -38,6 +38,8 @@ type Props = {
   childDimension: "category" | "merchant" | null;
   seeAllHref: string;
   defaultView?: "monthly" | "cumulative";
+  /** A card above the numbers: the merchant page's controls (spec 7). */
+  controls?: ReactNode;
 };
 
 /** One template for every level (mockup page map): the total and its delta, a per-month chart,
@@ -52,6 +54,7 @@ export function DetailPage({
   childDimension,
   seeAllHref,
   defaultView = "monthly",
+  controls,
 }: Props) {
   const income = detail.type === "income";
   const good: Good = income ? "up" : "down";
@@ -103,6 +106,7 @@ export function DetailPage({
           ))}
         </BreadcrumbList>
       </Breadcrumb>
+      {controls}
       <header className="flex flex-col gap-0.5">
         <h1 className="text-sm text-muted-foreground">
           {title} · {rangeLabel(detail.period)}

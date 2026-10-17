@@ -23,6 +23,15 @@ def test_seed_has_the_spec_taxonomy():
     assert all(c.what for c in CATEGORIES)
 
 
+def test_the_seed_names_every_category_and_group():
+    software = next(c for c in CATEGORIES if c.slug == "software_ai")
+    assert software.name == "Software & AI"
+    assert software.group_name == "Technology"
+    # `_name` is group metadata, never a category.
+    assert not any(c.slug.startswith("_") for c in CATEGORIES)
+    assert all(c.name and c.group_name for c in CATEGORIES)
+
+
 def test_leaves_follow_the_direction():
     outgoing = {c.slug for c in TAXONOMY.leaves("outgoing")}
     incoming = {c.slug for c in TAXONOMY.leaves("incoming")}

@@ -149,15 +149,20 @@ export function replaceParams(query: string, changes: Record<string, string | st
   return params.toString();
 }
 
-/** The param changes that select a period; the others (explorer filters, accounts) stay. */
+/** The param changes that select a period; the others (explorer filters, accounts) stay. The
+ * period is always written, `month` included: a merchant page redirects a URL without one. */
 export function periodChanges(choice: Omit<Filters, "accounts">): Record<string, string | undefined> {
   return {
-    period: choice.period === "month" ? undefined : choice.period,
+    period: choice.period,
     month: choice.month,
     start: choice.start,
     end: choice.end,
   };
 }
+
+/** A merchant page opened with no period, month or range shows 12 months (spec 7). */
+export const needsDefaultPeriod = (params: SearchParams): boolean =>
+  params.period === undefined && params.month === undefined && params.start === undefined;
 
 export function clearedExplorer(query: string): string {
   return replaceParams(query, Object.fromEntries(EXPLORER_KEYS.map((key) => [key, undefined])));

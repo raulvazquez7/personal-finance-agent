@@ -6,6 +6,7 @@ import {
   explorerParams,
   filterParams,
   isDay,
+  needsDefaultPeriod,
   parseExplorer,
   parseFilters,
   periodChanges,
@@ -125,12 +126,25 @@ describe("query helpers", () => {
   it("selects a period and keeps the accounts and explorer filters", () => {
     const custom = `period=custom&start=2026-08-10&end=2026-08-19&account_id=${A}&q=zztest`;
     expect(replaceParams(custom, periodChanges({ period: "month", month: "2026-07" }))).toBe(
-      `account_id=${A}&q=zztest&month=2026-07`,
+      `account_id=${A}&q=zztest&period=month&month=2026-07`,
     );
-    // The default period leaves the URL; a custom range drops the month.
+    // A custom range drops the month.
     expect(replaceParams("month=2026-07", periodChanges({ period: "custom", start: "2026-08-10", end: "2026-08-19" }))).toBe(
       "period=custom&start=2026-08-10&end=2026-08-19",
     );
+  });
+
+  it("writes the default period, so Latest month stays a month on a merchant page", () => {
+    expect(periodChanges({ period: "month" }).period).toBe("month");
+    expect(replaceParams("period=last_12_months", periodChanges({ period: "month" }))).toBe("period=month");
+  });
+
+  it("asks for a default period only when the URL names none", () => {
+    expect(needsDefaultPeriod({})).toBe(true);
+    expect(needsDefaultPeriod({ type: "income", account_id: A })).toBe(true);
+    expect(needsDefaultPeriod({ month: "2026-07" })).toBe(false);
+    expect(needsDefaultPeriod({ period: "month" })).toBe(false);
+    expect(needsDefaultPeriod({ start: "2026-07-01", end: "2026-07-31" })).toBe(false);
   });
 
   it("shifts months across a year", () => {

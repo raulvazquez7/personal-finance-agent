@@ -1,3 +1,7 @@
+"use client";
+
+import type { ToggleEvent } from "react";
+
 import { FieldDescription } from "@/components/ui/field";
 import type { Schemas } from "@/lib/api";
 import { startingCategory } from "@/lib/pickers";
@@ -18,6 +22,10 @@ type Category = Schemas["CategoryOut"];
 /** `when` shows a line only for the cards that need it. */
 type Line = { id: string; field: string; text: string; when?: (items: Item[], categories: Category[]) => boolean };
 
+const STORAGE_KEY = "review-help:v1";
+// The category fields only exist on category cards: a list of duplicate suggestions needs none of them.
+const hasCategoryCards = (items: Item[]) => items.some((item) => item.kind !== "merge");
+
 const LINES: Line[] = [
   // One line per card kind: a merchant's card renames or merges the merchant, while a transaction
   // reviewed on its own (with or without a merchant) only takes a merchant for itself.
@@ -37,9 +45,15 @@ const LINES: Line[] = [
     id: HELP_ID.category,
     field: "Category",
     text: "money out lists expenses and transfers; money in lists income first, then refunds under “Refund of a purchase · <group>”, then transfers.",
+    when: hasCategoryCards,
   },
-  { id: HELP_ID.subscription, field: "Subscription", text: "a recurring charge; only money out can be one." },
-  { id: HELP_ID.line, field: "Category for this transaction", text: "expand a merchant to label one transaction on its own." },
+  { id: HELP_ID.subscription, field: "Subscription", text: "a recurring charge; only money out can be one.", when: hasCategoryCards },
+  {
+    id: HELP_ID.line,
+    field: "Category for this transaction",
+    text: "expand a merchant to label one transaction on its own.",
+    when: hasCategoryCards,
+  },
   {
     id: HELP_ID.confidence,
     field: "jev",
@@ -50,14 +64,36 @@ const LINES: Line[] = [
   },
 ];
 
+/** A disclosure that starts open; closing it is remembered on this device (spec 9). */
 export function ReviewHelp({ items, categories }: { items: Item[]; categories: Category[] }) {
+  // Applied once the element is in the page: the server HTML is open, and reading storage during
+  // render would not match it.
+  function applyStored(node: HTMLDetailsElement | null) {
+    try {
+      if (node && localStorage.getItem(STORAGE_KEY) === "closed") node.open = false;
+    } catch {
+      // Storage can throw in private browsing: the help stays open.
+    }
+  }
+
+  // The browser owns the open state; this only remembers it.
+  function onToggle(event: ToggleEvent<HTMLDetailsElement>) {
+    const isOpen = event.currentTarget.open;
+    try {
+      if (isOpen) localStorage.removeItem(STORAGE_KEY);
+      else localStorage.setItem(STORAGE_KEY, "closed");
+    } catch {
+      // Not remembered, which only means it opens again next visit.
+    }
+  }
+
+  const lines = LINES.filter((line) => !line.when || line.when(items, categories));
+  if (lines.length === 0) return null;
   return (
-    <section aria-labelledby="review-help-title" className="flex flex-col gap-1">
-      <h2 id="review-help-title" className="text-sm font-medium">
-        How to review
-      </h2>
-      <ul className="flex flex-col gap-0.5">
-        {LINES.filter((line) => !line.when || line.when(items, categories)).map((line) => (
+    <details ref={applyStored} open onToggle={onToggle}>
+      <summary className="cursor-pointer text-sm font-medium">How to review</summary>
+      <ul className="mt-1 flex flex-col gap-0.5">
+        {lines.map((line) => (
           <li key={line.id}>
             <FieldDescription id={line.id}>
               <span className="font-medium text-foreground">{line.field}:</span> {line.text}
@@ -65,6 +101,6 @@ export function ReviewHelp({ items, categories }: { items: Item[]; categories: C
           </li>
         ))}
       </ul>
-    </section>
+    </details>
   );
 }

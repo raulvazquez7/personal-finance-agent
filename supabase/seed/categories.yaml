@@ -1,161 +1,236 @@
 # Two-level taxonomy (spec section 7), generated from the spike's validated criteria.
 # tx_type -> level 1 -> level-2 slug -> jev criterion (what, optional not_for).
+# `_name` is a group's display name and `name` a category's (spec 8.1); jev never sees them.
 expense:
   home:
+    _name: Home
     rent:
+      name: Rent
       what: monthly rent paid to a landlord or letting agency
       not_for: mortgage instalments
     mortgage:
+      name: Mortgage
       what: mortgage instalments and related charges from a bank or mortgage lender
       not_for: rent, personal loans or consumer credit
     utilities:
+      name: Utilities
       what: electricity, gas, water and heating bills
     internet_phone:
+      name: Internet & phone
       what: internet, mobile and landline telecom bills
     home_insurance:
+      name: Home insurance
       what: home and contents insurance premiums
     maintenance:
+      name: Maintenance
       what: home repairs, plumbers, electricians, cleaning services, homeowners' community fees
       not_for: buying furniture or household items
   shopping:
+    _name: Shopping
     groceries:
+      name: Groceries
       what: supermarkets, grocery stores, bakeries, butchers, fruit shops, food markets
     fashion:
+      name: Fashion
       what: clothing, shoes, bags and accessories shops, sportswear
     electronics:
+      name: Electronics
       what: electronics, computers, phones, appliances, photo and video game shops
     home_goods:
+      name: Home goods
       what: furniture, decoration, household items, hardware and DIY stores, cleaning products; anything bought at IKEA, including IKEA FOOD
     beauty_perfumery:
+      name: Beauty & perfumery
       what: perfumeries, cosmetics and make-up shops, drugstores
       not_for: hairdressers and beauty services
     hobbies:
+      name: Hobbies
       what: music instruments, sports equipment, crafts, books, stationery, toys and hobby shops
       not_for: school textbooks and course materials
     tobacco:
+      name: Tobacco
       what: tobacco shops (estanco, estanc, expendeduría or EXPENDEDURIA in the bank text), tobacco and vaping products
     other_shopping:
+      name: Other shopping
       what: online marketplaces, department stores, bazaars and any other retail purchase that fits no specific
         shop
   leisure:
+    _name: Leisure
     restaurants_bars:
+      name: Restaurants & bars
       what: restaurants, bars, cafes, fast food, ice cream shops, food delivery and its memberships (Uber Eats,
         Uber One, Glovo Prime); the bank usually files these card payments as RESTAURANTES Y CAFETERIAS
       not_for: card payments the bank files as GASOLINERAS, IKEA FOOD, Amazon and Prime Video charges
     entertainment:
+      name: Entertainment
       what: streaming services, music and video apps, video games bought online
       not_for: software, AI and productivity tools
     culture_events:
+      name: Culture & events
       what: cinema, concerts, theatre, museums, theme parks, event tickets
     sports_gym:
+      name: Sports & gym
       what: gym memberships, sports clubs, classes and sports activities
       not_for: buying sports equipment
     gambling_lottery:
+      name: Gambling & lottery
       what: lottery, betting, casinos, lottery administrations
   transport:
+    _name: Transport
     fuel:
+      name: Fuel
       what: petrol stations, fuel, EV charging; every card payment the bank files as GASOLINERAS, even when the merchant text names a bar or
         a shop
     public_transport:
+      name: Public transport
       what: metro, bus, tram and commuter train tickets and passes, bike and scooter sharing
       not_for: long-distance trains and trips away from home
     taxi_rideshare:
+      name: Taxi & rideshare
       what: taxi, Uber, Cabify, Bolt rides
       not_for: Uber Eats and food delivery memberships
     parking_tolls:
+      name: Parking & tolls
       what: parking, motorway tolls
     car_costs:
+      name: Car costs
       what: car repairs, garages, tyres, car wash, ITV inspection, car insurance, road tax
   travel:
+    _name: Travel
     flights:
+      name: Flights
       what: airlines and flight tickets
     lodging:
+      name: Lodging
       what: hotels, hostels, holiday apartments and rentals
     travel_other:
+      name: Other travel
       what: travel agencies, packages, long-distance trains and buses, car rental, fees for purchases abroad
   health:
+    _name: Health
     pharmacy:
+      name: Pharmacy
       what: pharmacies and parapharmacies
     medical:
+      name: Medical
       what: doctors, dentists, clinics, hospitals, opticians, physiotherapy, psychologists
       not_for: hairdressers, beauty treatments, veterinarians
     health_insurance:
+      name: Health insurance
       what: private health insurance premiums
     personal_care:
+      name: Personal care
       what: hairdressers, barbers, beauty salons, nails, spa and massage
       not_for: buying cosmetics or perfume in a shop
   technology:
+    _name: Technology
     software_ai:
+      name: Software & AI
       what: software, AI tools, productivity apps and cloud storage subscriptions (OpenAI, Anthropic, Cursor, Notion,
         Google One)
       not_for: streaming and entertainment apps, buying devices
   education:
+    _name: Education
     tuition:
+      name: Tuition
       what: school, university and nursery-school fees, parents' associations (AMPA), exam fees
     courses:
+      name: Courses
       what: language schools, academies, tutoring, online courses and training
       not_for: sports classes
     books_supplies:
+      name: Books & supplies
       what: school textbooks, course materials and school supplies
       not_for: leisure books and toys
   family:
+    _name: Family
     childcare_kids:
+      name: Childcare & kids
       what: childcare, babysitters, summer camps, extracurricular activities and children's needs
       not_for: school fees
     pets:
+      name: Pets
       what: veterinarians, pet food, pet shops, pet grooming and insurance
   people:
+    _name: People
     payments_to_people:
+      name: Payments to people
       what: 'money sent to a private person: Bizum sent, a transfer to an individual''s name'
   giving:
+    _name: Giving
     donations:
+      name: Donations
       what: donations to charities, foundations, NGOs, churches and causes
   financial:
+    _name: Financial
     bank_fees:
+      name: Bank fees
       what: bank commissions, account and card fees, overdraft interest
     loan_payment:
+      name: Loan payments
       what: repayment of a personal loan, consumer credit or financing
       not_for: mortgage
     taxes:
+      name: Taxes
       what: taxes, fines, social security payments and public administration fees
     other_insurance:
+      name: Other insurance
       what: life insurance and any insurance that is not home, health or car
   cash:
+    _name: Cash
     atm_withdrawal:
+      name: ATM withdrawals
       what: cash withdrawal at an ATM
   other:
+    _name: Other
     uncategorized_expense:
+      name: Uncategorized expense
       what: an expense that fits no other category or whose text gives no clue
   credit_card:
+    _name: Credit card
     credit_card_spending:
+      name: Credit card bill
       what: the monthly settlement of a credit card, or the instalment of a card purchase paid in instalments, when the card's own purchases are not imported (adeudo mensual de tarjeta, operacion financiada con tarjeta)
       not_for: a purchase paid by card at a shop, which takes the shop's category
 income:
   income:
+    _name: Income
     salary:
+      name: Salary
       what: payroll, salary (nomina) paid by an employer
     self_employment:
+      name: Self-employment
       what: payments from clients for freelance or business work, invoices paid
     pension_benefits:
+      name: Pension & benefits
       what: pension, unemployment benefit, public aid and subsidies, tax refunds from the administration
     refunds:
+      name: Refunds
       what: money back with no known purchase behind it, such as cashback or a bonus paid by a bank
       not_for: the refund of a purchase at a shop, which takes the category of that purchase
     investment_income:
+      name: Investment income
       what: interest, dividends, investment returns
     payments_from_people:
+      name: Payments from people
       what: 'money received from a private person: Bizum received, a transfer from an individual''s name'
     other_income:
+      name: Other income
       what: any other income that fits no category above
 transfer:
   transfer:
+    _name: Transfers
     own_accounts:
+      name: Own accounts
       what: moving money between accounts of the same household (traspaso propio)
       not_for: money sent to or received from another person
     savings_investment:
+      name: Savings & investments
       what: contributions to savings, brokers, investment or pension plans
     credit_card_payment:
+      name: Credit card payment
       what: monthly settlement of a credit card whose own statement is imported, so its purchases are already categorized
     loan_received:
+      name: Loan received
       what: money a bank or lender pays into the account as a loan or credit line; it is paid back, so it is not income
       not_for: salary, refunds or payments from people
