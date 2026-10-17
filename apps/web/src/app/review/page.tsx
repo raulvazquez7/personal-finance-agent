@@ -16,8 +16,7 @@ export default async function ReviewPage() {
   ]);
   return (
     <div className="mx-auto flex w-full max-w-4xl flex-col gap-6">
-      <ReviewList initialItems={items} categories={categories} merchants={merchants}
-                  uncategorized={count.uncategorized} />
+      <ReviewList initialItems={items} categories={categories} merchants={merchants} count={count} />
     </div>
   );
 }

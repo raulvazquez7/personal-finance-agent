@@ -6,12 +6,16 @@ import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 
 import { Progress } from "@/components/ui/progress";
-import { apiPost, type Schemas } from "@/lib/api";
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
+import { apiPatch, apiPost, type Schemas } from "@/lib/api";
 import { plural } from "@/lib/labels";
 import { directionOf } from "@/lib/pickers";
+import { reviewOrder, type ReviewFilter, type ReviewSort } from "@/lib/review-order";
 
+import { MergeCard } from "./merge-card";
 import { ReviewHelp } from "./review-help";
 import { ReviewRow, type Decision } from "./review-row";
+import { useSkipped } from "./use-skipped";
 
 type Item = Schemas["ReviewItem"];
 type Transaction = Schemas["ReviewTransaction"];
@@ -20,21 +24,25 @@ type Pending = { id: string; timer: ReturnType<typeof setTimeout>; commit: (keep
 
 const UNDO_MS = 5000;
 let seq = 0;
-const byTotal = (a: Item, b: Item) => Math.abs(Number(b.total)) - Math.abs(Number(a.total));
 
 type Props = {
   initialItems: Item[];
   categories: Schemas["CategoryOut"][];
   merchants: Schemas["MerchantOut"][];
-  /** Transactions no categorization run has handled yet (no jev key, or jev failed on them). */
-  uncategorized: number;
+  /** The header's numbers; `uncategorized` counts transactions no categorization run has handled
+   * yet (no jev key, or jev failed on them). */
+  count: Schemas["ReviewCount"];
 };
 
-export function ReviewList({ initialItems, categories, merchants, uncategorized }: Props) {
+export function ReviewList({ initialItems, categories, merchants, count }: Props) {
   const router = useRouter();
   const [items, setItems] = useState(initialItems);
   const [total] = useState(initialItems.length);
+  const [filter, setFilter] = useState<ReviewFilter>("all");
+  const [sort, setSort] = useState<ReviewSort>("amount");
+  const [skipped, skip] = useSkipped();
   const pending = useRef(new Map<string, Pending>()); // by row key: at most one change per row
+  const { uncategorized } = count;
 
   useEffect(() => {
     // Leaving the page, or the route, sends what is still waiting for its undo window.
@@ -47,10 +55,11 @@ export function ReviewList({ initialItems, categories, merchants, uncategorized 
     };
   }, []);
 
+  // The order is chosen at render time (reviewOrder): the list only adds and removes cards.
   function replace(key: string, next: Item | null) {
     setItems((current) => {
       const others = current.filter((item) => item.key !== key);
-      return (next ? [...others, next] : others).sort(byTotal);
+      return next ? [...others, next] : others;
     });
   }
 
@@ -132,6 +141,19 @@ export function ReviewList({ initialItems, categories, merchants, uncategorized 
     }
   }
 
+  function mergeYes(item: Item, source: Schemas["MerchantOut"], into: Schemas["MergeSuggestion"]) {
+    // The source's own category card leaves with it: once merged, its rows belong to the survivor
+    // and come back under it on the next load. Undo restores both.
+    const sourceCard = items.find((other) => other.kind === "merchant" && other.merchant?.id === source.id) ?? null;
+    schedule(item, null, "Merged", (keepalive) =>
+      apiPatch(`/merchants/${source.id}`, { merge_into_id: into.merchant_id }, { keepalive }), sourceCard);
+  }
+
+  function mergeNo(item: Item, source: Schemas["MerchantOut"]) {
+    schedule(item, null, "Dismissed", (keepalive) =>
+      apiPost(`/merchants/${source.id}/dismiss-merge`, undefined, { keepalive }));
+  }
+
   function labelOne(item: Item, tx: Transaction, d: Decision, message: string) {
     const rest = item.transactions.filter((t) => t.id !== tx.id);
     const next = rest.length
@@ -149,6 +171,7 @@ export function ReviewList({ initialItems, categories, merchants, uncategorized 
   }
 
   const done = Math.max(total - items.length, 0);
+  const shown = reviewOrder(items, filter, sort, skipped);
   return (
     <section className="flex flex-col gap-6">
       <header className="flex flex-col gap-3">
@@ -156,6 +179,12 @@ export function ReviewList({ initialItems, categories, merchants, uncategorized 
           <h1 className="text-xl font-semibold tracking-tight">Review</h1>
           {total > 0 && <span className="text-sm tabular-nums text-muted-foreground">{done} of {total}</span>}
         </div>
+        {count.pending > 0 && (
+          <p className="text-sm">
+            {count.pending} to review: {plural(count.categories, "category", "categories")} ·{" "}
+            {plural(count.merges, "possible duplicate", "possible duplicates")}
+          </p>
+        )}
         <p className="text-sm text-muted-foreground">Confirm or fix. Your answer applies to every transaction of the merchant.</p>
         {items.length > 0 && <ReviewHelp items={items} categories={categories} />}
         {uncategorized > 0 && (
@@ -166,6 +195,32 @@ export function ReviewList({ initialItems, categories, merchants, uncategorized 
           </p>
         )}
         {total > 0 && <Progress aria-label="Review progress" value={(done / total) * 100} />}
+        {items.length > 0 && (
+          <div className="flex flex-wrap items-center gap-2">
+            <ToggleGroup
+              variant="segment"
+              size="sm"
+              aria-label="Show"
+              value={[filter]}
+              onValueChange={(value: string[]) => value[0] && setFilter(value[0] as ReviewFilter)}
+            >
+              <ToggleGroupItem value="all">All</ToggleGroupItem>
+              <ToggleGroupItem value="categories">Categories</ToggleGroupItem>
+              <ToggleGroupItem value="duplicates">Duplicates</ToggleGroupItem>
+            </ToggleGroup>
+            <ToggleGroup
+              variant="segment"
+              size="sm"
+              aria-label="Sort by"
+              className="ml-auto"
+              value={[sort]}
+              onValueChange={(value: string[]) => value[0] && setSort(value[0] as ReviewSort)}
+            >
+              <ToggleGroupItem value="amount">Amount</ToggleGroupItem>
+              <ToggleGroupItem value="date">Date</ToggleGroupItem>
+            </ToggleGroup>
+          </div>
+        )}
       </header>
 
       {items.length === 0 ? (
@@ -175,20 +230,35 @@ export function ReviewList({ initialItems, categories, merchants, uncategorized 
             <p>All caught up</p>
           </div>
         )
+      ) : shown.length === 0 ? (
+        <p className="py-8 text-center text-sm text-muted-foreground">Nothing to review under this filter.</p>
       ) : (
         <ul className="flex flex-col gap-3">
-          {items.map((item) => (
-            <ReviewRow
-              key={item.key}
-              item={item}
-              categories={categories}
-              merchants={merchants}
-              onConfirm={(d) => confirm(item, d)}
-              onLabelOne={(tx, d) => labelOne(item, tx, d, "Labelled")}
-              onDismissMerge={() => item.merchant && schedule(item, { ...item, merge: null }, "Dismissed", (keepalive) =>
-                apiPost(`/merchants/${item.merchant!.id}/dismiss-merge`, undefined, { keepalive }))}
-            />
-          ))}
+          {shown.map((item) => {
+            const { merchant, merge } = item;
+            if (item.kind === "merge" && merchant && merge) {
+              return (
+                <MergeCard
+                  key={item.key}
+                  item={item}
+                  onYes={() => mergeYes(item, merchant, merge)}
+                  onNo={() => mergeNo(item, merchant)}
+                  onSkip={() => skip(item.key)}
+                />
+              );
+            }
+            return (
+              <ReviewRow
+                key={item.key}
+                item={item}
+                categories={categories}
+                merchants={merchants}
+                onConfirm={(d) => confirm(item, d)}
+                onLabelOne={(tx, d) => labelOne(item, tx, d, "Labelled")}
+                onSkip={() => skip(item.key)}
+              />
+            );
+          })}
         </ul>
       )}
     </section>

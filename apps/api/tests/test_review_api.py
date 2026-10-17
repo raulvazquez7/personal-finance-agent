@@ -127,6 +127,34 @@ def test_dismiss_merge(client, db_conn):
     assert client.post(f"/merchants/{MISSING}/dismiss-merge").status_code == 404
 
 
+def test_a_pending_merge_is_its_own_card_and_counted_apart(client, db_conn, make_tx):
+    foods = _merchant(db_conn, "ZZTEST ACME FOODS")
+    acme = _merchant(db_conn, "ZZTEST ACME")
+    db_conn.execute(
+        "update merchants set merge_candidate_id = %s, merge_confidence = 0.6 where id = %s",
+        (foods, acme),
+    )
+    # A settled row of the source does not pull a category card in with the merge.
+    settled = make_tx("-7.00", "PAGO | ZZTEST ACME", booked_at=SYNTHETIC_DAY)
+    db_conn.execute(
+        "update transactions set merchant_id = %s, category_source = 'jev',"
+        " category_slug = 'groceries', needs_review = false where id = %s",
+        (acme, settled),
+    )
+    cards = [
+        item
+        for item in client.get("/review").json()
+        if item["merchant"] and item["merchant"]["id"] == str(acme)
+    ]
+    assert [(card["key"], card["kind"], card["transactions"]) for card in cards] == [
+        (f"merge:{acme}", "merge", [])
+    ]
+    assert cards[0]["merge"]["merchant_id"] == str(foods)
+    count = client.get("/review/count").json()
+    assert count["pending"] == count["categories"] + count["merges"]
+    assert count["merges"] >= 1 and "uncategorized" in count
+
+
 def test_categories_and_merchant_autocomplete(client, db_conn):
     db_conn.execute("insert into merchants (name, match_key) values ('ZZTEST ACME', 'ZZTESTACME')")
     assert len(client.get("/categories").json()) == 57

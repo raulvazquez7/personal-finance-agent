@@ -7,7 +7,7 @@ import { useEffect, useRef, useState, type FormEvent } from "react";
 import { CategoryFilter } from "@/components/pickers/category-filter";
 import { MerchantPicker } from "@/components/pickers/merchant-picker";
 import { Button } from "@/components/ui/button";
-import { Field, FieldGroup, FieldLabel } from "@/components/ui/field";
+import { Field, FieldContent, FieldDescription, FieldGroup, FieldLabel } from "@/components/ui/field";
 import { InputGroup, InputGroupAddon, InputGroupInput } from "@/components/ui/input-group";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -239,8 +239,14 @@ export function ExplorerFilters({ search, explorer, categories, merchants }: Pro
                   id="filter-review"
                   checked={explorer.needs_review === "true"}
                   onCheckedChange={(checked) => go({ needs_review: checked ? "true" : undefined })}
+                  aria-describedby="filter-review-help"
                 />
-                <FieldLabel htmlFor="filter-review">Needs review only</FieldLabel>
+                <FieldContent>
+                  <FieldLabel htmlFor="filter-review">Needs review only</FieldLabel>
+                  <FieldDescription id="filter-review-help">
+                    Counts transactions that need a category, not review cards.
+                  </FieldDescription>
+                </FieldContent>
               </Field>
             </FieldGroup>
           </PopoverContent>

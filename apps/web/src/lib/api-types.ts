@@ -851,6 +851,10 @@ export interface components {
         ReviewCount: {
             /** Pending */
             pending: number;
+            /** Categories */
+            categories: number;
+            /** Merges */
+            merges: number;
             /** Uncategorized */
             uncategorized: number;
         };
@@ -862,7 +866,7 @@ export interface components {
              * Kind
              * @enum {string}
              */
-            kind: "merchant" | "transaction";
+            kind: "merchant" | "transaction" | "merge";
             merchant: components["schemas"]["MerchantOut"] | null;
             /** Transactions */
             transactions: components["schemas"]["ReviewTransaction"][];
