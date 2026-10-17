@@ -38,7 +38,7 @@ type Props = {
   childDimension: "category" | "merchant" | null;
   seeAllHref: string;
   defaultView?: "monthly" | "cumulative";
-  /** A card above the numbers: the merchant page's controls (spec 7). */
+  /** A card under the title and total, above the chart: the merchant page's controls (spec 7). */
   controls?: ReactNode;
 };
 
@@ -106,7 +106,6 @@ export function DetailPage({
           ))}
         </BreadcrumbList>
       </Breadcrumb>
-      {controls}
       <header className="flex flex-col gap-0.5">
         <h1 className="text-sm text-muted-foreground">
           {title} · {rangeLabel(detail.period)}
@@ -127,6 +126,7 @@ export function DetailPage({
           )}
         </p>
       </header>
+      {controls}
       <SpendingCard
         name={title}
         months={detail.months}
