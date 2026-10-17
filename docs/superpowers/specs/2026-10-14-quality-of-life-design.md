@@ -237,7 +237,10 @@ the default, and links built by `filterParams` still leave it out.
 | `cadence_effective`, `cadence_source` | From `v_subscriptions` when the merchant has flagged charges, otherwise null |
 | `rows_a_default_would_change` | Rows of this merchant whose `category_source` is `jev`, `merchant` or `none`: the rows `_RELABEL_MERCHANT` can touch |
 
-404 when the id is unknown. The page shows a controls card above the numbers.
+404 when the id is unknown. The page shows a controls card under the title and total, above
+the chart and the tables. Below `sm` the card starts folded behind its title, a button with
+`aria-expanded`. (Changed 2026-10-17 from "above the numbers": on a phone the open card pushed
+the title and total off the first screen.)
 
 **Default category.** The current one reads "Group › Category", or "No default" when null.
 Changing it calls the existing `POST /merchants/{id}/review` with that category and the
