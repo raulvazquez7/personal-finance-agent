@@ -35,9 +35,9 @@ flowchart LR
     B --> C{Own transfer or<br/>system rule?}
     C -->|yes| G[(Postgres)]
     C -->|no| D["jev: merchant, category,<br/>subscription in one call"]
-    D --> E{"Python: merchant match,<br/>confidence ≥ 0.95?"}
-    E -->|yes| G
-    E -->|no| F[Review inbox] --> G
+    D --> E["Python: merchant match,<br/>flag if confidence < 0.95"]
+    E --> G
+    G -.->|flagged rows| F[Review inbox]
     G --> H[One enriched view]
     H --> I[Dashboards]
     H --> J["Chat agent<br/>(read-only SQL)"]
