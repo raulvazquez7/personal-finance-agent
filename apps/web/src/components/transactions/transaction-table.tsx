@@ -7,12 +7,12 @@ import { TransactionRow } from "./transaction-row";
 
 type Tx = Schemas["Transaction"];
 
-type Props = { items: Tx[]; onOpen?: (tx: Tx) => void; showSource?: boolean };
+type Props = { items: Tx[]; categories: Schemas["CategoryOut"][]; onOpen?: (tx: Tx) => void; showSource?: boolean };
 
 /** Rows grouped by day; each day header shows that day's net (spec 7.3). The screen-reader
  * headers hide with their columns on small screens, and each day is a row group whose header
  * cell names the day for the rows under it. */
-export function TransactionTable({ items, onOpen, showSource = false }: Props) {
+export function TransactionTable({ items, categories, onOpen, showSource = false }: Props) {
   const columns = showSource ? 5 : 4;
   return (
     <Table>
@@ -41,7 +41,13 @@ export function TransactionTable({ items, onOpen, showSource = false }: Props) {
             </th>
           </TableRow>
           {day.items.map((tx) => (
-            <TransactionRow key={tx.id} tx={tx} showSource={showSource} onOpen={onOpen && (() => onOpen(tx))} />
+            <TransactionRow
+              key={tx.id}
+              tx={tx}
+              categories={categories}
+              showSource={showSource}
+              onOpen={onOpen && (() => onOpen(tx))}
+            />
           ))}
         </TableBody>
       ))}

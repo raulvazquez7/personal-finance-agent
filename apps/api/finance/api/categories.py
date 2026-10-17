@@ -13,6 +13,8 @@ class CategoryOut(BaseModel):
     slug: str
     tx_type: str
     level1: str
+    name: str
+    group_name: str
 
 
 def require_category(conn: Connection, slug: str) -> None:
@@ -22,7 +24,14 @@ def require_category(conn: Connection, slug: str) -> None:
 
 @router.get("")
 def list_categories(conn: Db) -> list[CategoryOut]:
+    # A missing name reads as the slug with its first letter up ("Software ai"), as in the view.
     rows = conn.execute(
-        "select slug, tx_type, level1 from categories order by tx_type, level1, slug"
+        "select c.slug, c.tx_type, c.level1,"
+        " coalesce(c.name, upper(left(replace(c.slug, '_', ' '), 1))"
+        "   || substr(replace(c.slug, '_', ' '), 2)) as name,"
+        " coalesce(g.name, upper(left(replace(c.level1, '_', ' '), 1))"
+        "   || substr(replace(c.level1, '_', ' '), 2)) as group_name"
+        " from categories c left join category_groups g on g.level1 = c.level1"
+        " order by c.tx_type, c.level1, c.slug"
     ).fetchall()
     return [CategoryOut.model_validate(row) for row in rows]

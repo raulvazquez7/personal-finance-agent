@@ -92,14 +92,26 @@ attributes:
     description: >
       Category of the movement (level 2 of the taxonomy). 'uncategorized' when the movement has no
       category yet; such rows count by their sign until categorized. Different from
-      uncategorized_expense, a category for expenses whose purpose is unknown.
+      uncategorized_expense, a category for expenses whose purpose is unknown. Filter and group
+      on this slug; say category_name to the user.
     allowed_values: categories
   - attribute: category_group
     kind: dimension
     description: >
       Group of the category (level 1), for broad questions such as "how much on transport".
-      'uncategorized' when the movement has no category.
+      'uncategorized' when the movement has no category. Filter and group on this slug; say
+      group_name to the user.
     allowed_values: category_groups
+  - attribute: category_name
+    kind: dimension
+    description: >
+      The category as the app shows it to the user ("Restaurants & bars" for restaurants_bars).
+      Use it in answers instead of the slug; filter on category.
+  - attribute: group_name
+    kind: dimension
+    description: >
+      The category group as the app shows it to the user ("Transport" for transport). Use it in
+      answers instead of the slug; filter on category_group.
   - attribute: merchant
     kind: dimension
     description: >

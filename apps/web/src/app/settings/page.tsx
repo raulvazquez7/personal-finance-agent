@@ -4,7 +4,6 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { FieldGroup } from "@/components/ui/field";
 import { apiGet, type Schemas } from "@/lib/api";
-import { label } from "@/lib/labels";
 import { byLevel1 } from "@/lib/pickers";
 
 import { AccountNameForm } from "./account-name-form";
@@ -68,7 +67,7 @@ export default async function SettingsPage() {
                         <dd className="flex flex-wrap gap-1">
                           {group.items.map((category) => (
                             <Badge key={category.slug} variant="outline">
-                              {label(category.slug)}
+                              {category.name}
                             </Badge>
                           ))}
                         </dd>

@@ -24,7 +24,7 @@ export function TransactionBrowser({ items, categories, merchants, showSource, o
   const [selected, setSelected] = useState<Tx | null>(null);
   return (
     <>
-      <TransactionTable items={items} showSource={showSource} onOpen={setSelected} />
+      <TransactionTable items={items} categories={categories} showSource={showSource} onOpen={setSelected} />
       <TransactionPanel
         tx={selected}
         categories={categories}

@@ -127,11 +127,70 @@ def test_dismiss_merge(client, db_conn):
     assert client.post(f"/merchants/{MISSING}/dismiss-merge").status_code == 404
 
 
+def test_a_pending_merge_is_its_own_card_and_counted_apart(client, db_conn, make_tx):
+    foods = _merchant(db_conn, "ZZTEST ACME FOODS")
+    acme = _merchant(db_conn, "ZZTEST ACME")
+    db_conn.execute(
+        "update merchants set merge_candidate_id = %s, merge_confidence = 0.6 where id = %s",
+        (foods, acme),
+    )
+    # A settled row of the source does not pull a category card in with the merge.
+    settled = make_tx("-7.00", "PAGO | ZZTEST ACME", booked_at=SYNTHETIC_DAY)
+    db_conn.execute(
+        "update transactions set merchant_id = %s, category_source = 'jev',"
+        " category_slug = 'groceries', needs_review = false where id = %s",
+        (acme, settled),
+    )
+    cards = [
+        item
+        for item in client.get("/review").json()
+        if item["merchant"] and item["merchant"]["id"] == str(acme)
+    ]
+    assert [(card["key"], card["kind"], card["transactions"]) for card in cards] == [
+        (f"merge:{acme}", "merge", [])
+    ]
+    assert cards[0]["merge"]["merchant_id"] == str(foods)
+    count = client.get("/review/count").json()
+    assert count["pending"] == count["categories"] + count["merges"]
+    assert count["merges"] >= 1 and "uncategorized" in count
+
+
+def test_confirming_a_category_keeps_the_merchants_duplicate_card(client, db_conn, make_tx):
+    foods = _merchant(db_conn, "ZZTEST ACME FOODS")
+    acme = _merchant(db_conn, "ZZTEST ACME")
+    db_conn.execute(
+        "update merchants set merge_candidate_id = %s, merge_confidence = 0.6 where id = %s",
+        (foods, acme),
+    )
+    tx = make_tx("-7.00", "PAGO | ZZTEST ACME", booked_at=SYNTHETIC_DAY)
+    _to_review(db_conn, tx, "groceries", merchant_id=acme)
+    before = client.get("/review/count").json()
+    assert {f"m:{acme}", f"merge:{acme}"} <= _keys(client)
+
+    body = {"category_slug": "groceries", "is_subscription": False}
+    assert client.post(f"/merchants/{acme}/review", json=body).status_code == 204
+
+    keys = _keys(client)
+    assert f"m:{acme}" not in keys and f"merge:{acme}" in keys
+    after = client.get("/review/count").json()
+    assert (after["merges"], after["categories"]) == (before["merges"], before["categories"] - 1)
+
+
 def test_categories_and_merchant_autocomplete(client, db_conn):
     db_conn.execute("insert into merchants (name, match_key) values ('ZZTEST ACME', 'ZZTESTACME')")
     assert len(client.get("/categories").json()) == 57
     names = [m["name"] for m in client.get("/merchants", params={"q": "zztest"}).json()]
     assert names == ["ZZTEST ACME"]
+
+
+def test_categories_carry_their_names_or_the_readable_slug(client, db_conn):
+    def software():
+        return next(c for c in client.get("/categories").json() if c["slug"] == "software_ai")
+
+    assert (software()["name"], software()["group_name"]) == ("Software & AI", "Technology")
+    db_conn.execute("update categories set name = null where slug = 'software_ai'")
+    db_conn.execute("delete from category_groups where level1 = 'technology'")
+    assert (software()["name"], software()["group_name"]) == ("Software ai", "Technology")
 
 
 def test_label_rejects_an_income_category_for_money_out(client, make_tx):
@@ -169,3 +228,54 @@ def test_a_confirm_without_a_subscription_answer_keeps_the_flag(client, db_conn)
     assert kept.status_code == 204
     row = db_conn.execute("select * from merchants where id = %s", (acme,)).fetchone()
     assert (row["category_slug"], row["is_subscription"]) == ("fashion", True)
+
+
+def test_the_merchant_profile(client, db_conn, make_tx):
+    acme = _merchant(db_conn, "ZZTEST ACME", category_slug="groceries")
+    db_conn.execute("update merchants set is_subscription = true where id = %s", (acme,))
+    for source in ("jev", "none", "user", "rule"):
+        tx = make_tx("-9.90", f"PAGO | ZZTEST ACME {source}", booked_at=SYNTHETIC_DAY)
+        db_conn.execute(
+            "update transactions set merchant_id = %s, category_source = %s,"
+            " is_subscription = %s where id = %s",
+            (acme, source, source == "jev", tx),
+        )
+    assert client.get(f"/merchants/{acme}").json() == {
+        "id": str(acme),
+        "name": "ZZTEST ACME",
+        "category_slug": "groceries",
+        "is_subscription": True,
+        "cadence": None,
+        # One flagged charge is monthly in v_subscriptions.
+        "cadence_effective": "monthly",
+        "cadence_source": "auto",
+        "rows_a_default_would_change": 2,
+    }
+    bare = _merchant(db_conn, "ZZTEST BARE")
+    db_conn.execute("update merchants set cadence = 'yearly' where id = %s", (bare,))
+    profile = client.get(f"/merchants/{bare}").json()
+    assert (profile["cadence"], profile["cadence_effective"], profile["cadence_source"]) == (
+        "yearly",
+        None,
+        None,
+    )
+    assert profile["rows_a_default_would_change"] == 0
+    assert client.get(f"/merchants/{MISSING}").status_code == 404
+
+
+def test_rename_or_merge_a_merchant(client, db_conn):
+    acme = _merchant(db_conn, "ZZTEST ACME")
+    other = _merchant(db_conn, "ZZTEST OTHER")
+    both = {"name": "ZZTEST NEW", "merge_into_id": str(other)}
+    for body in (both, {}, {"name": "!!!"}):
+        assert client.patch(f"/merchants/{acme}", json=body).status_code == 422
+    for body in ({"name": "ZZTEST NEW"}, {"merge_into_id": str(other)}):
+        assert client.patch(f"/merchants/{MISSING}", json=body).status_code == 404
+
+    renamed = client.patch(f"/merchants/{acme}", json={"name": "ZZTEST ACME RENAMED"})
+    assert (renamed.status_code, renamed.json()) == (200, {"id": str(acme)})
+    name = db_conn.execute("select name from merchants where id = %s", (acme,)).fetchone()["name"]
+    assert name == "ZZTEST ACME RENAMED"
+
+    merged = client.patch(f"/merchants/{acme}", json={"merge_into_id": str(other)})
+    assert (merged.status_code, merged.json()) == (200, {"id": str(other)})

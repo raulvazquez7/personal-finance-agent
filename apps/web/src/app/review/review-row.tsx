@@ -11,7 +11,7 @@ import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import type { Schemas } from "@/lib/api";
 import { dayLong, signedMoney } from "@/lib/format";
-import { label } from "@/lib/labels";
+import { groupName } from "@/lib/labels";
 import { directionOf, startingCategory } from "@/lib/pickers";
 import { cn } from "@/lib/utils";
 
@@ -28,11 +28,11 @@ type Props = {
   merchants: Schemas["MerchantOut"][];
   onConfirm: (decision: Decision) => void;
   onLabelOne: (tx: Transaction, decision: Decision) => void;
-  onDismissMerge: () => void;
+  onSkip: () => void;
 };
 
-export function ReviewRow({ item, categories, merchants, onConfirm, onLabelOne, onDismissMerge }: Props) {
-  const { suggestion, merge } = item;
+export function ReviewRow({ item, categories, merchants, onConfirm, onLabelOne, onSkip }: Props) {
+  const { suggestion } = item;
   const direction = directionOf(item.transactions.map((t) => t.amount));
   // Decision H: a jev suggestion that does not fit the direction (income on money out) is dropped.
   const [categorySlug, setCategorySlug] = useState(() => startingCategory(item, categories));
@@ -44,8 +44,6 @@ export function ReviewRow({ item, categories, merchants, onConfirm, onLabelOne, 
   const level1 = categories.find((c) => c.slug === categorySlug)?.level1;
   const showConfidence = categorySlug === suggestion.category_slug && suggestion.confidence != null;
   const single = item.count < 2 ? item.transactions[0] : null;
-  // Merge only picks the suggested merchant: confirming then merges and sets the category in one request.
-  const mergePicked = merge != null && merchant?.id === merge.merchant_id;
   const incoming = item.transactions.some((t) => Number(t.amount) > 0);
   const outgoing = item.transactions.some((t) => Number(t.amount) < 0);
   const description = item.transactions[0].description_raw;
@@ -55,29 +53,35 @@ export function ReviewRow({ item, categories, merchants, onConfirm, onLabelOne, 
     <li>
       {/* A group named by its bank text: every card repeats Merchant, Category and Confirm. */}
       <div role="group" aria-labelledby={labelId} className="flex flex-col gap-3 rounded-card bg-card p-4">
-        <button
-          type="button"
-          onClick={() => setOpen(!open)}
-          disabled={item.count < 2}
-          aria-expanded={item.count > 1 ? open : undefined}
-          className="flex min-w-0 items-center gap-2 text-left text-sm text-muted-foreground"
-        >
-          <ChevronRight className={cn("size-4 shrink-0 transition-transform", open && "rotate-90", item.count < 2 && "invisible")} />
-          <Direction incoming={incoming} outgoing={outgoing} />
-          {single && (
-            <span className="shrink-0">
-              {dayLong(single.booked_at)}
-              {/* On phones the account would push the amount off the row. */}
-              <span className="hidden sm:inline"> · {single.account_name}</span>
+        <div className="flex items-start gap-2 sm:items-center">
+          <button
+            type="button"
+            onClick={() => setOpen(!open)}
+            disabled={item.count < 2}
+            aria-expanded={item.count > 1 ? open : undefined}
+            className="flex min-h-7 min-w-0 flex-1 items-center gap-2 text-left text-sm text-muted-foreground max-sm:flex-wrap"
+          >
+            <ChevronRight className={cn("size-4 shrink-0 transition-transform", open && "rotate-90", item.count < 2 && "invisible")} />
+            <Direction incoming={incoming} outgoing={outgoing} />
+            {single && (
+              <span className="shrink-0">
+                {dayLong(single.booked_at)}
+                {/* On phones the account would push the amount off the row. */}
+                <span className="hidden sm:inline"> · {single.account_name}</span>
+              </span>
+            )}
+            {/* Two lines and a title, so the bank text can always be read on a phone (dogfood issue 003);
+                there it takes its own line, as Skip shares the top one. */}
+            <span id={labelId} className="line-clamp-2 min-w-0 break-words max-sm:order-last max-sm:basis-full" title={description}>
+              {description}
             </span>
-          )}
-          {/* Two lines and a title, so the bank text can always be read on a phone (dogfood issue 003). */}
-          <span id={labelId} className="line-clamp-2 min-w-0 break-words" title={description}>
-            {description}
-          </span>
-          {item.count > 1 && <span className="shrink-0">×{item.count}</span>}
-          <Amount value={Number(item.total)} className="ml-auto shrink-0 font-medium" />
-        </button>
+            {item.count > 1 && <span className="shrink-0">×{item.count}</span>}
+            <Amount value={Number(item.total)} className="ml-auto shrink-0 font-medium" />
+          </button>
+          <Button size="sm" variant="ghost" onClick={onSkip}>
+            Skip
+          </Button>
+        </div>
 
         <div className="grid gap-3 md:grid-cols-[1fr_1fr_7rem_auto_auto] md:items-center">
           <MerchantPicker
@@ -102,7 +106,7 @@ export function ReviewRow({ item, categories, merchants, onConfirm, onLabelOne, 
               </span>
             )}
           </div>
-          <span className="truncate text-sm text-muted-foreground">{level1 ? label(level1) : <NoData />}</span>
+          <span className="truncate text-sm text-muted-foreground">{level1 ? groupName(level1, categories) : <NoData />}</span>
           <label className="flex items-center gap-2 text-sm text-muted-foreground">
             <Switch
               checked={subscription}
@@ -114,37 +118,13 @@ export function ReviewRow({ item, categories, merchants, onConfirm, onLabelOne, 
           </label>
           {/* With several transactions, say that the answer covers all of them, not the first line. */}
           <Button
-            size={single ? "icon" : "default"}
-            aria-label={single ? "Confirm" : undefined}
             disabled={!categorySlug}
             onClick={() => onConfirm({ categorySlug, isSubscription: subscription, merchant })}
           >
-            <Check />
-            {!single && `Apply to all ${item.count}`}
+            <Check data-icon="inline-start" />
+            {single ? "Confirm" : `Apply to all ${item.count}`}
           </Button>
         </div>
-
-        {merge && (
-          <div className="flex flex-wrap items-center gap-2 rounded-lg bg-muted px-3 py-2 text-sm">
-            {mergePicked ? (
-              <span>
-                Confirm to merge into <strong>{merge.name}</strong>.
-              </span>
-            ) : (
-              <>
-                <span>
-                  Same merchant as <strong>{merge.name}</strong>?
-                </span>
-                <Button size="sm" variant="outline" className="ml-auto" onClick={() => setMerchant({ id: merge.merchant_id, name: merge.name })}>
-                  Merge
-                </Button>
-                <Button size="sm" variant="ghost" onClick={onDismissMerge}>
-                  No
-                </Button>
-              </>
-            )}
-          </div>
-        )}
 
         {open && (
           <ul className="flex flex-col divide-y border-t">

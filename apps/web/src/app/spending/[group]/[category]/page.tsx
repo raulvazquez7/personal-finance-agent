@@ -3,13 +3,15 @@ import { notFound } from "next/navigation";
 
 import { DetailPage } from "@/components/detail/detail-page";
 import { apiGet, type Schemas } from "@/lib/api";
-import { knownCategory, label } from "@/lib/labels";
+import { categoryName, groupName, knownCategory } from "@/lib/labels";
 import { isSlug, parseFilters, withFilters } from "@/lib/params";
 
 export const dynamic = "force-dynamic";
 
 export async function generateMetadata({ params }: PageProps<"/spending/[group]/[category]">): Promise<Metadata> {
-  return { title: label((await params).category) };
+  // The page fetches the same list; Next.js memoizes the same GET within one request.
+  const [{ category }, categories] = await Promise.all([params, apiGet<Schemas["CategoryOut"][]>("/categories")]);
+  return { title: categoryName(category, categories) };
 }
 
 /** A category inside a group (spec 7.1): the same template, with merchants instead of categories. */
@@ -29,11 +31,11 @@ export default async function CategoryPage({ params, searchParams }: PageProps<"
       categories={categories}
       merchants={merchants}
       filters={filters}
-      title={label(category)}
+      title={categoryName(category, categories)}
       crumbs={[
         { label: "Overview", href: withFilters("/", filters) },
-        { label: label(group), href: withFilters(`/spending/${group}`, filters) },
-        { label: label(category) },
+        { label: groupName(group, categories), href: withFilters(`/spending/${group}`, filters) },
+        { label: categoryName(category, categories) },
       ]}
       childDimension="merchant"
       seeAllHref={withFilters("/transactions", filters, { tx_type: "expense", level1: group, category })}

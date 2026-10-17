@@ -47,8 +47,8 @@ describe("groupByDay", () => {
 });
 
 const categories: Schemas["CategoryOut"][] = [
-  { slug: "fashion", tx_type: "expense", level1: "shopping" },
-  { slug: "salary", tx_type: "income", level1: "income" },
+  { slug: "fashion", tx_type: "expense", level1: "shopping", name: "Fashion", group_name: "Shopping" },
+  { slug: "salary", tx_type: "income", level1: "income", name: "Salary", group_name: "Income" },
 ];
 
 describe("applyChange", () => {

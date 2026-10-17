@@ -1,5 +1,5 @@
 /** Breakdown rows as the tables and donuts show them: named, linked one level deeper, coloured
- * by group on the overview (spec 7.2), and compared with the previous period. */
+ * by group on the overview (spec 8.2), and compared with the previous period. */
 
 import type { Schemas } from "./api";
 import { groupColor } from "./colors";
@@ -15,6 +15,8 @@ export type BreakdownItem = {
   hint: string;
   href: string | null;
   color?: string;
+  /** The "_other" subtotal: drawn with the hatch, never a group colour. */
+  folded: boolean;
   share: number;
   amount: string;
   count: number;
@@ -45,15 +47,19 @@ function hrefOf(row: Row, dimension: Dimension, { filters, type }: BreakdownCont
   return withFilters("/transactions", filters, { tx_type: type, category, merchant_id: "none" });
 }
 
+function colorOf(row: Row, dimension: Dimension, slots: BreakdownContext["slots"]): string | undefined {
+  if (!slots || row.key === "_other") return undefined;
+  return groupColor(dimension === "group" ? row.key : (row.level1 ?? "uncategorized"), slots);
+}
+
 export function breakdownItems(rows: Row[], dimension: Dimension, context: BreakdownContext): BreakdownItem[] {
   return rows.map((row) => ({
     key: row.key,
-    name: rowName(row, dimension),
+    name: rowName(row, dimension, context.categories),
     hint: rowHint(row, dimension, context.categories),
     href: hrefOf(row, dimension, context),
-    color: context.slots
-      ? groupColor(dimension === "group" && row.key !== "_other" ? row.key : row.level1, context.slots)
-      : undefined,
+    color: colorOf(row, dimension, context.slots),
+    folded: row.key === "_other",
     share: row.share,
     amount: row.amount,
     count: row.count,

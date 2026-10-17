@@ -6,7 +6,9 @@ import {
   DIGITS_SEPARATOR,
   accountDigits,
   accountsLabel,
+  categoryName,
   groupHint,
+  groupName,
   knownCategory,
   knownGroup,
   label,
@@ -19,15 +21,15 @@ import {
 type Row = Schemas["BreakdownRow"];
 
 const categories: Schemas["CategoryOut"][] = [
-  { slug: "groceries", tx_type: "expense", level1: "shopping" },
-  { slug: "fashion", tx_type: "expense", level1: "shopping" },
-  { slug: "electronics", tx_type: "expense", level1: "shopping" },
-  { slug: "home_goods", tx_type: "expense", level1: "shopping" },
-  { slug: "credit_card_spending", tx_type: "expense", level1: "credit_card" },
-  { slug: "salary", tx_type: "income", level1: "income" },
+  { slug: "groceries", tx_type: "expense", level1: "shopping", name: "Groceries", group_name: "Shopping" },
+  { slug: "fashion", tx_type: "expense", level1: "shopping", name: "Fashion", group_name: "Shopping" },
+  { slug: "electronics", tx_type: "expense", level1: "shopping", name: "Electronics", group_name: "Shopping" },
+  { slug: "home_goods", tx_type: "expense", level1: "shopping", name: "Home goods", group_name: "Shopping" },
+  { slug: "credit_card_spending", tx_type: "expense", level1: "credit_card", name: "Credit card bill", group_name: "Credit card" },
+  { slug: "salary", tx_type: "income", level1: "income", name: "Salary", group_name: "Income" },
   // Taxonomy order is parking then fuel. A group hint that ignores top_categories reads that order.
-  { slug: "parking_tolls", tx_type: "expense", level1: "transport" },
-  { slug: "fuel", tx_type: "expense", level1: "transport" },
+  { slug: "parking_tolls", tx_type: "expense", level1: "transport", name: "Parking & tolls", group_name: "Transport" },
+  { slug: "fuel", tx_type: "expense", level1: "transport", name: "Fuel", group_name: "Transport" },
 ];
 const row = (fields: Partial<Row> & { key: string }): Row => ({
   label: null,
@@ -53,8 +55,16 @@ describe("labels", () => {
     expect(plural(31, "transaction", "transactions")).toBe("31 transactions");
   });
 
+  it("shows the stored names, and the readable slug when a name is missing", () => {
+    const software = { slug: "software_ai", tx_type: "expense", level1: "technology", name: "Software & AI", group_name: "Technology" };
+    expect(categoryName("software_ai", [...categories, software])).toBe("Software & AI");
+    expect(categoryName("software_ai", categories)).toBe("Software ai");
+    expect(groupName("technology", [...categories, software])).toBe("Technology");
+    expect(groupName("uncategorized", categories)).toBe("Uncategorized");
+  });
+
   it("describes a group by its first categories", () => {
-    expect(groupHint("shopping", categories)).toBe("Groceries, fashion, electronics…");
+    expect(groupHint("shopping", categories)).toBe("Groceries, Fashion, Electronics…");
     expect(groupHint("credit_card", categories)).toBe("Not itemized: card statements are not imported");
     // Decision I: uncategorized rows never reach /review, so the hint does not send the user there.
     expect(groupHint("uncategorized", categories)).toBe("Not categorized yet");
@@ -63,22 +73,24 @@ describe("labels", () => {
 
   it("describes a group by the categories it spent on, in that order", () => {
     expect(rowHint(row({ key: "transport", top_categories: ["fuel", "parking_tolls"] }), "group", categories)).toBe(
-      "Fuel, parking tolls",
+      "Fuel, Parking & tolls",
     );
     // An empty list stays the taxonomy line (groupHint), not a blank.
-    expect(rowHint(row({ key: "shopping" }), "group", categories)).toBe("Groceries, fashion, electronics…");
+    expect(rowHint(row({ key: "shopping" }), "group", categories)).toBe("Groceries, Fashion, Electronics…");
   });
 
   it("names rows, including the folded ones and merchants without a merchant", () => {
-    expect(rowName(row({ key: "_other", folded: 12 }), "merchant")).toBe("Other 12 merchants");
+    expect(rowName(row({ key: "_other", folded: 12 }), "merchant", categories)).toBe("Other 12 merchants");
     // The folded row names its dimension, so it never reads like the real expense group "other".
-    expect(rowName(row({ key: "_other", folded: 3 }), "group")).toBe("Other groups");
-    expect(rowName(row({ key: "_other", folded: 4 }), "category")).toBe("Other categories");
-    expect(rowName(row({ key: "other", level1: "other" }), "group")).toBe("Other");
+    expect(rowName(row({ key: "_other", folded: 3 }), "group", categories)).toBe("Other groups");
+    expect(rowName(row({ key: "_other", folded: 4 }), "category", categories)).toBe("Other categories");
+    expect(rowName(row({ key: "other", level1: "other" }), "group", categories)).toBe("Other");
+    expect(rowName(row({ key: "transport" }), "group", categories)).toBe("Transport");
+    expect(rowName(row({ key: "parking_tolls", level1: "transport" }), "category", categories)).toBe("Parking & tolls");
     // Rows without a merchant never read like a merchant named after their category.
     const noMerchant = row({ key: "category:credit_card_spending", category_slug: "credit_card_spending", count: 3 });
-    expect(rowName(noMerchant, "merchant")).toBe("No merchant");
-    expect(rowHint(noMerchant, "merchant", categories)).toBe("Credit card spending · 3 transactions");
+    expect(rowName(noMerchant, "merchant", categories)).toBe("No merchant");
+    expect(rowHint(noMerchant, "merchant", categories)).toBe("Credit card bill · 3 transactions");
     expect(rowHint(row({ key: "_other", folded: 3 }), "group", categories)).toBe("3 groups");
     expect(rowHint(row({ key: "fashion", level1: "shopping" }), "category", categories)).toBe("Shopping");
     expect(rowHint(row({ key: "m", category_slug: "groceries", count: 12 }), "merchant", categories)).toBe(

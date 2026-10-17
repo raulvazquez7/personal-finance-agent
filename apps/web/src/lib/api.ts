@@ -47,7 +47,8 @@ async function send<T>(method: "POST" | "PATCH" | "DELETE", path: string, body?:
 
 export const apiPost = <T = void>(path: string, body?: unknown, init: { keepalive?: boolean } = {}) =>
   send<T>("POST", path, body, init.keepalive);
-export const apiPatch = <T = void>(path: string, body: unknown) => send<T>("PATCH", path, body);
+export const apiPatch = <T = void>(path: string, body: unknown, init: { keepalive?: boolean } = {}) =>
+  send<T>("PATCH", path, body, init.keepalive);
 export const apiDelete = (path: string) => send<void>("DELETE", path);
 
 /** Pending review items for the navigation badge; null when the API is unreachable or slow. */

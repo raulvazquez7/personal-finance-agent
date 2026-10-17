@@ -1,4 +1,5 @@
-"""Group what needs review into one item per merchant (spec 11.1); rows without one stand alone."""
+"""Group what needs review into one item per merchant (spec 11.1); rows without one stand alone.
+A pending merge suggestion is a card of its own (quality of life spec 9)."""
 
 from collections import defaultdict
 from datetime import date
@@ -59,9 +60,14 @@ class MerchantOut(BaseModel):
     name: str
 
 
+class PendingMerge(BaseModel):
+    merchant: MerchantOut  # the source, which the merge would fold into the suggestion
+    suggestion: MergeSuggestion
+
+
 class ReviewItem(BaseModel):
     key: str
-    kind: Literal["merchant", "transaction"]
+    kind: Literal["merchant", "transaction", "merge"]
     merchant: MerchantOut | None
     transactions: list[ReviewTransaction]
     count: int
@@ -109,9 +115,25 @@ def _transaction(row: ReviewRow) -> ReviewTransaction:
     return ReviewTransaction.model_validate(row.model_dump() | {"description_raw": masked})
 
 
+def _merge_item(pending: PendingMerge) -> ReviewItem:
+    return ReviewItem(
+        key=f"merge:{pending.merchant.id}",
+        kind="merge",
+        merchant=pending.merchant,
+        transactions=[],
+        count=0,
+        total=Decimal(0),
+        suggestion=Suggestion(
+            category_slug=None, level1=None, confidence=None, is_subscription=False, top=[]
+        ),
+        merge=pending.suggestion,
+    )
+
+
 def build_review_items(
-    rows: list[ReviewRow], merges: dict[UUID, MergeSuggestion], taxonomy: Taxonomy
+    rows: list[ReviewRow], merges: list[PendingMerge], taxonomy: Taxonomy
 ) -> list[ReviewItem]:
+    """Category cards first, largest total first; then merge cards, most confident first."""
     groups: dict[str, list[ReviewRow]] = defaultdict(list)
     for row in rows:
         key = f"m:{row.merchant_id}" if _joins_its_merchant(row, taxonomy) else f"t:{row.id}"
@@ -119,7 +141,6 @@ def build_review_items(
     items = []
     for key, members in groups.items():
         first = members[0]
-        is_merchant = key.startswith("m:")
         merchant = (
             MerchantOut(id=first.merchant_id, name=first.merchant_name)
             if first.merchant_id
@@ -128,13 +149,15 @@ def build_review_items(
         items.append(
             ReviewItem(
                 key=key,
-                kind="merchant" if is_merchant else "transaction",
+                kind="merchant" if key.startswith("m:") else "transaction",
                 merchant=merchant,
                 transactions=[_transaction(m) for m in members],
                 count=len(members),
                 total=sum((m.amount for m in members), Decimal(0)),
                 suggestion=suggestion_for(members, taxonomy),
-                merge=merges.get(first.merchant_id) if is_merchant else None,
+                merge=None,
             )
         )
-    return sorted(items, key=lambda item: (-abs(item.total), item.key))
+    items.sort(key=lambda item: (-abs(item.total), item.key))
+    ordered = sorted(merges, key=lambda m: (-m.suggestion.confidence, str(m.merchant.id)))
+    return items + [_merge_item(pending) for pending in ordered]

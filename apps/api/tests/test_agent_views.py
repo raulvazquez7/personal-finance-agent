@@ -25,6 +25,8 @@ TRANSACTIONS = [
     "note",
     "is_subscription",
     "needs_review",
+    "category_name",
+    "group_name",
 ]
 SUBSCRIPTIONS = [
     "merchant",
@@ -66,6 +68,19 @@ def test_agent_transactions_keep_the_money_rules_and_never_a_null_category(db_co
     assert by_category["fashion"] == ("shopping", Decimal("120.00"))
     assert by_category["loan_received"] == ("transfer", Decimal("0"))
     assert None not in by_category
+
+
+def test_agent_transactions_name_categories_and_groups_as_the_app_does(db_conn, make_tx):
+    money_month(db_conn, make_tx)
+    _as_agent(db_conn)
+    rows = db_conn.execute(
+        "select distinct category, category_name, group_name from transactions"
+        " where account = 'test 0077' and month = '1999-01'"
+    ).fetchall()
+    names = {r["category"]: (r["category_name"], r["group_name"]) for r in rows}
+    assert names["fashion"] == ("Fashion", "Shopping")
+    assert names["loan_received"] == ("Loan received", "Transfers")
+    assert names["uncategorized"] == ("Uncategorized", "Uncategorized")
 
 
 def test_agent_reader_reads_the_views_and_nothing_else(db_conn):
