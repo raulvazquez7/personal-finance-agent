@@ -12,10 +12,13 @@ describe("colours", () => {
   });
 
   it("gives slots 6 to 8 a hue and every later slot its own grey", () => {
-    const all = { ...slots, health: 6, education: 9, other: 16 };
+    const all = { ...slots, health: 6, gifts: 8, education: 9, other: 16, pets: 17 };
     expect(groupColor("health", all)).toBe("var(--chart-6)");
+    expect(groupColor("gifts", all)).toBe("var(--chart-8)");
     expect(groupColor("education", all)).toBe("var(--chart-grey-1)");
     expect(groupColor("other", all)).toBe("var(--chart-grey-8)");
+    // Eight greys: every later slot shares the last one.
+    expect(groupColor("pets", all)).toBe("var(--chart-grey-8)");
   });
 
   it("steps the ramp and keeps its last step for the rest", () => {
