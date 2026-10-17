@@ -11,6 +11,7 @@ import { apiPatch, apiPost, type Schemas } from "@/lib/api";
 import { plural } from "@/lib/labels";
 import { directionOf } from "@/lib/pickers";
 import { reviewOrder, type ReviewFilter, type ReviewSort } from "@/lib/review-order";
+import { settledByConfirm, settledByMerge } from "@/lib/review-settled";
 
 import { MergeCard } from "./merge-card";
 import { ReviewHelp } from "./review-help";
@@ -76,20 +77,20 @@ export function ReviewList({ initialItems, categories, merchants, count }: Props
     next: Item | null,
     message: string,
     send: (keepalive: boolean) => Promise<void>,
-    settled: Item | null = null,
+    settled: Item[] = [],
   ) {
     // A new change on a row sends that row's earlier change first, so Undo never restores a stale
-    // row. The survivor of a merge counts as one of those rows.
+    // row. The cards this change settles count as those rows.
     sendNow(original.key);
-    if (settled) sendNow(settled.key);
-    // A merge and confirm also settles the surviving merchant's own item (inputs topic 6):
-    // it leaves the page with the merged one, and Undo brings both back.
+    settled.forEach((card) => sendNow(card.key));
+    // Cards the change settles on the server (a survivor's own item, inputs topic 6, or a duplicate
+    // suggestion) leave the page with it, and Undo or a failed send brings them all back.
     const restore = () => {
       replace(original.key, original);
-      if (settled) replace(settled.key, settled);
+      settled.forEach((card) => replace(card.key, card));
     };
     replace(original.key, next);
-    if (settled) replace(settled.key, null);
+    settled.forEach((card) => replace(card.key, null));
     const id = `${original.key}:${++seq}`;
     const commit = (keepalive: boolean) => {
       pending.current.delete(original.key);
@@ -132,21 +133,17 @@ export function ReviewList({ initialItems, categories, merchants, count }: Props
         name: d.merchant && d.merchant.id === null ? d.merchant.name : null,
         merge_into_id: mergeInto,
       };
-      const survivor = mergeInto
-        ? (items.find((other) => other.kind === "merchant" && other.merchant?.id === mergeInto) ?? null)
-        : null;
-      schedule(item, null, "Confirmed", (keepalive) => apiPost(`/merchants/${merchantId}/review`, body, { keepalive }), survivor);
+      schedule(item, null, "Confirmed", (keepalive) => apiPost(`/merchants/${merchantId}/review`, body, { keepalive }),
+        settledByConfirm(items, merchantId, mergeInto));
     } else {
       labelOne(item, item.transactions[0], d, "Confirmed");
     }
   }
 
   function mergeYes(item: Item, source: Schemas["MerchantOut"], into: Schemas["MergeSuggestion"]) {
-    // The source's own category card leaves with it: once merged, its rows belong to the survivor
-    // and come back under it on the next load. Undo restores both.
-    const sourceCard = items.find((other) => other.kind === "merchant" && other.merchant?.id === source.id) ?? null;
+    // The source's own category card and the other duplicate cards the merge settles leave with it.
     schedule(item, null, "Merged", (keepalive) =>
-      apiPatch(`/merchants/${source.id}`, { merge_into_id: into.merchant_id }, { keepalive }), sourceCard);
+      apiPatch(`/merchants/${source.id}`, { merge_into_id: into.merchant_id }, { keepalive }), settledByMerge(items, item));
   }
 
   function mergeNo(item: Item, source: Schemas["MerchantOut"]) {
