@@ -155,6 +155,27 @@ def test_a_pending_merge_is_its_own_card_and_counted_apart(client, db_conn, make
     assert count["merges"] >= 1 and "uncategorized" in count
 
 
+def test_confirming_a_category_keeps_the_merchants_duplicate_card(client, db_conn, make_tx):
+    foods = _merchant(db_conn, "ZZTEST ACME FOODS")
+    acme = _merchant(db_conn, "ZZTEST ACME")
+    db_conn.execute(
+        "update merchants set merge_candidate_id = %s, merge_confidence = 0.6 where id = %s",
+        (foods, acme),
+    )
+    tx = make_tx("-7.00", "PAGO | ZZTEST ACME", booked_at=SYNTHETIC_DAY)
+    _to_review(db_conn, tx, "groceries", merchant_id=acme)
+    before = client.get("/review/count").json()
+    assert {f"m:{acme}", f"merge:{acme}"} <= _keys(client)
+
+    body = {"category_slug": "groceries", "is_subscription": False}
+    assert client.post(f"/merchants/{acme}/review", json=body).status_code == 204
+
+    keys = _keys(client)
+    assert f"m:{acme}" not in keys and f"merge:{acme}" in keys
+    after = client.get("/review/count").json()
+    assert (after["merges"], after["categories"]) == (before["merges"], before["categories"] - 1)
+
+
 def test_categories_and_merchant_autocomplete(client, db_conn):
     db_conn.execute("insert into merchants (name, match_key) values ('ZZTEST ACME', 'ZZTESTACME')")
     assert len(client.get("/categories").json()) == 57

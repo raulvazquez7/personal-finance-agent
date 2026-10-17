@@ -31,7 +31,7 @@ order by t.booked_at, t.id
 _MERGES = """
 select m.id, m.name as source_name, c.id as merchant_id, c.name, m.merge_confidence as confidence
 from merchants m join merchants c on c.id = m.merge_candidate_id
-where not m.confirmed
+where m.merge_candidate_id is not null
 """
 
 

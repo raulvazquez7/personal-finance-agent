@@ -83,8 +83,8 @@ export function ReviewList({ initialItems, categories, merchants, count }: Props
     // row. The cards this change settles count as those rows.
     sendNow(original.key);
     settled.forEach((card) => sendNow(card.key));
-    // Cards the change settles on the server (a survivor's own item, inputs topic 6, or a duplicate
-    // suggestion) leave the page with it, and Undo or a failed send brings them all back.
+    // Cards the change settles on the server (a survivor's own item, inputs topic 6, or a merged
+    // source's cards) leave the page with it, and Undo or a failed send brings them all back.
     const restore = () => {
       replace(original.key, original);
       settled.forEach((card) => replace(card.key, card));
@@ -134,14 +134,14 @@ export function ReviewList({ initialItems, categories, merchants, count }: Props
         merge_into_id: mergeInto,
       };
       schedule(item, null, "Confirmed", (keepalive) => apiPost(`/merchants/${merchantId}/review`, body, { keepalive }),
-        settledByConfirm(items, merchantId, mergeInto));
+        settledByConfirm(items, item, mergeInto));
     } else {
       labelOne(item, item.transactions[0], d, "Confirmed");
     }
   }
 
   function mergeYes(item: Item, source: Schemas["MerchantOut"], into: Schemas["MergeSuggestion"]) {
-    // The source's own category card and the other duplicate cards the merge settles leave with it.
+    // The source's other cards and the duplicate cards that suggest it leave with it.
     schedule(item, null, "Merged", (keepalive) =>
       apiPatch(`/merchants/${source.id}`, { merge_into_id: into.merchant_id }, { keepalive }), settledByMerge(items, item));
   }

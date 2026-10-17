@@ -181,14 +181,15 @@ def confirm_merchant(
     name: str | None = None,
     merge_into_id: UUID | None = None,
 ) -> UUID:
-    """None keeps the merchant's subscription flag and each relabelled row's own mark."""
+    """None keeps the merchant's subscription flag and each relabelled row's own mark. A pending
+    duplicate suggestion stays: the category and the duplicate are separate questions."""
     with conn.transaction():
         if name or merge_into_id is not None:
             merchant_id = rename_merchant(conn, merchant_id, name, merge_into_id)
         updated = conn.execute(
             "update merchants set category_slug = %s,"
-            " is_subscription = coalesce(%s::boolean, is_subscription), confirmed = true,"
-            " merge_candidate_id = null, merge_confidence = null where id = %s returning id",
+            " is_subscription = coalesce(%s::boolean, is_subscription), confirmed = true"
+            " where id = %s returning id",
             (category_slug, is_subscription, merchant_id),
         ).fetchone()
         if updated is None:

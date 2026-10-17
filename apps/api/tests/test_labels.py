@@ -178,6 +178,23 @@ def test_merge_repoints_rows_and_keeps_the_target_default(db_conn, make_tx):
     assert gained["cadence"] == "quarterly"
 
 
+def test_a_merge_settles_the_duplicate_questions_about_the_source_only(db_conn):
+    other = _merchant(db_conn, "ZZTEST OTHER")
+    target = _merchant(db_conn, "ZZTEST ACME", merge_candidate_id=other, merge_confidence=0.6)
+    source = _merchant(db_conn, "ZZTEST ACME BAR", merge_candidate_id=target, merge_confidence=0.6)
+    pointer = _merchant(db_conn, "ZZTEST ACME PUB", merge_candidate_id=source, merge_confidence=0.6)
+
+    merge_merchants(db_conn, source, target)
+
+    candidates = {
+        row["id"]: row["merge_candidate_id"]
+        for row in db_conn.execute(
+            "select id, merge_candidate_id from merchants where id = any(%s)", ([target, pointer],)
+        )
+    }
+    assert candidates == {target: other, pointer: None}
+
+
 def test_renaming_to_an_existing_merchant_merges(db_conn, make_tx):
     source = _merchant(db_conn, "ZZTEST ACME 2")
     target = _merchant(db_conn, "ZZTEST ACME")

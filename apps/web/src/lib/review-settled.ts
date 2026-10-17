@@ -2,32 +2,28 @@ import type { Schemas } from "./api";
 
 type Item = Schemas["ReviewItem"];
 
+/** A merchant's category cards: its grouped card and its single rows, not its duplicate card. */
 const merchantCards = (items: Item[], merchantId: string) =>
-  items.filter((item) => item.kind === "merchant" && item.merchant?.id === merchantId);
+  items.filter((item) => item.kind !== "merge" && item.merchant?.id === merchantId);
 
-/** Duplicate cards a merge of `sourceId` into `intoId` settles on the server: the source's own (the
- * source is deleted), the survivor's (the merge confirms it) and any that suggested the source. */
-const mergeCards = (items: Item[], sourceId: string, intoId: string) =>
-  items.filter(
-    (item) =>
-      item.kind === "merge" &&
-      (item.merchant?.id === sourceId || item.merchant?.id === intoId || item.merge?.merchant_id === sourceId),
+/** Cards a merge of `sourceId` settles on the server: every card of the source (it is deleted and
+ * its rows come back under the survivor on the next load) and the duplicate cards that suggest it.
+ * The survivor keeps its own duplicate card: the server keeps that question open. */
+const mergedAway = (items: Item[], sourceId: string) =>
+  items.filter((item) => item.merchant?.id === sourceId || item.merge?.merchant_id === sourceId);
+
+/** The other cards a merchant card's confirm settles, so they leave /review with it (spec 9).
+ * Without a merge pick none: the category and the duplicate are separate questions. With one the
+ * survivor takes the category, so its category cards go too. */
+export function settledByConfirm(items: Item[], card: Item, mergeInto: string | null): Item[] {
+  if (mergeInto === null || !card.merchant) return [];
+  return [...merchantCards(items, mergeInto), ...mergedAway(items, card.merchant.id)].filter(
+    (item) => item.key !== card.key,
   );
-
-/** The other cards a merchant's confirm settles, so they leave /review with it (spec 9). The server
- * marks the confirmed merchant as reviewed, which drops its duplicate card; with a merge pick the
- * survivor takes the category, so its category card goes too. */
-export function settledByConfirm(items: Item[], merchantId: string, mergeInto: string | null): Item[] {
-  if (mergeInto === null) return items.filter((item) => item.key === `merge:${merchantId}`);
-  return [...merchantCards(items, mergeInto), ...mergeCards(items, merchantId, mergeInto)];
 }
 
-/** The other cards a Yes on a duplicate card settles: the source's category card, whose rows now
- * belong to the survivor and come back under it on the next load, and the merge's duplicate cards. */
+/** The other cards a Yes on a duplicate card settles. */
 export function settledByMerge(items: Item[], card: Item): Item[] {
-  if (!card.merchant || !card.merge) return [];
-  return [
-    ...merchantCards(items, card.merchant.id),
-    ...mergeCards(items, card.merchant.id, card.merge.merchant_id).filter((item) => item.key !== card.key),
-  ];
+  if (!card.merchant) return [];
+  return mergedAway(items, card.merchant.id).filter((item) => item.key !== card.key);
 }
