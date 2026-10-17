@@ -63,14 +63,15 @@ def test_a_known_merchant_is_reused_even_with_a_weak_brand():
 
 def test_same_merchant_answer_merges_suggests_or_creates():
     def run(confidence):
-        return _ask_same_merchant({"ACME BAKERY": confidence, "none": 1 - confidence})
+        # The known name stays the top pick; its confidence decides.
+        return _ask_same_merchant({"ACME BAKERY": confidence, "none": confidence / 2})
 
-    merged, new = run(0.85)
+    merged, new = run(0.6)
     assert merged.merchant.name == "ACME BAKERY" and new == []
-    suggested, new = run(0.6)
+    suggested, new = run(0.4)
     assert suggested.merchant.name == "ACME" and suggested.merge_candidate.name == "ACME BAKERY"
-    assert abs(suggested.merge_confidence - 0.6) < 1e-9 and new == ["ACME"]
-    separate, new = run(0.3)
+    assert abs(suggested.merge_confidence - 0.4) < 1e-9 and new == ["ACME"]
+    separate, new = run(0.2)
     assert separate.merchant.name == "ACME" and separate.merge_candidate is None
     assert new == ["ACME"]
 
@@ -78,9 +79,9 @@ def test_same_merchant_answer_merges_suggests_or_creates():
 @pytest.mark.parametrize(
     ("confidence", "merchant", "candidate", "new"),
     [
-        (0.8, "ACME BAKERY", None, []),
-        (0.5, "ACME", "ACME BAKERY", ["ACME"]),
-        (0.49, "ACME", None, ["ACME"]),
+        (0.5, "ACME BAKERY", None, []),
+        (0.3, "ACME", "ACME BAKERY", ["ACME"]),
+        (0.29, "ACME", None, ["ACME"]),
     ],
 )
 def test_merge_and_suggestion_thresholds_are_inclusive(confidence, merchant, candidate, new):

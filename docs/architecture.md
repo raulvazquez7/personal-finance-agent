@@ -12,7 +12,7 @@ flowchart TD
     C --> D{System rule?<br/>ATM, Bizum, card settlement, loan, own transfer}
     D -->|yes| H[(Saved)]
     D -->|no| E["jev System One: one call,<br/>three typed questions"]
-    E --> F["Python: exact merchant match, merge at ≥ 0.8,<br/>merchant default wins, level 1 from level 2"]
+    E --> F["Python: exact merchant match, merge at ≥ 0.5,<br/>merchant default wins, level 1 from level 2"]
     F -->|"needs_review if confidence < 0.95"| H
     H --> L[link_loans]
     H -.->|needs_review rows| G["/review inbox, once per merchant"]
@@ -47,7 +47,7 @@ of yes.
   ([classification using confidence](https://docs.typesafe.ai/cookbooks/classification_using_confidence)).
 - **Confidence drives routing.** Rows under 0.95 go to a person. A new name that shares a word
   with a known merchant gets one more question, whether it is the same business, and is merged
-  only at ≥ 0.8 (`merge_threshold` in `apps/api/finance/settings.py`). A merchant the user has
+  at ≥ 0.5 (`merge_threshold` in `apps/api/finance/settings.py`). A merchant the user has
   labelled keeps that label as its default.
 - **Where 0.95 came from.** In the [jev spike](superpowers/spikes/2026-09-23-jev-categorization/README.md)
   (412 labelled rows), jev was right on 99% of the 254 rows it scored at 0.95 or more.
