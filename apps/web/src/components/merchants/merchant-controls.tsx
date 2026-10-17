@@ -1,7 +1,8 @@
 "use client";
 
+import { ChevronDown } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useLayoutEffect, useRef, useState } from "react";
+import { useId, useLayoutEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 
 import { CategoryPicker } from "@/components/pickers/category-picker";
@@ -13,6 +14,7 @@ import { Switch } from "@/components/ui/switch";
 import { ApiError, apiDelete, apiPost, type Schemas } from "@/lib/api";
 import { plural } from "@/lib/labels";
 import type { Direction } from "@/lib/pickers";
+import { cn } from "@/lib/utils";
 
 import { MerchantNameControls, type RunRequest } from "./merchant-name-controls";
 
@@ -32,6 +34,9 @@ export function MerchantControls({ profile, categories, merchants, direction }: 
   const [subscription, setSubscription] = useState(profile.is_subscription === true);
   const [seen, setSeen] = useState(profile);
   const [pending, setPending] = useState(false);
+  // Below sm the card starts folded: open, it filled a phone's first screen.
+  const [open, setOpen] = useState(false);
+  const contentId = useId();
   // The control that started the request: disabling it drops its focus, and a disabled button
   // ignores focus(), so it gets focus back once pending clears.
   const focusAfter = useRef<HTMLElement | null>(null);
@@ -98,9 +103,21 @@ export function MerchantControls({ profile, categories, merchants, direction }: 
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Merchant settings</CardTitle>
+        <CardTitle>
+          <button
+            type="button"
+            aria-expanded={open}
+            aria-controls={contentId}
+            onClick={() => setOpen((current) => !current)}
+            className="flex w-full items-center justify-between gap-2 rounded-md outline-none focus-visible:ring-3 focus-visible:ring-ring/50 sm:hidden"
+          >
+            Merchant settings
+            <ChevronDown aria-hidden className={cn("size-4 text-muted-foreground transition-transform", open && "rotate-180")} />
+          </button>
+          <span className="max-sm:hidden">Merchant settings</span>
+        </CardTitle>
       </CardHeader>
-      <CardContent className="grid items-start gap-6 md:grid-cols-2">
+      <CardContent id={contentId} className={cn("grid items-start gap-6 md:grid-cols-2", !open && "max-sm:hidden")}>
         <FieldGroup>
           <Field>
             <FieldLabel htmlFor="merchant-category">Default category</FieldLabel>
