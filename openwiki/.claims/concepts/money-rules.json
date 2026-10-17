@@ -1,0 +1,194 @@
+{
+  "schemaVersion": 1,
+  "pageVersion": "sha256:27ff14cf35d88c95427981e86c9b30dc05865c2bcee5c33abe4bf86c22dcfdc5",
+  "claims": [
+    {
+      "id": "claim_87f568e1cab74391bc83b69d10e92b29",
+      "statement": "spend and income are defined only in v_transactions_enriched: spend is -amount for tx_type expense and 0 otherwise, income is amount for tx_type income and 0 otherwise, and a transfer is 0 in both.",
+      "evidence": [
+        {
+          "resource": "repo://supabase/migrations/20260925110000_slice3_views.sql#L4-L21",
+          "version": "repo-lines-v1:sha256:cb0e06cf000225b098a4a81378f36b4906c3906f86be1e8c00975a86dd5a637f:eyJzZWxlY3RlZExpbmVDb3VudCI6MTgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjNlMzc1OWY3MmExMTdiOTU4MWZjOGFjNGE1MTc2YzQwODczNTk1NTRmM2E1MmY5ZTg3NDZjYzk5ZmMwM2QzNjciLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ5MGYwYTM3NDRmNWVhYjRmMGY2M2E5OTM0MDEyMmQ1NGY5NzY3NmEyMTJhMzk1M2E0YmQxMTFiZDQ5NjIzMjEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6Ijc5M2FmOWIwZWFlMWFjM2EzNjJiZWJjMzkxY2JlNWExOTA4YWY0ODAzMDdhMjdiYTM3NTQ2MWNlN2ZiYzdjYjciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjZlNDFhMWNkZWUwY2UxMmE4YTlmODk4YzExZmRmMzVhOTM5ZjY3Y2FiOTBlYTRlYTE0YjEzNjQzMzcwMzIwOTQifQ"
+        },
+        {
+          "resource": "repo://supabase/migrations/20261014130000_display_names.sql#L14-L32",
+          "version": "repo-lines-v1:sha256:a0980771a1b24312627ca7b1d74e74a1b0265cf9d1d4c3b697215ddc9af458fd:eyJzZWxlY3RlZExpbmVDb3VudCI6MTksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImQzYWJhOGY1MGMzYWFiMmFkNzQwY2RjMTIwMDU0YzkwNDU5Yzg5YTVhOTYwOGRiY2JjOThjOTFkNTRjMGY2N2MiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjkzMDUwMDYyNWY3NzY0ZmYxMTcyMmEzNzhkZDQ1ZTQyNTlkZDI0OTVlYTI5ZWU5MzBmNzBjZDBhMWU1MzkxYTQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImVlZDNjYzIzNDIzYTcyYjlkOWEyYjI0ZjNjNzg3NjVkMzY2MTQzNTliZGUwMjJlMjU3NTBhNzU1ZTRiYWMzZjIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImNhMzViNTJjZmY4NmVhNzIyNDJhZTM0MWQwOGNlMDMzODU1YjBjNjFlOTBlYTZjMWViN2Y5NjJhZWI1ZWYyOTQifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_4ad131043d36479ab24ede2d03d0776b",
+      "statement": "direction on the enriched view is the sign of amount, not tx_type, so a money-in expense row is incoming while its spend is negative and its income is 0.",
+      "evidence": [
+        {
+          "resource": "repo://apps/api/tests/test_views.py#L41-L57",
+          "version": "repo-lines-v1:sha256:794bee2cc11a880c24e18ca7be50293391c1037b39a70c81b577252476b51a62:eyJzZWxlY3RlZExpbmVDb3VudCI6MTcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjgwM2QyYzNhNzAzMDVmMDA3ODczNTcxMjlmZmZhMzRhNTIwN2FjYWJjNzA2YmE0OTk4OWUyMDIzYzRiZGMwZGEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjMwYzFmMTg4ZjE0MmVkN2E4MjQ2ODBiMjA3MTcyYzU1MTliYzYxNGE0OGZkYTdjZjE2N2VkYjhkZGY3OTk1NmMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjRmYmQwMDkzMTRiYzI3MDg0MTY3MzRhMDJhZTVmZjM5YTFlNDhhMDUwYmU5MWY0M2IyZmFhOTIwMDJjNjJiZmMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjViNjA5MzBmMjM3NGQ4MjA5OTc0MzY1ZDJmOGFkYmQ0MzZjODg1ODk0MzU2N2FjZTIxMmY3ZjZjYmY4MDNlMTMifQ"
+        },
+        {
+          "resource": "repo://supabase/migrations/20261014130000_display_names.sql#L17-L23",
+          "version": "repo-lines-v1:sha256:74c31ef11d188de97c244a7780d12e71190476f209d8fc6354778d1cfc4c8462:eyJzZWxlY3RlZExpbmVDb3VudCI6NywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNTcyNzhjNjI5ODM4ZjMzYWQ4YTlhZjZhZWI2ZmQzMGYwODRmNzNhNzI0ZDc1MTgyNTU5YWY0OWIzOTA3Mjg4MyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZTAwYTJlYTU0OWJjNzkwYTIzYWUzYjdjNDZhNDk0N2YyZDE1ZDM5ZThmNDRiOWEzOWQ1NmFjZjE1NTNiYTcwNiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMzllNDJjYWFhZGQxZWE2ZGU2MDdjNGEwNmQwMWQyYzc2MmYxZDM5MTI4Zjk3NzZkMzk4MGVhYTlkODNmNzExMiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiOWY2MjUyOTgyNGVkNjQ5NjJiNDFiN2JkYzgxNWNkNzk4ODIzMjczZDg5MTA2M2IyOWU3OGJkZWIzMTQzMWE4ZiJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_5f548210ea8448f08cbb09729ca9b13f",
+      "statement": "Import stores tx_type from the sign (amount > 0 is income, otherwise expense). Categorization and user labels then copy categories.tx_type onto the row, so an uncategorized row keeps the sign rule until it is categorized.",
+      "evidence": [
+        {
+          "resource": "repo://apps/api/finance/categorization/labels.py#L19-L35",
+          "version": "repo-lines-v1:sha256:fbfaf24a5c25b6f8c0ca82f2f4270a8d44668e8f6c5f6dc31c224953d8163e9b:eyJzZWxlY3RlZExpbmVDb3VudCI6MTcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImJiN2Q5YmJiMTMxMTA2YjZiY2ZlN2QzMTE0YjYyYmJhNTY5YzViODRiN2NlZjVjYmM3YjI5ZDFlZGYxMzY3NDMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImIxZDNmMWJhMzc5ZmI4YmNlOGVmM2NiNjk5MjRhY2YxN2U1ZmFiYTQ0ZWQ2ZTEwYmU1Y2IyNjg5Zjc2ZjExMjUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjFjZjNkOTE2YTE1ZmFlOThjNWYyZTNjZWRiYzRhYTVmNGU5ZWI4NjUxNmJlM2ZmNzg4YjZjZTg5YmY5MTdmMTIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjFiYzM1MmJhM2VmYTE1MWMyZDY1YmUwYjE5Yzg2MjNjZDExOWI4ZjI3ZTQxN2E0MjZkNGQ1NzFlZDNlMTQ4ZGUifQ"
+        },
+        {
+          "resource": "repo://apps/api/finance/categorization/taxonomy.py#L52-L55",
+          "version": "repo-lines-v1:sha256:46b7eb0c060fc8dd177735d43c2daa2875625e70a7600cd7001a731a588ffedc:eyJzZWxlY3RlZExpbmVDb3VudCI6NCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZGRlZjljODAxZmY4OTlhZTE2MDNkMmU5M2IxZjQxNjhjYTlkZTA3YzVlZGJlYWNmZjE4MjVjYzk4ZDNjNTQ4YyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMmNmN2EwNjBiMDY0MDM1ZTA0OGYxMWU4NzhhODhiOTM5NTkzZDYzOWI0Y2VjNTA2OWFkNmVlOGQ5YTczNDMyYSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNjgxNGIyNzZkNmJkYzM2MzIwMjQwNDQxZWU0NTQ5MmFmNmUxM2FiMjg0NWJlZTZlZDQyOTI0ZThiYTYwMTQzNyIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiYjQwYmZlNmJiMGM3NmE1ZWMyMzM0ZGEzOWYyNDc3ZGY0NWUwOWY2NzNjM2ZmYmQ0Njc0NjRjYmM1ZGVjMjcxMiJ9"
+        },
+        {
+          "resource": "repo://apps/api/finance/ingestion/importer.py#L56-L76",
+          "version": "repo-lines-v1:sha256:ce32b2a1262506e0e9961f3a81eeb1913289378cd748f2e89a275f1cde8db1e6:eyJzZWxlY3RlZExpbmVDb3VudCI6MjEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjI1OTRiNTE4Mzc1NmM3MGI5MzNmNGFjZTUyNzg0YzJmZDdiZjI3YzUzZGU1OWJkMjA4YjViODZmY2E1ZGM5NmYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjU1MDMyZTk2NGQwOTMyMzUxZTVkMTg1MjY5MjgxYjE3MWEzYTA5YjA4YjI4NmU2NjFlYTQ3MDMyM2M4MmViNGQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjhjYzRhN2QxY2M3OTZhYmEzZTQ2NzIzMzI3ZjUxN2U5ZjgxMTk4MmQyNTBmMDcwMjk4NmU0YjU3NjRhZDk1ODkiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImRiYzc0ZDA0NmI5MDM2YjkwYWQ3OWE0NjUyYjFkMDQ3YjE1YTA4ZDI3MWJjMzUyM2RmMjU0Y2U3OTg5MjAyNzkifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_c18c9f349beb48da8334914ca85c1b42",
+      "statement": "v_monthly_summary and v_spend_by_category only group v_transactions_enriched. Dashboard totals, series, and breakdowns query v_transactions_enriched directly through the shared WHERE fragment rather than those summary views.",
+      "evidence": [
+        {
+          "resource": "repo://apps/api/finance/dashboard/breakdowns.py#L25-L34",
+          "version": "repo-lines-v1:sha256:76dde393ea5997e87f560e8fcfa230ed9de8ba2c6a305b328d9dc7d043eaf0d7:eyJzZWxlY3RlZExpbmVDb3VudCI6MTAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImJjOTI4YmNhZjU5NjVkZThlZDM4OTliNmYyNWM5NzJlYjM1Yjc0NWViMjYzZThiNGM4Y2ZjNjY4NzQwNTY4YzAiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImEzMDNlY2RkNGE0ZDEwZjE5YzczZmQ0MmZkMTI0MzdmZDMzNTRhODI2ODE2MDVkYTUyNTVhOTdhMzkwNjhkYmIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImY1MzJhZTNkMjcyNDNlOWM5ZDAyYzg4NDJmMGQ2ZTMxN2JlZjIyMzc4ZGVmZWQ1YTk5OGVkZTFiOGIyMGViOWQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjkzMjg1NGIwN2MwY2JhZDA4MzdmNmQyMzU1NTA5MzQwOWE0ZmZiNmQ3MjllMTE0ZmQ2NWE0MDljMzQ5ZDVjNTcifQ"
+        },
+        {
+          "resource": "repo://apps/api/finance/dashboard/filters.py#L1-L21",
+          "version": "repo-lines-v1:sha256:b762ab3eb6ad3915749b32dee826da288a53f59b2372be3f6c546ecbe44f568c:eyJzZWxlY3RlZExpbmVDb3VudCI6MjEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImRlMDVlNjE5ZGM3ZmI4ZjdkNWE0YjY3MTg1ODg1NjM1YmU2YjdlMzAxYzdmNTU1MzdkNGU2YjA1YjU3NWI2ZjQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImEzMDNlY2RkNGE0ZDEwZjE5YzczZmQ0MmZkMTI0MzdmZDMzNTRhODI2ODE2MDVkYTUyNTVhOTdhMzkwNjhkYmIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjowLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6Ijk1MGQwOTY5Mzk3ZTliMmUzMjM4NzAxNWIxOTA1ZGE5Njk0ZGI0MWJhYmIzNzU0OTNlMzFjNDQ1YWRiZjllZTQifQ"
+        },
+        {
+          "resource": "repo://apps/api/finance/dashboard/totals.py#L16-L31",
+          "version": "repo-lines-v1:sha256:f8607556f9d9a7409346b9f1b7f88eadb53c8bb6bfe40d2950552b80b6594f0e:eyJzZWxlY3RlZExpbmVDb3VudCI6MTYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImY5NWUwNWU5ZDg4ZDlkMWQxYzY3Mzc1NTUyN2QzMzUwYjg1MzZmOGE5NjA0MWNlYmYzNDI1NGEyMTY4NTNkNGQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjQ5ZmRlYmQzZTFlZDNmNTI3MDgwZjZhYmVmYjE2YTc2ZDNkMTE5NDMyYTYzNTZjMGM1OTJlNzM3MDBjNDkwZTAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImZhZjc2ZWVkZTQ1YTNjMDliNzAzNWEyNzI4OWI1MTg0ZDVjM2UyYWRkN2M1NDdhZDJjMWI0YTcwN2Y2ZmU1OGUifQ"
+        },
+        {
+          "resource": "repo://supabase/migrations/20260925110000_slice3_views.sql#L23-L42",
+          "version": "repo-lines-v1:sha256:db1480a41d94580b609a7a77f64ccfa0e55141d1a351f85208eacd1a2e36e5d5:eyJzZWxlY3RlZExpbmVDb3VudCI6MjAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY5NThiMGY1OWNiN2U3YWNiOTAzZDBhMDU5NjQwZDBkMjI0Y2M5YTNmZDc1NzRhYzUxYjUzZjEwMzlkMTdiNDAiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImY2MTA2MDYxNzIxNDc5Yzg5YzY3OWNiZDZhYjhmZjk0Yzk1NmI0MmIwZTQ2ZTJhOTE0MjMxNzMwZmNkZWY3MjYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjIxNThiNTk5MDllMWVjNThjMWQ4NDcwMmJjMWI2YmFlODcxNjVkZDNjMWU3NDA0YjliMjkzODk5Y2ZiMmE0N2QiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImRhZGRkN2Y5MTdhMTk0YmRhMGYwYTM2YzM4YTdmYTA4ZWE5YTZjOWU1Y2MyM2I4NDlhYmE1NTIwYWE2MDM3YTkifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_c53a5b1eeea74cc09ff2c8866973b9e3",
+      "statement": "Dashboard KPIs sum income and spend from the enriched view, then compute savings and savings rate in Python after the sum. savings_rate returns None when income is not positive.",
+      "evidence": [
+        {
+          "resource": "repo://apps/api/finance/api/dashboard.py#L31-L47",
+          "version": "repo-lines-v1:sha256:cbccf63d1912cdf6ea39fef0604223ed17322ff4bcfc80d0743db868c755d9dd:eyJzZWxlY3RlZExpbmVDb3VudCI6MTcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImM3NGRiMzNhOWE2NDA5YWMyNDA5MWI4MWU0YjlhZWE1OGQyYTU0MzJiYTVkODQ3NjJhZDRjNGM1M2MyMTFkNjIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjA4N2M2NDg3MTFmNjhmNTY3NTlmZjI1NDRhYjhmMGU5NDk3NGU2ZWIwOThkMDA4YzZjY2MwZDhmZmY2NWEwOTUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImZmZjBlZDdlYzlhZTUwZjhjNTEzZjUxNmQ1MjAxZmM4YjNiMDRkZDA0OGNkMDRiZjA3ZmY1NmE1M2NiNzA1NGMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImYxYjczMWViMDcwMWE0MTIxMGQ1NzllNmZkMjdhZTdhMWFjMzM4MmI1NmUyN2RjZWMwZGNhYjUxN2Q0OTFlYjgifQ"
+        },
+        {
+          "resource": "repo://apps/api/finance/dashboard/periods.py#L89-L91",
+          "version": "repo-lines-v1:sha256:a62beb99b94268a7b4ce84955ab3270892dd2398ec5329afcaf6d1273e647bbf:eyJzZWxlY3RlZExpbmVDb3VudCI6MywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMmVjMmZmOWI3OTI1N2Y1ZmNkMzg3OTVhZmE4NDU4MWEyOTYzYzg4MWZlZjgwMTBjNTkzZDQ1MWJhNGVhYTNkNSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNmIyNmRjZWE0ZGI3NmYxZWU3OTUzMzQyY2FhMjRiMzUwYzY2M2I1Y2FkYzVjOGE2YjQyNTA4ZGViNGRlYjgzMiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMGI0NjhhZDBhYmQ1ZGY4NjIwYmI5NGJkZmZlODVmNDIxMTBlY2RhOGFmNzY0YTRkNWMzYmEwNmJhYTVmNzczZiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjAsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZTNiMGM0NDI5OGZjMWMxNDlhZmJmNGM4OTk2ZmI5MjQyN2FlNDFlNDY0OWI5MzRjYTQ5NTk5MWI3ODUyYjg1NSJ9"
+        },
+        {
+          "resource": "repo://apps/api/finance/dashboard/totals.py#L34-L42",
+          "version": "repo-lines-v1:sha256:4233205feff2958e6d6676c6f8467dc57ae385f58b17588e974061dfb102f852:eyJzZWxlY3RlZExpbmVDb3VudCI6OSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNzZmNWM2M2Q0ZTY5NTVmYzhmZjFmYjgzY2Y0NWExZjA1MmQxN2M1M2E5ZThiY2Y1ZWVhMTliNzIxZThlMTM2MiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMzBjMWYxODhmMTQyZWQ3YTgyNDY4MGIyMDcxNzJjNTUxOWJjNjE0YTQ4ZmRhN2NmMTY3ZWRiOGRkZjc5OTU2YyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMDlmOTMwODNjMTk3MTIxYjk4MjcwMGJhOGFmYWJkMTcyMmNmMWQzZTc0MDQ1MDllODBlZmEyNzI0N2Y2MmYwNyIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZGRmZmU5MTg5NzkxZGJlODdjNzUyZDUyMmRjZDNjY2NmZjIyOTU3NzdjZjAxYjQxOTc2MTQ5ZGZlYjQ5NDYzOCJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_daa9302c72b040c2a3e5bbe929790998",
+      "statement": "A month with no imported transactions is has_data false with null amounts, never zero. Comparison deltas use the previous period cut to the same day count when data ends inside the current period, and no delta is shown when the whole previous period has no imported data.",
+      "evidence": [
+        {
+          "resource": "repo://apps/api/finance/api/periods.py#L57-L78",
+          "version": "repo-lines-v1:sha256:55605694167eb6256637e93e68653f4190b896bc50f285add8cca8e6a7d5d491:eyJzZWxlY3RlZExpbmVDb3VudCI6MjIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImQ2NzM3ZmJjYjg3MDdhNWNjMmQ2ZWI5ODNhODk1ZGNjZWQ0NGVkMTQ4ZmYxNGRiNWY0YzIwZjZmMjllZWExN2IiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjMwYzFmMTg4ZjE0MmVkN2E4MjQ2ODBiMjA3MTcyYzU1MTliYzYxNGE0OGZkYTdjZjE2N2VkYjhkZGY3OTk1NmMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjViMmJhNWY1ZDA4MzFiM2QyM2JlYTI4ZTY4ZDRmZmExZjMyNWNhOGZjYzE5ZGY0N2Y2ZjhiZWQxZjhmMzNmN2EiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjM4NDFlYjVlNTFiZTI3MGM0OGI4NWE4ZmMyMzExNTY5ZWJhZmI5MGZlYjRhZDM5YWJjYjU0ODMwNmIwN2I0OWEifQ"
+        },
+        {
+          "resource": "repo://apps/api/finance/dashboard/filters.py#L56-L66",
+          "version": "repo-lines-v1:sha256:405d83a8ee95ef46a74eb40b0258e521f0050fc14683f72419b83d2c446192a6:eyJzZWxlY3RlZExpbmVDb3VudCI6MTEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjdhMDQ5MTA2OWNlY2ZhYzRjZmIyZGYwNWY0MzhkOTk0MjkyNjc0MWRhOTJhZjVmZTk3MWMwMTRlNGU0MTM5ODAiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjUzZmFlZTQ5NWM3NTdmOTY0OTY4MzcxMWI1ZmQxODYzZDBiMDYzMjE3ODhkNTNmMTVkNTRjZDQzOGNhNzViYmEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImM2YTNiZDk5OGFjZTFlODUxOGM2ZTRmODY3MGU3NThlMzg2ZjQxMDU2ZjRhN2NlOThiNGUyNWM3ZjkwMGNmMTkiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjgwODJmMmY1OTMzYTcwYjk5MTc4MjUzOGQ2ZmEzN2EwZmM0ZWQxMjkxYTg1ZmIzNzc5NDAyOTQ1NTllN2QyNzQifQ"
+        },
+        {
+          "resource": "repo://apps/api/finance/dashboard/periods.py#L72-L78",
+          "version": "repo-lines-v1:sha256:e5a71a3fd4bc9b47ac25cbb47be2fc1c49e933597a68706154d864fbe41348d3:eyJzZWxlY3RlZExpbmVDb3VudCI6NywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNDkxNDRiMTI2NTdmMjZiMDBkOWY1YmMxMjNjZjE2ZDI1ZGI5ZmVmYzkwNjRkYmM0MjY1NTQyNGYxNTlmZGE5ZSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNWNjNzk3YTVkNzViN2ZhN2QzNzhkMmI2ZjJmMjA1ZDRkYzMzMzI2OGY2ZGJmYTliYzEyZmZjOTY5NGViMGM5YSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiODNkZDVmNzNkNjk4ZTE0ODExOTJiNmEzY2UzZTI3Y2NiOGQ5OGMwYTM0NzRkYTI3NTJiNGVkZjVhYzk1ZjdiYiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNTA4YWQyZjFiN2Q2YWU4NjdjYTQzMDdlYTc5ZTM3ODY5NzcwZmY4ZTMyNWY3ZWE2MDIwMGFjMzRhNzZkZjFiMCJ9"
+        },
+        {
+          "resource": "repo://apps/api/finance/dashboard/totals.py#L49-L70",
+          "version": "repo-lines-v1:sha256:a99ae06179d000b9919293d55af018586968c0b7c09d11b0be3e14f4c8b8f9fb:eyJzZWxlY3RlZExpbmVDb3VudCI6MjIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjYxMjNiNDMxMTUwNDVkNmRjMWU2ZDM4NWI5ZjFhYmQwNzhiNTI5ZGIxM2QyNmUzZDYyZWYyMTkwZmFjMzVkMGMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjU5MDlhNTNhNjE4ZDAyOGUxZDMwMDBjMGE3YWJjZWVjYmU1ZmIzN2Y0ZTUxMWVmZTQ2NjQzZmFkNmU2Njg3MmYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImJjNDE4MjEyYmFjM2I1YzNhMTBhZmFlMmU3NTg2MzMzZWQ2OTM4OTI0NjQ4MTQ3MjllOTQyYTM4ZGNhNDA4MjUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjkyYjQwMWIxYjA0ZjY3ZmY1N2U0YzA5YjhhNjFjMTUxMDNmNjRiYWMwYTIyMTVhYzliNWEyNjI5ZDJhMDA5ODcifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_c56758767dfb4c218d71cd8073fe5c02",
+      "statement": "v_subscriptions lists only flagged money-out expense rows that have a merchant, one row per merchant. User cadence on merchants.cadence wins over the median gap, and clearing it returns detection; the dashboard yearly total is twelve times the monthly total of active rows.",
+      "evidence": [
+        {
+          "resource": "repo://apps/api/finance/api/merchants.py#L146-L154",
+          "version": "repo-lines-v1:sha256:37f91d89a1bd38ff374bb2bac2f12ab7ac4d57223a7bcc3f72e3d1e19ac39f02:eyJzZWxlY3RlZExpbmVDb3VudCI6OSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNTZlYThlOWU5ZDhkZWMyMWQ2YWM4MTIzY2ZjZDYzNjE1MzBmYTc1YTBkZGQ5NTRhZDBhM2ZhMDc4YjM1OGViZSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiYmQ2YjMzNWQ3ZGQ2ZjlhMmNiNTlmYmEyNjkxZjc2YTM4OTlkMWUwNjYyNjVhNDQ4MjYzM2Q2NjBjZWIyYWIxMyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMGFkNjhkMzJlNDA5NDFhMGM1YTVlMDNhMTFlM2EwY2I5YzJiZjBjZWUyZjVmZDI3Y2Q3NTVjN2EyMmZjNjg4NCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjAsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZTNiMGM0NDI5OGZjMWMxNDlhZmJmNGM4OTk2ZmI5MjQyN2FlNDFlNDY0OWI5MzRjYTQ5NTk5MWI3ODUyYjg1NSJ9"
+        },
+        {
+          "resource": "repo://apps/api/finance/dashboard/subscriptions.py#L10-L19",
+          "version": "repo-lines-v1:sha256:f3f7c6fa1cec0b7df03ed205ecdd5cde852cae208fc42336b1a2a1f295280fbd:eyJzZWxlY3RlZExpbmVDb3VudCI6MTAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImQ4OTExNjBhYTJhMDdhODYyODI4YmFkYjY3NGM3YmMwYTdmYjcxNjBlYWJiZjFmYjllNjhhYzg2NTI2NTk1YjkiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjU1MDM3YjJiNjE0NGZjNjk3NDU5ZWQyZGU3MzNjMjc1MDkzMjUwZjVjYWMwYjc4NjI5YTk0ODFhMDk3ZTQxNjUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjcwOTIzMzU5MDAzYzM4NDdmMmZmMDhjOTdjZTNhNGY5MjRjZmQ2ZDAxNWFjMmQ1YzdiNzA5ZTM2MDQ2ZjhhYmEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6Ijg5NTNjMGI2NjgwNmNiZDM2ZjY2YzBmODIxMzc5NjZlMzNhN2M2ZmY2OTIyODA4NTM1OWIxYjBmMzIwNTRjMTMifQ"
+        },
+        {
+          "resource": "repo://supabase/migrations/20261014120000_subscription_cadence.sql#L10-L48",
+          "version": "repo-lines-v1:sha256:8ac12496fe710343ffc02324e5411aadd7de2593b1fec5643c9c65cef8c1953a:eyJzZWxlY3RlZExpbmVDb3VudCI6MzksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjhhM2JiNzBjYWMxYTEyNGNkM2Q2YTVkNjc3MDYyMTk2ZTU0MWVjMjliYjIxOGJhMWFkZjQ3YTYwMDk0NjIzMmIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImQxNTdiYzlmYzRlMjg2MjM2OTQ4YzI0ZWE3ZGJkMTQyZjk2Y2JkNzkzODZiYWI0NDVjOWJkOGVmNTczZTQ2YzMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImQzMjMxNjNjYTc5NDE5YzdjOWNjMjFjNDg3ZDNjM2FiYjY2NzY3OWYwYTkzYmIzOTg1OWZjOWIyMTVmMmM4NGUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjgzYTRiMTA2MGEzODY2NmNjMTA2Y2M2NjQzOWM1NTMyYWZlZGM5ZDJhNzY4NGY3OWMwN2E3Y2E0MGM0YTM4OTcifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_fd1c939cd3ce44fcb32bf9155e8c1e61",
+      "statement": "The chat reads spend and income only through agent.transactions and agent.subscriptions, which project the public money views. Metric SQL in metrics.yaml is EXPLAINed as agent_reader at startup, so a metric that does not match the projection prevents the API from starting.",
+      "evidence": [
+        {
+          "resource": "repo://apps/api/finance/agent/catalog.py#L78-L101",
+          "version": "repo-lines-v1:sha256:369707a457ebdebef8e8f4af988fe9b2cfd796032e6798e1c572ff4bd9d8b7ae:eyJzZWxlY3RlZExpbmVDb3VudCI6MjQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImI0MjY5Mzg2YmE3ODA4N2ZjYWEwNzdlNTI4NTU5NjBjOTg5MzY0ZmFiNTBhOTQ4NTEwNThkMDNkMWQyN2IwMTgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImMyMDAyMTY3ODNkZDVjYzFkYThkN2RiNGQ3ZDhmNTIzNzVmN2Y1NjMzMTg4ZTQ2NzI4NWUyNWIxY2NmOTEzZjEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjhjYzRhN2QxY2M3OTZhYmEzZTQ2NzIzMzI3ZjUxN2U5ZjgxMTk4MmQyNTBmMDcwMjk4NmU0YjU3NjRhZDk1ODkiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6Ijc5MjQ4M2ZhY2FjNjZiNWI5ZDQzYmNkN2NhYzBmOWUyN2ZmMmYwNGFmM2IwODlkYjE0ZGM1ZTkxZjc1NWIwYjIifQ"
+        },
+        {
+          "resource": "repo://apps/api/finance/agent/runtime.py#L48-L50",
+          "version": "repo-lines-v1:sha256:4535fdbc21767cc7290d64fcf92c88e6db9f03dd9cc1a2197555d2206589a417:eyJzZWxlY3RlZExpbmVDb3VudCI6MywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMjQ1M2U3N2UyODY2Zjc2OTBkY2M5NTg2OWJkZDIzZGZhMWYzNGVmZThhOGIwZjk4MDUzZDEwOWY0MjJjMTY4OSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMTZlMGNkMDUxOTBiNTdmOTU5M2I1YzAyZGZmYzRlZjJlZjQyMDAzNDczN2E1OWVlZTBiNDQ2MGZjODY0MGYxNiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZDVmYTRkZDc5MjUwMzZlMmMwNzYyMzQ2MThiNGMxZGE1ZWYwZDJiNDFlMzUxMDQ3YmYyNGNlNmI2Yjg4MTgxZiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNTQzYWIxYjliYjE4Yjg4MjI1MTU3NDNhZmE1MDFlOTI3MDVhODYwZDRlZDUyZDNiOWY4NTI1MjcxOGI0OWQzMCJ9"
+        },
+        {
+          "resource": "repo://apps/api/finance/agent/semantic/metrics.yaml#L1-L28",
+          "version": "repo-lines-v1:sha256:b53f1d3908c55424f4707844448ff7df24280ef20d3bad901772a7f42a0a8ab8:eyJzZWxlY3RlZExpbmVDb3VudCI6MjgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY1NDA0Y2E1MzI3YjM1NzFiODNkOWUxMmMyMjRhNjQ5Mjk2ZmM3OTRlM2I0NzQ0YTYxNzNlNDhmZGMzZjdhODAiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjU5NGEyZTExNGJhMzk3MDBjZDA0YjZjZTliOWVlZjZiNDc3MjAyODgwN2FjZDYzYjQ1OTk4YjIxNTExOWZkNTgiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjowLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        },
+        {
+          "resource": "repo://supabase/migrations/20261012000000_slice4_chat.sql#L4-L21",
+          "version": "repo-lines-v1:sha256:66b03eb0b05eecde2a2a6bd9ebf17834ae90139540ea14f4224c0835452a7b25:eyJzZWxlY3RlZExpbmVDb3VudCI6MTgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImUyMzlhODg1N2Y4MTYzMjAyNjVlYjQ4YzM0MWFlMTdhYTNhN2Y1NjU1NTlhODE5ODcwNDdkZjM0MjU1NWFhYzAiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijc5MDdiNWMxYjFmYzY2NGM4NGMxYjk2MzM0MmQ4NTE4ODk1NzBjYWFiY2QzNGQyOTg4M2ZjOGQwOGY2MzA5YTYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjIxMWJkNjYzNTk5MWE1OTYxYzBhM2RmMGI0ZmY5ZDBiNGI1NmZmM2VjMzMzMTE3MmI2YTZiYmQ2YzQ0YmNiMzUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImM4NDc1YzliOWQwMTQwOGFkNTlhOTE5Mjc4NDdhOTdjNWM1NTQ5YmQ0NTIyYTA4ZjQ4MWNmZjg0MmIyMGE0MTkifQ"
+        },
+        {
+          "resource": "repo://supabase/migrations/20261014130000_display_names.sql#L34-L43",
+          "version": "repo-lines-v1:sha256:f970403fc7db3bdde135df4c9408f1f21995a6a43da2c397ee94f5e76be873a0:eyJzZWxlY3RlZExpbmVDb3VudCI6MTAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjUxZWZjNzdiY2JmOGJiOGQwZjVmYTBkZDVjMjc2YzJlMzViYWFhN2MyMGRlM2QyMDBmM2I1M2Q0MTAyNTE5NTEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjM1MmNjYTdiN2Y2MGM1NjljNTM3YThkZGU3NmZiODUxMDI2Nzg4ZmI5ZjYxY2VjN2EwMmMwYzFjZDE5MThiNTMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImZlMWNkNjY4YjAzM2U0ZGFmMTE4NTMwZjUyN2Y0NDRjYmEyMjhlMGFmY2VlNjg1YWJjNzAyNzU2NjEyYzM2MWEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_eabe71e94dba4863ab87ce27b4c88885",
+      "statement": "net_cash_flow is the metric that sums amount, including transfers, and is not a spending measure. The semantic model tells the agent never to SUM(amount) for spending or income.",
+      "evidence": [
+        {
+          "resource": "repo://apps/api/finance/agent/prompts/system.md#L20-L24",
+          "version": "repo-lines-v1:sha256:a051b3dd6a4d307997bc6604a2b54b1d4ea454fb47d47f8e7751dd56fdcf911b:eyJzZWxlY3RlZExpbmVDb3VudCI6NSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNTI0ZWJkY2VhNjc0NzhlYmVkMjBjZTE4ZjdmZjcxMjgxOWQ3YWMxMzJjMDc2ZWY2NjhlMWI4NGFjMjAyNjBjMSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZThhZTI4YjgzYTRmMDhiMTgzZDY4Y2Y1YmM4OTU1YWUxN2NmMDIxNjdiZmU0NTU0MTRmNDYzZDZjNWMwZmZlMCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMjkxN2NmMzMyYzFiZTc5YjExOGIzMTJhMGRkM2MyMTY2YTQzMTZiMTg4MzhmNmE4OTBhNDJmOGIwY2VlYmZhYiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNmZkNGI1Mzc2ZDc1NWQxOGNkY2NjZDJjNzQ3NmE5ZjliMTU4ZDBmZWVhMmNkMmE4NjI2NjI1MzcxZDQ1OTI3OSJ9"
+        },
+        {
+          "resource": "repo://apps/api/finance/agent/semantic/metrics.yaml#L23-L28",
+          "version": "repo-lines-v1:sha256:a2812aba66d1a3b70b6a5bbbd93239b7de172f45ed8a830cbce57ef4f2128856:eyJzZWxlY3RlZExpbmVDb3VudCI6NiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMTkwOTg3ZGYxM2Y1MzAyZWMzN2IyMzQxYzk2NDM1ZDkyZmMzOWJhNTM3ODhlYTg5MGM5NTExZTUyODc0ZDgwMCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNTk0YTJlMTE0YmEzOTcwMGNkMDRiNmNlOWI5ZWVmNmI0NzcyMDI4ODA3YWNkNjNiNDU5OThiMjE1MTE5ZmQ1OCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiN2QzNjA3YmZhMjM3ZjZkMTljNDA3MDQ1Y2I1NzIyOWE1ZmMyNWMwMmNlZDQ2NDNhNmY5MGY2NTFhODNlZWRjNyIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjAsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZTNiMGM0NDI5OGZjMWMxNDlhZmJmNGM4OTk2ZmI5MjQyN2FlNDFlNDY0OWI5MzRjYTQ5NTk5MWI3ODUyYjg1NSJ9"
+        },
+        {
+          "resource": "repo://apps/api/finance/agent/semantic/transactions.yaml#L48-L54",
+          "version": "repo-lines-v1:sha256:4824c9c841a3bfc06a5d715f2c6e4c2e0a7fd96b2332abc892364ffa9883a00f:eyJzZWxlY3RlZExpbmVDb3VudCI6NywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYzQ0MmMzZTE1MWVmNTBjOTk5Y2MxY2UzOTAzN2ZiMTZmMWQyODU2YjIwNzg5ZmM3MDM0Y2IxMThmZDBjY2FhYSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiYzYzNGU0NTk2NzJiYTRkYmI3Nzk0ZmJjNDI0NGEwNjQ1MDdjMWY4YWQ5NzAxZWU1YzdiZTk1M2JhOGZmN2ViMyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZjllNmUyOGY2OWFjOWU3MWYxZGE5ZWJiZmQ4Y2RiMTQxNTNjNTllYzQ5MjcwYjU4ZDdmNTU0NzA1YjVmMzVkNyIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiOTY1OGY3YjVlMzBjMGExYmRjM2EzMmUzMWZiZThlMDE0MWE0NDVkZDNmNDA0ZDA4YjVjZjdmMmFmYTM3MDE4MSJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_69bc602fef7b4b3ab533ed5b30bfcc3e",
+      "statement": "The January 1999 money-month fixture locks the contract in the views: income 2000.00, expenses 455.00, savings 1545.00, with transfers excluded and a later-month refund of 30.00 recorded as negative expenses.",
+      "evidence": [
+        {
+          "resource": "repo://apps/api/tests/money_month.py#L1-L27",
+          "version": "repo-lines-v1:sha256:91cd1178ea21778efbf0102d8acafaa00f61ee98c03d0daef0651975f8cc81b9:eyJzZWxlY3RlZExpbmVDb3VudCI6MjcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjhkNjJjMjZiMWY4MDI2ODQ5MDNiOTIyYmU1Y2ExNmQ0OTZkMWUzOTYzMWQxNTBhMmFkZDlhN2YxNGM2MmZjZGEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImY5NDE2ZTA5Zjc4YmEzMTZjMDMyNTY4MjEzYjg1NWVlNzU2ZTQxNTY1ZDkxOGYwOTUxOWM4MWZkNjIwZjQwNjAiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjowLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImM5M2U3YzdkYWI0MWU0MGE2MzM1OTI4NjFkNDI1MmY4Y2M2YzMwZDc1MmE5ZDg2ZWUwMTM5MmQ1ZmYxYWFlNTAifQ"
+        },
+        {
+          "resource": "repo://apps/api/tests/test_views.py#L11-L21",
+          "version": "repo-lines-v1:sha256:7aefa6bce529643ff54c7dcc87aa0ff8d674eed29a7e3baf7c3b540ce3349880:eyJzZWxlY3RlZExpbmVDb3VudCI6MTEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjA5N2NhNjMyMTk3NWM1MmNjMzFiNzNmYzMxOGQwNjRmYTc5M2JmMDZlZWJmZDRlNGRiMWUxYzJhOTMxYjkxMzIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImFkZDI0NDU4MmI2ZmIwM2QyM2I4NDE1YWJlY2QzNDZiMGM5ZjQ2NmI2Zjc1MmIwNjgxODljZTdlOWEyZGMzNTAiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjZiOTA2NzYzZTM2Njg2NDQ3NGZiYmUxYjA2ZjNiOWNlN2VmOGE3YWYzOTBiZjM5MjM1NWMyMGM2YTkyM2QwOTAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6Ijc1Nzk3ZjgwYjJkNjBlMjI3OTc4ZjZiY2EwZGZlMGY4ZTFiOTI3ZjAwMDZiNjBlZWU2MzYyMzZjMDc3NmVhOTMifQ"
+        }
+      ]
+    }
+  ],
+  "verification": {
+    "by": "openwiki/0.7.2",
+    "at": "2026-10-17T19:58:49.962Z"
+  }
+}

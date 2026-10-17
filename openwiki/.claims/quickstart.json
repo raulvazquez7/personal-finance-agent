@@ -1,0 +1,212 @@
+{
+  "schemaVersion": 1,
+  "pageVersion": "sha256:6df17bb5b04210839df0ccb456d1dfaeef03035e147463db16d0e66822855d68",
+  "claims": [
+    {
+      "id": "claim_53d5959d48cc48e39f905eea270d47a9",
+      "statement": "Coding agents should start at the quickstart and follow one link rather than preloading the wiki. Code and tests win over documents, specs in docs/superpowers/specs explain why, and docs/backlog.md items must not be presented as built.",
+      "evidence": [
+        {
+          "resource": "repo://AGENTS.md#L1-L16",
+          "version": "repo-lines-v1:sha256:8926524de63a1266e7592d9f1256ec367b67e9fa0583f343808e3e51f19d4990:eyJzZWxlY3RlZExpbmVDb3VudCI6MTYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjVmMTgwZjljMTI2OTAzYmNjMzMxYWE5NTQ1NmU0OTQ0NGE3ZDRkMDExZThhMmE4M2Y1ZGM4NzAyMzkxODEyZDAiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjA5Zjc4NzE0ODkzYWE3Nzk0MmNlYTFjNGEyZTAyMzFkYmI3ZmEyYTQxYTcwYzgxNDYwYTNjNjc1NjJkYTNhYWEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjowLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        },
+        {
+          "resource": "repo://CLAUDE.md#L6-L14",
+          "version": "repo-lines-v1:sha256:ee5b28e0281edc3c47f2e70773f05b8fd4c66674b1b0c60ae9a152d30db75b46:eyJzZWxlY3RlZExpbmVDb3VudCI6OSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYjIwNmJkOWUwZTIyYzQ1Yjc5MjdmZjdiODJjYjViZDJkYTMwNWMxODAxMjFhNDcyMmFjNzY4MWRhMzY5ZmUxNiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiYjRiOTVhNTVhYTUwOWQ0NzM4NTM1MTc1ZDJjNDI0MWVkYWZkZDIwODc4NWYxYTc5MDRiYTZiMGVmMDJmODk5NyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiYTAyMGQ0MzliZmYyM2NkODY2ZWYxMTVmNWNiZTY5ODdkZGYxZDNmYWYwZGJmZjI0M2E3ZGZjNDkyMmY0YjZjZCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiODY1YTIzMDM5MDdlNmVlYWUxNTAxZWU5NDUzOTIwNjc3ODI1NTgxODc2MzBkNWE5ZDNlNjc1MGVhODhlNjE4NyJ9"
+        },
+        {
+          "resource": "repo://docs/architecture.md#L107-L144",
+          "version": "repo-lines-v1:sha256:e25792d97d08e489789c9c6d428ac0425a51b9c28668f46af2777623f7513c3c:eyJzZWxlY3RlZExpbmVDb3VudCI6MzgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImZkYjJjMTMwNzA0YTBiOGM0Zjk0MTYxNjdkZjBhZWY0ODYyYTVmNTMxMWQyZDhmYzRkOTYyMWZhYjhmYzRjYWIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjliYjhkNWVlY2VlY2U3ZDdmM2MxNTRmYjMwMDU0ZWIyZTRlZmUxNjc4NTdkMWI0MzE4ZDBkNGY0NjA5NWZmNjciLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjFjMTYwY2U2NTVlNzM4N2JlZTNlMTRkMTdiYjI1MmY3ZTc1NTViMTAyZjE3NDliZTk4N2Y2NDE3ZWY2YzEyNTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjRhMThkMjM0NTU0ZTQ3NjQ3NmVkOWEzNDRmMGM3YWU4YzU0NGQ3NmRmYmY0M2VmNTgxMTA2MDc2MzIwNGIzMGQifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_59e9437aa75744a6bd97af2f3bfb98d3",
+      "statement": "Python in apps/api/finance owns ingestion, categorization, dashboard reads, the chat agent, and evals. Next.js in apps/web is the browser and never opens Postgres. Supabase Postgres is the ledger.",
+      "evidence": [
+        {
+          "resource": "repo://README.md#L62-L63",
+          "version": "repo-lines-v1:sha256:6b07ed158336b30d5265a64cd8dfc05a6d22780971ac81da272cc7d11dbe02e2:eyJzZWxlY3RlZExpbmVDb3VudCI6MiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiOWZmMjQzNTFhMTI4ZTZkNmQxMTkxODdhZmQ4YzE5OTYxYmM1OGE1NmRlNGQxOGE2YWE3YmQ5NWI3NzdjMWY4YSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMWNlOWU1NjVlMGJiYTNiN2YyZDA4N2NlZGU1NzgxYmJiMWNmMmFmZTkxOTUwNzBiOGFkNTlmYzE1ZTA1OTU1YiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiYjNiZjMwOWRlZTU5NTc1NThjNTQ5YTBjOWQzYWQzOTYwYjE5NGNiNmQwOTczNTc4ZmE3NWU0ZjFiZTE4ZjA2MiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMzg4ODYyZWIxZDg0ZDQwMWUzYjE5NjQzYWZhZDA5ZjQ5YmVjYjJmODJkYTY5MTkwYjgzYzFiYjAxOWI3ZGI3YSJ9"
+        },
+        {
+          "resource": "repo://apps/api/pyproject.toml#L1-L27",
+          "version": "repo-lines-v1:sha256:6f35bf4eb24435bfe1515868c8b5ec536dbc0c6ea7e846bbfcd2c26390f90f63:eyJzZWxlY3RlZExpbmVDb3VudCI6MjcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjcwMmE4MWMzODM2ZWRlZjJkMGJhMTFkMjM1M2ZiNmRhYmM3NzcxNTBhN2NhODNlYTBkOWU5YTcwMzEzZmVhYmIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjowLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImY0MzI1ZGZkNTc3M2RmMGE1YzNkNjE3NzNlOWRiODg3ZjE4Njc3NGZlNGY2NDVkMjk1ZTcxZDIzNmMzYzQ5NDcifQ"
+        },
+        {
+          "resource": "repo://apps/web/package.json#L1-L12",
+          "version": "repo-lines-v1:sha256:7286d884527057c0ac947e98fb86d4d7be4d214e88795697eda1e1a1f1a6642a:eyJzZWxlY3RlZExpbmVDb3VudCI6MTIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImE2ZmIwOGZkYTFhY2I5NTdiNjExNmJkMzc4MTFhMWZlNDFhMDE2MTFjMDYzMWVkYmY3ODZkNjg4OWEyN2E1NWMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjRkNWNkMmZiNGYzZGY4ODQ1MTUyNTViMzk1MjNmMmY4YjU0NzJiZWVhOWY1NjZmZmNhMjA0ZGI4MDI1NjEwNDEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjowLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6Ijc3ZTdiZGJmNjY3MDU4ZDMzMTJjY2U2NmQyMjA2Yzk0ZmNjNGU0ZTM5ZTY3OWU0NDI2OTZmYjQwNDg5ZWEzZmYifQ"
+        },
+        {
+          "resource": "repo://docs/architecture.md#L1-L23",
+          "version": "repo-lines-v1:sha256:2c7d31c949991f7ff3cd48278d313b722074374db57c99e69e3a7987da320ae3:eyJzZWxlY3RlZExpbmVDb3VudCI6MjMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImE4NjE2OThjNTMyNWNlYTI5YzlhYmFkZTZlNDE5ODliNmY2ZGIzM2Q3NzRiZTFiZDkwMDU4ZWExNjc3ZDlmNjYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjowLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImYyZTQ5OGQ5YTcwNmQ2MmY1M2ZiODU0MjNlNGIwMDJjOWRlMjUyZDIxYzNlMTM2MjQ1Mzk0MjRmYmZkYjQ5NTQifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_7ddc0ca2904040ca946f0af6013bac6b",
+      "statement": "A PDF adapter, dedup, or import_statement change belongs in apps/api/finance/ingestion. A new bank is a new adapter plus a bank enum value, not a change to the cascade. Pairing, rules, jev, merchants, thresholds, and link_loans belong in apps/api/finance/categorization.",
+      "evidence": [
+        {
+          "resource": "repo://apps/api/finance/categorization/store.py",
+          "version": "repo-file-v1:sha256:6970b6bed2a8ce6db9500fac9e17a21562834fdd7f87fe3361997bb4c7bb6508"
+        },
+        {
+          "resource": "repo://apps/api/finance/cli.py#L32-L74",
+          "version": "repo-lines-v1:sha256:15fbc403ea6d045a7138bbcbe62ea081e29ecc7e31d2d666a7a116c7c4cea6c4:eyJzZWxlY3RlZExpbmVDb3VudCI6NDMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjFlMWZhMWU0YmI0ZDNhYmI3MjA1M2NhN2QwMWVjNjExNzg0YjM1YzZkOTU5NmMxMmJiMGI1YjgzNDEwMTMwYTEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImU2ZTdlNTYwNDNkNzJkZDI5YTExNjEzYmJhZjlmMTIyY2FhNTkwM2MyNTgzMTNlMTY4YmQ4ZWFiMmI2NTdjNzgiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6Ijg1NzY5MzJiNzExNDVhZDk3YjBiZWY4Zjc3YzdhMWEwMzM2NGQ3ZjliYmJiNWM1ZDQ3OTQyY2QwMjgyMmU1ZTMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjNiZTk1OGYwMDdkN2M1NTkwYTUyNThiNjY4M2I2ZWZlOGNjMTkyZDc5YmUyNGYxMzdkODQzMGY0YTNjZmZmMjkifQ"
+        },
+        {
+          "resource": "repo://docs/architecture.md#L24-L59",
+          "version": "repo-lines-v1:sha256:a02b13e695dffcebcdf188c96232174b2733c5ab03eafd199a86ff6bd824f523:eyJzZWxlY3RlZExpbmVDb3VudCI6MzYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjVlZTFiZWIxZGE5YmZmNDQyY2RlODFiMmFmYTI4ZGM2NTdjNTY1MjhmN2IyMjVkZTJjMDA2YjczZTYwY2M4Y2MiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjdlNTQ0YTcxNDU5Zjk0ODllOTI0NzRlZGY4MGIyYjgxYmI3N2U5YWQyNjZiODk0Yzc3NzBlMDRhMjc2MGI0NjIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImQ1MDdkYTlmYWRkZGM3YWE3YjU3OTMxZWZjMDllNTQxYWQ4MjdkM2NlOGQ2NDNhNDU5MzA3MTRjN2U0ZDhlYTkiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImFiYjVmZTc4ZjFkYjViOTk2YmJlYzgwOGFlYmZiMWM4MjlkMTM3Yzc3MTE3MWI2YzYzN2FjMjJiMTQ1NTc3OGEifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_08a85d63a4a845849060b8cb34b85ccc",
+      "statement": "Dashboard totals and subscription aggregates must sum v_transactions_enriched rather than recomputing spend or income in the web app. The money contract itself is docs/money-rules.md and must be linked, not restated.",
+      "evidence": [
+        {
+          "resource": "repo://CLAUDE.md#L14-L14",
+          "version": "repo-lines-v1:sha256:b4b95a55aa509d4738535175d2c4241edafdd208785f1a7904ba6b0ef02f8997:eyJzZWxlY3RlZExpbmVDb3VudCI6MSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYjRiOTVhNTVhYTUwOWQ0NzM4NTM1MTc1ZDJjNDI0MWVkYWZkZDIwODc4NWYxYTc5MDRiYTZiMGVmMDJmODk5NyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiYjRiOTVhNTVhYTUwOWQ0NzM4NTM1MTc1ZDJjNDI0MWVkYWZkZDIwODc4NWYxYTc5MDRiYTZiMGVmMDJmODk5NyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiYmJiNzZjZjBhMGExMmQ3NTA1NjYxODA0ZjQyZjY1NDU2ZmNjZmRlMThjNzBiZWYwYWRlYjlkMzE5ZmYyMzY4MCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiODY1YTIzMDM5MDdlNmVlYWUxNTAxZWU5NDUzOTIwNjc3ODI1NTgxODc2MzBkNWE5ZDNlNjc1MGVhODhlNjE4NyJ9"
+        },
+        {
+          "resource": "repo://docs/architecture.md#L117-L122",
+          "version": "repo-lines-v1:sha256:c3740425651889933c0f1c744cbf213186e0b6b80203d05c72513a012a3d36fe:eyJzZWxlY3RlZExpbmVDb3VudCI6NiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMmM5YzAxNjVhZWVkNjk4ZDVkYjEzYzNhNmQyM2I3M2Q1MTFiZWY5MGZjODNiNjk2YzBhNjRkZTY3ZGRkNjU5OSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiYzdiYzc1YWNkMmYwMjYyYTkyNjk5MzM2NzFlMzk1NDJhY2U5MTRmM2YzMTQ5NjljZTFiYjJiOTBlMTFkYzBjZiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiYTU3ZmU0ZmE4MDE4MzgxMDc0ZDI4M2MwZTZmYmQ2YjBiZGZlMjY3ZTkxMjY3ODhhYzJiNDhmZjVlNTMzMzIxNSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNjA3N2FlNDM1YjhhYThmZWQ0NWE0ZDIwYTc1MWY4MjYyYTgyMjZiNzMxNjIwYTVkZGExYjc5YWU4ZTU4NTA0YiJ9"
+        },
+        {
+          "resource": "repo://docs/money-rules.md",
+          "version": "repo-file-v1:sha256:28a4c3d2aa55679e65cf26caa9e6abc68d0257d1d1776703b49df0681dff5624"
+        }
+      ]
+    },
+    {
+      "id": "claim_d433a027a82146a3ba59104f0566c4ea",
+      "statement": "The shipped chat is one LangChain ReAct agent with a single run_sql tool and no router. The v1 spec section 9 jev router was superseded by the slice 4 spec section 16. Metrics and examples live in apps/api/finance/agent/semantic and are checked at startup. agent_reader must not be granted beyond the agent schema.",
+      "evidence": [
+        {
+          "resource": "repo://CLAUDE.md#L111-L116",
+          "version": "repo-lines-v1:sha256:f078ec2c06a7d155b675e4a65aee128176f0e55e74705953d16f469035ed30e8:eyJzZWxlY3RlZExpbmVDb3VudCI6NiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMmI0YWRlZjE3Y2JiZjUzMDA3YjQyYzI3NDVlNDEyZWI3ZjJiMmFiOGVlNjA0MjhiNWU0ODc3NDdmOWFlMDk4ZiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiODMzOWI5MjdkMjZjYzMyM2U3MTczYjE5YWY5ZWVmNTZmNjlhYTNiMjgzNDllYTNiN2ViMjI1OGM4Y2FhNmJkNCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiOWIwM2ViN2Y4YTc5ZmIwZTRjM2ZjZDlkYTE4YTZjYzE2OTExNzE2N2RhNjRjODczMTJjMzZmN2U4ODFlNzJhZCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNmRkNjNlNGVkNWRlZDI1MzAyYTY4Y2IzYWEyMzQ1MTZmNTExZGE5MzAzYTQ3N2NlN2I1ZTczYWEwYWQzYzBjYiJ9"
+        },
+        {
+          "resource": "repo://apps/api/finance/agent/graph.py",
+          "version": "repo-file-v1:sha256:709f7169cd69372d4047a96e16e886b203ad9da1a90f1d612b6270e9b1180a8f"
+        },
+        {
+          "resource": "repo://docs/architecture.md#L80-L109",
+          "version": "repo-lines-v1:sha256:eeba84146d161773be3784927bfb0335cdfc0275ae38456d964bb2f82068e4ab:eyJzZWxlY3RlZExpbmVDb3VudCI6MzAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImQ5NmYxNDE0ZTM5MTdkOTdlODFiMjRhOThlNTZkZGVjZWIwODA4OWY1NDAxOTBkZDZjZDNjMTMyMmU1MTkwNWUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjYzZDg3MmY3MzQ4OGVhOWYyZWViY2NmOGVkODc3M2Q2YzUzZTZiMGRjNmRmNWViNGNhNzdmNjM3NTUzYmEyZGQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjJjMmEwMWMyYTJmOTlkNWY1ODY2NmU0ZjIyOThlMGUyMzZlYzljNjIwMDVjYWMyY2I3NjFlNDk1OTZhNWM3YTkiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjM5YWNjYjdlMGFjN2YzMzcxMmIxZDI0NzA5YTAyNjczNjk5MTRhYjBhYWEzMDBhMmJiMjdlNzg1MzZhMzg4NjIifQ"
+        },
+        {
+          "resource": "repo://docs/superpowers/specs/2026-10-12-slice-4-chat-design.md",
+          "version": "repo-file-v1:sha256:20237476998c6a837eb7c0a138ef9bee90cc040faae4c0e71fa59ad9b2d1b4d3"
+        }
+      ]
+    },
+    {
+      "id": "claim_1321e2e9fc024331a5970cec37857321",
+      "statement": "The finance CLI is the pyproject script finance.cli:app. import parses then categorizes in-process, seed upserts taxonomy and rules from supabase/seed, categorize supports --all and --rules-only, labels export/import move the golden set by dedup_key, eval-categorization is a paid dry run, and chat is the same agent as the web.",
+      "evidence": [
+        {
+          "resource": "repo://CLAUDE.md#L48-L66",
+          "version": "repo-lines-v1:sha256:f7a75c83ea7f2a9a413365528d43d4688dc6715f75aa540a4c53e43506ffd307:eyJzZWxlY3RlZExpbmVDb3VudCI6MTksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImI0YzVlZjcwZjA5N2UyZGZlZDk4Mzk3NjliMWUwMDllZGJmNjUxNjM1YmI3YTg3YTkxMmFjNGNiMWQ2YjZhMzQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjdjNTZiMjBhMzBhNTM2OGNhNGI4NmNhYmQzYmQ3ZjY0YzY3M2Y4ZmIxYjg3NmQ2ZDgwNGRlNTNjMzNlMTBlNDUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImE1NjhkNDU0YjlhYWE1ZDVhZjlkMjA5MjgzZDc3ZmQzMmY1M2IzNWE5YTAxNzM4MWQ5ODlkYTcyNTljMTk1N2EiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImM4NDMwN2YyMzY4ZGViZTg0ZDI1YjA2NmQxMDQ3NDYwZTliOTA5MTczYWQ0ODQzYWE1MjI3NzcwZWI5ZWY5ZmQifQ"
+        },
+        {
+          "resource": "repo://apps/api/finance/cli.py#L20-L141",
+          "version": "repo-lines-v1:sha256:fa24aa746ea7614ba95b693540b8e83dfc7427e167ecb1a9186ba5981df73814:eyJzZWxlY3RlZExpbmVDb3VudCI6MTIyLCJmaXJzdFNlbGVjdGVkTGluZUhhc2giOiI2MDU0MTU1MjgwODFiZDdlMjY2MWZjZmEyYzgwMWM2Y2FjOTcxYTIxNmI1ZTMzNjc0MDUzZjI5MzQzYjhlODU0IiwibGFzdFNlbGVjdGVkTGluZUhhc2giOiI1OWI2ODFkMzgxNWQxMTQ5MTVjNWEzMTk1MjU4NWUyZGQ4MWRlYTE1MGEwM2E5ZjQ2MzcxYTk0MjcwNDQ2ZWZhIiwicHJlY2VkaW5nQ29udGV4dExpbmVDb3VudCI6MywicHJlY2VkaW5nQ29udGV4dEhhc2giOiI4NDgzMDY5NmI0MjIzYzEyOGQ2N2MxMjgwNTBlZTg2NTJhNmVjOTFmZWEwNDkwNzgyYTI0MWVlOGQ4ZTY2MWNlIiwiZm9sbG93aW5nQ29udGV4dExpbmVDb3VudCI6MCwiZm9sbG93aW5nQ29udGV4dEhhc2giOiJlM2IwYzQ0Mjk4ZmMxYzE0OWFmYmY0Yzg5OTZmYjkyNDI3YWU0MWU0NjQ5YjkzNGNhNDk1OTkxYjc4NTJiODU1In0"
+        },
+        {
+          "resource": "repo://apps/api/pyproject.toml#L25-L26",
+          "version": "repo-lines-v1:sha256:370637a7e1ad32add0d847d8c9b0a8d5557c8f5f50d2ca36ae69e3a5b6c2d808:eyJzZWxlY3RlZExpbmVDb3VudCI6MiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNGVhYjRlYzYzZGU1MTdkYTRjZDhlNWM4MzA3ZmIyYzc3MzdkMzkxOTBhYjY5ZjMyYTVlOWVmODFlYTQ0MTZkZSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMTljNGMyMGQ3ZDdlYThlYzczM2NlZGQ2ZjJmMDJiZjJlNTI5YjUwMzA4MzI1MTk0NzZjZGJjMjE2NTZmNzNiZiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiYzI0Y2YxYjcxN2U0OTkzNWMwMDM4MzgxN2U1NDQ0YmZhMTA1ZTkwMDI1NjBmZjE0OWNkM2QwODkzZDg5ZDMyNSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiYjg0Yjg2YjYyMTI4YjZiYmQ0YTUyZDRkMzg2NjNhNmY3OTc1YzAwM2Y3YWZlNTc3MTAwNDc1OWY1OWVhYmZkNCJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_4bebe28125f041cca209ef9e28aabfdb",
+      "statement": "The FastAPI app opens chat in its lifespan via open_chat, mounts the account, category, categorize, chat, dashboard, import, merchant, review, spending, and transaction routers, requires same_origin on unsafe methods that send an Origin, and wraps the app in CORS and TrustedHostMiddleware. GET /health is the liveness check. A missing database URL or an xai model without XAI_API_KEY disables chat only.",
+      "evidence": [
+        {
+          "resource": "repo://apps/api/finance/api/main.py#L25-L61",
+          "version": "repo-lines-v1:sha256:02363108ef205923b2acca24a615d917f296f8c0c1cf3034565b930ded79ca1d:eyJzZWxlY3RlZExpbmVDb3VudCI6MzcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijg3Y2ZmM2YxNzg0MmRlYzZlN2U5MWMzZTNiOGZjZTBhODIyZmMzMTEyNzM4MWIwMGY0NGE5ZjEzMzMzMDNhMmUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjRlNjRlZDZhZjhkM2RlYzcwNzEyMjk1OTY1ZDJjN2I3NTMzNDU1MTEyNmU2ZmYzNmFjYzU4ZTJmMTdlMGVhMDUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjE0NDMyOTM5MTAwMjRmMWI1MzA5YjU0YjU2ZTU2MjhlMDBkNzg0MzcyNTg4NDVkOGEyNjJhM2I3OTA5MzA2ZDQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        },
+        {
+          "resource": "repo://apps/api/pyproject.toml#L43-L48",
+          "version": "repo-lines-v1:sha256:ee9394fa70815160a0574b2e61dc8935d90b6c95e89353564340c30fb159df55:eyJzZWxlY3RlZExpbmVDb3VudCI6NiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNDRmMzk3OWUzZjk4NjkxNmE5OWQ1NmFkN2Q1MGZjYzVlYzJlYWViYmE5MzI4NTYyMzFlNTg4ZTVjYmM5YzJkMiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZTlkZmZmODM3YzE3YWVlMWQ1YWZiM2ZmMTBkMjZiYjhiYTFjNTlhZTk3YmI2OTU1M2M1MzY2Njk1Y2ZkMGY1NSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMDkyODIyZDdjNTYyOTU0ZGE1NDFmMTE4N2I0NTc0OTBiMDk1OTI5OTdlYmRkMzQyMDZkYTA0ZmNkYWRjNmQxZiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNTcwMjE1YTM3ODk4YTYzYTI1OWZhZTA1NDY5NjIzMDk4MDU1YmE2NjM5MTkzNDg2YzNmNzY4NzRhMTIyZDIxYyJ9"
+        },
+        {
+          "resource": "repo://docs/architecture.md#L80-L84",
+          "version": "repo-lines-v1:sha256:5867ce846e07321a7d2fb6c45bbe2fc72577446d1b8504146ad6ee3cefdb4257:eyJzZWxlY3RlZExpbmVDb3VudCI6NSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZDk2ZjE0MTRlMzkxN2Q5N2U4MWIyNGE5OGU1NmRkZWNlYjA4MDg5ZjU0MDE5MGRkNmNkM2MxMzIyZTUxOTA1ZSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZWUyZmQ5NjQ5YjY3ZjkxZGIwMjIxZjdmZmFmMWZiYjA5ZmNlY2E5NWMzMTgzY2NhYjIzYzA0MWUyOWJmNzU2NiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMmMyYTAxYzJhMmY5OWQ1ZjU4NjY2ZTRmMjI5OGUwZTIzNmVjOWM2MjAwNWNhYzJjYjc2MWU0OTU5NmE1YzdhOSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNzVmODM5YTJkYmJjOTcxZGI4YWE0NDgxNmVjY2QwMmZiM2UxYTM1YzUwNmIxZDNmNGUyZjMzMzkxNWM4MmYzZSJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_6c4eff1c75c3407aa7640a1df08a7c74",
+      "statement": "The web app runs from apps/web on port 3000. Routes include /, transactions, subscriptions, spending, income, merchants, chat, review, imports, and settings. The AI SDK useChat is only the browser transport; the agent stays in Python.",
+      "evidence": [
+        {
+          "resource": "repo://CLAUDE.md#L76-L113",
+          "version": "repo-lines-v1:sha256:8b934300dff84888346b5df6e3361ae731cfdf0d5673a0279157a54fe2ce0c55:eyJzZWxlY3RlZExpbmVDb3VudCI6MzgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImZjYWViNDNkNDZiMTM1MjM1OTY2YmJkODc2YzE4ZWY4ZDIwMDRkMjFjNmFlYmQ0ZTZkMzViOGI0MGI3MDUwYjkiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImIyOWM0OWIzMjc3MmE2ZDc4YmViN2Q4NzE0ZGE4ODJjMDgwODYyMGVlNTVlMzcwOGMzZDQxYmUwMDM4ZjhmMDYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImQzOGI5YTIyZDY1NWFkMjljODA4YTQ2NTkxMTY4ZDgyYzY3ZDg4NTk3MjI3ZDJiNzE0ZWZlZTA3MGQ5NzE0ZDgiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImQzOTE1Mjk3OTA5NWMwMzJiMzNhODVmM2Q1M2JhMTMxYjQ5ZDE3ZmFkMzM3YTc1NjIyYzY1ZjZiYjQ4MGUxNWEifQ"
+        },
+        {
+          "resource": "repo://apps/web/package.json#L5-L16",
+          "version": "repo-lines-v1:sha256:6d0ed12d8393ec85f9356914fdcf638af132fa5f7902fade6ca6fdddf9aa4642:eyJzZWxlY3RlZExpbmVDb3VudCI6MTIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjM0ODMzZDU5NDljMDNhNDBjYTk1MjQ5MTYxMGE2NjU5NjQ0YjNhYTQ2NjM2MmY3OTkwMjBkYmYxOTgxNTQ3ZGIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImNjOTk0NTY4MzcwYWU5NGVjZjM3MzA0Njk1OGNhYWFiNDk0YjRiOTBjNWU0ZWE1YTllNzM1YTZmN2FlMDBmN2QiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjUwZGU3MmFiOTMyMTA4MGZkY2YyZDYyYjk3Y2QwZjNmMDk2MjBhOWM2MjA5NmY2YWRmYmMyMWI1ZGVhMjAwYzgiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImExMDgxMjU2N2JlNTViMmM0MjkxZjI1NjlkMDc1YmNkZGQ0MmVmYzFjYmYzZDEzYTE3MTg0ODEyNzVlMWMwZWMifQ"
+        },
+        {
+          "resource": "repo://docs/architecture.md#L101-L103",
+          "version": "repo-lines-v1:sha256:53cef07cec8dfd89f57f824784f2f95eab5a32b17e613aeb5aac343622e99141:eyJzZWxlY3RlZExpbmVDb3VudCI6MywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMjk4MTRjMTIzYmUwMDFlNWUwOTJhNGZlY2UzYjNmOWUxYWE0NjgxOWFlMjQwZTllY2QxNjE0MDcxZDBhN2FhOCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiYmFhNmQzYjlkYzhjNDU1NmU3MzAzNjA3ZDVlYjAzMzI5MjMwYTM4M2ZiNmY2ZDEyZmI0N2M5YzZmNzE1YWI0YSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMDBjNjQxODQ0ODdkNTFkZTdjMTRkYmM2Y2QzMGE5M2FiN2U4MWM3Y2E4MTQ2MjI1MjRiMzcwNGQ1OWU3OTViZSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMWMxNjBjZTY1NWU3Mzg3YmVlM2UxNGQxN2JiMjUyZjdlNzU1NWIxMDJmMTc0OWJlOTg3ZjY0MTdlZjZjMTI1NSJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_ada608d9779645e985d7d60c201dd915",
+      "statement": "CI runs API lint and unit tests plus web lint and build. Integration tests, vitest, Playwright, and agent-browser are not CI. User-visible flows are checked with agent-browser. Writes use scratch-database recipe R2 and chat checks use recipe R3 with the scripted chat server. Both recipes are named in CLAUDE.md, which says where they live. Their steps are not restated here.",
+      "evidence": [
+        {
+          "resource": "repo://.github/workflows/ci.yml#L1-L37",
+          "version": "repo-lines-v1:sha256:86df202f0b04e27bfe9e941921330d00a56201a3dead931cb49f1ab967bae151:eyJzZWxlY3RlZExpbmVDb3VudCI6MzcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjA2ZTFiMzJmYTA5MDc5YWUyZjAwMDFmZmYwZWNhMjdiNDk4NTk1N2Q0ZWI0ODU3OTI5YjNjZjA1OGZhYWU1NDEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImZmYzRlNTVlYmEwZTczODQxYzY5NDNkYTkwZGM2NjgyNjg0MTIyMjNhYTIwNWFmZDcwNDExMTFhOTAyZTc3MWYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjowLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        },
+        {
+          "resource": "repo://CLAUDE.md#L76-L99",
+          "version": "repo-lines-v1:sha256:b4efc1d73d47e9a2819e1d1906cb04bf8a50e55774423a878d60466aaff49290:eyJzZWxlY3RlZExpbmVDb3VudCI6MjQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImZjYWViNDNkNDZiMTM1MjM1OTY2YmJkODc2YzE4ZWY4ZDIwMDRkMjFjNmFlYmQ0ZTZkMzViOGI0MGI3MDUwYjkiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijk5OWJkN2QzZTQ0MWZlZmE2NjI3ODJmMDY3NmY5ZWRiN2I3NzMzYjRjNDcxZDg1NGVjMDk5M2JmNDE3ZDU5M2UiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImQzOGI5YTIyZDY1NWFkMjljODA4YTQ2NTkxMTY4ZDgyYzY3ZDg4NTk3MjI3ZDJiNzE0ZWZlZTA3MGQ5NzE0ZDgiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjJjNDU4YzYwMjQ4NTI0MmZiMmM4MjRmYjhjNGYwMjQwYzVmMzJlZGQzY2E4MmZlNzMyNDZhZWIzOGRmM2U5YzQifQ"
+        },
+        {
+          "resource": "repo://apps/api/pyproject.toml#L43-L53",
+          "version": "repo-lines-v1:sha256:83abfb97037940b849279757a1f895b813afe1d307501d05977377538ecbb62f:eyJzZWxlY3RlZExpbmVDb3VudCI6MTEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ0ZjM5NzllM2Y5ODY5MTZhOTlkNTZhZDdkNTBmY2M1ZWMyZWFlYmJhOTMyODU2MjMxZTU4OGU1Y2JjOWMyZDIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjM2ODBhMzVhYTAzNjNlYjdhZmI2ZjhiOWNjMTk4NmQ1MjA2Zjk4ZWVjMmU3ODI4N2ExYzE3MzFhMDY3Mjk1ODgiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjA5MjgyMmQ3YzU2Mjk1NGRhNTQxZjExODdiNDU3NDkwYjA5NTkyOTk3ZWJkZDM0MjA2ZGEwNGZjZGFkYzZkMWYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImQzYTM2NjkzZTc0ZWRiZjk5NjNiOTUzNDE5NjgyNDRhYWJkYmE3MDcxNzJlOWJiYTY4NGRmOTc5MDdiYTM5NTQifQ"
+        },
+        {
+          "resource": "repo://apps/web/package.json#L5-L11",
+          "version": "repo-lines-v1:sha256:7dec64c3b81c384aa4a6babfb63dc42e92534b6a31e0f8b63173ebc873a6d913:eyJzZWxlY3RlZExpbmVDb3VudCI6NywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMzQ4MzNkNTk0OWMwM2E0MGNhOTUyNDkxNjEwYTY2NTk2NDRiM2FhNDY2MzYyZjc5OTAyMGRiZjE5ODE1NDdkYiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiYzgxNjM4ZjAxOGE4NjRmZDhjODJhYjliNGM5MDRmYjI2NjNhMzQxYTllYTEwOThjZTk0ZmEzZWM1NDFjN2E2MyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNTBkZTcyYWI5MzIxMDgwZmRjZjJkNjJiOTdjZDBmM2YwOTYyMGE5YzYyMDk2ZjZhZGZiYzIxYjVkZWEyMDBjOCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiYjBhZmNhOGNlNTZlYjM5MjkzYmFkMzhmNDNiYjQwODZlMjQxYTgxNGNkMTVlMDVkMTA4Nzg5YzM1YjM4MTNiZiJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_672b8c82ac4b407bb1a11c9b00b9a143",
+      "statement": "supabase db reset wipes labels, notes, and merchant defaults and is not a verification command. Labels must be exported first. The restore procedure lives in CLAUDE.md.",
+      "evidence": [
+        {
+          "resource": "repo://CLAUDE.md#L69-L74",
+          "version": "repo-lines-v1:sha256:f533ecc844ba2bf4a8194b76adbc07ba53edc28c09fff5bf22d8b3a7c4dade39:eyJzZWxlY3RlZExpbmVDb3VudCI6NiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYjI2OTA5ZWY4ODFmZmQ3ODQ3NzhiYjRkZmQ4OGEyN2U2NjViYTgzYmZmOWY1ZTMxYjljODZkNjFjYjdkMTRmOSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiOTI5ZmZiODBlMmZkM2U5ODhiYjVkZmJmODNjYjBjZTNlYTc1YzAxZTQ3NGE3ZGYwOWVjZTliNDhlMDEwMDM4OCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZjkwMDAyYWIzNjRjNzAxMTQzNWJjZmY3Mjg0YzU3YWY4N2NmYjAwN2RhNDYzZTE3NTRjN2U1OTZkYWUzOGQ4ZSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMTNiNWVlNmVjMWE1OWZkMTgwYzI1ZmFhM2E2MGI1NTNiODJlZGI0ZWY0NGRlNmY1MzI3OGY3OTFiNGM1NDBhNSJ9"
+        },
+        {
+          "resource": "repo://README.md#L85-L88",
+          "version": "repo-lines-v1:sha256:c82184014c35dfd5092267c5275323a822c7b41d7cc3e27af769afffa45d8875:eyJzZWxlY3RlZExpbmVDb3VudCI6NCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMGQ5YmEzYjg5OTk2MzJhYzBkYzAwNzVmNDkyMjY5ODE4MTBkZWJmZDhkNzFmYTRmYWMzOWU0YTA5MDcyM2M2NSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMGQ3MzZjOTM3ZTNjNjE5MDlkNTQ2NWRkNjliYzQ0NTc2MTY2NjFkZjVkN2JjYjJlYzdiOTJmMzk3OGI5NjAyYSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZTYxMjk2ZGI0MDAyOGVmMWMwMDkyMTIwYzc3NGM2MzBiMDg5YjJlODJjMWNhYmRmZjg2YWUyODJlYWNiYTRhMiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNGExOGQyMzQ1NTRlNDc2NDc2ZWQ5YTM0NGYwYzdhZThjNTQ0ZDc2ZGZiZjQzZWY1ODExMDYwNzYzMjA0YjMwZCJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_559ab5bd3dcb4b999b41c7976ce90ded",
+      "statement": "Plans under docs/superpowers/plans/ are task history, not instructions. Personal amounts, account numbers, IBANs, merchant names, and ignored data/ paths must not be copied into docs or tests. conversation_history/ and skills/ are not repository source directories.",
+      "evidence": [
+        {
+          "resource": "repo://CLAUDE.md#L95-L107",
+          "version": "repo-lines-v1:sha256:177979e23a9042f27dc3abc793016654f44adc946b9665569cd552158898c655:eyJzZWxlY3RlZExpbmVDb3VudCI6MTMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjM1MTNlZTJhMDRmNGM0ZGNmYWZkMzFlODc3ZDcyZDA5NTMzMWFlMjI0MjcxMjVjMWNlYzQzOGZjNGNmZTU5MjYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImFjNDJmYTJlZmUzOTBhYzE4MGVlNmQxYjA3OWVlMjYwZWFlMDhkMTQ5MzkxZWNmODA5MTRmMmQ4NTQzZTA0OTciLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjEwZjY0MTVkN2ZkNDM3NzdkNzFmZjQ2YTM4MTdkNGY5MzMyMjQyYWJlNzRkOWM0OWU0MDhhN2ZhMjg3MjExMDAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjliMDNlYjdmOGE3OWZiMGU0YzNmY2Q5ZGExOGE2Y2MxNjkxMTcxNjdkYTY0Yzg3MzEyYzM2ZjdlODgxZTcyYWQifQ"
+        },
+        {
+          "resource": "repo://docs/architecture.md#L111-L144",
+          "version": "repo-lines-v1:sha256:36b4c4d5cc8f81c2cc80f1a3e387cd0b75ef162e9b737b3229ba62d5e08b128c:eyJzZWxlY3RlZExpbmVDb3VudCI6MzQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImI4YjkwNzQ3MjYxZWJiODNjZDlkYzY3YzQ1NmY1MjgzOWJlY2MwZWMzYzBlZjA3YzIxY2RjZGFlZTAwMGExYTciLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjliYjhkNWVlY2VlY2U3ZDdmM2MxNTRmYjMwMDU0ZWIyZTRlZmUxNjc4NTdkMWI0MzE4ZDBkNGY0NjA5NWZmNjciLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImM1NjNkOWZkN2YzZWU2YmYzMDI1MzBmNTQ1NmJiMDcyY2Q5NzdkN2NmNGMyNGIwOWMyODUzMDQ0YTRkMGJiNGQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjRhMThkMjM0NTU0ZTQ3NjQ3NmVkOWEzNDRmMGM3YWU4YzU0NGQ3NmRmYmY0M2VmNTgxMTA2MDc2MzIwNGIzMGQifQ"
+        }
+      ]
+    }
+  ],
+  "verification": {
+    "by": "openwiki/0.7.2",
+    "at": "2026-10-17T19:58:49.962Z"
+  }
+}

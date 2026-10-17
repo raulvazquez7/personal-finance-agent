@@ -1,0 +1,268 @@
+{
+  "schemaVersion": 1,
+  "pageVersion": "sha256:3357d07304076875f550bc2a837eba824097b92a8499fdf1fdbda663e42a728d",
+  "claims": [
+    {
+      "id": "claim_ba114bfffc9f498fa570c2f248d34184",
+      "statement": "The shipped chat is one LangChain ReAct agent built with create_agent and a single run_sql tool; the v1 jev router and describe_schema tool were superseded and are not present.",
+      "evidence": [
+        {
+          "resource": "repo://apps/api/finance/agent/graph.py#L44-L53",
+          "version": "repo-lines-v1:sha256:2d9224e4c157e43532c33ae7317dbf6177d6a23d669789887683666d8970ff9c:eyJzZWxlY3RlZExpbmVDb3VudCI6MTAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImY3YTY3M2I5NGYzZDBiYzRiZTcwMGRjOTVjZDQ4OGM5NDcyMjVhMDY1MGYzNWFlZDU3MWUzZDM2NDQzN2EwNDIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjMwYzFmMTg4ZjE0MmVkN2E4MjQ2ODBiMjA3MTcyYzU1MTliYzYxNGE0OGZkYTdjZjE2N2VkYjhkZGY3OTk1NmMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjhjYzRhN2QxY2M3OTZhYmEzZTQ2NzIzMzI3ZjUxN2U5ZjgxMTk4MmQyNTBmMDcwMjk4NmU0YjU3NjRhZDk1ODkiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        },
+        {
+          "resource": "repo://apps/api/finance/agent/tools.py#L36-L50",
+          "version": "repo-lines-v1:sha256:554aa227fc6c7dd5a6cb9e123a671ea2048ff0cf52d5f311d1d39c8667f560f2:eyJzZWxlY3RlZExpbmVDb3VudCI6MTUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImMwNzQ4MTVkZjNiYjZmYWNiMDI0OTYyYjNiMjM4Yjg1OGU2MjY2NWJiYzY0ODA3NWVkN2U3MTBmZjJiYTZhNTQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImM3YmJiMmM3ZDk4YWZmYWJkMmUzNTk3NDM2NzkxZjk5MWYyYzJlYzVhNDU0MTkwMGM3MGJiMDhkMzRmM2Q4NmMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjMxMWQ3YjQ3ODQ0NjA2YTI0OGYzOWE1Y2EwNzg4YTIzOTcyNmJhMzQ1ZTJlMWE1ZTUxYTBhYjllNWZmYjMyNDEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        },
+        {
+          "resource": "repo://docs/superpowers/specs/2026-10-12-slice-4-chat-design.md#L565-L573",
+          "version": "repo-lines-v1:sha256:d0b76e0358b1973a4eab48edcd37b731f7aa13e7c2fbea09a46d725179c33e9f:eyJzZWxlY3RlZExpbmVDb3VudCI6OSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiOGQ4YjkzMWUxNDk0NzJhN2E4YTlmZDVkNzIzZjE4OTE0YWVhMDI2MTA1ZTFhYWU1OTAyMWVmMzI1N2RkZGFlYSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiYjRhODNlZDU1MjJjMjc5ODgxYjhhNmEzODNkZjQ1YmQ3ZjJjZmRiMTZmOWJmMmRkOTU4ZmQ1MDZkNjI5NTc0NSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiYjEzNzcxNzY3NjI4NWZhYTQyNWYwYmU2NjVlYTFiODE4MTU1OWQyN2M2OGRkMTNlMWNkNzNlYzhjZGQ4N2Q2YSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiOWFhZDdiYzM3ZTA3YWUwNWI2MDVmOTIzOTk3NjIzYmI1NTZhM2VlMGE2Mjc2OGE5YjU4MmVjMjMyNzgzMTNhOCJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_8c69b225a93d4e94ae155a63ba8c37f8",
+      "statement": "open_chat yields None and leaves dashboards working when SUPABASE_DB_URL is missing or an xai model has no XAI_API_KEY; otherwise startup validates the semantic layer, sets up the checkpointer, and fails closed on mismatch.",
+      "evidence": [
+        {
+          "resource": "repo://apps/api/finance/agent/runtime.py#L29-L73",
+          "version": "repo-lines-v1:sha256:4cb5cfa81e749d0259cbe604cefda8404c18120ff423a8097d1c50be5f151ac3:eyJzZWxlY3RlZExpbmVDb3VudCI6NDUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijg3Y2ZmM2YxNzg0MmRlYzZlN2U5MWMzZTNiOGZjZTBhODIyZmMzMTEyNzM4MWIwMGY0NGE5ZjEzMzMzMDNhMmUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImZiYmM1MDE0ZTg3MGY1Mzg0MDNlMzM3M2NlMGQyMWY2MjQzNzBlMTMyNTQwNGMyM2RjYWUyYjEwOTBkMjY4NmMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjYyMDA5N2U0YWE1MDA2OGJhMTU3ZjlhMjczOWZhZDg2OTk1ZTFlMGNkY2NkYWRjNTg5N2MyMDM0Yzc0ZDNlZmEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        },
+        {
+          "resource": "repo://apps/api/finance/api/chat.py#L22-L28",
+          "version": "repo-lines-v1:sha256:a9da11a41ae98c523e526c927b1dc8bf38bfb08a14a6b90352cdf9c82d7431fc:eyJzZWxlY3RlZExpbmVDb3VudCI6NywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMDEwZGViOTk3ZDIxM2RhODI1YTJkZjY5NzlkOGViNWEyOTA1ZjU1ZGRkNzM2YzM2MWIxYmYxMDFjYjRlZTFlOCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNTkwOWE1M2E2MThkMDI4ZTFkMzAwMGMwYTdhYmNlZWNiZTVmYjM3ZjRlNTExZWZlNDY2NDNmYWQ2ZTY2ODcyZiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZTYzYmI3MDA3YmQyMjI5YTllNzcwMTU3OGM3MmE2ZTI4Y2ZlMjE3MzBhMmMyNDRiY2E0OTY1ZGUzMDU2MTM0NCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNDljMWNmNTdhNzRiMDQ4ZTBhZmVhOTJhZGM0ODRjZTk5NWJlZDkxOTExZWE3YmI5MGUzZDQ2MGMxYTczOTEyMiJ9"
+        },
+        {
+          "resource": "repo://apps/api/finance/api/main.py#L25-L30",
+          "version": "repo-lines-v1:sha256:20102a0c8f26ab2da86c0e3ad12f5f9b77330c9b3c3613a1cb8ed3dc5fdf8601:eyJzZWxlY3RlZExpbmVDb3VudCI6NiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiODdjZmYzZjE3ODQyZGVjNmU3ZTkxYzNlM2I4ZmNlMGE4MjJmYzMxMTI3MzgxYjAwZjQ0YTlmMTMzMzMwM2EyZSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMmI0NDYwZGI5MDQ0NjdjZTU1ZGEwNmVhNTdhNjhiMWE3ZDMwOWU3MzAzMGIwMTkwZWFkNDc1NzBmOTc2ZjE1NCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMTQ0MzI5MzkxMDAyNGYxYjUzMDliNTRiNTZlNTYyOGUwMGQ3ODQzNzI1ODg0NWQ4YTI2MmEzYjc5MDkzMDZkNCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNTM2MzRlOTllZWYwNzFhMWY2YTJjNjY4NmY5ZWFkYjc0MGI4MTdkMmVlYjk1Y2E0YWRjMjk4Yjg4ZmI2Yzc3MiJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_4f54157e2c4441f084074f6e5e126b7d",
+      "statement": "A turn runs in its own task, persists the user message before the agent, streams AI SDK parts, and always saves the assistant message as ok, stopped, or error before releasing the thread.",
+      "evidence": [
+        {
+          "resource": "repo://apps/api/finance/agent/service.py#L197-L214",
+          "version": "repo-lines-v1:sha256:b8ec72c32381c92cbe94c9ffc629da84a9d4826ca17b114779710c449bbc6a0e:eyJzZWxlY3RlZExpbmVDb3VudCI6MTgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImNjYzY5NWRmMTE0NmRjODA3NzZiM2JiNGVhYzM0Y2UxNmEwYWVmNmI2MjIwZjQ1NmYwN2VmM2ZiYTc5NmQ2ZDIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjU5MDlhNTNhNjE4ZDAyOGUxZDMwMDBjMGE3YWJjZWVjYmU1ZmIzN2Y0ZTUxMWVmZTQ2NjQzZmFkNmU2Njg3MmYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjFmMmU2YzE0NTQyYmFmZTg1ZTk3ZTkwZjE3MTc1MzMwYjc4YjZkY2JiOWU4NjY5ZjFmMjY1OTA4MTAyM2IwOGUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImRmM2RkZDJmMzYxZWQ2MzI5YmM0Njk3YTY5ZmMzOWE2OWRmN2ViMzQ2Mzc5NWRlOTUyNTc4OTljYTA4ZGIyOTEifQ"
+        },
+        {
+          "resource": "repo://apps/api/finance/agent/service.py#L75-L166",
+          "version": "repo-lines-v1:sha256:1a81b63e371c2b7e4ffb17b46f21be867911ad93f9d615dd5ad0c7bafe0a4bb6:eyJzZWxlY3RlZExpbmVDb3VudCI6OTIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjZhNDZjODlhYTBhY2M1NDM3ZDBmZTVkMmI1NWQ0N2NiZWYxZmQ5ZjdmMDcxMDNhZjlkM2U3MjQ2YTk3ZTcxOWUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImIxYzlmZGExMzRjN2I4ZTAwNDM5Yjk4N2M5ZWUzMjVmMzgwZWNiYTY0NTI4NTQ4YTYwYWIyOGE3ZDk0ZDk3N2EiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjE4OTQzZTA5NDJmYTRlNTliYTU4MjUyYzgxYjIzY2RiZGM2OTA4ZjJlNzI3YWI0ZTJhYWNiNDAwNDEzMGVjNzYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImFlMmQzNTU2NDlhNGI2YTQ5MDlmNmU1ZmMyNTg5NjYwZTE3MTIyZjVmM2JjY2I2OGY2NzM5ZmNmZWQ2YmIwODcifQ"
+        },
+        {
+          "resource": "repo://apps/api/tests/test_chat_service.py#L38-L107",
+          "version": "repo-lines-v1:sha256:b3d9bfd616fc9ad080658e2139a944767baede469e64c1ddceaa95403bb4f766:eyJzZWxlY3RlZExpbmVDb3VudCI6NzAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImUyNzU1YmQzZGFiZTRhYTE4NzFkY2QwZWQzZGUyMjQ4NjgwYzYxMTY1ODNhMjQ2MTg2NjQ5YTcwYzEwZDM3ZDgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImUyMjE1MzdhNzBhOGY2YTI2ZTQ3ZTJkNDQwMjBhODAwODgyNTEzOTdiZTg0YjQwOTY2ZmRkOWMzYzJiZTBjNWUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImExMjJmNjVkOTE3OTFkMTIwMmJmOTc4NzJiNTljNjc4NDM1ZjM4NzdkY2FkNTMwOGU4NmY2Mzc4OGQ4ZTUyMDUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImFjMGIyZTQyYTE2ODMzN2I4NGM2NDNhOWZiYmJmNzY2MjY5OTlhNjIwOWQ4ZTBmMWM0MzlkODQyNTk4Mjg3ZTMifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_fd538600101541178bb0579e3a790aeb",
+      "statement": "A thread answers one turn at a time; a concurrent send or a delete of an active thread raises ThreadBusy, and a delete also removes the LangGraph checkpoint.",
+      "evidence": [
+        {
+          "resource": "repo://apps/api/finance/agent/service.py#L44-L94",
+          "version": "repo-lines-v1:sha256:62fc23865d47bc0535340d144f8f486c1a23ea7975252110c0ca298307ad583f:eyJzZWxlY3RlZExpbmVDb3VudCI6NTEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY5YmJmMjk1MWQ2NDgzZTA5MWVlZDk0YzE3Y2I0NDJhY2JjZDY5OWI3YWEyYTY2MGI1ZGRjNzQyM2YyYWY4NzAiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImZjZTNhZTY4MWY4YTUzOTY5MTQxNzlhZjU2ZjZhODJkNmE1YmE3YjM2ZjFjZGYxYjhhNTIxOTk2ZGY1NzdjZmQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImRlMjdiZjhjMDU5ZTFlMmZmOTRlN2RhODQyMzZmZWI3ZDgxNTYzZDY5ZjFkOThiY2I3ZmMzNDNhYjZlZDkzZGUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImQ5MGQyM2UxYWYyOGU1ZTVhZDE2NWMxZGI1NzRmMTYzMmZkYmE0MGVmODI2NTIxZjE3NWVhZDk0NjE4NWE1YTgifQ"
+        },
+        {
+          "resource": "repo://apps/api/finance/api/chat.py#L64-L91",
+          "version": "repo-lines-v1:sha256:e617d1d8e95e83a3cbdab93b14e8db260198a9a0d13dab1ac34a28884c5b5931:eyJzZWxlY3RlZExpbmVDb3VudCI6MjgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjE0ZTE0MTFkYjI2ZTA3N2NjZjRkYTU1Y2Q2ZDczZjIwODY4ZmUyYWMxOTllMTQzMGMyZjIyYzRiZmRlMTAwYmEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijc3YjQ0ZjE4N2RmZWVlNWVjYmIyYmNiODc4OTJlNjA3OWE4MmRkODMyNjJhMjc5ZDRhYzVlMzFiMDRhYjJjMzEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjE2N2E2MTU3NzkwYmU4MTc2ZTMzZDEyZDgxMmM0MTJmNTE5ZjNiMGMzMzc1MzY5YzVmMGNhMmFmM2Q1OTMxZmYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjFmMTYzMGNhZWVjNzJmNzcwM2M0ZjRjZDAxOTM5YzY4MWVkY2JlYTI5ZmFkMGIxYWQzZDUwMzMxZmFlNjgxZGEifQ"
+        },
+        {
+          "resource": "repo://apps/api/tests/test_chat_service.py#L131-L145",
+          "version": "repo-lines-v1:sha256:ab2e198d405bcacd57dbb330bcf75199d50f74efca51e532acee3563975fc1c2:eyJzZWxlY3RlZExpbmVDb3VudCI6MTUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImM2ZGJiYzU3ZWUzZDkyODNhZmMwNjk4NjFjOTRiNTU0MTRiZWMwZDg0NzgwZTA3NzgyNzViYzU1ODc3NThjMTkiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjA1MWIyNDdlZmEyMTM2YzY1NjMyNzE0OTNlNTY4ZTdlY2YyMTYyZDAwZDg4NjhlOGM4ZTQwOTdlYjI1ZDMzMTYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjY5NmUxZTg3YWJlZDI2ODQwNTI4NThiYzIwZDFjZThiZTQ1YzhkN2Y2MDYwMWE4ZTU2OTUxNmI5M2ZmZGVhOTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjM0OWU5MjA0MDY2MWY1MWIzYWRjY2VkMjlmYjA2OTkzMTU4MTkxN2M1ZmY3NGQxZGVjYmM1N2YxYTllNmY2NzAifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_aa441addb52d429b81a5d8c66d7a707f",
+      "statement": "AgentContext and the system message are supplied per model call and are not stored in the checkpoint, so a prompt edit does not rewrite old threads.",
+      "evidence": [
+        {
+          "resource": "repo://apps/api/finance/agent/graph.py#L15-L20",
+          "version": "repo-lines-v1:sha256:2cea2a3a9f1a53417a5590d7196d143b7d50db4f8e608fdeede922aeb1403885:eyJzZWxlY3RlZExpbmVDb3VudCI6NiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZjY5YTEzOTc1YzI1NmVjODMyMGUyMDE2MDgzYzk2ZGY2MzdjYTNkMzViZWJkZTIzMTRiZWUzYTQ3MTFiNTZjYSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMDFiYTQ3MTljODBiNmZlOTExYjA5MWE3YzA1MTI0YjY0ZWVlY2U5NjRlMDljMDU4ZWY4Zjk4MDVkYWNhNTQ2YiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiOWU4ZWY2ZTAyODIyMWNmY2RiNTczZDg1MjhhZmE1MTQwN2JkMzA5MzM3YjExNzc4NGVjNzNlYmRmOTgwZmEyNCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiYjZiOWNiZWI3NTA3ODdiNzQxMDI4MDhjMmQyNGNmMTA0ODZjM2E4OTJjNmYwOTc3MWY3Njg0M2VmMzdiZDY5OSJ9"
+        },
+        {
+          "resource": "repo://apps/api/finance/agent/prompt.py#L1-L24",
+          "version": "repo-lines-v1:sha256:9e704c740dcb6eaec7e995cbb4bf7e7caa6de833e6cf83040a2e9905ccb4ba6d:eyJzZWxlY3RlZExpbmVDb3VudCI6MjQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijg4NzIyMjk5NDJmNDVkNDFjM2QwZmQwMTY1ZDVjNjRlODQ2OTk4NTVhMjA0NzdjYTdiZjcyYTk4NTAyM2M1NTAiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjMwYzFmMTg4ZjE0MmVkN2E4MjQ2ODBiMjA3MTcyYzU1MTliYzYxNGE0OGZkYTdjZjE2N2VkYjhkZGY3OTk1NmMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjowLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        },
+        {
+          "resource": "repo://apps/api/tests/test_agent_graph.py#L94-L99",
+          "version": "repo-lines-v1:sha256:e5d1c1c47d79021b71dbea147a21608a8dc50232b7da6c04517932b3073016b0:eyJzZWxlY3RlZExpbmVDb3VudCI6NiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYTQxOTljYjgzZDFhNTBhOGI5ZmViYTU1MTVhNzg0NjJmOTQxYWEzNDA5MWFjNDdhOTM0M2JhMGU5OGQ0NWU4MyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMjkxNmZiYzUwZGNkNmE0ZjgwZGQ1MzM5MzBlNzhmZTY4ZTlhYjg2ZDFhMmQzMmE5YzE3MGEyYWZjY2YwZjIzNCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiYThhMTNhM2E5YjhhM2JmZDdmNjdkM2NmODc1NmM1OTBiYjk3ZjI5NTNjMDMyZGU4ZmRkMmE1YTBjODIxYWExZSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiYTA3MzVmYTcwZWE0YTU4ZTVmMTI1MjVlMDU1MzA1ODlhOGI0ZjRlMjA2M2Q4YWJjMmRjMzgyZWRjNjU4YzdjYyJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_c59a25a235d3474b92baddffa60bf04e",
+      "statement": "The middleware stack closes dangling tool calls, summarizes and clears old results, limits run_sql to continue and model calls to end, and stops the turn on an infrastructure error without another model call.",
+      "evidence": [
+        {
+          "resource": "repo://apps/api/finance/agent/middleware.py#L40-L104",
+          "version": "repo-lines-v1:sha256:b0ac2eb9279f973aa2a859427faf76debbf1b44179da4150e3ea04310a356ee6:eyJzZWxlY3RlZExpbmVDb3VudCI6NjUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImMzNjMzOTQ4NzdjZmNlNTY3OTA4MDE0NGUzYWIwY2EyOWJhOTkzOGI1ZGFjMDJkYWViYTg3OGU2YjQxOWEwODgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImFkZDI0NDU4MmI2ZmIwM2QyM2I4NDE1YWJlY2QzNDZiMGM5ZjQ2NmI2Zjc1MmIwNjgxODljZTdlOWEyZGMzNTAiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImE5OGIwNjNkOWI0N2U2NTM3OTYyNTU3MmNjZTE5NzY2OWQ1NzY3ZTEyYzE4YmUwNzU2NTJiOGNkOTgxY2U4ZDUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        },
+        {
+          "resource": "repo://apps/api/tests/test_agent_graph.py#L45-L77",
+          "version": "repo-lines-v1:sha256:aa85101854a71dff5f6e71b225bb5292c16c729bfebade9b03302d6a0018b932:eyJzZWxlY3RlZExpbmVDb3VudCI6MzMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjEwMjZhZmQxODI4YmZiNTdmMzMwNTYzMTk1MzBlYzk4ZTc0ZjdjYWUyNjg2ZjQ4YmU2M2IyZjc2NDExMmJmY2EiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImM1YzZiYWVkZDY1MDRlMTc1YzI1N2QxZGE5MzI0OWMxNTA1NjI2OTMyYTcxZGIxM2MxYTgzYjI1MzlhMjMyZjQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjJjMDRmMDBkOWY0NTc2MGZmODYyOGZlNWViMDNiMTI2ZjIwZWQ5NjE0MWE0MzI1YTVlYmNhYzQ4MTQ2NmZkMDMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImQ0NGZmZGQ4YmI4ZjNhZjBiZWE2MjZlYTcxNzcyMzU5Y2M1YjZmMWZiYTYwNGIwNzk4ZTMyYzNhMGNiMGM2NTgifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_61069bb56e0b4f75be9444e6767b7778",
+      "statement": "sqlglot check_query accepts only one read over transactions, subscriptions, or a CTE, and rejects writes hidden in the tree, schema-qualified names, and unknown or role-changing functions before they reach the database.",
+      "evidence": [
+        {
+          "resource": "repo://apps/api/finance/agent/sql_guard.py#L17-L103",
+          "version": "repo-lines-v1:sha256:a5e88aaccf21853b480ad2a22708cdd2d6a1e50cb19879233e4859545d935aa5:eyJzZWxlY3RlZExpbmVDb3VudCI6ODcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImYxYmZhZmUwZWQwMmE0MzZhNWZmNjQ1MDYyZjI4MjlkNTlhZGQ3Nzc1MDMyZDVjZWJmMWRkOTJjNTA4N2FhODgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjU5MDlhNTNhNjE4ZDAyOGUxZDMwMDBjMGE3YWJjZWVjYmU1ZmIzN2Y0ZTUxMWVmZTQ2NjQzZmFkNmU2Njg3MmYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImFlY2NhMzllM2NiZGRlNTY5MTA2NThiODkxNzdhYmE3ZDhjM2JhMzZkMjVhZjIyNjkxN2I2MDA1YjAyZTZmMjAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        },
+        {
+          "resource": "repo://apps/api/tests/test_sql_guard.py#L37-L82",
+          "version": "repo-lines-v1:sha256:f6b116939728945e042811c58cebaa967003cc59a6195907ae398df66bde4ff9:eyJzZWxlY3RlZExpbmVDb3VudCI6NDYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijk4YmMxOWEyMWI4YTI0NjM3MmUyZmExYjNiZGYxODNjMmQ2ZDk3ZjBlNjAwMGFjNzNiN2EwNTg5YTJiZjliNGYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjMwYzFmMTg4ZjE0MmVkN2E4MjQ2ODBiMjA3MTcyYzU1MTliYzYxNGE0OGZkYTdjZjE2N2VkYjhkZGY3OTk1NmMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjdiYmY4ZTIyMDVkY2YzZWUzZjdhZGQ5ZDBiMmJhMjA2MGI2MGMyMjg2OTA0NDM1MGMyMGQ1ZmU2NDhkNmE4ZjQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjVkNjZlOGFjZTIxM2M0YzliOWViYjc3MDRhZDY5NWEyZjcwNGM4Mjk4OWQ3YjBiNzE4YmI1ZTQ5MGE4Yjc1MmMifQ"
+        },
+        {
+          "resource": "repo://apps/api/tests/test_sql_runner_db.py#L79-L87",
+          "version": "repo-lines-v1:sha256:fa2eddd311eaeb65b814e04232693816c0e68676ef7f8076492d2cfa9b65cf7d:eyJzZWxlY3RlZExpbmVDb3VudCI6OSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYWNlOTMzNjYzMmJiMGY5NWRmNTgwZGIxMWE2YjVjOWJmZDMyNGMyN2U3Nzg0MDMxMDc0MGNhMWU2NzU1YTRkMSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNWNhYmViYjMxZTA5ZTI5MjQ5YjFkNWRiNTU1NjgwOWZhMTE4Y2ZkZjdmZTA5Yjk5YzE0NzRlZGI3MTA5YWQwMCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMjk5MDlmY2Y4MWNiM2U3YWFiNjNmODVmYWYxYzI2OWUwNjlkZjkwMDRlZjA0ZDAyZjdiMWQ3YmUxNmQ2MzI1MiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiOGQwNjhmNmE1NzA5NzUyNTY2ZDdhNGJhZTE4MGMwNGE4NGZlZGQ1NDdiNjI3MTMyZWMyNmRjZTQ3NTg1NTAwMyJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_b99efb50d7934289b158d97070d96963",
+      "statement": "Every agent query runs as NOLOGIN role agent_reader in a read-only transaction that is always rolled back, with search_path agent and a statement timeout; a role escape still cannot write.",
+      "evidence": [
+        {
+          "resource": "repo://apps/api/finance/agent/sql_runner.py#L43-L53",
+          "version": "repo-lines-v1:sha256:7cf2327701def6b85d46b52be1e3db35384023ecd0c72a25c182ed1b561d0742:eyJzZWxlY3RlZExpbmVDb3VudCI6MTEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijg3Y2ZmM2YxNzg0MmRlYzZlN2U5MWMzZTNiOGZjZTBhODIyZmMzMTEyNzM4MWIwMGY0NGE5ZjEzMzMzMDNhMmUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjUxODUzNGQ4Zjc0MTMyN2UxNmY0M2U2MWRlY2UzZTNjODQyYjFkZjkzZjA0ZjEyZGQ2NDg1YjkzOGFmYzJiNGQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImQzZDE3MWRlNzU0MzFhMDIxYTBkOTRmYTc2ZmFiZjBkNzEzOWM4OThjMWEwYjQ0YjQzY2E2MDkwM2ZhMWI4NDUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImQ5OTk2NWE2MzM5OWQ0MjdkZDBmMWJhZDczZWU2YTM3MDU1MWZiMzUwMTA1MGYwMGVhMGZlNmIyMDY2NDM2MDAifQ"
+        },
+        {
+          "resource": "repo://apps/api/tests/test_sql_runner_db.py#L48-L55",
+          "version": "repo-lines-v1:sha256:40bb80b73165275099d62a4fa3e801f49eb79c7362e3611fd01dff71d006a001:eyJzZWxlY3RlZExpbmVDb3VudCI6OCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiOWIwMzVjNjQ3ZGY3NGZjNDI4MDM0YWM3NWY2MjE1YzJmZTQ0MGY1MDJlZWMzMDNhM2Q4N2Q1ZjA0ZjM1ODBlOCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNTE1YjIzMWFhMDFmMjA4OWY5M2QxMGQ0MTVhNjcxMmQwMDczODRjNTZmYzU5NDIwODEyYzg2N2E3ZDk4ZTA5MSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNGQyOTc0YWFkOWE3MDQzMmI1MjdmNGIxY2FhMDFmOWE3ZjJiZTE4OTZiM2RjN2Y3YTI3ZmI2ZWE4NWU1M2FlMiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMjEzNjE2MmM1M2NkNzY2YzU0NmMxNWJlNmZjMWY4ZDBmNzExMzlkYTM0ZmMxNGZhMWJjZmM5NWM5OWVkZTkxMSJ9"
+        },
+        {
+          "resource": "repo://supabase/migrations/20261012000000_slice4_chat.sql#L23-L38",
+          "version": "repo-lines-v1:sha256:e80409392d802f9411e70f02f7986547f55d0c41c45fce3b4ca9d492b538931a:eyJzZWxlY3RlZExpbmVDb3VudCI6MTYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImYxMDc3MjE3MTM5Y2VmODU2ODk5OTE1ZTViMjdjNDE4ZjI2MjJkZTQ1MWQwMWQwYTQxOTEwYmFjOGIzOGQ3YWIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImM1ODYzNjFhMDgxMzVhNTEwM2Q4NzFiNmZkZmRhNjQxMTcyMzMxNDZiN2MwOTAyOGUzMGM2NjZkMzNkN2JhMjkiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjM4NjkzOGE1ODkzOTdiNTNlMzkwZTYzMzZkZTlkNzA2ZTRmMGM4YTgxMDdjYmFhZTFhNTE2NThhZDkyOTkyYjQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjkxYzQ5MGFlY2Y3Y2VlZTFjNjNiMmMyYWRiMGNlYTdlYzRlMWUyNDA4ZDM4ZWU1NDJkNWZkOTIzMTQxYmQwMDUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_56a5f4e619a74cba8e980fe17a4cb3b4",
+      "statement": "run_sql returns a compact truncated table to the model and the full QueryResult as an artifact; SQL and connection failures become result data rather than exceptions, and only unreachable-database errors set infra_error.",
+      "evidence": [
+        {
+          "resource": "repo://apps/api/finance/agent/sql_runner.py#L69-L120",
+          "version": "repo-lines-v1:sha256:d5095de9aa70e88ae42d463f5f4e4d658613ca324c600a380f13fdf9cb766ac0:eyJzZWxlY3RlZExpbmVDb3VudCI6NTIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjkxYWUzOTZhMGNjMzRmYzExNDgzMGM5N2M3Mjc2MzViZDVjNDljNDhkNzhmMDZhMDA0NDg0OGM4YjMzM2M0NTAiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjMwYzFmMTg4ZjE0MmVkN2E4MjQ2ODBiMjA3MTcyYzU1MTliYzYxNGE0OGZkYTdjZjE2N2VkYjhkZGY3OTk1NmMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImQ3N2I4YzU4OWYyMmUxNjkwMDZlNTAzNTE5ZjRjODc5ZTRiODM5NzA3MDA0MzA4OTk5MTAzOGZjMzgwMzQwMzAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjRmZjIyZDcyZWNjMTQyZjVlZjQ0NjdkNTJlYmIyYjMzMWNhZDMyYzlhMWUzNGRjNTIzY2UwODQ5MjY4M2IyMDQifQ"
+        },
+        {
+          "resource": "repo://apps/api/finance/agent/tools.py#L13-L48",
+          "version": "repo-lines-v1:sha256:9c518b495ef360a16ec0e9b82df0b6ff7763c2fdd5ba1327343c105c889bbd39:eyJzZWxlY3RlZExpbmVDb3VudCI6MzYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjUxMTYyN2VjZjIzZDEzOTI0MTkzMTc0MWU3ZTYyMDdlYTAyNjdmN2MwYjZiMWM3ZGI5NjM2YjhjMTk1N2M4YjYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImY4NDRmMmNlZWEyNGNiNzA3ZDBjNmQwNjZkMWU5ZjI1MGEzZDAzZGY0MGY5OTc3MzBmMTQwNjJiZTBiMWFiYzciLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjFhNzA5MmQ5ZTJlODg2ZmU3ZGI0OTA4MDZlNjMxNzJiNzlkYTBkZTY4YjRjNzJjNWU3ODBmNjRkOGVlYWUwNDkiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoyLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjdmMjE1ZDU3MzgxYTE2Y2RiNzQ4NzgwYjEzMDQ2NGI2ZDlmY2U5MDY4Yjk1MzZhMmIwNjViMjg0NWZiMDllNDEifQ"
+        },
+        {
+          "resource": "repo://apps/api/tests/test_sql_runner.py#L22-L78",
+          "version": "repo-lines-v1:sha256:3992c9644764eb113da90d1863b2dfc77de9c3bc363b95724f402339c260d3ff:eyJzZWxlY3RlZExpbmVDb3VudCI6NTcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijc1NTNkODhmZDE1NGZlYWZlMmRiMzMxMGUxYmU4M2JmZDJmODhkODJiNWE3MjZlOTYzZmFkODQxZjA1NDk1YjciLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImE3MTJjZDhjYzcxMjNhN2EzOTc4NDM5M2Q5ZmExMzgyNTk3Y2VkYjYwODk0ZDAzMmNiMTY5ZGRiMWFhZjcyMjgiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjlhODJlYmU5ZWQ0MDdjM2E2YmE0YjAwMzQyOTJiYWE1MmMxMWNlNWFlMjg2MTA3NDAyZGU0NzkyZWVlY2FjZmMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjU2ODBiMGYyOTI4YWMwZGJmM2RkNGEzMWQ1YzE2ZTkxOThhMjlhNjA4NmQzOWNmYjU3YzIwZjYwYmUzM2E2NWQifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_d71fdb3c78764100976bd07d8027da51",
+      "statement": "The agent reads only agent.transactions and agent.subscriptions, thin projections that omit ids, raw descriptions, IBANs, and balances; category and category_group coalesce to uncategorized.",
+      "evidence": [
+        {
+          "resource": "repo://apps/api/tests/test_agent_views.py#L10-L90",
+          "version": "repo-lines-v1:sha256:f4556ba8e8b6dce74fdc3e629d1f2c951f6f1afcf6f210f4fdd52beec117c198:eyJzZWxlY3RlZExpbmVDb3VudCI6ODEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImVkODNkZWNkM2M1MWRkNTEyNmRkMGZlNjE4NDQyNzM1YzI3MTVhMGExZjU2ZjNjMzJkYThhYjYyNTQ1OWQ1YTciLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjdiMDdhMmNlODZlZjcwMGYwNDFlNzQ2MjE1YTRkMDY5NzBiMzFjMTk3Y2EwMTI4NGFmY2I2N2M3MmVmZGJkYWYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6Ijc1MzhjY2MyMGU0MTYzZGVjNGVmYmU4MWRlMzIyNTVjMTZhYzhkMzU4OTI3ODgzMWUxYzc3MzE3ZmQwNGM3Y2YiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImY5ZWNkYTg1MGFjZDAyOWU2MmJjZDM5YzRiYjMyMTllYjlmNDRmZWRmNjE3ZGEyNzBlMGZjNTY3NjI0OTYyYjYifQ"
+        },
+        {
+          "resource": "repo://supabase/migrations/20261012000000_slice4_chat.sql#L4-L21",
+          "version": "repo-lines-v1:sha256:66b03eb0b05eecde2a2a6bd9ebf17834ae90139540ea14f4224c0835452a7b25:eyJzZWxlY3RlZExpbmVDb3VudCI6MTgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImUyMzlhODg1N2Y4MTYzMjAyNjVlYjQ4YzM0MWFlMTdhYTNhN2Y1NjU1NTlhODE5ODcwNDdkZjM0MjU1NWFhYzAiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijc5MDdiNWMxYjFmYzY2NGM4NGMxYjk2MzM0MmQ4NTE4ODk1NzBjYWFiY2QzNGQyOTg4M2ZjOGQwOGY2MzA5YTYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjIxMWJkNjYzNTk5MWE1OTYxYzBhM2RmMGI0ZmY5ZDBiNGI1NmZmM2VjMzMzMTE3MmI2YTZiYmQ2YzQ0YmNiMzUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImM4NDc1YzliOWQwMTQwOGFkNTlhOTE5Mjc4NDdhOTdjNWM1NTQ5YmQ0NTIyYTA4ZjQ4MWNmZjg0MmIyMGE0MTkifQ"
+        },
+        {
+          "resource": "repo://supabase/migrations/20261014130000_display_names.sql#L34-L43",
+          "version": "repo-lines-v1:sha256:f970403fc7db3bdde135df4c9408f1f21995a6a43da2c397ee94f5e76be873a0:eyJzZWxlY3RlZExpbmVDb3VudCI6MTAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjUxZWZjNzdiY2JmOGJiOGQwZjVmYTBkZDVjMjc2YzJlMzViYWFhN2MyMGRlM2QyMDBmM2I1M2Q0MTAyNTE5NTEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjM1MmNjYTdiN2Y2MGM1NjljNTM3YThkZGU3NmZiODUxMDI2Nzg4ZmI5ZjYxY2VjN2EwMmMwYzFjZDE5MThiNTMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImZlMWNkNjY4YjAzM2U0ZGFmMTE4NTMwZjUyN2Y0NDRjYmEyMjhlMGFmY2VlNjg1YWJjNzAyNzU2NjEyYzM2MWEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_7c1bfc9ef22f4d7e9360ae28202bc030",
+      "statement": "The YAML semantic layer is the agent's model knowledge, metrics, and examples; startup requires a two-way column match and EXPLAIN of every metric and example as agent_reader.",
+      "evidence": [
+        {
+          "resource": "repo://apps/api/finance/agent/catalog.py#L78-L102",
+          "version": "repo-lines-v1:sha256:175f9ce9d68f168756fb9ddbaa10b8f27cb1aa9de1b1979120079c5448501881:eyJzZWxlY3RlZExpbmVDb3VudCI6MjUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImI0MjY5Mzg2YmE3ODA4N2ZjYWEwNzdlNTI4NTU5NjBjOTg5MzY0ZmFiNTBhOTQ4NTEwNThkMDNkMWQyN2IwMTgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijc5MjQ4M2ZhY2FjNjZiNWI5ZDQzYmNkN2NhYzBmOWUyN2ZmMmYwNGFmM2IwODlkYjE0ZGM1ZTkxZjc1NWIwYjIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjhjYzRhN2QxY2M3OTZhYmEzZTQ2NzIzMzI3ZjUxN2U5ZjgxMTk4MmQyNTBmMDcwMjk4NmU0YjU3NjRhZDk1ODkiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        },
+        {
+          "resource": "repo://apps/api/finance/agent/semantic_layer.py#L70-L114",
+          "version": "repo-lines-v1:sha256:6b69a10c7b833b5825d97133cf6ff8715d1e905666b5303c584154bcf6725c20:eyJzZWxlY3RlZExpbmVDb3VudCI6NDUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjBhMmQ3MTIzM2ExMmMyNWFhOWEwYzUwYWVkMDU0OGIxMGEyNGU5YzFjYjkxNjUwMTVjZjNiOTQ4NTNmZmM4ZjYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjU5MDlhNTNhNjE4ZDAyOGUxZDMwMDBjMGE3YWJjZWVjYmU1ZmIzN2Y0ZTUxMWVmZTQ2NjQzZmFkNmU2Njg3MmYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6Ijg1NDEyNzMwOWZkZTJiZWUxOWQzODY1MWRkOWU5ZmJiZmQzM2E5MGM2Yjc1ODk4NjY4MzM3N2U1YmNjNzUyOWUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        },
+        {
+          "resource": "repo://apps/api/tests/test_catalog_db.py#L12-L19",
+          "version": "repo-lines-v1:sha256:9c56a8d835e4ac190a8a2cc1a71ae97ed2fa51648bcbac71b5f07f1576788748:eyJzZWxlY3RlZExpbmVDb3VudCI6OCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNzA1ZDFkOGNkZGExNDk2ZmY3MjIwYzQzZTVjNmFkYzQ5NDkwMDA0OGE4ZjdlNmUzZGVlZTJhNDgwMDVhZWNiNyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMjM1MTczYzEwNjc4NzY4ZjA4YTQyYzdjYTIxNGY3ZTA2NzM4M2U3NTNhZjNjN2NkYmMxZTFjYWQyOTBjOGU3ZiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNmI5MDY3NjNlMzY2ODY0NDc0ZmJiZTFiMDZmM2I5Y2U3ZWY4YTdhZjM5MGJmMzkyMzU1YzIwYzZhOTIzZDA5MCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNjhkZDEzNWM4NTZkMzJhNDk3OTI1ODM3NjcwYzNkYTc1ZWVkM2NkNjc2YjA5ZDVlMWRhNTY5MDMzMjc0NjBmNyJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_ecbec3d6150a432c9006764eb562f5ba",
+      "statement": "Shipped metrics are expenses, income, savings, savings_rate, and net_cash_flow on transactions; savings_rate is computed after summing and net_cash_flow is SUM(amount), not spending.",
+      "evidence": [
+        {
+          "resource": "repo://apps/api/finance/agent/semantic/metrics.yaml#L1-L28",
+          "version": "repo-lines-v1:sha256:b53f1d3908c55424f4707844448ff7df24280ef20d3bad901772a7f42a0a8ab8:eyJzZWxlY3RlZExpbmVDb3VudCI6MjgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY1NDA0Y2E1MzI3YjM1NzFiODNkOWUxMmMyMjRhNjQ5Mjk2ZmM3OTRlM2I0NzQ0YTYxNzNlNDhmZGMzZjdhODAiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjU5NGEyZTExNGJhMzk3MDBjZDA0YjZjZTliOWVlZjZiNDc3MjAyODgwN2FjZDYzYjQ1OTk4YjIxNTExOWZkNTgiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjowLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        },
+        {
+          "resource": "repo://apps/api/tests/test_semantic_layer.py#L16-L26",
+          "version": "repo-lines-v1:sha256:6e6c7883b44cde25fc578b6526a695ae396635ddafd3343adea1d83c108ec805:eyJzZWxlY3RlZExpbmVDb3VudCI6MTEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxNGMxYjQxYzRmNjFiZDc3OTkxMzA2Y2VlMTliNmFkZTQyYTI5YjIzZTQ4OWE2M2Y3MTZmMDY3NDJkN2U1OTAiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImI5MjFhZTI0NjJkOGYwYTgzZDg1N2Q1ZDZmNWNkMTkxNzkyMzIxNTUyMWVkNTNkZWQzZTk0OTlmY2JiMWE1MWMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjZjNmJjMjJlZTQ1NDhkOTlkNWY2ZTU3NDBiYTk4M2Q4OGQwNGQ5ZTM0YjJkYjM0YmJiMDljNjMyM2NkZjg3ZTkiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImU5YjczZjJkMjJiYTJhYjgxOWVlYTZlMzE4ZjNlN2Q0MWMwMGI4ZWU1MTk1ZTJiM2M5Y2RjNTQ0YmFkMDA5NDIifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_bfc324428b42440caf8c312b46dde321",
+      "statement": "chat_messages is the history the user sees and never shrinks, while the LangGraph checkpoint is agent memory that summarization rewrites; delete removes both.",
+      "evidence": [
+        {
+          "resource": "repo://apps/api/finance/agent/service.py#L85-L94",
+          "version": "repo-lines-v1:sha256:e21560a8e25e5b30d489b5f9dd35eb1f2b3196d9197bfdcf1946098eadcd78aa:eyJzZWxlY3RlZExpbmVDb3VudCI6MTAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjdmZDE0NzJjMWVhZmRmYWVjNDBmM2UwMmQ3NDlkNWJiMDg4NjQ1ZTIzMDdjZTViNTdlOTgwODZlNmU1YzcwZDEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImZjZTNhZTY4MWY4YTUzOTY5MTQxNzlhZjU2ZjZhODJkNmE1YmE3YjM2ZjFjZGYxYjhhNTIxOTk2ZGY1NzdjZmQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImI1NmE4OThjNmExZDY3NDMzNmE4NTIzMTM3MWI3ZGE0OTRhNWRiNTU3YWIzNjJhYTZhZDk3ZmYwNTAzODM4NDciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImQ5MGQyM2UxYWYyOGU1ZTVhZDE2NWMxZGI1NzRmMTYzMmZkYmE0MGVmODI2NTIxZjE3NWVhZDk0NjE4NWE1YTgifQ"
+        },
+        {
+          "resource": "repo://apps/api/finance/agent/store.py#L1-L3",
+          "version": "repo-lines-v1:sha256:5892fd416c6a2aa870c9009a31e21b513e3f26eed8686c0cdf6f0611e38f9b5e:eyJzZWxlY3RlZExpbmVDb3VudCI6MywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYTIyMDRjZjYyYzkwMDEwOThiY2ExYjJhZDc0YWNiNWYyNDgxOGNmN2E4NTk5ODU0ODA3M2RjOWY1ZmY3MTY5NiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMDFiYTQ3MTljODBiNmZlOTExYjA5MWE3YzA1MTI0YjY0ZWVlY2U5NjRlMDljMDU4ZWY4Zjk4MDVkYWNhNTQ2YiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjAsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZTNiMGM0NDI5OGZjMWMxNDlhZmJmNGM4OTk2ZmI5MjQyN2FlNDFlNDY0OWI5MzRjYTQ5NTk5MWI3ODUyYjg1NSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMWU0NTYxMGY0NDA2NzEzODZhYzQzMGZkMzAxNWNiY2EzNmI1ZTNiNDQ2YjRkMWQzYWRlYTIxYjZmZTRlODY5YSJ9"
+        },
+        {
+          "resource": "repo://supabase/migrations/20261012000000_slice4_chat.sql#L50-L64",
+          "version": "repo-lines-v1:sha256:e199bc41072350ec8fdb79579e29026513ab76651d6948373ccdd25252f3030b:eyJzZWxlY3RlZExpbmVDb3VudCI6MTUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjYxMjY2ZTA1MDU5Y2FiZTQ0NDcxNzk3MTVjOWYzYTcwNDg2OTQzMTU4NWRmY2M3ZTNhMjg2OGFlOGRiMGNjMTgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjkyMTYzNmMzZjhhYjcyODMxYmJkNmFjNTI2NzY0OWVkZmNhNDkyZTEzZDRiYjUzMDA3NTJiM2FhYTZiYWM2MDUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjgyYzY4ODA2MzYzZGFiNDk1Y2M4ZTBjOWE2OGVmZTMzMzRjYTdjYzk5NzNiNzBjNzk1NWNlMTVlZDQ3NzFiNzEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_dbb554b1ce6348af988907ad055412e5",
+      "statement": "Each turn records one Langfuse chat-turn trace with prompt and semantic-layer hashes, deterministic scores, and a replaceable user-feedback score; without keys nothing is recorded.",
+      "evidence": [
+        {
+          "resource": "repo://apps/api/finance/agent/service.py#L111-L166",
+          "version": "repo-lines-v1:sha256:f310d50196d6de1c1ea84a7a3e03e0bd6f0ea5731cfe4ca0cd1789c1701a30b1:eyJzZWxlY3RlZExpbmVDb3VudCI6NTYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ3YjQwZjY2MzlhNzU1MzgwZjViZGI0ZmEwMzMzNjQ3NWVjZTEyMjdjYThhZDc3ZTFkM2RhNmY4ZWY3MDc2YTciLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImIxYzlmZGExMzRjN2I4ZTAwNDM5Yjk4N2M5ZWUzMjVmMzgwZWNiYTY0NTI4NTQ4YTYwYWIyOGE3ZDk0ZDk3N2EiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjA3YTVkYWExYmQ3MzQzM2I4NmQ5OGI1N2IwMTVkZTY4YjQyNDk3OGJhMDk5N2YxY2U3ZWUzYmFjYzk5ZTQ3NWMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImFlMmQzNTU2NDlhNGI2YTQ5MDlmNmU1ZmMyNTg5NjYwZTE3MTIyZjVmM2JjY2I2OGY2NzM5ZmNmZWQ2YmIwODcifQ"
+        },
+        {
+          "resource": "repo://apps/api/finance/agent/service.py#L48-L56",
+          "version": "repo-lines-v1:sha256:f1298fc1c453493dde0b984774f7011a922c6de9e791c006fd8f038fe86bd90b:eyJzZWxlY3RlZExpbmVDb3VudCI6OSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiY2U4NmNmM2QyMWNiNGNkYjVlZWEwMzgzY2ZlNDcxYWExMWZhMzZkYTA2MjFjM2UwNWQyNTAwNTdlMDAwODRiMiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNDg5M2Y0MGUzNzgxZWI4OTZjODJkMDQ2YTA4MDY3YTExZTM1Y2RmMmYxZGZhZjI2ZmVhOTBiOGRiNjY3NjQxMyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiODU0MTI3MzA5ZmRlMmJlZTE5ZDM4NjUxZGQ5ZTlmYmJmZDMzYTkwYzZiNzU4OTg2NjgzMzc3ZTViY2M3NTI5ZSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNmMxZjAyZmQ3ZWMxZDQ2MmMwY2I4MThiOTQ4ZmZlNGY3MTViMmMyYzQzMjYzMGMyMzJkZmUzNGQ0Mjc0M2ZhOSJ9"
+        },
+        {
+          "resource": "repo://apps/api/finance/api/chat.py#L100-L114",
+          "version": "repo-lines-v1:sha256:61b0e2eb290c2732b947a63918ea20e8201efcfe5735eac3676f697063c73a3b:eyJzZWxlY3RlZExpbmVDb3VudCI6MTUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjNjZTg5ZDBhNjJmNzNlMDVkYTkwZTlhY2EwYmZmMmJlNzc5ODMyYWIzZDk4ZGM1YmQ2ZjY4YjY4YTdhYTVlZjEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjU5MDlhNTNhNjE4ZDAyOGUxZDMwMDBjMGE3YWJjZWVjYmU1ZmIzN2Y0ZTUxMWVmZTQ2NjQzZmFkNmU2Njg3MmYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjgxZTQ2ZjA2ZGVkZGMyNmZhZGE5OTgyMjBjODVlYzI3ZDExMmFkN2M2YjU4ZTFiYmZlYTk3ZGZkZDY1MTFmMDQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImJkNmIzMzVkN2RkNmY5YTJjYjU5ZmJhMjY5MWY3NmEzODk5ZDFlMDY2MjY1YTQ0ODI2MzNkNjYwY2ViMmFiMTMifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_e0cf800451514f15a13e790794475613",
+      "statement": "Chat evals, a check that every stated amount appeared in a query of the turn, and account balances are backlog items and are not implemented.",
+      "evidence": [
+        {
+          "resource": "repo://apps/api/finance/agent/semantic/transactions.yaml#L17-L21",
+          "version": "repo-lines-v1:sha256:4c03a58a07527033bb51dfcc9c90deca9603ce9e8c52713a9ae2f031977ae574:eyJzZWxlY3RlZExpbmVDb3VudCI6NSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiOTczN2FiZGEzYmNkNzdkMWJhMDc4OTQxOWUzMzdhY2UwMDk2N2ZjNzRjMmM3MTEwYTgzYzJmMGRhODhiNWRhNCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMWI5M2IxYzcyNzQxOTA0ZTFjMDAyNDQ3Y2Y3NTg5OWNlMWU1NjY4NGM4MTg1NGI4M2U3ZGI3MWVmOGNlMmY0MCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZTUwY2RkNDQ5YjQzYWZjNzc5MWNjOWY2OTk4OTkxMTVlMmE3NjdlYWE2NTUwZGQxYTdkZjAzNDY4M2RlMzM0YSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiODQ4ZjYyMTM2Mzc1ZWI0MDA5YTA0YTdjNmQ5MGExM2IzN2Q1ZTg4YTdkMGI2MDNmZWY0YTI5ZjJlZDAzYTBiMSJ9"
+        },
+        {
+          "resource": "repo://docs/backlog.md#L59-L90",
+          "version": "repo-lines-v1:sha256:c5fe586d99353d16f7fabc586be6ffae82dedd2c0df0472035c5c71c07187b48:eyJzZWxlY3RlZExpbmVDb3VudCI6MzIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImM2NTgxMDYxMTdkOTgwODZlYjM5YmFmNjFkYzVkZDgyYjgwNDFmNjEzYzYzMGFjOTAzMDUxZWQyMmRkNGIxMTciLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjA0MDM3M2RhNDMwMDk2NTY5MWFmZTZjN2Q2N2YwYjFjY2Q2NDNkYWQzNDBjNDgyYWZmMWUwODMxMjg3M2MzYzAiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImNkMjg5N2VmMjMxMWI1MzRjNjQ5OGRiMDQ1ZTg0NDY2N2Q4NWU4YjE1OGU1NzA2MGM2ZmI0ZTM5ZTEzZjU2NmIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        }
+      ]
+    }
+  ],
+  "verification": {
+    "by": "openwiki/0.7.2",
+    "at": "2026-10-17T19:58:49.962Z"
+  }
+}

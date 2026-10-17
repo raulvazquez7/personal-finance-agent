@@ -123,3 +123,11 @@ Run the API and web first; pages live at `http://localhost:3000` (`/`, `/spendin
   different one. Push with:
   `git -c credential.helper='!f() { echo username=raulvazquez7; echo password=$(gh auth token -u raulvazquez7); }; f' push`
 - Conventional commits (`feat:`, `fix:`, `docs:`, `chore:`, `test:`).
+
+<!-- OPENWIKI:START -->
+
+## OpenWiki
+
+@AGENTS.md
+
+<!-- OPENWIKI:END -->

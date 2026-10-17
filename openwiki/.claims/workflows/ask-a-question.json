@@ -1,0 +1,286 @@
+{
+  "schemaVersion": 1,
+  "pageVersion": "sha256:62f318204961b660d887696b60589636418455bcef45ab9d62a3c3e0f720d3e9",
+  "claims": [
+    {
+      "id": "claim_bd7cab4a98fd49c09a317b4af9739168",
+      "statement": "A chat question is answered by the LangGraph ChatService in apps/api. The AI SDK useChat is only the browser transport: it posts only the new question text and renders the AI SDK UI message stream.",
+      "evidence": [
+        {
+          "resource": "repo://CLAUDE.md#L111-L112",
+          "version": "repo-lines-v1:sha256:75e72fa24a481372601a259f3b34e8817d353183072640b0ca4dac81ee398c3e:eyJzZWxlY3RlZExpbmVDb3VudCI6MiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMmI0YWRlZjE3Y2JiZjUzMDA3YjQyYzI3NDVlNDEyZWI3ZjJiMmFiOGVlNjA0MjhiNWU0ODc3NDdmOWFlMDk4ZiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiYjRjMjBmMGQxZDMyMDIxMjdhYTIwN2E0MDkyNGU2YWFhMDdhMTI4YzY0ZGI3MTdhNGZmZDMyYTQxYzlmNjBmZCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiOWIwM2ViN2Y4YTc5ZmIwZTRjM2ZjZDlkYTE4YTZjYzE2OTExNzE2N2RhNjRjODczMTJjMzZmN2U4ODFlNzJhZCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiOWU0MTU4NDRmYTJjMjEyYWE4N2NiZjE0YzNjYWJiMjZlNmIyNTUxMGQzNjdkODQ1MWUyNTg3NWJiMjVmZTkxZiJ9"
+        },
+        {
+          "resource": "repo://apps/api/finance/api/chat.py#L81-L92",
+          "version": "repo-lines-v1:sha256:564005b55d00aad1c6cc39ed9feb52963bc5c001ff90a43790c87faeb565b067:eyJzZWxlY3RlZExpbmVDb3VudCI6MTIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjA1YWMzMjNmOGI5YmQ4NDBjMjc5ZTI3Yzg2NzE5ODYxY2M5NGNmNjNmZTQxNTkzZDAxNDk1NTY2OTYyOTgwYWYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImIyYWIwZjZmNGQxNTEzNzA4OGMyZmE4NzQ5MzM5MDk2NDAxZDZiNjQ5NGJkOGNiZGY3OWU5NGY1NWM3N2ZiYzAiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjllYzM2ZGQ5M2ZkYWI4YjcyOTY4OTBhNjlkMWRiZjk5YWIxZDM3MzNhNzc5ZDcyOTdkZTZiNWUzYzAxYzZjNjciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImNhZWIzMDE4NWM2ZTUyODI0N2I0NTcxOTJmY2I5YWMyZTEzMTAxYjU1ZGU3Y2NkODU1ZDBmM2VhMGVmZDkyNjgifQ"
+        },
+        {
+          "resource": "repo://apps/web/src/lib/chat-api.ts#L15-L22",
+          "version": "repo-lines-v1:sha256:2c2a90c0ff0e7637e8ff02e51d7937d8522d449121f8e1c2972e652de1f20edb:eyJzZWxlY3RlZExpbmVDb3VudCI6OCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMTAwMjFkMzkyYjhkZTBjODI5NzI2YzAxMzExMjUxNTNiMDY1NzllYTAyMGI5MzQwNGM5MjIzNzJkMGI5ZDc0NyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZjZmNWI0MGIxNTg0NTdkMTc4NjRmMjE3OTA3ODZkZDVhMmVjZGI2NGI2NmE2NTFmNzg4ZDRlMjVjZDMzMDNkMiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiODRlZTMwZDEyZmMyNmIyYTI4NWQwZGNiY2M2NmNmMjYzMTlkNTI1NDFjYTIyYjI5YTkzNGI5ZThjOGZmNWQyZCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjAsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZTNiMGM0NDI5OGZjMWMxNDlhZmJmNGM4OTk2ZmI5MjQyN2FlNDFlNDY0OWI5MzRjYTQ5NTk5MWI3ODUyYjg1NSJ9"
+        },
+        {
+          "resource": "repo://apps/web/src/lib/chat.ts#L49-L55",
+          "version": "repo-lines-v1:sha256:fa47cccf264d4daa2390d87324c6bb76ab40b4a8186da668731ff886d54957d7:eyJzZWxlY3RlZExpbmVDb3VudCI6NywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMWEzZGFlZGRiMDljMWQzZWNkNDBjZmNiZTc5OTk5YjAyNmYyOTgyNzM0ODJhYTAwYTc3ZTQ3MmIzMTZhZmU3MCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNDEyY2EzNDVjY2Y3NWJmOWMwODA2YmNlNjk1YmU4ZGU4MDhiNzk5ODQyNTFhN2E1NGQyMDJjZjYxMDFkZDQ1MSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNTY4NDc5N2QxNDcwYThiZmY3YmQ1YTZhMDIxNGU5NWI5ZjMzMzA3ODgxZTY2YzM1ZmY3MDA1ODFjNzIwOGJkZiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiODE1NDQ1YmU4MDY4MWY0YjMzZWMwNTEyYTEyMzQ4YjRjOGZkOTE1ODEyYTcyZjZlMDM5MDkyM2E0MmIyYWZjNSJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_88696eddfb264a619a4a31c3029ff74e",
+      "statement": "The first question creates a thread, starts sendMessage on a Chat held by ChatsProvider, and navigates to /chat/<id>. Conversation reuses that same Chat instance, so the stream continues across the route change and while another chat is open.",
+      "evidence": [
+        {
+          "resource": "repo://apps/web/src/components/chat/chats-provider.tsx#L28-L61",
+          "version": "repo-lines-v1:sha256:8323d4a9e74c49e74fce64c6bdc2e77677173b5acf13d8bae5a28333da1c4a0c:eyJzZWxlY3RlZExpbmVDb3VudCI6MzQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjFmMmY0MjUwYTk3NzhkYmNlM2Y4YWQ2ODVlY2I5ZjBmMGQ1OTg4YjU3ODI1OGE4ZTFmMjNkZWNlMTc4M2Q2OGYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjA3ODllNmI5NjU4YmFkMDg5MzVmNDcyNzkxMzk5N2VhZjgxOTEwNDg0YTkwM2NjNDIzOWY0NjIyZDQ4OWQ4YTgiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImI2OWU4NzZjMDRkMDNlNzg3M2MyMDlmMDUxYmE0NmJlNDBlZDBmNGNjOTcwOTYyZTI1NTQwMWRhOTYyZDc2MTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjhiZjYzNjMzN2Q4ZDVmMmVjNDM0YjZkYTAzYzY3Y2NkNzcxZGRhZmFkMTY3YmUxOWQ5NjE0NTkyYzUxYTM0ZDEifQ"
+        },
+        {
+          "resource": "repo://apps/web/src/components/chat/conversation.tsx#L18-L23",
+          "version": "repo-lines-v1:sha256:558801ff456375e35e3b22fcb1a7fb03ff258d50647a9e4191c76b18fb40769d:eyJzZWxlY3RlZExpbmVDb3VudCI6NiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiODMyMTJiM2Q3MTgzOTVhNTVjNzliM2EwM2U5NWIyZjJmZDAyNzU4M2Q5YzhjNTMyNjk4ZmU3YjA2ZDIxMDEyOSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiYmUxMGZlMzhlNTdjZmZkNTJhYmZhNGZlMzFlZDM5ZTA5MDAwYjg3Y2EyMGI3NjIwOTk4YmM1NjFmZTJmZTBlMyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiYjUxMGY5MDkwODNmMzA4ZjVhYmViMjJlM2ZmNTEyOTU4ZDhhMTlhY2Q5MDA3M2NhYjVlMzM5NDIwNWVlZTJmYSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZjZmNGEzMDYzZWJlNDMyMGY2MzAwZGY2M2M4MGEyYjg5Nzg4ZmE0MGY2NDJmMjFjNDhmNTFiN2ZmMDE3ZmI2MSJ9"
+        },
+        {
+          "resource": "repo://apps/web/src/components/chat/new-chat.tsx#L23-L43",
+          "version": "repo-lines-v1:sha256:bde5cff4a531018cc8894aa15b252b5b7a4b951bf9a7ecd6367c147784feacb3:eyJzZWxlY3RlZExpbmVDb3VudCI6MjEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjZjYTM1Yjc4MWIxNzQ0ODliOTljNDM3OTg2MDIzNGI0NGU3OGJiMDU1YTVkNGUwZGRiMTI0ODNhMTQ5MjgxYTIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ4OTNmNDBlMzc4MWViODk2YzgyZDA0NmEwODA2N2ExMWUzNWNkZjJmMWRmYWYyNmZlYTkwYjhkYjY2NzY0MTMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjY5Njk4ZGZkZmNhNmNjNTkwZTEwODk1YmNiMDZjNTk2NDA0YjBlM2I1OTlkMTM3NDFhMzY0M2FjYjJhMmQ4ZjgiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjYzMzAyZmI5NDExYzU4NGVlMGUwMDA3MDlhNzYzMDYzNTk0M2RmOGExYzM4MjYzMGFkNjI1Mzk4YTAyNGJjOTQifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_09202943f8d54c86a5352dd3b7a16f57",
+      "statement": "If SUPABASE_DB_URL is missing, or the model is an xai model and XAI_API_KEY is missing, open_chat yields None. The API lifespan stores that on app.state.chat, and every /chat route then returns 503. The chat layout and chatErrorText surface that the chat is not set up.",
+      "evidence": [
+        {
+          "resource": "repo://apps/api/finance/agent/runtime.py#L29-L46",
+          "version": "repo-lines-v1:sha256:0118316c11ec4afae78f5fc395e773bf7b180af50d190f3c9eb10c33b0d2f449:eyJzZWxlY3RlZExpbmVDb3VudCI6MTgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijg3Y2ZmM2YxNzg0MmRlYzZlN2U5MWMzZTNiOGZjZTBhODIyZmMzMTEyNzM4MWIwMGY0NGE5ZjEzMzMzMDNhMmUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjVlN2JjZDM2ZWY1M2I0NDUyM2U2NWU5OGQxOTQ0OTkzZTBmZjE3NDZmNTUzNmMxYTUxMTc0NmYzZTAxZTc1NmYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjYyMDA5N2U0YWE1MDA2OGJhMTU3ZjlhMjczOWZhZDg2OTk1ZTFlMGNkY2NkYWRjNTg5N2MyMDM0Yzc0ZDNlZmEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjAxOWNlYjZkOTYyODNlOTRlMzYzNjkxZTcxMDUzZmQzYzA5YzFhYzMxNjVmZWVmYzZjZDYwMTBlYTBhNDcwNDUifQ"
+        },
+        {
+          "resource": "repo://apps/api/finance/api/chat.py#L22-L29",
+          "version": "repo-lines-v1:sha256:11ddf65bc035d369e3152d391de7c9d7b5e4674b07998d9683ee1a421b8ed942:eyJzZWxlY3RlZExpbmVDb3VudCI6OCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMDEwZGViOTk3ZDIxM2RhODI1YTJkZjY5NzlkOGViNWEyOTA1ZjU1ZGRkNzM2YzM2MWIxYmYxMDFjYjRlZTFlOCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMWZlN2E5NDEzMzBmZmY0MDc4NTE2MmU5ZTJjZDM3ZDc4MWExNTM2MzFhN2RkM2I3ZDIyZWE3NjI1MjM5Zjg3OCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZTYzYmI3MDA3YmQyMjI5YTllNzcwMTU3OGM3MmE2ZTI4Y2ZlMjE3MzBhMmMyNDRiY2E0OTY1ZGUzMDU2MTM0NCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiY2YyZTZlNDRmMjU0N2Q5NDQ0MDcwYjhkOTgzOWYwNDJlNTQxNmZhOWRmNGIwYzE5Zjg0MDJkNWUxYTRjYTc1YiJ9"
+        },
+        {
+          "resource": "repo://apps/api/finance/api/main.py#L25-L30",
+          "version": "repo-lines-v1:sha256:20102a0c8f26ab2da86c0e3ad12f5f9b77330c9b3c3613a1cb8ed3dc5fdf8601:eyJzZWxlY3RlZExpbmVDb3VudCI6NiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiODdjZmYzZjE3ODQyZGVjNmU3ZTkxYzNlM2I4ZmNlMGE4MjJmYzMxMTI3MzgxYjAwZjQ0YTlmMTMzMzMwM2EyZSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMmI0NDYwZGI5MDQ0NjdjZTU1ZGEwNmVhNTdhNjhiMWE3ZDMwOWU3MzAzMGIwMTkwZWFkNDc1NzBmOTc2ZjE1NCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMTQ0MzI5MzkxMDAyNGYxYjUzMDliNTRiNTZlNTYyOGUwMGQ3ODQzNzI1ODg0NWQ4YTI2MmEzYjc5MDkzMDZkNCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNTM2MzRlOTllZWYwNzFhMWY2YTJjNjY4NmY5ZWFkYjc0MGI4MTdkMmVlYjk1Y2E0YWRjMjk4Yjg4ZmI2Yzc3MiJ9"
+        },
+        {
+          "resource": "repo://apps/web/src/app/chat/layout.tsx#L16-L46",
+          "version": "repo-lines-v1:sha256:cd6e4004da97132b4c82b29f2d1e649222eb5f3c05ee43e0c4c4eba01b2ededb:eyJzZWxlY3RlZExpbmVDb3VudCI6MzEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImI3ZWM5ZTU5M2EwNDg1MTRiODUyZjcyZDY3YmJkZWZjYzA2NDJiZWYyOGNiNjg3MDUxZjk2YjFjNWMyYWMyOTEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImE2Y2YwNzkyNWI2MDJmYTk5M2Y5MTM4Y2I3YTZlZDlhMDI3MzI3YWRjNWUzY2RhNDIyNmU1MmU4M2JkYTQ5NzQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjEwMGZhNTI4YzMwZDVlNjE1YjA2ODEzYmNhZGE2YjU3OTk4ZmEyM2QyZmEyMDFhZTc1M2MyZWZlMWNkMjAxMjYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoyLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjdiOGI2MDBhNWI0NDhiMWU0ZDAyZGYwOTc0NmVkM2NhMzE3MmY3NWM0YWFiYjAxZGRlMDgwZTM2Y2FiMDc0YjQifQ"
+        },
+        {
+          "resource": "repo://apps/web/src/lib/chat.ts#L109-L116",
+          "version": "repo-lines-v1:sha256:ce67bf644dd3d609a1811fd61e57d0bc4fad37dfe36995afc2bf30d95de0b05c:eyJzZWxlY3RlZExpbmVDb3VudCI6OCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMTcwM2Q4OTg0MWQ2ZTBmMzkyZjYwY2E0ZDJjZGNkMWNiNTlkOGY3ZWExYTRjNmI2MTViODhlZWQ1ZDE1MTIxNiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMjlkNGY0NjRlYzgyZWE4NGUyZWViZTBjODU4MmUwNzMyMmZlMzA4NGE0YWU0Y2I2ODZlZDIzYWY3Y2QwYzI2ZCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMjE5OGNjNDM3MGQxOWJhZjcxM2RkNjIwMmJiNWQ4ZGY5NzhjMzZhMDI5NDMyYjY1NGVkZDJlNjlmZmJmZWFjZSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZWVkYWJlYjZjNGE1NDVjZjMyODI1NzlkMWE5ZTFhM2FmZDE2ZmRmMDc3YjZhNGFmMGQ3NDcwODRkMmMyN2YyOCJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_9e6099669f4c47b1b02a2a575d0faaf7",
+      "statement": "A thread answers one turn at a time. stream_turn raises ThreadBusy when the thread id is already in ChatService.active, and send_message and delete_thread map that to HTTP 409. A send during delete is also ThreadBusy so it cannot start a turn whose checkpoint the delete would drop.",
+      "evidence": [
+        {
+          "resource": "repo://apps/api/finance/agent/service.py#L75-L94",
+          "version": "repo-lines-v1:sha256:81a3f79ad2774ba27c303c5c4ca1a0da15ff795510a83e5fc6b8fa31a77bfe9d:eyJzZWxlY3RlZExpbmVDb3VudCI6MjAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjZhNDZjODlhYTBhY2M1NDM3ZDBmZTVkMmI1NWQ0N2NiZWYxZmQ5ZjdmMDcxMDNhZjlkM2U3MjQ2YTk3ZTcxOWUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImZjZTNhZTY4MWY4YTUzOTY5MTQxNzlhZjU2ZjZhODJkNmE1YmE3YjM2ZjFjZGYxYjhhNTIxOTk2ZGY1NzdjZmQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjE4OTQzZTA5NDJmYTRlNTliYTU4MjUyYzgxYjIzY2RiZGM2OTA4ZjJlNzI3YWI0ZTJhYWNiNDAwNDEzMGVjNzYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImQ5MGQyM2UxYWYyOGU1ZTVhZDE2NWMxZGI1NzRmMTYzMmZkYmE0MGVmODI2NTIxZjE3NWVhZDk0NjE4NWE1YTgifQ"
+        },
+        {
+          "resource": "repo://apps/api/finance/api/chat.py#L64-L92",
+          "version": "repo-lines-v1:sha256:8eeed21bac408c576c1a3f6f2b976a72ad2f2b6c6502f143be40a369b1dfd944:eyJzZWxlY3RlZExpbmVDb3VudCI6MjksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjE0ZTE0MTFkYjI2ZTA3N2NjZjRkYTU1Y2Q2ZDczZjIwODY4ZmUyYWMxOTllMTQzMGMyZjIyYzRiZmRlMTAwYmEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImIyYWIwZjZmNGQxNTEzNzA4OGMyZmE4NzQ5MzM5MDk2NDAxZDZiNjQ5NGJkOGNiZGY3OWU5NGY1NWM3N2ZiYzAiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjE2N2E2MTU3NzkwYmU4MTc2ZTMzZDEyZDgxMmM0MTJmNTE5ZjNiMGMzMzc1MzY5YzVmMGNhMmFmM2Q1OTMxZmYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImNhZWIzMDE4NWM2ZTUyODI0N2I0NTcxOTJmY2I5YWMyZTEzMTAxYjU1ZGU3Y2NkODU1ZDBmM2VhMGVmZDkyNjgifQ"
+        },
+        {
+          "resource": "repo://apps/api/tests/test_chat_api.py#L176-L217",
+          "version": "repo-lines-v1:sha256:fc43402c3c420c280641a5dee6eff52921999d037e8f53b7b3fe322fe74bd743:eyJzZWxlY3RlZExpbmVDb3VudCI6NDIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY0ODg2YTFjNjI0MTVlZGNjMjkzN2E3ZWZjMTVlMjJmNTk3NTM2ZDY4NTgxMzA0MTVhMmFmY2YxMDdlMmQ4NWYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImJkNjk1NzE1M2NjYWQ2YjU5NDA3YTRlY2U2YjRlODY4NGZmMTUwZDdjYzFkNzZiYzdlNDcyYzdkODZhMmNmMmEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjRjZGFhODRmOWVhMDk5N2I0ZWQ4ZjZhZmI5MjFmZjVmYWVmNDZhODJmZTcwNTUzMjA5MjFjNTkzNGMzOTg0OTMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImM4ZTBlNTU1ZjRjZDkwYjI0MGU2MTg5ZTk3NTllZDM2Mjg0MTZjNDBhM2FhYzM1Y2IzMmE0ZWE4YmEyMmU3MWMifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_3d43c9cb2e384f9fb613df0bdf9b8cc4",
+      "statement": "An accepted turn runs in its own task and relays AI SDK parts over a queue. The response is text/event-stream with x-vercel-ai-ui-message-stream v1. Parts begin with start (the assistant message id) and end with finish, then the SSE [DONE] marker.",
+      "evidence": [
+        {
+          "resource": "repo://apps/api/finance/agent/service.py#L75-L109",
+          "version": "repo-lines-v1:sha256:338252e8955f03f215044899590abb1706988058f09e06c3720662f5c9818c76:eyJzZWxlY3RlZExpbmVDb3VudCI6MzUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjZhNDZjODlhYTBhY2M1NDM3ZDBmZTVkMmI1NWQ0N2NiZWYxZmQ5ZjdmMDcxMDNhZjlkM2U3MjQ2YTk3ZTcxOWUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjkxN2YxYzE0ZWQ4ODlmYzFkNjBhNmEyNTU4ZDJlZDViZDNjMDA1NmIwZTRlYTdmNDg3NDFhNDNhMzg2MTRkNTAiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjE4OTQzZTA5NDJmYTRlNTliYTU4MjUyYzgxYjIzY2RiZGM2OTA4ZjJlNzI3YWI0ZTJhYWNiNDAwNDEzMGVjNzYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImE2MTc4MGVkYjkwMTRiYjMxNmI5ZDdlYmI0ZTg4ZTVhZWM1NmE1YWI1NTM4NzFlN2ViYzlkYjg4MzI5MDhkZWMifQ"
+        },
+        {
+          "resource": "repo://apps/api/finance/agent/ui_stream.py#L18-L22",
+          "version": "repo-lines-v1:sha256:b8333abe607691628e7554428bdaed27faedc416d0f6720a9273814b03c15d71:eyJzZWxlY3RlZExpbmVDb3VudCI6NSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMWQ2ZTdiMzU3NGQ3MGQ2YWI3NzUwM2JmODUxNjBjNmQyYWNmZDM5YmU3YzY0MDZmZDJmOGIxMTNhZDkyZjJiNiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNDEyY2EzNDVjY2Y3NWJmOWMwODA2YmNlNjk1YmU4ZGU4MDhiNzk5ODQyNTFhN2E1NGQyMDJjZjYxMDFkZDQ1MSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMGY2MWEzYjVmM2RkZDE0ZjM2NTI4ZWMyNTFlNWU2NDg1YTUwMGMyODU0OTJmYmFhMDFmM2IyYTQ1M2UwNmUwZiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNmMxZjAyZmQ3ZWMxZDQ2MmMwY2I4MThiOTQ4ZmZlNGY3MTViMmMyYzQzMjYzMGMyMzJkZmUzNGQ0Mjc0M2ZhOSJ9"
+        },
+        {
+          "resource": "repo://apps/api/finance/agent/ui_stream.py#L95-L99",
+          "version": "repo-lines-v1:sha256:8d39cd424c7a65f3059676ba08ec4125508c0eaa98e77b8682b7104cd75c1abf:eyJzZWxlY3RlZExpbmVDb3VudCI6NSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiY2JkZjJiN2NhYzFlZjllYWU3MzFiMTJlZmI3ZGIwYTgzNjg4Y2FjY2NmZjg5MmQyNzZkM2UyYzU1YWEwNmFlNiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZGU0NTFlZjUwYWM4ZWQ2OGYyOWYyZTliMDVjODRlM2M0YjM3NjRkYzNmNTIxN2E3MjlmY2UzMDU1YTdiMzlkYiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiYWJmODExZDhiMTg3YzYxZDcyZjgyNWZhZTBhYzJlZmJlNmI5ZDVjMjdjZTI4MWZmZjkwYmI2ZDcwZjliNDNhNyIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjAsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZTNiMGM0NDI5OGZjMWMxNDlhZmJmNGM4OTk2ZmI5MjQyN2FlNDFlNDY0OWI5MzRjYTQ5NTk5MWI3ODUyYjg1NSJ9"
+        },
+        {
+          "resource": "repo://apps/api/finance/api/chat.py#L85-L92",
+          "version": "repo-lines-v1:sha256:21f0878dd1f1dba489546e5f00ed202a14934c0c0dacf7217224837ab5e68933:eyJzZWxlY3RlZExpbmVDb3VudCI6OCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMTc5ZWIyNGY5ZDg0ZWExMGI3NmQwYTZlZDAyMGNlNDZjODdjMzgxMGJmNmU1MTZkNmViYjk2NzkyNDhlNTZhNiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiYjJhYjBmNmY0ZDE1MTM3MDg4YzJmYTg3NDkzMzkwOTY0MDFkNmI2NDk0YmQ4Y2JkZjc5ZTk0ZjU1Yzc3ZmJjMCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiM2JkYzEyYzc3ZjZiN2NhZWM0MTYyOTkxMzdhMmVmZWZhNDY5OTNlMWY0YmM4ODUxOGQ4YjU3MjY1MmY2MjI3ZiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiY2FlYjMwMTg1YzZlNTI4MjQ3YjQ1NzE5MmZjYjlhYzJlMTMxMDFiNTVkZTdjY2Q4NTVkMGYzZWEwZWZkOTI2OCJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_02fef53e709443b1a179d34bb276481d",
+      "statement": "ui_parts turns model text into text-start, text-delta, and text-end, a run_sql call into tool-input-available, and the tool artifact into tool-output-available. Updates that rewrite history carry RemoveMessage and are not streamed again. A tool message without an artifact is streamed as an error-only output.",
+      "evidence": [
+        {
+          "resource": "repo://apps/api/finance/agent/service.py#L168-L185",
+          "version": "repo-lines-v1:sha256:262b5ff392b5037d66587628156dfd3e66e461cceedb339483a151f8ef3cdc1c:eyJzZWxlY3RlZExpbmVDb3VudCI6MTgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjBhYmQ5NDI3ZTdjNDI1NzZjYWZiMGRkZDhhNjgzY2VlMjc2YmFiZWViOTI5NGZjNGE2N2UyNWU4YzkyOTY2ZTkiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjRmYTE0NTIyOTE2ZjI2YWEzM2YzMjg3MmI2MzI3Y2I1NGJkNmQ0MzYxNDQ4YTgxYWQwN2YxZjZiZGZlZWM0OTciLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjAzOGQ3YzI2NGUzNjI5NmI2YmUzOGFmNjQzZjNjNjkyYWYxM2UyZmNhMzZkNmNmZjY2MGI4YWE4NTg3MjY2MWMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImRlMzI4YWNkY2VhMzk0MjcxYzk2MTAzNjhjMDUyMTExYmJjNmJkMTJiMmM3OWVjYzhlMTE1NWZlOTEwYmQyMmUifQ"
+        },
+        {
+          "resource": "repo://apps/api/finance/agent/ui_stream.py#L43-L92",
+          "version": "repo-lines-v1:sha256:49850225c8dfd1564b72c0fa495cc65b0bd85feb313d8d1d1ab8abadd52fe0cb:eyJzZWxlY3RlZExpbmVDb3VudCI6NTAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImZmMGYxYzk3YzY1MWE1OWZmODg2NjUyZjZkNDFiMTE0ZTE4NWM0ZGRjOWJjMzM3OWU3MmYxZjFmODgzMDM4YzkiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImRmNDdkNzc4MjVjNDlhYjVkODFmNWVlOTA3OGViNzA5YmVhYzk4Yzg4YjAyNzg2ZmUxNGE1ZmVlMzk3N2NjOTQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjI2NzIzYWNlNTE4NmQyMTgzZmVlMDEyOTI1MzM0OTllMTZjNTc4MDA1ZWJhNTdjMTEzMTRhOGQxZDdiOTQ4ZTciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImZiNzgxOWNhNmU3ZGQxZTI3M2Y0ZTUwOTJlOTc2NmM4YzJkMDQ1ZTgyNmZmMDA5NDIwYTQ2MDJmMTI3NGRkNzMifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_d2fe92ae4eb546069ed75a7dab23ef3a",
+      "statement": "The user message is inserted before the agent runs. The assistant row is saved in the turn finally with the streamed message id, joined text, query artifacts, status, and Langfuse trace id. Reload reads chat_messages, not the LangGraph checkpoint, which is the agent's own memory and is deleted together with the thread.",
+      "evidence": [
+        {
+          "resource": "repo://apps/api/finance/agent/service.py#L136-L166",
+          "version": "repo-lines-v1:sha256:65bb2f029aacfade41438dc2c507358eeb90c6481cbce6a026edfcac0418d7a1:eyJzZWxlY3RlZExpbmVDb3VudCI6MzEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijc1MWMzNmUwZDQ2YzA3MGQxZmQ0NjBiZjMzNzVjMjBmNzI2MjdlZGI0MjE3NjUxMjViNTUxYTIwZGUwNWQzZmMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImIxYzlmZGExMzRjN2I4ZTAwNDM5Yjk4N2M5ZWUzMjVmMzgwZWNiYTY0NTI4NTQ4YTYwYWIyOGE3ZDk0ZDk3N2EiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjVjZjU3MzVlNWI4YTg0ODVkMmQ2NTg2OGE3MWMyZGI3MWZhN2RjNGI0NTc2NTBkYjE1NjgxZTdjNjQ0YTk1MTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImFlMmQzNTU2NDlhNGI2YTQ5MDlmNmU1ZmMyNTg5NjYwZTE3MTIyZjVmM2JjY2I2OGY2NzM5ZmNmZWQ2YmIwODcifQ"
+        },
+        {
+          "resource": "repo://apps/api/finance/agent/service.py#L197-L214",
+          "version": "repo-lines-v1:sha256:b8ec72c32381c92cbe94c9ffc629da84a9d4826ca17b114779710c449bbc6a0e:eyJzZWxlY3RlZExpbmVDb3VudCI6MTgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImNjYzY5NWRmMTE0NmRjODA3NzZiM2JiNGVhYzM0Y2UxNmEwYWVmNmI2MjIwZjQ1NmYwN2VmM2ZiYTc5NmQ2ZDIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjU5MDlhNTNhNjE4ZDAyOGUxZDMwMDBjMGE3YWJjZWVjYmU1ZmIzN2Y0ZTUxMWVmZTQ2NjQzZmFkNmU2Njg3MmYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjFmMmU2YzE0NTQyYmFmZTg1ZTk3ZTkwZjE3MTc1MzMwYjc4YjZkY2JiOWU4NjY5ZjFmMjY1OTA4MTAyM2IwOGUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImRmM2RkZDJmMzYxZWQ2MzI5YmM0Njk3YTY5ZmMzOWE2OWRmN2ViMzQ2Mzc5NWRlOTUyNTc4OTljYTA4ZGIyOTEifQ"
+        },
+        {
+          "resource": "repo://apps/api/finance/agent/store.py#L79-L117",
+          "version": "repo-lines-v1:sha256:3af0446411fdb80503213f23073fb972ec81509f6174fdb2fbf30c6d63302213:eyJzZWxlY3RlZExpbmVDb3VudCI6MzksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImZmOTNhYThkMGM1YTRiZmYxMzc1YzQyMDEwZTBhM2I0YWMzYWQ1ZDk1ZWYxNDQ1NDI4NmE3NjhhOWVlYmE5MWUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjZmNjJlZDM1MjY5OTA2OTE4MDFjMTMyODFhYWU4MTMwYjM0MGU0ZjhiMmY5ZTMxNTM4NjhkZDI4MTY5YzYzZDAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjdkNDNiZmExODRkZTBmMTQ0OWZiMzNkYzcyMjhmNTMyYzRmMWJhOTEzOTU2N2ExMTJlMzJkNjNmYTg4ZWRiODkifQ"
+        },
+        {
+          "resource": "repo://apps/web/src/app/chat/%5Bid%5D/page.tsx#L11-L22",
+          "version": "repo-lines-v1:sha256:70c06d919f415f15db29009bf210d9c151b10b5a25687137eaa6d99c103e37f8:eyJzZWxlY3RlZExpbmVDb3VudCI6MTIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImIzMzRkM2U3NjAxOTU2ZWI2ZDgwZTEzMjkyODRjZjhjOTJiOGVmNWYwMTJkNDliOWQwOTUyYjg0ZjU4MTkzNTMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjJmOGRiMDQ5YWNiNTY5NzBkNjBkZGNhNjFlYmUzNjMzOWZiM2UyYWFmNDdhMjQ2OGFiNjcyZGY0MTM0YTlhZmYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImU5ZTZhZTk3Y2ZjMzM2ZjU2MDk5OTQ2ODYwZWI4YzZhOTRiMDcwZTAzZjZhMzlmYzM3MjA1YTFlOTU1YjI3NzgiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        },
+        {
+          "resource": "repo://supabase/migrations/20261012000000_slice4_chat.sql#L50-L64",
+          "version": "repo-lines-v1:sha256:e199bc41072350ec8fdb79579e29026513ab76651d6948373ccdd25252f3030b:eyJzZWxlY3RlZExpbmVDb3VudCI6MTUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjYxMjY2ZTA1MDU5Y2FiZTQ0NDcxNzk3MTVjOWYzYTcwNDg2OTQzMTU4NWRmY2M3ZTNhMjg2OGFlOGRiMGNjMTgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjkyMTYzNmMzZjhhYjcyODMxYmJkNmFjNTI2NzY0OWVkZmNhNDkyZTEzZDRiYjUzMDA3NTJiM2FhYTZiYWM2MDUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjgyYzY4ODA2MzYzZGFiNDk1Y2M4ZTBjOWE2OGVmZTMzMzRjYTdjYzk5NzNiNzBjNzk1NWNlMTVlZDQ3NzFiNzEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_d76ee157337b4555adf570dfb2721e7e",
+      "statement": "On a thread with no title yet, a title task runs beside the answer and emits a transient data-title part only if set_generated_title wins. useChat delivers that part to onData, not as a message part. A user rename sets title_source to user and blocks a later generated title.",
+      "evidence": [
+        {
+          "resource": "repo://apps/api/finance/agent/service.py#L137-L142",
+          "version": "repo-lines-v1:sha256:e0ef89dddc34d8c13fe92352f32361fcfa1582216157c52438a240ea639a4e30:eyJzZWxlY3RlZExpbmVDb3VudCI6NiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMWEwNzcwM2M5MTZkMzRiZmI2OTc0YmMyMGYwMjg1NGJhNWZmNTBiODUyNzI4ZWQxNDkxZmNlMDY4OGFkZDg2YSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNTU2YjE0NjIwNDFjNGU2YjM3ZmE0NDAxYjJiYjM0MjVkZThhMDQ1MjljNjYxMzU5MzhmNzJhZGM1M2FjZDBiOSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMzE5OWYwMzI0MGQ1NGE1YmFkZjIxMzY2OWUyOTRkNWU0YTgxYjBiOTBkODI4Nzk5MDU1YWFlMTE2ZWE3ZTJiOCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiOTI5ZjcyZjFhMGUzN2E3YzE5MjNjMmI1NWI4NWIxM2NiMWU4Nzk1ZDMzODVhMTIwMWQxZmZkYWZmODQ1NjFiYiJ9"
+        },
+        {
+          "resource": "repo://apps/api/finance/agent/service.py#L187-L195",
+          "version": "repo-lines-v1:sha256:830d23f23ab09431b76c12772399ebee8a972b79ea3f3ba12f3dd1d63a603d3b:eyJzZWxlY3RlZExpbmVDb3VudCI6OSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMWRmZjI4NjYxYjk5NDkyNDkzNjUwOTE0M2M3MGRlMWExNGUxZTZmM2ZmMDk1MDRmN2JjZDU4NzU4ZTBmZmMyZCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNWNmMTMxNjBiY2MyZjBkODY4M2Y4NjliY2UyNjkxNGQwZmUzOWNkNmZkODk3OGIwMTk3YjQ1NWM4MjUwZTc0NiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNmE1NDQ3OGQ2ZTUyODg0MDJkNmZlNjliZjI5NzE1M2UwNDEwNGQ0ZjRiZWFlNDFmM2VjMzcyNThlNjhhMWQyMyIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiYTNlMGVlZjBmYTVmYzM3N2M1ZTc4ZTI1YmU1NGZjM2Q1ZDNhYzFlZjY3ZWVlMjk4YTg5ZTlmMjM3Y2Q0ZTE3ZCJ9"
+        },
+        {
+          "resource": "repo://apps/api/finance/agent/store.py#L47-L68",
+          "version": "repo-lines-v1:sha256:1cbf499383170707d59a29288a7b18bf8d2c8c4d36d338c21212d633522ec18d:eyJzZWxlY3RlZExpbmVDb3VudCI6MjIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjA0ZTVlZGRiOTJjYTc3ZTViMTliYjBlMmU0YmFjOThhMzNhMzE1NTdlNGE0NWY3ZmViYzlhZDBjNTRmOTcwNmUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImNmNzMzMjg0YmE2ZThhN2VmNmJjYzEwMzZhNjJiNmI4NmI4MzhkMzkxOTU3ZGQwNDk2MGUxNjA1YzZkNjNmYmIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjEzNWNiOGM1ZTVlNGViMWMxNGVmM2IzMTBmN2Y5NGQ0YTg5NjYzM2Q0YThkOTRmYTk3ZGYwNzM3MjU0MWE2NmQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjNjNTEwZDk2YTkzY2FiMDFkZWRkMDM0YmFkMDViNjM1OTljM2M1ODYxZjhhYjViNDhmMGE4MzY3OTU5MDg0NDgifQ"
+        },
+        {
+          "resource": "repo://apps/api/tests/test_chat_api.py#L159-L173",
+          "version": "repo-lines-v1:sha256:c26dc46d91eb8fab9a19e903e822b7b843f77b5a79568f090338b7448e43a6cf:eyJzZWxlY3RlZExpbmVDb3VudCI6MTUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY0ODg2YTFjNjI0MTVlZGNjMjkzN2E3ZWZjMTVlMjJmNTk3NTM2ZDY4NTgxMzA0MTVhMmFmY2YxMDdlMmQ4NWYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjlmZjZmZjNlNjVlZjYwMjVmYTUxN2E4NjAzMzU2NTQwZjcwNjM4OTljMWIzNzM5NTQ2MzVkYTVmOTBlMjQ2ZDQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImE4N2JhZmUxMDdhYTc1ZjRmZGY4ZGNhYzJhZGZhMjk2NzA5M2EzNWZlZDNjZmVkMTFkMjU1ZTM0YjZmYzg5MjMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImM4ZTBlNTU1ZjRjZDkwYjI0MGU2MTg5ZTk3NTllZDM2Mjg0MTZjNDBhM2FhYzM1Y2IzMmE0ZWE4YmEyMmU3MWMifQ"
+        },
+        {
+          "resource": "repo://apps/web/src/components/chat/chats-provider.tsx#L43-L45",
+          "version": "repo-lines-v1:sha256:013af66ef347e82d7a77ae9e63fb1e5ab0b62534762fc61b990c1e085a6bd22e:eyJzZWxlY3RlZExpbmVDb3VudCI6MywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNzljM2FjY2YxYmFjYWE0MWZiNzEwMmMxZjg0MzY4OGRiNmJmOTkxODNiYzM5YzcyYjA0MTVhOTg2MTIxZDZkZSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMWU2NzNhYmQ0NTdhOTdlZWExN2E2MDA2MmViMGZhZWE2YmRmMDk0ODY4Y2M2YjhmOGMwZWJkYTJmNjFlZDQyZiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZjIzMDgwMGY2ZDIyOGM5YzA2ZmQ4ZTY5NjBmYjc3NGE1YzA0OTk5ZDVjY2ExNjkzYmU1YTczYzgzNDFlN2I3MSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNzkwODExZmMxNWQ4N2Y3NTM1NGMzMjBlZDMwM2M5ODY1ODg5YjJhZTk2YTlmOTk5YjYxMmQxMzUwNmRkODYxZCJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_e44f1675c8af4b0790f0c3cca3f8647b",
+      "statement": "Stopping or disconnecting cancels the turn task. The relay shields the wait so cancellation does not land a second time inside the save. The partial answer is stored as stopped, the thread is released, and the next question can run. An unread stream still finishes, saves, and releases the thread.",
+      "evidence": [
+        {
+          "resource": "repo://apps/api/finance/agent/service.py#L96-L166",
+          "version": "repo-lines-v1:sha256:cddc07a48c85ef6f573f5bbccf2bd3558fc68ae09e1e24d4c2e4368fd4520d2c:eyJzZWxlY3RlZExpbmVDb3VudCI6NzEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImM0N2IyMTIyOGU3ZDU2NDY5OGEwZmI5ZDlkZDU3ODBiMjhjNWVkNWE0NDYwYzkwNTJkNTE3N2NhNWQ2NGQxYjgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImIxYzlmZGExMzRjN2I4ZTAwNDM5Yjk4N2M5ZWUzMjVmMzgwZWNiYTY0NTI4NTQ4YTYwYWIyOGE3ZDk0ZDk3N2EiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImJhZTMwYzhkZGMxMzU2YWRiODI0NWUwZWI2ZDU4ZGVmNmQ4ZGVhM2QyY2MyMGEwOTMxNTc0M2Y1YzA4NTNhNjIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImFlMmQzNTU2NDlhNGI2YTQ5MDlmNmU1ZmMyNTg5NjYwZTE3MTIyZjVmM2JjY2I2OGY2NzM5ZmNmZWQ2YmIwODcifQ"
+        },
+        {
+          "resource": "repo://apps/api/tests/test_chat_api.py#L220-L266",
+          "version": "repo-lines-v1:sha256:ed015b38f92db7d6598b2d3ecfced275f98074b4b4e886d8157cc7d54f334125:eyJzZWxlY3RlZExpbmVDb3VudCI6NDcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY0ODg2YTFjNjI0MTVlZGNjMjkzN2E3ZWZjMTVlMjJmNTk3NTM2ZDY4NTgxMzA0MTVhMmFmY2YxMDdlMmQ4NWYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijk2ODMyOWM4YWMxODIwODJkMDVhNjI5MWFkMmM1OGM0Yzc0NWJjMjQ0NGJhZTk1YTRjZDk2NWIzNWYwZDYwZmIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImYwZTI1MmJjMDYyODFmNzJkMDc4Mjk0ZmYwNmFiNjhkN2IzYWExNDVhN2EyZGFlYTczNWRhY2ViYTBlNDIyNWMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        },
+        {
+          "resource": "repo://apps/api/tests/test_chat_service.py#L175-L188",
+          "version": "repo-lines-v1:sha256:1833e8d710407f1b772addd39cb608f5aedc0a14eb17d0e759739caef918312a:eyJzZWxlY3RlZExpbmVDb3VudCI6MTQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjNhMDc1ZmE0NzBmNzg3ZTdlOGRiMzczZTIwMmZmNWVhMzBlNzM4OGRkMTZhMDcwZWY2MTQ2ZWM3ZTc0YWNhMTUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImNmZmI4YmIwY2M2OGNiN2Q5ZDYwNWU1ODRiODA1YWY5ZjZjNGE3ZjZkZDRjYTZmMjI4NTMyYWU4OGRlN2NjODMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjNmMWViZTA5YTZmNjljNzI4NTQ4ZGU1ZWQxYTYwZDdjNDJhYjc3MDEyMWI5MDk2MWUwZjkyYTU3ZWE1ODgzMjAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjU1ZjRlYjliMjJhOTgxZWY1YmNkMjZkODdiY2EyYjJhN2NiZGE5Y2U0ZmRlNDllZDE0YjY3OTc0YjgxMzUxMDEifQ"
+        },
+        {
+          "resource": "repo://apps/api/tests/test_chat_service.py#L78-L107",
+          "version": "repo-lines-v1:sha256:af6f549641400d8dab1fc7e82f4a0df2da2c8eb46feff78756c57a1424a1bea4:eyJzZWxlY3RlZExpbmVDb3VudCI6MzAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjllZDdmODllZjdkZGQxMDI2YWY1ODAyOWQzNTQ1M2Q0YTg0YTJhNzUyNmEzNzkxODkxOGI3YjlmNzY5ZTY4ZWMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImUyMjE1MzdhNzBhOGY2YTI2ZTQ3ZTJkNDQwMjBhODAwODgyNTEzOTdiZTg0YjQwOTY2ZmRkOWMzYzJiZTBjNWUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjI5NzZkMDM4YjYyZDg3ZWZlMmQxYTFjZDE1NzdjM2RmNDNhOTU2YzU2ZTBmYmQzYTk2ZDI3MmJmMWQzNjY2NzMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImFjMGIyZTQyYTE2ODMzN2I4NGM2NDNhOWZiYmJmNzY2MjY5OTlhNjIwOWQ4ZTBmMWM0MzlkODQyNTk4Mjg3ZTMifQ"
+        },
+        {
+          "resource": "repo://apps/web/src/components/chat/conversation.tsx#L76-L77",
+          "version": "repo-lines-v1:sha256:0cb12d16451f66544fb9a8dc6bcc8ca38a4772c88fb5a92b66c04def37fd98ba:eyJzZWxlY3RlZExpbmVDb3VudCI6MiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZjg1MWM4OWZlMTU0NzY4YTNiMDg2NWRiYjI5ZDZlYTgxNGU4MWE0ZWUzZDlhMzUxNWZmYTFjMjUyYzE2MGY3ZSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZDE3NGJlMWNlZWMzZDgzYzcwMjhhMTExZjZkODQ2MzEzY2ExYWRkNjMwZGQ2YmRlZTk5M2MxZWY5MDQ2M2M0MSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMzk3NmFiZmY3M2FmYzUyNzRlMTYxOTI5OWNlOTdjY2JhNTkzOGE5NWMxMjQyMzFhODliYWY2NTJhNmFhZjM0ZSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiODVlMjkwY2UxNDE2ZTI2OTJjZTg5OTAxOGIxYzE1NDFlMzFjZTIyZTBjNWYzZDY3NGYzOWE1M2UxYmE4NWY5YSJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_13e8c33058274758864f3e279f69fa34",
+      "statement": "A model or other exception is streamed as an error part and saved as status error. A connection failure, including a pool timeout before the agent, or a query artifact with infra_error, uses the fixed unreachable-database sentence and is also saved as error. Either way the thread is released so a later turn can succeed.",
+      "evidence": [
+        {
+          "resource": "repo://apps/api/finance/agent/middleware.py#L26-L37",
+          "version": "repo-lines-v1:sha256:543d9e2314b975299b04f5fc2395da916d645b6bb11eb3b41d8c0a74c8d319b7:eyJzZWxlY3RlZExpbmVDb3VudCI6MTIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImI2Zjc1ZDlhOGFiMWM0NzhkMDkxYjAxYjYxZGE4N2Q1ZjQ1OTU5NGEyNDAyNDE1ZTUxZDQ0OTMyMTI0ODNiNWQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImZhZmJhMDUyN2MzOTUzYzRiNmUwZTViNTczOWJhODM2MTJmODA1M2JjZGM5NDY2NzMwMTkzY2QxZDU5MGI0MDgiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjUwMWMwNzc3NWY2NmU3MWJlODgzMGI5YTIwMzhiNjczOTU4OTNhZjMwMjU3OGY5OTgyM2I4OTU4M2I4OTdhNjQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjNlNzc4ZTZiMjAzODE1ZDJiNDYyOTI1YWUyMjEwNDExZTQwZDRlMjc4OTYwNzZhMTU3MjQ3NTI5N2I1NmI3Y2IifQ"
+        },
+        {
+          "resource": "repo://apps/api/finance/agent/middleware.py#L62-L71",
+          "version": "repo-lines-v1:sha256:c6734e69d007e43a8800d0f9c86891443c9dcfdb9a7d1371b9f10afe16d8d234:eyJzZWxlY3RlZExpbmVDb3VudCI6MTAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImZiMzliMzZjMGI3MTE5NWRmYTY1MTNmMTY4NTkyY2RjNTNiYTUxZTYwODk0NDU5OGIzZDQ0OTQwNzA4ZDFkZmUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ4OTYwMGE3M2QyZTAyZjM1MmI5MGZlZjFkOGQ2MzgxMWJhNGE4ZWUwYzFiZWFhN2FlNDY1OGYzNmFhMmUxOTgiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjBmMmNiOTQ4ZDg3MjZhMDU0NmZkN2U5ZjA0YmFjODQ0NTEwYmZiNDM5YjllZWFhZTZiZGE5ZTljYzZiMTQ5MjkiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjliMWI2NzcwNzI0OTBhZDE3ZmU2MDI1NzkyYTc0MWFiOWNjNmU1ZWZkMDgyYmNmMmU3MDY3NjhmOTMxYTVlOTUifQ"
+        },
+        {
+          "resource": "repo://apps/api/finance/agent/service.py#L143-L165",
+          "version": "repo-lines-v1:sha256:02199475dce02e9c8684d0bd7026d37635923e0ae49b71ad6af2e5be7c4438fc:eyJzZWxlY3RlZExpbmVDb3VudCI6MjMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImExYjA2NTg4MzhiNDk1ODQwYWI5ZTBkZDBkYjRjOWUxNmJhZTFhZmZkN2E5MzE2MzA2MmY4NzJjNTc4ZWVlNjEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjNjYmI0ZGE4Y2YyMzQxMzIxZjdiZDg4ODUzNzU4OTE4NGExMjk4YjFhOTEzYTIyMGUzNDY0ZTBiOTI3OTgyOWIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjNkMDcxZDNhMWYzODFlYWQyNWJkOWU5NTI1MWFkNThiYmNkOTg3NDA2Zjk3NTVhNWQxYTNiMmM2ZGQ1ZmFkMDYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImZmNmU2MTUzMzBmNmI2ODdjYzcxMTgwMjJiYjVkZTg5Y2E0ZDc2NzVkYjIwNWY1ZTJkZDFkMjY2ZjkzNWY5MzUifQ"
+        },
+        {
+          "resource": "repo://apps/api/tests/test_chat_service.py#L115-L128",
+          "version": "repo-lines-v1:sha256:a9c23236d6f3124002f85da31e5ab042393a6f4f0d217b07a788d5ab078451bf:eyJzZWxlY3RlZExpbmVDb3VudCI6MTQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImRlNjRhZGE5MmJjNmZjZTIxYjk4YjdjMTUxMDJkMGQzZjdjZDAwMjIxYzIwNTMxYjc0MWRmODY4YmQyMGI1ZDUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImVhYTNiMDhhOGQ4MjE5ZmQ2MjdjYTM3ZDM1OTE0ODI1MGIzYTM0ZWRkMzE3MWM5NTY0Y2FmMTAxYjk2ZDVmNTMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjRlN2Q3NDhhODhmNDdkYTcxNmE1MjFmY2U1ZWIxZjU0ODVlNDNhMTY1YTgyY2RiNTNjMTFjMDhmNTAxNTA5YzQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImFlMDQyMzE1NWY0OWZjYTdlNzE2YTkxMTgyZDEzZDNiNTEyZmI2NjI0YWYyNzY0MDY0NGY2YjJhYzQ1YTMzMWQifQ"
+        },
+        {
+          "resource": "repo://apps/api/tests/test_chat_service.py#L191-L258",
+          "version": "repo-lines-v1:sha256:1313278e69027485bfe9a3b2982c9fda6fcf8a149ce6cf6dfcbe95490c186f3b:eyJzZWxlY3RlZExpbmVDb3VudCI6NjgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY4ZThiNjlmYjZmNmRjNzg5ZWUzMjRjMDRmN2U0ODhkZjJhYjdjNWUxY2YzYTgyMGY2ZTZiZTcxNzJhNjBhZGMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY2MDJjYmZiYzc1NmFiOGY2MDQxYTAzMTIzMzNkMDZmZGQxMDdiNmNhOGYwYTEyY2E3Y2QzZGY3YjY5MGZkMGYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjdiN2QwZmJhNzk4NTE5MDE2MWRhMjJmOGQ2NzExODNhN2NkY2I0OTNhMmJmNzczZThlOWE1YWQzYTcxMjRjYjIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjZjMWYwMmZkN2VjMWQ0NjJjMGNiODE4Yjk0OGZmZTRmNzE1YjJjMmM0MzI2MzBjMjMyZGZlMzRkNDI3NDNmYTkifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_ce3b07d001bd4c81a422a16906af1ea6",
+      "statement": "After a saved answer, POST /chat/messages/{id}/feedback stores thumbs on the assistant row and, when a trace id exists, writes one Langfuse user-feedback score whose score_id is the message id plus -feedback, so a later click replaces it. The turn itself writes sql_calls, sql_errors, hit_sql_limit, stopped, and infra_error scores when a trace id exists.",
+      "evidence": [
+        {
+          "resource": "repo://apps/api/finance/agent/service.py#L205-L219",
+          "version": "repo-lines-v1:sha256:de51c8a6101846c9b3e86818131162f9594e14f78cb81d66be380d6506216407:eyJzZWxlY3RlZExpbmVDb3VudCI6MTUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijg0YjFhOWI4YTc2MWE5YTBmNTIxZDViOGU4NjRhNGI2NmYwNzZiZjNiY2YzNmU5MzFmZjFiYzY5NWVlNmMzNDQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjUxMDM0ODFjNTdkMGYwZGMwZjc2Y2QyY2M4YjM2MDRjNGU4Mjk2ZGE0MTIyYWRkMTllODE3NDVkYzdlMzMxYTYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjM0YzU5MWQ4YTRmOWI1NTgzZDE3Njg2MDYwN2FiNTlkNjRlMGI1YTA0OWY0YzI4ZmE0OTMyN2ViZGU4NjhiNDUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        },
+        {
+          "resource": "repo://apps/api/finance/agent/service.py#L48-L56",
+          "version": "repo-lines-v1:sha256:f1298fc1c453493dde0b984774f7011a922c6de9e791c006fd8f038fe86bd90b:eyJzZWxlY3RlZExpbmVDb3VudCI6OSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiY2U4NmNmM2QyMWNiNGNkYjVlZWEwMzgzY2ZlNDcxYWExMWZhMzZkYTA2MjFjM2UwNWQyNTAwNTdlMDAwODRiMiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNDg5M2Y0MGUzNzgxZWI4OTZjODJkMDQ2YTA4MDY3YTExZTM1Y2RmMmYxZGZhZjI2ZmVhOTBiOGRiNjY3NjQxMyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiODU0MTI3MzA5ZmRlMmJlZTE5ZDM4NjUxZGQ5ZTlmYmJmZDMzYTkwYzZiNzU4OTg2NjgzMzc3ZTViY2M3NTI5ZSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNmMxZjAyZmQ3ZWMxZDQ2MmMwY2I4MThiOTQ4ZmZlNGY3MTViMmMyYzQzMjYzMGMyMzJkZmUzNGQ0Mjc0M2ZhOSJ9"
+        },
+        {
+          "resource": "repo://apps/api/finance/agent/store.py#L119-L130",
+          "version": "repo-lines-v1:sha256:9b2bd03782d19577beba0c92e8263a776e5795c06a8f8277b094b3a96b89e295:eyJzZWxlY3RlZExpbmVDb3VudCI6MTIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjlmYTk5YTIyYWI4YWI2ZGU2ZjcxOGYwNDA2NjgyZDA4NjdmYWM5MDM4MGIzNmNhNzI5ZTBjZDU1YzAyMjIyYTIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjdiNTNiMjc2ZDAxOWFiNTc3Mzk2NWVkZTY0MzQyZDZmOGNiN2JlMzJmNGQxZTEyZDBkOWM2Y2NkYmE5NjkwMjQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjcyNTIxN2VmNzY5YTA5YTQyMmIxMGJkZWFlMmFhM2M4MDBlNjhlNTgzOWZlZmE4MzY3YzU0MDhmMzQ1YmVkMWUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        },
+        {
+          "resource": "repo://apps/api/finance/api/chat.py#L95-L115",
+          "version": "repo-lines-v1:sha256:6c85497793c61bd12b7e2406133599760eda9522e3dfc6dcee1d1b674dff682c:eyJzZWxlY3RlZExpbmVDb3VudCI6MjEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImU3NTYxYzA2NDEwMDA5YjdjZWFmOTIzYTc5ZDY1YzdiNDZmMDZhMDBjYzlhZDM5MDhjMGU5OGFiMDZmZGYyN2YiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImJkNmIzMzVkN2RkNmY5YTJjYjU5ZmJhMjY5MWY3NmEzODk5ZDFlMDY2MjY1YTQ0ODI2MzNkNjYwY2ViMmFiMTMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjFmMTYzMGNhZWVjNzJmNzcwM2M0ZjRjZDAxOTM5YzY4MWVkY2JlYTI5ZmFkMGIxYWQzZDUwMzMxZmFlNjgxZGEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        },
+        {
+          "resource": "repo://apps/web/src/components/chat/feedback-buttons.tsx#L16-L36",
+          "version": "repo-lines-v1:sha256:9fd4f9c281fbfc4f23869bd627c2d5e58d3153bf87032acbd65cc2dc9ad60650:eyJzZWxlY3RlZExpbmVDb3VudCI6MjEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijg2MmZhNGQ3YmUyY2IyMzVkMmVlZWNiOTRhMmJmZGY3MDkzZDhmNTZlNDVkNWFhNTY1ZGQzM2U5ZTVhYzEwZjYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjI3ZTU3ODhkNWQ5ZDczZDI0YTgxZGJjMGE1YTc0YmZhODJjOWMzYjNhZjk5ZTUyYWY3OTZlOTBiNDY4YThhM2QiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjJlN2VlYzE4MDk5OTM5MmYxN2QwYzNmNzM5MWEyYTA1NzhlZTdjNjY1MDkyMWRhZDdmM2MyNTAyMTIzYjlhOWYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImI3MTQ0Y2U4Y2NjZGIyNTNjMjc5MTk0N2M3ZGE0NmE0N2YxMWY5MzBkNTQ4ODJjMmE3ZThhYjBkMjhhODljNWMifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_0395510dcc844443a7998c8852046445",
+      "statement": "Chat checks run on scripted models, never paid ones. The recipe is R3, named in CLAUDE.md, and the process is apps/api/tests/scripted_chat_server.py on a scratch database. The integration tests lock the UI stream protocol, 409 while busy, a stopped save over real HTTP, and stored feedback.",
+      "evidence": [
+        {
+          "resource": "repo://CLAUDE.md#L97-L99",
+          "version": "repo-lines-v1:sha256:716eb2c398cad4eb061d45354e8f7db887630494beff816f9d6b77ab40409e6f:eyJzZWxlY3RlZExpbmVDb3VudCI6MywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZDUzNmYyY2U1Mzg5MDU4YWNlMWRjMDhkY2Y5MzcxN2RkMDdiYzVlNDMzZGE3Y2RmOTk4MzI1NTQ3ZWRiOTlmYSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiOTk5YmQ3ZDNlNDQxZmVmYTY2Mjc4MmYwNjc2ZjllZGI3Yjc3MzNiNGM0NzFkODU0ZWMwOTkzYmY0MTdkNTkzZSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiYzdlMzUxYjRkN2MyOGUyYzVmMzJkZTk4MWRkZWY5YmQ5MDQ0OTIzYmYzMjBmMDg2ZjdmMGQ3OTRjNmM5MjE3MCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMmM0NThjNjAyNDg1MjQyZmIyYzgyNGZiOGM0ZjAyNDBjNWYzMmVkZDNjYTgyZmU3MzI0NmFlYjM4ZGYzZTljNCJ9"
+        },
+        {
+          "resource": "repo://apps/api/tests/scripted_chat_server.py#L1-L19",
+          "version": "repo-lines-v1:sha256:f978f2182a135b65b79a07eafe5927be7392e63209c73f28b3d321930ae483d8:eyJzZWxlY3RlZExpbmVDb3VudCI6MTksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImRjM2M5YWY0ZmZjNDc3YzI0YjNlYjVhMzZhOTBhNDAxOTFjNzAyZGU1YThhODAxOWMxMjgzNDFlOTc1YWUzZDciLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijg4YjQ1NDE3YjJkM2E5ODA4ZWJlYzcwNDYyNjJkZWQ1ODhiZjI3NTFmYzNiYTcxZmZhNDU5YmYzNDg3NmZmNDciLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjowLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6Ijg0NDgxMzE0NWFlNzI3ZDYwY2U0MWNlMmIzNDkzMTM0ODRmODBhYWNlZDFjNzJhZWFhOWY5ZmUwY2FlZmY1ODMifQ"
+        },
+        {
+          "resource": "repo://apps/api/tests/test_chat_api.py#L176-L217",
+          "version": "repo-lines-v1:sha256:fc43402c3c420c280641a5dee6eff52921999d037e8f53b7b3fe322fe74bd743:eyJzZWxlY3RlZExpbmVDb3VudCI6NDIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY0ODg2YTFjNjI0MTVlZGNjMjkzN2E3ZWZjMTVlMjJmNTk3NTM2ZDY4NTgxMzA0MTVhMmFmY2YxMDdlMmQ4NWYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImJkNjk1NzE1M2NjYWQ2YjU5NDA3YTRlY2U2YjRlODY4NGZmMTUwZDdjYzFkNzZiYzdlNDcyYzdkODZhMmNmMmEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjRjZGFhODRmOWVhMDk5N2I0ZWQ4ZjZhZmI5MjFmZjVmYWVmNDZhODJmZTcwNTUzMjA5MjFjNTkzNGMzOTg0OTMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImM4ZTBlNTU1ZjRjZDkwYjI0MGU2MTg5ZTk3NTllZDM2Mjg0MTZjNDBhM2FhYzM1Y2IzMmE0ZWE4YmEyMmU3MWMifQ"
+        },
+        {
+          "resource": "repo://apps/api/tests/test_chat_api.py#L220-L266",
+          "version": "repo-lines-v1:sha256:ed015b38f92db7d6598b2d3ecfced275f98074b4b4e886d8157cc7d54f334125:eyJzZWxlY3RlZExpbmVDb3VudCI6NDcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY0ODg2YTFjNjI0MTVlZGNjMjkzN2E3ZWZjMTVlMjJmNTk3NTM2ZDY4NTgxMzA0MTVhMmFmY2YxMDdlMmQ4NWYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijk2ODMyOWM4YWMxODIwODJkMDVhNjI5MWFkMmM1OGM0Yzc0NWJjMjQ0NGJhZTk1YTRjZDk2NWIzNWYwZDYwZmIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImYwZTI1MmJjMDYyODFmNzJkMDc4Mjk0ZmYwNmFiNjhkN2IzYWExNDVhN2EyZGFlYTczNWRhY2ViYTBlNDIyNWMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        },
+        {
+          "resource": "repo://apps/api/tests/test_chat_api.py#L98-L129",
+          "version": "repo-lines-v1:sha256:a86a4903c43dfd60edeb705de25768919c7c25d42166b378c1a81264ce788833:eyJzZWxlY3RlZExpbmVDb3VudCI6MzIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY0ODg2YTFjNjI0MTVlZGNjMjkzN2E3ZWZjMTVlMjJmNTk3NTM2ZDY4NTgxMzA0MTVhMmFmY2YxMDdlMmQ4NWYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImYyYmE5ZGIxOGY5ZWUxZmQ4ZmNmMDcxZWVlMGQ4YzBiYmRmMmI0YzlhZTY0ZGQ1OTA0ZDhlYzAwYzI0MWNiNzciLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImExMjJmNjVkOTE3OTFkMTIwMmJmOTc4NzJiNTljNjc4NDM1ZjM4NzdkY2FkNTMwOGU4NmY2Mzc4OGQ4ZTUyMDUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImM4ZTBlNTU1ZjRjZDkwYjI0MGU2MTg5ZTk3NTllZDM2Mjg0MTZjNDBhM2FhYzM1Y2IzMmE0ZWE4YmEyMmU3MWMifQ"
+        }
+      ]
+    }
+  ],
+  "verification": {
+    "by": "openwiki/0.7.2",
+    "at": "2026-10-17T19:58:49.962Z"
+  }
+}

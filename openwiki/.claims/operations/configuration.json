@@ -1,0 +1,298 @@
+{
+  "schemaVersion": 1,
+  "pageVersion": "sha256:1fd221fff79abc37957acb1f99245af08ed5be48a332aebe2e4427a38c02bfae",
+  "claims": [
+    {
+      "id": "claim_7ef149ddf6bb4c9e90f17d35c2022a0e",
+      "statement": "Settings is loaded once from the repo-root .env, ignores unknown keys, and maps nested chat fields with the __ delimiter so CHAT__<FIELD> overrides ChatSettings.",
+      "evidence": [
+        {
+          "resource": "repo://.env.example#L9-L15",
+          "version": "repo-lines-v1:sha256:1059e089e88fa94bec0fbead7e0560ee24b56e1dbc4b3c351dbab99bfcee6889:eyJzZWxlY3RlZExpbmVDb3VudCI6NywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMzFjNTE2MjRlMTQ4YTIxNmQ0MGYwODkwYTI1OWEyZmM5MDI3YmVkNTE5NTkwZGM3NDg1MDhiYWZkY2MzY2JlMiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNzU1OGZiNDE4MmQ5OTNmNmZhZGNkNzY2MjFjNmM3Y2ZmNzM4Njc4M2VjNWUwYzExOWYxOTk5YWQyZGQzMzBmNCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNzdlMmEzZDcxNWY4MWZlYTFlZWQxOGQzN2I1Y2JiNTVkNjBlMzQ2OGYzMTJjNmE5ZDVjMDdiYzA1MDU5ZmIxNCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZjZlZDAyYjFmZWEzYThmZjMwODY1ZjRmOWNiYTE1MjVmYjE5N2MzZGM0NDllNGRlZDBlMzUwNGIzYjBjN2I0YiJ9"
+        },
+        {
+          "resource": "repo://apps/api/finance/settings.py#L10-L17",
+          "version": "repo-lines-v1:sha256:13b2e62ef058b5d1083716711c1e524e0bf4ff0ffea69df0e31fa201d0b636b3:eyJzZWxlY3RlZExpbmVDb3VudCI6OCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNDRhNjZkZDFlOGJkZDg2ZGRkMDM3ZGMxYzBiY2U1YzM4NTdiNGQ3MTIxNjM1YWRiNWI5YzQzZTg2MGQzZDZlYyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiYjJiYTczYjZjMmM3MjYzNmQ4MDJhYzgxOGFhZGEzYWE2YjY3ZGY1MTA0OTMwZWJjMDZiMjc2ODVmMGRhNzc3NSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMjM3NmM5YzM1NzAxM2ViNWMxZDU4ZTZlMTFhN2QzMTUyN2UwOGE1ZWVlMmM2ZmZlNmRhODJmZDJiZTE3MWI4MSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNzc0NjZmMjdiYjA1YjM3NTQ2MGFkMTE5MDkwYmExMWQxYjBhMDIzNDFjZTgzYjI4Nzk1ZmZjYTg4OTliYzkwYSJ9"
+        },
+        {
+          "resource": "repo://apps/api/finance/settings.py#L60-L88",
+          "version": "repo-lines-v1:sha256:fc0eb94db3f402adf768ac6f4def4f1cff3f03e6c9367395ec25f1c4f8103e0c:eyJzZWxlY3RlZExpbmVDb3VudCI6MjksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImZjODYzMzFjOTBiNzhjZGI5MTdmZDViZDY5ZmMwNzE0ZDVhNWZlODQ2MGQ4NzYyNzllMTVmZjQyZmZjNzIzNWMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjFiZTliNGQzMjVhZTAyYTY4NmU1MzNkNTc2OTBiNjZkYTkxNzc3ZDkzY2Q5NjMwMWI4MGIwYjJjZmZhOWZlNTUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjRiNTMwZWRlNGYzZTg4MmQ2ZTg1ZTllNmE3N2JiYTI5NTk5OTk3MWU2NTk5NGU0ZTA0MWJjMDAzYjE1NzhkMmYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        },
+        {
+          "resource": "repo://apps/api/tests/test_settings.py#L37-L41",
+          "version": "repo-lines-v1:sha256:1aefb62bed106a109c5c9b6e70ae4ddab7c6bfb5cd4d5824b8c68028989469ef:eyJzZWxlY3RlZExpbmVDb3VudCI6NSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNTU5ZjE5YTg3NTY4ZTQ1MWI4NDAzMDAwMGFhYTc4MDAyNDVjYjI2OGE1YmNhMzkxOTUxNTc3MzkzOGNjZmE1MiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZDlhMjVlYjIzZDQ0MTAxYjU4YjdhMzE3ZWYzNGM3NWY5YWFiNjQyN2JhNDlhZmVkMjgwODdiYWYwNDRjNmUwMCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiN2MxZGJlMGEwY2MyMmI3MTM2MDUwZDBkOGE1MWQ3YjE2MDBhNWI5NjY5NGViZGM3MWNkNWQ3NGRhODUzZTFmYSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZmIyZjM1YTNlOWFhYzZhMjQ3ZGQwNzAxMjNiOTNhN2VlODA5YzI0MDQ1Mzk2MjU5YWNiOTM2YmI4YjQwYmJjYiJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_4813452053a747dea42a179b48b93ead",
+      "statement": "The five secret fields supabase_db_url, typesafe_api_key, xai_api_key, langfuse_public_key, and langfuse_secret_key are repr=False, so a Settings repr or failing assert does not print their values.",
+      "evidence": [
+        {
+          "resource": "repo://apps/api/finance/settings.py#L65-L70",
+          "version": "repo-lines-v1:sha256:c8f38f64df193ce2c437bf9553bebcd6af8553453b047637435fd9e34a7a64e7:eyJzZWxlY3RlZExpbmVDb3VudCI6NiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYjIwOTUxZDNjN2I0YWE3NWViMzAyNTVhOTMyZjZlMmUzMmIxMzU0M2E5YzhjOTIyYmRlZDhhMmViZDk2MWM0YSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiOWI0NzVlOTliOGE4MWMyYjlhOGQ5NTQ4MTY5ODc5YTg4Y2ExN2RkYzU5NGI1MmIzMjNkNjBjODQzMjA5Nzk1NiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiOTlhZTQyYThkYjkwZTAxMGMxOThiYWEzZDQyMGIzNDIwMTA3NzU2OWNhMTExMTlhY2ZiYWYzMWViNDJlZmI3MiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiODc5MjlhYWI4ODM4MGUxYjFhNWZiMWMwM2QyMzg0MDFlNDA0NDFkZTZhYzQzYzBiNDg4YjdjY2Q3NDg1MGE0MyJ9"
+        },
+        {
+          "resource": "repo://apps/api/tests/test_settings.py#L6-L19",
+          "version": "repo-lines-v1:sha256:b00838a2b2cb550fa07be8b7d3a18805347e84a820e5d9eb1368963754bc0508:eyJzZWxlY3RlZExpbmVDb3VudCI6MTQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjM2MmQ0OGYyYjYwYzkyMTA4YTczMDhmODUyNTY2OTVhNThlZDBmZWUyMjM1MzY0ZjA5NjFhNmU1Y2UxZGI0MDYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ4YmE0Yjg4YmU0MDBjMmZhNWZlZTJkNGY2ZWU4ZTI4MDMyOTFjZmM0ZDlhMWY1NDA2NmM0YzFmNTRlMzQ5ODMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImQ3NWE5OGI0NDNjOGI0Y2I1MzAzYjk0NzE3MmM2M2Q4YTYxZTcyNWMyNTc4Mzc5OTEzZTFhMGQzZjZkZDk3Y2MiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjkzM2M2MmVlMjg2ODMyNTlmZGFjMzUzYmVmNGEzYTJhNWJjNmJkN2IwZjRiYjg4ZGU3MDZkNGY0NzllODBkMDgifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_509b8bb3de23405eb844463519a55a61",
+      "statement": "Chat is disabled, and chat routes return 503, when SUPABASE_DB_URL is unset or an xai: model has no XAI_API_KEY; dashboards are unaffected and a caller-supplied model still requires the database URL.",
+      "evidence": [
+        {
+          "resource": "repo://apps/api/finance/agent/cli.py#L41-L44",
+          "version": "repo-lines-v1:sha256:c79ab10c4f5d0b2b7e8efd8b7e075b3a64033e618a39eb1ba6cec348a6d03c3e:eyJzZWxlY3RlZExpbmVDb3VudCI6NCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiN2VkNTM4ODRhMzRiZWNhOWMxMDFjNDM1ZjNlZmJiYWM1MjcyNzUwYmUyMGYxYjY0YTUzOGU1M2ZiZmUyYmIwMCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiM2U3NTk2MmNmODdkYmJiMzU2Mzk0YTcxNzMzOTFkMzU4MDFjZTk0NzZhYjIzZThkOTMwZDkyODZjMDZlOGFhNiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZWM1OGI3NGQ1MjZiNGNkYWU5OTljNWU1YzE0ZjE4Mzc1ZTIwN2I0YWI5YWY4NjI1MTcyZmZmOTU0NjZhY2JiZCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZGE3NDM0N2I1MzYzYTg2Y2FlODIwZTI4MGNiYzhmN2IwOTYzNWI2ZDU5YWU5NGFlOGQ5MmI3OWU4MjliYzYyOSJ9"
+        },
+        {
+          "resource": "repo://apps/api/finance/agent/runtime.py#L29-L47",
+          "version": "repo-lines-v1:sha256:f8c51022d890dc0edfb3658365f02b236b64e3a778e613c49470390d555e662b:eyJzZWxlY3RlZExpbmVDb3VudCI6MTksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijg3Y2ZmM2YxNzg0MmRlYzZlN2U5MWMzZTNiOGZjZTBhODIyZmMzMTEyNzM4MWIwMGY0NGE5ZjEzMzMzMDNhMmUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjJiYzQwMzYzNTk0OGIxNWJiODg4YjJmMzJlZjIzMzQ0ZGYxNjExZWMwODRkNmNiMDQzOWVlNzcyYzMzNWM1ZDgiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjYyMDA5N2U0YWE1MDA2OGJhMTU3ZjlhMjczOWZhZDg2OTk1ZTFlMGNkY2NkYWRjNTg5N2MyMDM0Yzc0ZDNlZmEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQ1MzVmZGJjMjE3NjdjYzcyOTBkNjRmY2Y5MmM4OGU2ZGI5ZjAzZGQ5Y2MxYTIxOTc1NTVkMjIwNjU4OWE0MTcifQ"
+        },
+        {
+          "resource": "repo://apps/api/finance/api/chat.py#L22-L28",
+          "version": "repo-lines-v1:sha256:a9da11a41ae98c523e526c927b1dc8bf38bfb08a14a6b90352cdf9c82d7431fc:eyJzZWxlY3RlZExpbmVDb3VudCI6NywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMDEwZGViOTk3ZDIxM2RhODI1YTJkZjY5NzlkOGViNWEyOTA1ZjU1ZGRkNzM2YzM2MWIxYmYxMDFjYjRlZTFlOCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNTkwOWE1M2E2MThkMDI4ZTFkMzAwMGMwYTdhYmNlZWNiZTVmYjM3ZjRlNTExZWZlNDY2NDNmYWQ2ZTY2ODcyZiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZTYzYmI3MDA3YmQyMjI5YTllNzcwMTU3OGM3MmE2ZTI4Y2ZlMjE3MzBhMmMyNDRiY2E0OTY1ZGUzMDU2MTM0NCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNDljMWNmNTdhNzRiMDQ4ZTBhZmVhOTJhZGM0ODRjZTk5NWJlZDkxOTExZWE3YmI5MGUzZDQ2MGMxYTczOTEyMiJ9"
+        },
+        {
+          "resource": "repo://apps/api/finance/api/main.py#L25-L30",
+          "version": "repo-lines-v1:sha256:20102a0c8f26ab2da86c0e3ad12f5f9b77330c9b3c3613a1cb8ed3dc5fdf8601:eyJzZWxlY3RlZExpbmVDb3VudCI6NiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiODdjZmYzZjE3ODQyZGVjNmU3ZTkxYzNlM2I4ZmNlMGE4MjJmYzMxMTI3MzgxYjAwZjQ0YTlmMTMzMzMwM2EyZSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMmI0NDYwZGI5MDQ0NjdjZTU1ZGEwNmVhNTdhNjhiMWE3ZDMwOWU3MzAzMGIwMTkwZWFkNDc1NzBmOTc2ZjE1NCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMTQ0MzI5MzkxMDAyNGYxYjUzMDliNTRiNTZlNTYyOGUwMGQ3ODQzNzI1ODg0NWQ4YTI2MmEzYjc5MDkzMDZkNCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNTM2MzRlOTllZWYwNzFhMWY2YTJjNjY4NmY5ZWFkYjc0MGI4MTdkMmVlYjk1Y2E0YWRjMjk4Yjg4ZmI2Yzc3MiJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_6602f57168294f5e8be85aab677672f9",
+      "statement": "A production categorization run with no TYPESAFE_API_KEY still pairs transfers and applies rules, then skips jev and leaves unmatched rows pending; finance eval-categorization refuses to start without that key.",
+      "evidence": [
+        {
+          "resource": "repo://apps/api/finance/categorization/store.py#L157-L176",
+          "version": "repo-lines-v1:sha256:50ee71c400649ea2df0e3f412c95fd3ceba28d511a1e50a250b8df77d563d449:eyJzZWxlY3RlZExpbmVDb3VudCI6MjAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjdmYTQyM2ViZTYzZWIzOWNiMmNhZmJhN2U1Y2I0Zjg2MTA5NzBmM2FiYmVmMGY0OWYxZGZiMGE3YTI3ZDVmNDIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImZjZDkzODkwMWU3OTA4ZjdiMmUyMjAzZTI4NTA1Y2U0OGVlYzc0Yzc1YjA0NTRiM2E2YTliYjgwNzY4MmFlNGIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImU2ZGZiZjQ1M2Y3ZjFiZWJhYjcyODM2MWIwZjM5M2VlYjRjMWZiNjY4ZjllYTIyYjkxNmRhY2Y1ZGZmODFkODMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQzMWJjOTA3OWI0ZTg0MDVkNDk3Yjc5YTNlMjI3NTM0NGEyYTMyZTU1YTdhMzBmNGM5M2NhYWVlMWM2ODBhMjYifQ"
+        },
+        {
+          "resource": "repo://apps/api/finance/categorization/store.py#L210-L223",
+          "version": "repo-lines-v1:sha256:048e1bf757a802787596cde671863ed94f05fb1f81bd5de9606cf98d02bab60b:eyJzZWxlY3RlZExpbmVDb3VudCI6MTQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImEyODcwNzllMDE3ZjYyOTQ2NGE2NTU0ZDhhYWRjYTBlM2FlNzI1YmNlOTJhODI3ZTJlMjA5MzgzZTFkYWJlMWUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImJhNTc4YzAwYmI4YTBjZTM1MTIxYWJiYzNhZGMwOTljYzI3ZjhlMjU3MmI2ZGRhN2NkOTRiNDgwZDQ0NDAwYjYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImIzZGYyYWNmMDZlOGMzZjAzYzcxMzVjNmU4YWM1YTljYTU0MzJhYmUwNmE3NGFjYTBmZGQ5YTUzYTAwOGY5ODciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        },
+        {
+          "resource": "repo://apps/api/finance/cli.py#L64-L74",
+          "version": "repo-lines-v1:sha256:818211ec76e153d335d9b2fb9ea1e062932b7b9c8f6f99f5bca92ecea4562736:eyJzZWxlY3RlZExpbmVDb3VudCI6MTEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijk4ZDVkZDQ4NDk1ZTkzYmRiOWJjM2I4ODVhNTNiYmZjOGE0MTQ0YmYyMjc4YzA0NzNhM2FlYzY1YjM4ZTc4YTciLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImU2ZTdlNTYwNDNkNzJkZDI5YTExNjEzYmJhZjlmMTIyY2FhNTkwM2MyNTgzMTNlMTY4YmQ4ZWFiMmI2NTdjNzgiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjY3NGU4Nzc2NzNjZDliYmRkNzBiNjE0ZmRiNDQ5YmIyMjQwZDE2NWZmNjIyODNlZDcxMmNlM2U0YzQ3MjJjNjciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjNiZTk1OGYwMDdkN2M1NTkwYTUyNThiNjY4M2I2ZWZlOGNjMTkyZDc5YmUyNGYxMzdkODQzMGY0YTNjZmZmMjkifQ"
+        },
+        {
+          "resource": "repo://apps/api/finance/evals/run.py#L104-L105",
+          "version": "repo-lines-v1:sha256:f23e928cb824b837f4eb0069516285bda6c94e2ae7392223375cfecc92a9053a:eyJzZWxlY3RlZExpbmVDb3VudCI6MiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZTIzMTE1ZjAwZjNiNzI2MTYyNDE1NjVjNjlkOWMxMWFmOTczNjJkYzNkMmFiODliNDNhYmMzMjY1YTI1ZDk5NSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZDUzZDBiZTJhY2QyOTYwMzI3OTk0YjI2M2NhMjI4Zjc1ODcxZDg0ZTY4NzcyNTA2N2Y1MWU3M2IzN2M1ZjIyNCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMmY2MDdjZjZlOTRkOTNhYjRhOGNmOWU5ZmRmZTU1ZGQyNTljZjFhYTE5NTg4MzQxZmZiMzgxMDk5ZjRmZDA3MiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNWJiOTZiZDYzNmQ2ZWY3MWVmYWVjY2MwNzM2NjU0MTkwMGFlMzZkMzEzNmU0MjI1NjcxNTQ4MmQxYTE3NmU0YiJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_93ac7abb518345a49742e26dbce551d8",
+      "statement": "TrustedHostMiddleware rejects any Host outside trusted_hosts with 400, including on /health, and testserver must stay allowed because TestClient sends that Host.",
+      "evidence": [
+        {
+          "resource": "repo://.env.example#L22-L24",
+          "version": "repo-lines-v1:sha256:1f9b3324b05aa362db1460e02c284fa29e2bfb03e2741af51c996ea82b8ac948:eyJzZWxlY3RlZExpbmVDb3VudCI6MywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNzE2NzY2NDBlODFiNzY5M2E2YjlkYTEwOTM5MDRhMmY1YTU4MTQwZmM0NTVkMjUwZGRkZmZjMTFlNjJlNDZkMiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZTMyODBkOTY3MzZmM2EyYTlhMDBhNTZkOGZmOTczYzg0YzA3YzNiYWM5NDEyMmFiZmJlOTM2YmVkMTE1NGJkMyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNmIwOGU0ZjVmMGNiZGI0NzJiMjY2NjVmNWRjN2YzNDFjOTBhMDU3MjJkMDA0ZWM2MzU2NzRhOGY0ZmQzNWNmYyIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjAsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZTNiMGM0NDI5OGZjMWMxNDlhZmJmNGM4OTk2ZmI5MjQyN2FlNDFlNDY0OWI5MzRjYTQ5NTk5MWI3ODUyYjg1NSJ9"
+        },
+        {
+          "resource": "repo://apps/api/finance/api/main.py#L39-L46",
+          "version": "repo-lines-v1:sha256:b862f9750e2b49ffb658d1140031376aca615fa59d5572e6b70f7db0ee6025da:eyJzZWxlY3RlZExpbmVDb3VudCI6OCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYzJmOTA3ZGVjNmZiMjUxZmU5N2RhYjhhNWViYmIyYmViMjc5N2FmNDAxNmVmOGY1NWU0NDQ2MmRkYjg2YjE0OCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiY2U2ZjVmMTUzYjAzMDY3ZDk5ZWM4Y2E5ZmExNmEzM2QzMzhiNWMyMjUwMmUzZTNhZDk3ZGZlMWQzOTg1ODNhYiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiOTc4YmM2YTBjYjMwZTY5YjNhOWNiOGZiZmM2ZWZiNjFmNTZjMGE5YTE3OTYxNjQ4MGVmYzBlMWNkMTE1YWYzYiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZGVjZTZiZDI0YmQyYTY0YWIyMmExNTNjMWZjNTZmMjY4Y2MzYzU3ZDhkYWY1NTk2NzMyMGY1ZWQ2MzIwYjU1MCJ9"
+        },
+        {
+          "resource": "repo://apps/api/finance/settings.py#L73-L74",
+          "version": "repo-lines-v1:sha256:c240d4c149091a07e529e7f567985731cb5dd7960bcab90032357901810e4952:eyJzZWxlY3RlZExpbmVDb3VudCI6MiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZThiYjEwNGZhYzE2Yzk2OTBmOGI5YjZlYWQ3YWJiODlhY2JlOTQ1NmViNDEwM2NhMjMwODcyMzc0ZTg3MmRjOCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiY2Y4YTEzMjJkOWFiZjliZWY0ZTc2YWQ0OWU1ZmZmMDI3NzdjMzc1ZDRkM2M0YTE2ZWQ3NmY2MjFlMTU2OGIzYyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiYTFmNzhlYzBjODA5ZjJmNmI1YjNmNTljYzkwYWRlZjZiYjZiMTY2ZDFlMTg0ZTM2M2ExMDZhZTFmMjcxMDkwYyIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiYjM5YjhlYTEyNDJmNzYzN2M0MGRkMGE5ZmI5ZWRlMzhmNzNjZjhlOTY5ZGY5MGEwYWZlNjg0YTgyZGYzYjQ1OCJ9"
+        },
+        {
+          "resource": "repo://apps/api/tests/test_api.py#L165-L168",
+          "version": "repo-lines-v1:sha256:2321363e76732604d94d837912b0a9a44d5fe0708ef197a17d7a6db39e84ca2e:eyJzZWxlY3RlZExpbmVDb3VudCI6NCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYWY2MWQ0ZDI5OGJjYzJiNTM5YTNlOTEyNDVkMGYwMDFjMDZkYTM5MmMwZGJlYjc0ODVmYmUxZTliYzg1MTU4NCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiOGViM2UzMzE0N2MxOGIzMjE1YmZhMjllZmI4N2YwMTg2OTYwYzU5MDAxZmJlOTUyYmVhNjczNTQ0NzEyYjU3MCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiOGNjNGE3ZDFjYzc5NmFiYTNlNDY3MjMzMjdmNTE3ZTlmODExOTgyZDI1MGYwNzAyOTg2ZTRiNTc2NGFkOTU4OSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjEsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiYjQwZDAzYTg4ZmU2MzA1ZWNhZDNhYWIwNWU0ZDg4ZjI1NzFmYzFlYTUwYzMxNjlmMjc2MjM4NGYwOGQ5YjZjMCJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_0b1f703f1b5c4ad698de94f92bf25bce",
+      "statement": "same_origin returns 403 for POST, PUT, PATCH, and DELETE when Origin is present and not in cors_origins, while a missing Origin is allowed so CLI, curl, and tests can call unsafe methods; CORS alone does not block those requests.",
+      "evidence": [
+        {
+          "resource": "repo://apps/api/finance/api/deps.py#L12-L30",
+          "version": "repo-lines-v1:sha256:55c6d8ececd1f4c1e0070caebdc67b024922206292c73b723d130622a4dffb72:eyJzZWxlY3RlZExpbmVDb3VudCI6MTksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjFiNTk2ZWU0ZTRmZDliZTkwZTZkZjg3YjZiNjQ3YTM3M2VmNTFiNTdiNjc3ODljM2Y3YzJkNDUwODU1NWU2MWIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImVmMDNiM2UzN2Q4ODc2ODliN2RmY2UzZGJmY2ZiNTVjMjBiYWRlNGNjY2MxOWM3NTVjNzVlNDNjYzNiN2ViZDYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImY3Y2M4ZjY5Mzg4YzNmNGIwYmViODlkODlkMWFkOWIwZDIzZWMwNjIxYjk0ZjVmNmI0ODIyMjZhMzA2NTlmNDQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        },
+        {
+          "resource": "repo://apps/api/finance/api/main.py#L33-L44",
+          "version": "repo-lines-v1:sha256:d3ab06ef55d66876e595579490361f46446b819ab30cd137103737df70747b56:eyJzZWxlY3RlZExpbmVDb3VudCI6MTIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImY4MjA5YTMyYjkwNDc3NDFhMmUyNTM3ZmQ4ODdhNDUzMTNkNDQ3ZjY0OWE1NGUxNDUzZTE3MDY3Njk4ODkxMDciLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImZhZmJhMDUyN2MzOTUzYzRiNmUwZTViNTczOWJhODM2MTJmODA1M2JjZGM5NDY2NzMwMTkzY2QxZDU5MGI0MDgiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjlhYmE5YmNkZmIzZThjMWRjNzNiMTUwMTJmYTc2YjI2NDFkMWM2NDllNzAzNDA3MGI0NjZjOTQ5YTk2YjBjY2IiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjlmYWFiMzFmZDVlN2Q4ZWEzZjhhNTcyZTc2MWNhYWMyYmJkMjUzYmZmNTE3MjBhMzVhMDJhN2QxMWFjYzdiOWYifQ"
+        },
+        {
+          "resource": "repo://apps/api/tests/test_api.py#L122-L138",
+          "version": "repo-lines-v1:sha256:aef970a7b77fcd09bf9af6a807ed737a4f6b43b5d731adfca6ec35610939b152:eyJzZWxlY3RlZExpbmVDb3VudCI6MTcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImYzY2Y0ZTg1ODhiMmZiOGI2NDYyNjUzMzkyMWIwN2JhY2NkZWQ0NTIzY2ZhYjQyNzI4YTZlMjljZGE4NjY4ODQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjUzN2FjMjhhNjNjN2MzNmUxZjFlYTExZGE2NGFjOGExYWZmN2NlMTlmYzAzOGE5OWY2MjU4MmEzOGY5ZDU4ZTgiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjhjYzRhN2QxY2M3OTZhYmEzZTQ2NzIzMzI3ZjUxN2U5ZjgxMTk4MmQyNTBmMDcwMjk4NmU0YjU3NjRhZDk1ODkiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQ1OWJjMzdjOWIzZWJmMWRjZGVhODJiYTcwMzBhOTQ5MDQwNmZmNDY2OGQ3MDE4NDNjMDRmOGU5NWJhZTQ0ODMifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_b76f42956cfc4782a0641f40fa3a7645",
+      "statement": "Public tables have no row-level security. agent_reader is a nologin role that can SELECT only the agent views after SET LOCAL ROLE inside a read-only transaction, which does not make the single-user local app safe to host as-is.",
+      "evidence": [
+        {
+          "resource": "repo://apps/api/finance/agent/sql_runner.py#L43-L53",
+          "version": "repo-lines-v1:sha256:7cf2327701def6b85d46b52be1e3db35384023ecd0c72a25c182ed1b561d0742:eyJzZWxlY3RlZExpbmVDb3VudCI6MTEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijg3Y2ZmM2YxNzg0MmRlYzZlN2U5MWMzZTNiOGZjZTBhODIyZmMzMTEyNzM4MWIwMGY0NGE5ZjEzMzMzMDNhMmUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjUxODUzNGQ4Zjc0MTMyN2UxNmY0M2U2MWRlY2UzZTNjODQyYjFkZjkzZjA0ZjEyZGQ2NDg1YjkzOGFmYzJiNGQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImQzZDE3MWRlNzU0MzFhMDIxYTBkOTRmYTc2ZmFiZjBkNzEzOWM4OThjMWEwYjQ0YjQzY2E2MDkwM2ZhMWI4NDUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImQ5OTk2NWE2MzM5OWQ0MjdkZDBmMWJhZDczZWU2YTM3MDU1MWZiMzUwMTA1MGYwMGVhMGZlNmIyMDY2NDM2MDAifQ"
+        },
+        {
+          "resource": "repo://docs/architecture.md#L146-L152",
+          "version": "repo-lines-v1:sha256:db80b60e9ed1235e176f1937f926252d2c36d26a3793dc34aca316a00b5ae946:eyJzZWxlY3RlZExpbmVDb3VudCI6NywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiOWY2NmRhYWZmYTc1ODlkYzZjMjVlNDQ5YWM0OTU3YjQxMmQ3OTIyNzY5YzMxZDcyMjJjNmYwYjI4OWVlYmQ2NSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiYzg0OTc3ODcyYTgyMmFhZTY5YTRhYjYzOGQzY2FjYjQ3MDcyZGQxMDYyMTJhMWY2ZGFmNTlkY2ZiZWRkYThkYSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZWFjNzFjNjE3MDkxNmVhMjBlOTZlZTYyNDFiYzkxZjUyMDA1N2YyOGRmNmUwOWJhY2JhMDlmNjYyNzdhYmJkNiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjAsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZTNiMGM0NDI5OGZjMWMxNDlhZmJmNGM4OTk2ZmI5MjQyN2FlNDFlNDY0OWI5MzRjYTQ5NTk5MWI3ODUyYjg1NSJ9"
+        },
+        {
+          "resource": "repo://supabase/migrations/20261012000000_slice4_chat.sql#L4-L38",
+          "version": "repo-lines-v1:sha256:5a6fce51837cb1bf163cd9f1c75175fe2646c88b6f5538a6207f65f3085c8808:eyJzZWxlY3RlZExpbmVDb3VudCI6MzUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImUyMzlhODg1N2Y4MTYzMjAyNjVlYjQ4YzM0MWFlMTdhYTNhN2Y1NjU1NTlhODE5ODcwNDdkZjM0MjU1NWFhYzAiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImM1ODYzNjFhMDgxMzVhNTEwM2Q4NzFiNmZkZmRhNjQxMTcyMzMxNDZiN2MwOTAyOGUzMGM2NjZkMzNkN2JhMjkiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjIxMWJkNjYzNTk5MWE1OTYxYzBhM2RmMGI0ZmY5ZDBiNGI1NmZmM2VjMzMzMTE3MmI2YTZiYmQ2YzQ0YmNiMzUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjkxYzQ5MGFlY2Y3Y2VlZTFjNjNiMmMyYWRiMGNlYTdlYzRlMWUyNDA4ZDM4ZWU1NDJkNWZkOTIzMTQxYmQwMDUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_2872584e87aa405697650611b68f5e8d",
+      "statement": "category_threshold 0.95 gates only jev-sourced categories into needs_review; brand_threshold drops new names, merge_threshold and merge_suggestion_floor decide merges, and subscription_threshold is a strict greater-than that merchant defaults can override.",
+      "evidence": [
+        {
+          "resource": "repo://apps/api/finance/categorization/categorizer.py#L60-L75",
+          "version": "repo-lines-v1:sha256:82b8cb8bcf52df498af3678de5c2725378357c70cc79d3fa0bece65829b3d046:eyJzZWxlY3RlZExpbmVDb3VudCI6MTYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjUyNDI0NjZjMWUzOTY2MWNjY2Q3MDY3MzBhYzVjOGJjNmFjZDA2MzcwYjlhNDNmZTQ4OTQ1NGUwYjBhMTJhNDQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImUyNDUxZDg1OTAxMjNmOTI1NTlkYzcxODYxNWUxMjJhODc5NmNmM2Q5NzY5NWZmYTMwZmM1YjNjY2QxY2IzNjYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImI5MTBiZmU2Nzc1YWRkMjk0MGQxYTNkODJhYmMxMjE4NmNlMTY1NmZmYWVjZDA1YTEzMGUyMmNlNjk3NGMyNmEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjEzMjQzYTE2YmEzZTU1YmE1MTdjYzUwZTVkOTc0YzBhYTYxNTA2NzRmYzE2NTIzYWQ4ODI4YmUyY2MwZjJjMjQifQ"
+        },
+        {
+          "resource": "repo://apps/api/finance/categorization/merchants.py#L80-L102",
+          "version": "repo-lines-v1:sha256:13d0829c56d60fe00d308cb484ab27dab23c1b1284a118d6728e80427d30895d:eyJzZWxlY3RlZExpbmVDb3VudCI6MjMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjZjZjAzODg0OGZlZmJkNjQ2YzEzMTIwZjY4NDcwNWRhNTUxMjhlYjI2MWFhNjkwODQ0MTdhNjM3ZmJjYmRiYzMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjU1MDMyZTk2NGQwOTMyMzUxZTVkMTg1MjY5MjgxYjE3MWEzYTA5YjA4YjI4NmU2NjFlYTQ3MDMyM2M4MmViNGQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjljOWEwYzI1OTIyNjI1NTZhYzVhNjU1ODAxOTUyM2M2Y2E1NTExYjU0YTY2MzQ5MGEzNTlhNTZhZDc4OTUzMzAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImQ0Y2JmNGFjZTRlYzJiYzExZmRlOWY3NGZlMDc3NTlkOTRhYzc1ZDNkZjEwYmE4MzAwMzczMmIzNDNmYjU4NTMifQ"
+        },
+        {
+          "resource": "repo://apps/api/finance/settings.py#L75-L82",
+          "version": "repo-lines-v1:sha256:2933e38cd86f5177f31f105e1cfc15d0e56d3330365401070476e1fba7ab5cf5:eyJzZWxlY3RlZExpbmVDb3VudCI6OCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYzQ2NzlkOThiZTljODc4YjM3YjdjODI4MjQ1ZDc4OGFkM2Y5NjU2NDg3Y2RjMTc4YmRjZTU3OGU5ZDdjNDVjNCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNjQzNmMxY2RkMWQwZmJiZjQxYjdlY2YxZjkzMTZjOGU0ZDQyMDk1ZDdkNWYwYTM1OTI3N2RiZTdmYzY1ZmZjZiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiYWRmNWE1ZGFmMjBiZDUxZWFiNzAyNmM0NGQ0NjA2ZWZlYjM5MDA1NWI4OTI5Mjc0NTlkYTUxNjBmYTg1YWQyMiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMDU1NDQ2YjI1YmQxNzc5NzA2ZDcwMjk5ODdiNmIyYzAwZGJhZWQ0YTkxMTlhM2Q4NjBhMGYwMWUzZmRmM2FhNSJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_18c6d3f84d0647dba6407dfa46dce6fe",
+      "statement": "transfer_pattern and transfer_window_days pair opposite equal amounts on different accounts from description_raw before any jev call, defaulting to a case-insensitive transfer regex and a two-day window.",
+      "evidence": [
+        {
+          "resource": "repo://apps/api/finance/categorization/pairing.py#L22-L41",
+          "version": "repo-lines-v1:sha256:c895abe302ae71d618bdd8b04e02f3a1f89e624eed67f9cb983d2065a9c0f86f:eyJzZWxlY3RlZExpbmVDb3VudCI6MjAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjcxMzI0NjM0YjljMGMwMWU3ZGIyNzRiNGNmZWI2YWZkNjE1MWJlN2VkYWRlYzY3MWM4NzQwZmQzODczMTM2MDkiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImFlNmEyOWJkOTMyOTkwMzZhMWQ3MGVjZDQyNGUzMjY3ZTQzMTYyODhkOTVmNTk5MzM0YTljZDQyZmZmMDVkOGQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjA3YmIxMjUxZTlmOGZlYTIzM2E2OWJhZmU0NzlmMjNlNmRjZjhmZDg4NDcyNjczOTk1NjY3NTZjNDRjMzY1YTEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjkxODZmYzllYzU2OGVkMzc0NTZmZjRlZjdiOGJjMDI2NzFlNDJhZTQ0ZjQ4ZThkMDViZTVmYTJlOTFhZTE5MDMifQ"
+        },
+        {
+          "resource": "repo://apps/api/finance/categorization/pairing.py#L67-L70",
+          "version": "repo-lines-v1:sha256:5abe0242be718f828677b61367ab966212778aef20fea07cfd14ee41cd5d9ca8:eyJzZWxlY3RlZExpbmVDb3VudCI6NCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNzI0ODk4MDAwMDc0ODVlNDlkMGRlYzA4ODRmYjAzYTZkMmNjNjc4M2Y1MzhkOWQxNzRmZmNkNTI0NTc4M2U5YSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiOGM2YTg3NjM4YjdmNDM5MzdmNzIxY2NiNDgwOTk3MWNiNWY3Mzk3MTEzZjJlNTI1ZGM4Zjg4OWFkNDEzNjNjNSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMzhhZTYwYTA5YTc4NGI0N2VhMDg1MzE2YmZmOTJjNjgwMTFkZDY3MGQ4OWYyOGRhZjVkYTliYjZhZTQxYmM0MiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNGU5NzQ4YWNlODlkYjJhMmFjYzExZThlOTg1MGExZTcyNmE0YjhjOWE0MjRiMGQ5NjIzNTY3MmMyOGU2NmM2MCJ9"
+        },
+        {
+          "resource": "repo://apps/api/finance/settings.py#L75-L76",
+          "version": "repo-lines-v1:sha256:55587bf0d00a00dc9657bb69f8f63affe6d686b55f21d8c96565d321c3c1e515:eyJzZWxlY3RlZExpbmVDb3VudCI6MiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYzQ2NzlkOThiZTljODc4YjM3YjdjODI4MjQ1ZDc4OGFkM2Y5NjU2NDg3Y2RjMTc4YmRjZTU3OGU5ZDdjNDVjNCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMTAwNzcwOGZlOGQ1YmRjNWJjZjU0ZjNkZmYwN2JkZDdhM2ExZDg2YTEyMGZjYTVmMjVhNjY2YTY3NTQ5NjBlOSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiYWRmNWE1ZGFmMjBiZDUxZWFiNzAyNmM0NGQ0NjA2ZWZlYjM5MDA1NWI4OTI5Mjc0NTlkYTUxNjBmYTg1YWQyMiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNGU4Njk0OWQ3Y2FkMWM5ZWNkODdhZjg0NzI1NWQ1N2Y2MWI5MDZhYTdmYzNjZDBhNDVhYWJhMzc3NjhhN2ZiYiJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_ab2ee84ef88144aeb1b1c5cdd2648aa6",
+      "statement": "ChatSettings defaults bound model choice, summary and tool-result clearing, per-turn SQL and model calls, SQL timeout and row display, pool wait, and title length, and max_model_calls_per_turn must stay strictly above max_sql_calls_per_turn.",
+      "evidence": [
+        {
+          "resource": "repo://apps/api/finance/agent/middleware.py#L79-L104",
+          "version": "repo-lines-v1:sha256:804fb5bd61dfa40de0e4ca2b848c572c36416ebe224988146acb4c81ad076aa9:eyJzZWxlY3RlZExpbmVDb3VudCI6MjYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImMxMTI1NmY0M2FjNDc1ZWUyNmIwNGQ5MThhYzRkMjc2Y2FmYTk0OTdjNjhjOTM5ZTc2ZmNmZWI1MThiZjA3OWQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImFkZDI0NDU4MmI2ZmIwM2QyM2I4NDE1YWJlY2QzNDZiMGM5ZjQ2NmI2Zjc1MmIwNjgxODljZTdlOWEyZGMzNTAiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjYzZmRhMjZkZWI3NDUwY2EzNjBiMzYwNzcxN2U2MzlkZGQyOGIxYzEyOGVkZTI4NDgzOWJhZmQ0MDIzY2RhMmQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        },
+        {
+          "resource": "repo://apps/api/finance/agent/runtime.py#L47-L60",
+          "version": "repo-lines-v1:sha256:10f6b7277b20a55135c1d10f22759536d30e9f031a4bed27b441cc0e7c362add:eyJzZWxlY3RlZExpbmVDb3VudCI6MTQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjJiYzQwMzYzNTk0OGIxNWJiODg4YjJmMzJlZjIzMzQ0ZGYxNjExZWMwODRkNmNiMDQzOWVlNzcyYzMzNWM1ZDgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImMwNTZhNWU3MzM3OWY1ZTAxZTgzNzA5ZTMyMDAyOThmZDExZWExMGQzNGQzNmI1ZTgzY2NhNWQ2ZTJkYjgyYjEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImI4M2Q0NzdhNmU2MDlhMDM1MjZhYTkxNjcxMTk2YWNmZDdhYTEzZDJkYmUwNmQyYWM5MmMwNTcyYWFlYjY5ZjMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6Ijk2YjJkZTQxNDY1OWRlYTU1ZTMyZGY4MDNmZTc0NGZlZjQzYTQ0MTIyOGJlY2NkOTVkMmIxOWQyMDkxNWY0OTkifQ"
+        },
+        {
+          "resource": "repo://apps/api/finance/settings.py#L15-L57",
+          "version": "repo-lines-v1:sha256:45ca4e35e2d247a0e94b5a57e0af42cbd97f58aae88f5697728be7d44db31c0f:eyJzZWxlY3RlZExpbmVDb3VudCI6NDMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjdlNDI3Nzc2ZGM0ZDgyNmIxZTc5Y2MyY2FiYzA4Yzg5ZDg0ODA3NWQzNmFkN2Q4ZmUwOTczNzNhOGVhYTUyZWYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImEyYWIwOTBiY2QxNjIwZmE2MmVhZWUxNTdhNzRmY2E2MzVhYTI5ZTEyY2JmZmQ2MThiNTc5MmQ4N2JjMDNhM2YiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjZjYmI2NWY1OTVlNGUyOTVlYzUwYTFiNWUyZjRiNzdiMmUwMjNlMWZjMTQ5YmE4YjhjMzI4MmE4OWJjNmNmZjQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6Ijc3MmM3NmQ1MmZlNTk5N2E5YmU2OTQzNjIwODZjNzAxYTFkNTUxMmYwZGJlODgxYjQxYjk1ZWM4NWQ0ZDc4ZmUifQ"
+        },
+        {
+          "resource": "repo://apps/api/tests/test_settings.py#L28-L52",
+          "version": "repo-lines-v1:sha256:dfddd2ab64ab2b54882fa8b26ea3e108a03a741e9a020de331f11c7d193e3aa0:eyJzZWxlY3RlZExpbmVDb3VudCI6MjUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjM1OTQyYTY0YTAxZGEyNTdiNzAyZTU2YTFmYWZlOTY3OTM0OGMxYzBkMzdjYzkzZDdjMjcxZjZhODkzNmYzYjciLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImI4NWQ3OGE5ZTgxODc3MDFhMjMzNDgzZjc2ZmZhYmNiNmY1MDNmNzg3ZTc2NWMwZDQwODk5ZTc5ZWJjNjY4ZjIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjdiOWRjN2QzMjg1ZWM1ZjhmMTEyZWY0MmE3MjEyZjdjZDk3Y2MwZjU4YWNkZGEyNzE1NTgxMjk5ZjhiN2EyODYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_a17879a998fd4ff492420607cd0aa2d8",
+      "statement": "jev receives bank, bank_concept, merchant_text, amount, and direction, plus candidate_name on a same-merchant call, and does not receive description_raw; card numbers are stripped from the structured text fields at import.",
+      "evidence": [
+        {
+          "resource": "repo://apps/api/finance/categorization/categorizer.py#L124-L132",
+          "version": "repo-lines-v1:sha256:c89029313ce34e881bd81f650779b856240e2a45a40a383f315895070f82ff65:eyJzZWxlY3RlZExpbmVDb3VudCI6OSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiOWVmOTQ3NzRiNmM4NDkwM2JhMjhiYjExMzkxMGZkMzdiMDFiZWVkNWQxODMwNmJkNjJlOGExMTEwNWI4NjM1ZCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZDI4MWQ1ZGJhZmU5NWU3ZTA1MGYwYTNjODI2NDAyY2IwMGJkZTJhYjVlNmIxMWFjMDFlMDkyNGVmMzM4NjU4OSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiOTdkYjIwZTIwNWQxZjk2NGZhYzg3MmFhNDlmMzQzZTk2MzQyYzljMWMwN2FiMjBhMTE3YjRjNTQzYjU5ODA2OCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiOWQ3ODEwMzkxM2EwNzRjNDNhNmRhMWYzNTVhMTVjMDgxMTJiMzNjN2U0NDhmOTU3MWI3ZDdjZjJmZWU0ODYwNCJ9"
+        },
+        {
+          "resource": "repo://apps/api/finance/categorization/jev_questions.py#L40-L47",
+          "version": "repo-lines-v1:sha256:9be07fa3367e694c4bb2a63c96548a228f06e81514a90851932429a5e66eb969:eyJzZWxlY3RlZExpbmVDb3VudCI6OCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZjVhMzg4OWFlZjgzYWU1MDhlNGRjODU1MjlkNTZhZjViMjIzNTlhNzg2NmVmYzJjODY0YzA5ZGZlOWQ2ZTE1MCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNDg5M2Y0MGUzNzgxZWI4OTZjODJkMDQ2YTA4MDY3YTExZTM1Y2RmMmYxZGZhZjI2ZmVhOTBiOGRiNjY3NjQxMyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNThjYjAxOGFiZmM4ZWE5MTg5NWNhNzRmYjczYjFkOTdhNjdlNzEyMzBhMzY2NmI5MjM0MmU5MTFmYWZmNzQxYyIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMDMyZDA1Njc4ZTZhMGYwYWZlOTI1NTRlOGQ1ZGI2ZDFkNWZjOTUzNTdjOGFhY2M1MWI1ZTMzMjhiN2ZkZGY1NCJ9"
+        },
+        {
+          "resource": "repo://apps/api/finance/categorization/merchants.py#L86-L91",
+          "version": "repo-lines-v1:sha256:1ad6f134e267c74d6f054287351fa716b325368d80086715e0803827d47737f6:eyJzZWxlY3RlZExpbmVDb3VudCI6NiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNTYzOTIwYjkyNDUzMmM3NTIyNDgzOTNmZmNkOWM1YmQ4ZGY0NzJmNmU5YThmYTdiODcyOGEzNzRmOTgxZmI3OCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNTkwOWE1M2E2MThkMDI4ZTFkMzAwMGMwYTdhYmNlZWNiZTVmYjM3ZjRlNTExZWZlNDY2NDNmYWQ2ZTY2ODcyZiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiYThhNDc4MTJkNGI4ZDU2MGI4NWQ1OThiNjI4NmZhMmE0ZmY1MzYxNWU3YWZjYzZhZmYwNGFmOWQ1MDIyNWIyZSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNTg4NTg3ODQ1YjIzNmVhYjBkYmZmY2Q4MTAwYTY4NDM5ODZkZGU0MTBlMzM1YzI2YjQwODJkNTIwY2RjYzFkMSJ9"
+        },
+        {
+          "resource": "repo://apps/api/finance/ingestion/structure.py#L22-L37",
+          "version": "repo-lines-v1:sha256:79eff0253c95a945a5745a2ff244d36af96def650c7acda073b7191b1a40037c:eyJzZWxlY3RlZExpbmVDb3VudCI6MTYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjYxYzE4MDQ0YjA3MTBmNzZhODljNGJlNzBmOGMxMGI3ZGQ0ZWViNGEwZmMyNTQyM2Y4NmM1NDFlN2RiODM0ODYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjkwZTE4ODVmMDkyZGEzZmMwNDE5ZDMzYzAxOGRhNmEwZGQ1MThkNjE5OWY1ODNkOWEzNjlmNWYwODU1NmU5YzAiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjY2OGRkY2NiNWNhZWQyNWEzMzQ1ZjIyNTE1OGNmYTRkNzNjYzcwYzIxYTBmM2E2M2EzNmY5YzU1NzkyZGQ4ODkiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjgwYzQ3ZjJjMTYwNDAxMGI2M2VhNGM2MDYzMzRlNzg4NTg4MjZlOTc0ZDI1MzYxMTI1NjRiMWYwYTY4NDlmNmYifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_dd5b2456b59249669198a41e33d07a5d",
+      "statement": "The chat model and its Langfuse callback receive the question, data context, and compact run_sql rows from agent views that include merchant names, cleaned bank text, amounts, dates, notes, and account names, and exclude ids, IBANs, and description_raw.",
+      "evidence": [
+        {
+          "resource": "repo://apps/api/finance/agent/service.py#L168-L185",
+          "version": "repo-lines-v1:sha256:262b5ff392b5037d66587628156dfd3e66e461cceedb339483a151f8ef3cdc1c:eyJzZWxlY3RlZExpbmVDb3VudCI6MTgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjBhYmQ5NDI3ZTdjNDI1NzZjYWZiMGRkZDhhNjgzY2VlMjc2YmFiZWViOTI5NGZjNGE2N2UyNWU4YzkyOTY2ZTkiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjRmYTE0NTIyOTE2ZjI2YWEzM2YzMjg3MmI2MzI3Y2I1NGJkNmQ0MzYxNDQ4YTgxYWQwN2YxZjZiZGZlZWM0OTciLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjAzOGQ3YzI2NGUzNjI5NmI2YmUzOGFmNjQzZjNjNjkyYWYxM2UyZmNhMzZkNmNmZjY2MGI4YWE4NTg3MjY2MWMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImRlMzI4YWNkY2VhMzk0MjcxYzk2MTAzNjhjMDUyMTExYmJjNmJkMTJiMmM3OWVjYzhlMTE1NWZlOTEwYmQyMmUifQ"
+        },
+        {
+          "resource": "repo://apps/api/finance/agent/tools.py#L13-L48",
+          "version": "repo-lines-v1:sha256:9c518b495ef360a16ec0e9b82df0b6ff7763c2fdd5ba1327343c105c889bbd39:eyJzZWxlY3RlZExpbmVDb3VudCI6MzYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjUxMTYyN2VjZjIzZDEzOTI0MTkzMTc0MWU3ZTYyMDdlYTAyNjdmN2MwYjZiMWM3ZGI5NjM2YjhjMTk1N2M4YjYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImY4NDRmMmNlZWEyNGNiNzA3ZDBjNmQwNjZkMWU5ZjI1MGEzZDAzZGY0MGY5OTc3MzBmMTQwNjJiZTBiMWFiYzciLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjFhNzA5MmQ5ZTJlODg2ZmU3ZGI0OTA4MDZlNjMxNzJiNzlkYTBkZTY4YjRjNzJjNWU3ODBmNjRkOGVlYWUwNDkiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoyLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjdmMjE1ZDU3MzgxYTE2Y2RiNzQ4NzgwYjEzMDQ2NGI2ZDlmY2U5MDY4Yjk1MzZhMmIwNjViMjg0NWZiMDllNDEifQ"
+        },
+        {
+          "resource": "repo://supabase/migrations/20261012000000_slice4_chat.sql#L4-L16",
+          "version": "repo-lines-v1:sha256:34c3116af9cfbc9375d17042158a9c70741e5b15e6491c3de05e1580e6f95536:eyJzZWxlY3RlZExpbmVDb3VudCI6MTMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImUyMzlhODg1N2Y4MTYzMjAyNjVlYjQ4YzM0MWFlMTdhYTNhN2Y1NjU1NTlhODE5ODcwNDdkZjM0MjU1NWFhYzAiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjM1MmNjYTdiN2Y2MGM1NjljNTM3YThkZGU3NmZiODUxMDI2Nzg4ZmI5ZjYxY2VjN2EwMmMwYzFjZDE5MThiNTMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjIxMWJkNjYzNTk5MWE1OTYxYzBhM2RmMGI0ZmY5ZDBiNGI1NmZmM2VjMzMzMTE3MmI2YTZiYmQ2YzQ0YmNiMzUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImQ0ZGUxNTI0ZmQyNWIyZTZhODBiOWEyZjM3NDM5YmNjZjg4MWFiNmMzZWFiMDE3MjJhMTUyNjJmNGQzZWJlYzEifQ"
+        },
+        {
+          "resource": "repo://supabase/migrations/20261014130000_display_names.sql#L34-L43",
+          "version": "repo-lines-v1:sha256:f970403fc7db3bdde135df4c9408f1f21995a6a43da2c397ee94f5e76be873a0:eyJzZWxlY3RlZExpbmVDb3VudCI6MTAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjUxZWZjNzdiY2JmOGJiOGQwZjVmYTBkZDVjMjc2YzJlMzViYWFhN2MyMGRlM2QyMDBmM2I1M2Q0MTAyNTE5NTEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjM1MmNjYTdiN2Y2MGM1NjljNTM3YThkZGU3NmZiODUxMDI2Nzg4ZmI5ZjYxY2VjN2EwMmMwYzFjZDE5MThiNTMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImZlMWNkNjY4YjAzM2U0ZGFmMTE4NTMwZjUyN2Y0NDRjYmEyMjhlMGFmY2VlNjg1YWJjNzAyNzU2NjEyYzM2MWEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_702ee2cd2d504d7bbabe50903c9859d7",
+      "statement": "With Langfuse keys set, each jev call is a generation nested under a categorize or eval span, and each chat turn is one observation with deterministic scores plus a replaceable user-feedback score; without keys the client records nothing and flushes are no-ops.",
+      "evidence": [
+        {
+          "resource": "repo://apps/api/finance/agent/service.py#L111-L158",
+          "version": "repo-lines-v1:sha256:a5588ce1ef613f00b4624e277385720407713eeb951e987fc1dd14777fadae2f:eyJzZWxlY3RlZExpbmVDb3VudCI6NDgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ3YjQwZjY2MzlhNzU1MzgwZjViZGI0ZmEwMzMzNjQ3NWVjZTEyMjdjYThhZDc3ZTFkM2RhNmY4ZWY3MDc2YTciLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImQxN2JkOThlOGRiY2RiZTk5N2YwMThkMzBmNTAwZDhiY2JhZjUyZjY0ODYzMTE3YjZjYWM0Zjk4NTlmMTMxNmMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjA3YTVkYWExYmQ3MzQzM2I4NmQ5OGI1N2IwMTVkZTY4YjQyNDk3OGJhMDk5N2YxY2U3ZWUzYmFjYzk5ZTQ3NWMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImU0MjY1ZDQ3NDA2NTcxZGE5NWZlYzUyMGJhZjRhM2U5NjJjNTRkNjU3MmEyZjNmMDVhNDJmNWI5NDIzODYzNzkifQ"
+        },
+        {
+          "resource": "repo://apps/api/finance/agent/service.py#L205-L219",
+          "version": "repo-lines-v1:sha256:de51c8a6101846c9b3e86818131162f9594e14f78cb81d66be380d6506216407:eyJzZWxlY3RlZExpbmVDb3VudCI6MTUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijg0YjFhOWI4YTc2MWE5YTBmNTIxZDViOGU4NjRhNGI2NmYwNzZiZjNiY2YzNmU5MzFmZjFiYzY5NWVlNmMzNDQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjUxMDM0ODFjNTdkMGYwZGMwZjc2Y2QyY2M4YjM2MDRjNGU4Mjk2ZGE0MTIyYWRkMTllODE3NDVkYzdlMzMxYTYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjM0YzU5MWQ4YTRmOWI1NTgzZDE3Njg2MDYwN2FiNTlkNjRlMGI1YTA0OWY0YzI4ZmE0OTMyN2ViZGU4NjhiNDUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        },
+        {
+          "resource": "repo://apps/api/finance/api/chat.py#L100-L114",
+          "version": "repo-lines-v1:sha256:61b0e2eb290c2732b947a63918ea20e8201efcfe5735eac3676f697063c73a3b:eyJzZWxlY3RlZExpbmVDb3VudCI6MTUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjNjZTg5ZDBhNjJmNzNlMDVkYTkwZTlhY2EwYmZmMmJlNzc5ODMyYWIzZDk4ZGM1YmQ2ZjY4YjY4YTdhYTVlZjEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjU5MDlhNTNhNjE4ZDAyOGUxZDMwMDBjMGE3YWJjZWVjYmU1ZmIzN2Y0ZTUxMWVmZTQ2NjQzZmFkNmU2Njg3MmYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjgxZTQ2ZjA2ZGVkZGMyNmZhZGE5OTgyMjBjODVlYzI3ZDExMmFkN2M2YjU4ZTFiYmZlYTk3ZGZkZDY1MTFmMDQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImJkNmIzMzVkN2RkNmY5YTJjYjU5ZmJhMjY5MWY3NmEzODk5ZDFlMDY2MjY1YTQ0ODI2MzNkNjYwY2ViMmFiMTMifQ"
+        },
+        {
+          "resource": "repo://apps/api/finance/categorization/jev_client.py#L80-L100",
+          "version": "repo-lines-v1:sha256:316ab2b95e5c4d0b93cde010ca51a09d5e9d513b6987a107b5803b90fcd68671:eyJzZWxlY3RlZExpbmVDb3VudCI6MjEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjkxMzYwYmFmNDgzMTU0MDgwZWQwNjI2NWNhZjk1N2Y3ZmJjOGM4ZTQ5ZWEyYWU3NjA2ZmRhYTg1YWUyNTcyZjQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjUxMDM0ODFjNTdkMGYwZGMwZjc2Y2QyY2M4YjM2MDRjNGU4Mjk2ZGE0MTIyYWRkMTllODE3NDVkYzdlMzMxYTYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjhjNzU2OTVmOGUzZGUzZmQ5Y2FiYzZjMGNjNTE4YjRmODNjMWI3ZDZkZDRmYTYyODZlZjIxZGQwMTE3ODYwNTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoyLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjNiNmVlYWYzNTY0ZjljMmE5ZWM5OTBmZjhlN2FjMGI2ZGQ1NDBkOWQ4OTZmYjMzMTZhODJiZWNmMTY2NDRhNjYifQ"
+        },
+        {
+          "resource": "repo://apps/api/finance/categorization/store.py#L178-L189",
+          "version": "repo-lines-v1:sha256:a5b664c76211c2d99126df00c5706e98009fa4137bc78a078f59fcda92fc1414:eyJzZWxlY3RlZExpbmVDb3VudCI6MTIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjU5YzcxNDk3Y2ZjODJlNmZlMGZmZmYwYjA2MjM2NWVmNDk3MTUzODhhNjU0N2I5N2ExMzAwZjdlZWEyOGYwMmQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImQ4YmE2NGZjY2E0YTQ1N2UzZGY5NjIzNTE3ZTM3MWMzYmI1NmEwNDAwNWFhZjliYTI2MGVmZDMyNjM3YzkyMmEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImVmMzEwODcwMzc3YTZiOTc1NmZjNWY5NGM2MGY3MzJkNmUyN2IyNzNiYTkxMjAxNTViZjM0ZWVhYTAyOWJmNDciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImM2MjNlNWNjM2EyNzUwMzBjMDdlMjJlZGNkYzFkMWY4NjhiMzY0MWFmZjUyMWJjMGZmZTgxNTFjNDY2OTg2YTgifQ"
+        },
+        {
+          "resource": "repo://apps/api/finance/tracing.py#L11-L23",
+          "version": "repo-lines-v1:sha256:f91bb74e1d5b17566c40b7f3376e9324d6a374a63e422aaa642586e3ab1cd4ed:eyJzZWxlY3RlZExpbmVDb3VudCI6MTMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjJlOWNjNWY4ZmFjY2ZkZWJlZTk4ZGE5OWRlMWY3NDdhZGM1OWRjODg3MzRmMjEwYWJmNDMwMjlmYmIzY2YzNDEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImYzN2I2ODNlNWMxNjk2Njc2MzE0YmI0MzQ1MmI5NDUyM2FhYmQ0MmE3MWViMTlkMjUzMjM5YzI5ZjRlODliNTMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjE0NDMyOTM5MTAwMjRmMWI1MzA5YjU0YjU2ZTU2MjhlMDBkNzg0MzcyNTg4NDVkOGEyNjJhM2I3OTA5MzA2ZDQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_4ea8bed536ac4556b2ad8c3c53c41459",
+      "statement": "jev_concurrency defaults to 8 and rejects values below 1, because a zero semaphore would wait forever for the first jev call.",
+      "evidence": [
+        {
+          "resource": "repo://apps/api/finance/categorization/jev_client.py#L66-L68",
+          "version": "repo-lines-v1:sha256:4a1fd86b6aebcac362357a8081f7efd2a3f6f96023e7368ac5b95ad5690456bb:eyJzZWxlY3RlZExpbmVDb3VudCI6MywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMjgwOTdjNmMwOTk2NzBiOTQzOGYzYzFmNDFlN2YzODM2NzU4ZGZlOGU4OTUwNmNmZDRiMzg1N2YyOWQzZDllYyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNjQyOGY1YTA0ZjgyNmEzYTdmZjYwYmQzMzlkZjUzYjA4M2ZlMDIzZmI0OTZkYmYxMDc5OWE2NTI1MzZmZDZkZCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNWUzZDlmOWViYjlmZjNiMGViMTk1M2IyMmM4YmRmNmMxYzA5MmFmMmRjMDVlZDUwODAyZTMzMjc0ZGVjNmYwYSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiOWE2ODA4OTAzMmVhNDIwZjM0YTI0MzkyY2E3OWU1N2YyYjZlMzk4NzllODIzYjYyZGE4ZmJiNmNkN2Q4YTg4NCJ9"
+        },
+        {
+          "resource": "repo://apps/api/finance/settings.py#L77-L77",
+          "version": "repo-lines-v1:sha256:6506cc91bbab608b384190c5ea40d0d4cdcf6175b39983549e4868b72d0942c9:eyJzZWxlY3RlZExpbmVDb3VudCI6MSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNjUwNmNjOTFiYmFiNjA4YjM4NDE5MGM1ZWE0MGQwZDRjZGNmNjE3NWIzOTk4MzU0OWU0ODY4YjcyZDA5NDJjOSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNjUwNmNjOTFiYmFiNjA4YjM4NDE5MGM1ZWE0MGQwZDRjZGNmNjE3NWIzOTk4MzU0OWU0ODY4YjcyZDA5NDJjOSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMWRkMzEwM2RlYTE1MjdjMGRhZjRjZmZiMmU4ZWIxZDJlNWJkYjUyZjc5MTkyNTg1NDQyNjM0NDg2ZTJjMTlkOCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNjFiMGY0ZDA5MTM0YWNiNTFhNzQ5MzEzODg5ZGVhYmQ0NDRiNjcyOGI0MTRmN2I3NzcyZWVhYzZjNGM0YzI4ZCJ9"
+        },
+        {
+          "resource": "repo://apps/api/tests/test_settings.py#L22-L25",
+          "version": "repo-lines-v1:sha256:064014f0bb0cae5a0f99de861b83fcd1af70b69f565cd04beb40132ec6367bef:eyJzZWxlY3RlZExpbmVDb3VudCI6NCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMGFhNTMyODg4ZDUwYjRjZTQwY2I0MDdhODg4MzQ4Njk2YTA1NzI1ZmI4YmNlN2M2M2U1ZWU0ZWJkZGExOGUwNSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZDc0MjU2MGEyODc1OTdhMDJiZWVjN2ZhZWQxYjVmODkxY2ZhZmM2MWYwOWJmOTI5MTlhYmFjZDgyNmMzZmUxMiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMjUzMjFlNTFmYzViYTc0YjgzYjAyNTNjOTEwNjAwYmQ5YjVhOWMwMTcyNmVlYjcxZmZlZjE3NWM0Nzk4N2Q4ZCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiODlmMzk3MzY4YzBmNGZhYjBjNTZjMzJhZGIzMzlmMzYwZTlhMzg1M2FkYzI4MjdhNGQyNDFlMGJiMjAyMzYyZCJ9"
+        }
+      ]
+    }
+  ],
+  "verification": {
+    "by": "openwiki/0.7.2",
+    "at": "2026-10-17T19:58:49.962Z"
+  }
+}
