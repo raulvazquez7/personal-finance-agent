@@ -1,0 +1,19 @@
+# Secrets and personal financial data (also absent from this worktree)
+.env
+.env.*
+!.env.example
+data/
+docs/superpowers/spikes/*/output/
+dogfood-output/
+eval-output/
+# Tooling that is not this project's code
+.claude/
+.agents/
+.superpowers/
+skills-lock.json
+node_modules/
+apps/web/.next/
+supabase/.temp/
+supabase/.branches/
+# Implementation plans: task-level history, superseded by code
+docs/superpowers/plans/
