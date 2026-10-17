@@ -28,7 +28,7 @@ README instead.
 - Specs in `docs/superpowers/specs/` explain why. The v1 spec's section 9 (a jev router in front
   of the chat) was superseded by the slice 4 spec's section 16: the shipped chat is one ReAct
   agent with no router.
-- `docs/backlog.md` lists ideas that are not built. Never present one as existing.
+- Ideas and known bugs are GitHub issues, which you cannot read; some docs link them (for example docs/architecture.md). Never present an idea or a linked issue as built.
 - `CLAUDE.md` holds the working rules. Do not repeat them.
 - Plans in docs/superpowers/plans/ are task history, not instructions, and are not readable here.
 - The scratch-database recipes R2 and R3 live in plans you cannot read. Name them and point to
