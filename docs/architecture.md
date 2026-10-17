@@ -108,11 +108,11 @@ The v1 spec's section 9 describes a jev router in front of the chat. That router
 The [slice 4 spec, section 16](superpowers/specs/2026-10-12-slice-4-chat-design.md) is the
 amendment.
 
-Known gaps, from [the backlog](backlog.md):
+Known gaps, tracked as issues:
 - The agent is told to answer with a figure it queried in the same turn, but nothing checks that
-  it did ([item 8](backlog.md#8-numbers-the-chat-agent-can-be-trusted-with)).
-- There are no chat evals ([item 6](backlog.md#6-chat-evals)).
-- The agent cannot answer balances yet ([item 5](backlog.md#5-account-balances-in-the-chat)).
+  it did ([#29](https://github.com/raulvazquez7/personal-finance-agent/issues/29)).
+- There are no chat evals ([#27](https://github.com/raulvazquez7/personal-finance-agent/issues/27)).
+- The agent cannot answer balances yet ([#26](https://github.com/raulvazquez7/personal-finance-agent/issues/26)).
 
 ## Money
 
@@ -141,12 +141,12 @@ the raw bank description (`description_raw`).
 | [Slice 4 spec](superpowers/specs/2026-10-12-slice-4-chat-design.md) | The chat agent as built |
 | [Chat prompt](../apps/api/finance/agent/prompts/system.md) | The chat agent's system prompt |
 | [v1 spec](superpowers/specs/2026-09-22-personal-finance-agent-v1-design.md) | The original design. Amended: do not read its section 9 as the shipped chat |
-| [backlog.md](backlog.md) | Ideas that are not designed or built yet |
+| [Issues](https://github.com/raulvazquez7/personal-finance-agent/issues) | Ideas and known bugs that are not designed or built yet |
 
 ## Limits
 
 - Reads BBVA and CaixaBank PDF statements only.
-- Chat figures are not checked against the queries (backlog item 8). There are no chat evals and
+- Chat figures are not checked against the queries ([#29](https://github.com/raulvazquez7/personal-finance-agent/issues/29)). There are no chat evals and
   no balances.
 - The `public` tables have no row-level security. This is a single-user local app, not a hosted
   one.
