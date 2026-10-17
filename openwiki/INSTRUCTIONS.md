@@ -30,6 +30,9 @@ README instead.
   agent with no router.
 - `docs/backlog.md` lists ideas that are not built. Never present one as existing.
 - `CLAUDE.md` holds the working rules. Do not repeat them.
+- Plans in docs/superpowers/plans/ are task history, not instructions, and are not readable here.
+- The scratch-database recipes R2 and R3 live in plans you cannot read. Name them and point to
+  CLAUDE.md, which says where they are; do not describe their steps.
 
 ## Never
 
@@ -37,3 +40,5 @@ README instead.
   the metrics in `docs/evals/HISTORY.md` and numbers from test fixtures.
 - Describe the contents of `data/` or of any ignored path.
 - Copy the README or `docs/architecture.md`. Link them.
+- Present conversation_history/ or skills/ as repository directories: they are OpenWiki's own
+  mounts.
