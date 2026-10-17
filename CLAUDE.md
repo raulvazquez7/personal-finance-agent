@@ -15,16 +15,33 @@ Money rules (what counts as income, spending, transfers): `docs/money-rules.md`.
 
 ## Workflow
 
-- Superpowers: brainstorm → spec → plan → subagent-driven-development, TDD,
-  verification before claiming done. One plan per delivery slice.
-- Models: the session and every subagent run on Opus. `.claude/settings.json`
-  sets `model` and `CLAUDE_CODE_SUBAGENT_MODEL`; never pass a smaller model to
-  the Agent tool for implementation or review work.
+- Always work with Superpowers in this repository, small tasks included: start
+  with `superpowers:brainstorming` (name the path: spike, bounded or
+  architectural, and wait for Raul's yes), then spec → plan → subagent-driven
+  development with reviewers, TDD, verification before claiming done. One plan
+  per delivery slice.
+- Prefer subagent-driven development whenever the slice can be split into
+  independent tasks and that split is worth it.
+- Spec and plan usually live in one chat; implementation starts in a fresh
+  context. Keep a small change in the same chat when a new context would only
+  add friction.
+- On Grok 4.7, hand off to a new chat with a clean context when the session
+  reaches or nears 500K tokens.
+- Models: the session and every subagent run on Grok 4.7 Extra High. `.claude/settings.json`
+  sets `model`; never pass a smaller model to the Agent tool for implementation or review work.
 - Everything in English: code, comments, docs, commits, UI copy.
 - Simplicity is a requirement: 15 readable lines beat 30 clever ones, use
   libraries the way their docs recommend, one responsibility per file, no
-  abstraction for a single caller. Check `context7` or official docs for
-  version-sensitive APIs (LangChain, Langfuse, typesafe-sdk, Next.js, shadcn).
+  abstraction for a single caller.
+- Before writing version-sensitive library code, read the current docs through
+  Context7, or the official docs when Context7 has no page. Match the
+  library's documented practice (LangChain, Langfuse, typesafe-sdk, Next.js,
+  shadcn, the AI SDK, and whatever else the change touches).
+- When an implementation changes something a person can see or operate, verify
+  that flow with [agent-browser](https://github.com/vercel-labs/agent-browser)
+  before claiming it works. Load `agent-browser skills get core` first. Open
+  the page, do the action, and read the result back. A first-render screenshot
+  is not the check.
 - Do not reuse code, prompts or domain logic from Raul's former employer's
   repos. Generic conventions only.
 
@@ -64,10 +81,9 @@ Run the API and web first; pages live at `http://localhost:3000` (`/`, `/spendin
 `/income`, `/merchants/<id>`, `/transactions`, `/subscriptions`, `/chat`, `/chat/<id>`, `/review`,
 `/imports`, `/settings`).
 
-- Before claiming a task or PR that touches `apps/web` is done: check the
-  affected flow with `agent-browser skills get core` (open, snapshot, act,
-  re-snapshot), e.g. upload a PDF on `/imports` and read the counts. Not on
-  every small edit.
+- Before claiming an implementation that changes a user-visible flow is done:
+  check that flow with `agent-browser skills get core` (open, snapshot, act,
+  re-snapshot), e.g. upload a PDF on `/imports` and read the counts.
 - Once per slice, before merge: one `agent-browser skills get dogfood` pass
   over the whole app, report in `dogfood-output/`.
 - Pass absolute paths to `upload` and `screenshot`: the daemon does not share
@@ -92,6 +108,8 @@ Run the API and web first; pages live at `http://localhost:3000` (`/`, `/spendin
 - jev (`typesafe-sdk`) is used only for transaction categorization; the chat
   agent is an LLM (grok) over the semantic layer. Deterministic code for dedup,
   transfer pairing, SQL safety, aggregations.
+- The product chat agent stays LangGraph in `apps/api`. The AI SDK
+  (`useChat`) is only the browser transport.
 - The chat agent reads only the `agent` schema, as `agent_reader` in a
   read-only transaction; never widen its grants.
 - Pydantic models at every API boundary; SQL migrations in
