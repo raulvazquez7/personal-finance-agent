@@ -7,11 +7,20 @@ Income stays near 7,540.31 a month and expenses between 3,700 and 4,300. Every n
 """
 
 import random
+import sys
+from calendar import monthrange
+from collections import Counter
 from dataclasses import dataclass
 from datetime import date
 from decimal import Decimal
+from hashlib import sha256
+from uuid import uuid4
 
+import psycopg
 from psycopg.conninfo import conninfo_to_dict
+from psycopg.rows import dict_row
+
+from finance.categorization.jev_questions import match_key
 
 CENT = Decimal("0.01")
 MONTHS = [(2025, m) for m in (10, 11, 12)] + [(2026, m) for m in range(1, 10)]
@@ -136,3 +145,121 @@ def require_scratch_docs(db_url: str) -> None:
         raise SystemExit(
             "refusing: the synthetic ledger loads only into a database named scratch_docs"
         )
+
+
+DIRECT_DEBITS = {merchant for _, _, _, merchant, _ in FIXED} | {"Bright Current"}
+
+INSERT_TX = """
+insert into transactions (account_id, import_id, booked_at, value_date, amount, description_raw,
+    merchant, dedup_key, tx_type, category_slug, category_source, merchant_id, merchant_source,
+    is_subscription, needs_review, transfer_pair_id)
+values (%(account)s, %(import)s, %(day)s, %(day)s, %(amount)s, %(raw)s, %(text)s, %(key)s,
+    %(tx_type)s, %(category)s, 'user', %(merchant)s, %(merchant_source)s, %(sub)s, false, %(pair)s)
+"""
+
+
+def _description(row: Row) -> str:
+    if row.category == "own_accounts":
+        return "TRASPASO ENTRE CUENTAS PROPIAS"
+    if row.amount > 0:
+        return f"TRANSFERENCIA RECIBIDA {row.merchant.upper()}"
+    if row.merchant in DIRECT_DEBITS:
+        return f"RECIBO {row.merchant.upper()}"
+    return f"PAGO CON TARJETA {row.merchant.upper()}"
+
+
+def load(db_url: str) -> None:
+    require_scratch_docs(db_url)
+    rows = build_ledger()
+    with psycopg.connect(db_url, row_factory=dict_row) as conn:
+        if conn.execute("select count(*) as n from transactions").fetchone()["n"]:
+            raise SystemExit("scratch_docs already holds transactions: drop and recreate it")
+        tx_types = {
+            r["slug"]: r["tx_type"] for r in conn.execute("select slug, tx_type from categories")
+        }
+        if not tx_types:
+            raise SystemExit("no categories: run `finance seed` against scratch_docs first")
+        accounts = {
+            name: conn.execute(
+                "insert into accounts (bank, iban, name) values (%s, %s, %s) returning id",
+                (bank, iban, name),
+            ).fetchone()["id"]
+            for name, (bank, iban) in ACCOUNTS.items()
+        }
+        merchants: dict[str, object] = {}
+        for row in rows:
+            if row.merchant and row.merchant not in merchants:
+                merchants[row.merchant] = conn.execute(
+                    "insert into merchants (name, match_key, confirmed, category_slug,"
+                    " is_subscription, cadence) values (%s, %s, true, %s, %s, %s) returning id",
+                    (
+                        row.merchant,
+                        match_key(row.merchant),
+                        row.category,
+                        row.subscription,
+                        "monthly" if row.subscription else None,
+                    ),
+                ).fetchone()["id"]
+        statements = Counter((r.account, r.booked_at.year, r.booked_at.month) for r in rows)
+        imports = {}
+        for (account, year, month), count in statements.items():
+            filename = f"synthetic-{account.lower()}-{year}-{month:02d}.pdf"
+            imports[(account, year, month)] = conn.execute(
+                "insert into imports (account_id, filename, file_sha256, rows_total, rows_new,"
+                " rows_duplicate, period_start, period_end) values (%s, %s, %s, %s, %s, 0, %s, %s)"
+                " returning id",
+                (
+                    accounts[account],
+                    filename,
+                    sha256(filename.encode()).hexdigest(),
+                    count,
+                    count,
+                    date(year, month, 1),
+                    date(year, month, monthrange(year, month)[1]),
+                ),
+            ).fetchone()["id"]
+        pairs: dict[tuple[int, int], object] = {}
+        for i, row in enumerate(rows):
+            month = (row.booked_at.year, row.booked_at.month)
+            conn.execute(INSERT_TX, {
+                "account": accounts[row.account],
+                "import": imports[(row.account, *month)],
+                "day": row.booked_at,
+                "amount": row.amount,
+                "raw": _description(row),
+                "text": row.merchant.upper() if row.merchant else None,
+                "key": sha256(f"{i}|{row}".encode()).hexdigest(),
+                "tx_type": tx_types[row.category],
+                "category": row.category,
+                "merchant": merchants.get(row.merchant),
+                "merchant_source": "user" if row.merchant else "none",
+                "sub": row.subscription,
+                "pair": (
+                    pairs.setdefault(month, uuid4()) if row.category == "own_accounts" else None
+                ),
+            })  # fmt: skip
+        problems = check(conn)
+    if problems:
+        raise SystemExit("\n".join(problems))
+
+
+def check(conn) -> list[str]:
+    """Compare v_monthly_summary with the targets; print the months as they stand."""
+    got = conn.execute(
+        "select month, sum(income) as income, sum(expenses) as expenses"
+        " from v_monthly_summary group by month order by month"
+    ).fetchall()
+    problems = []
+    for row in got:
+        year, month = (int(part) for part in row["month"].split("-"))
+        print(row["month"], row["income"], row["expenses"])
+        want = (Decimal(INCOME[(year, month)]), Decimal(EXPENSES[(year, month)]))
+        if (row["income"], row["expenses"]) != want:
+            problems.append(f"{row['month']}: got {row['income']} / {row['expenses']}, want {want}")
+    if len(got) != len(MONTHS):
+        problems.append(f"{len(got)} months in v_monthly_summary, want {len(MONTHS)}")
+    return problems
+
+
+if __name__ == "__main__":
+    load(sys.argv[1])
