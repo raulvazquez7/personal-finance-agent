@@ -1,8 +1,7 @@
 # How tally ai is built
 
-This page is for someone checking the code. It explains what each part does and why, and links
-to the source of every claim. It is not the spec, the prompt or the API reference: those are
-linked at the end.
+This page is for someone checking the code. It explains what each part does and why, and points
+to the files that implement it. It is not the spec or the prompt: both are linked at the end.
 
 ## Pipeline
 
@@ -10,21 +9,21 @@ linked at the end.
 flowchart TD
     A[PDF statement] --> B["Parse, normalize, deduplicate<br/>(card number removed from the text)"]
     B --> C[Pair transfers between own accounts]
-    C --> D{System rule?<br/>ATM, Bizum, card settlement, loan, paired transfer}
+    C --> D{System rule?<br/>ATM, Bizum, card settlement, loan, own transfer}
     D -->|yes| H[(Saved)]
     D -->|no| E["jev System One: one call,<br/>three typed questions"]
     E --> F["Python: exact merchant match, merge at ≥ 0.8,<br/>merchant default wins, level 1 from level 2"]
-    F -->|confidence ≥ 0.95| H
-    F -->|below| G["/review inbox, once per merchant"] --> H
+    F -->|"needs_review if confidence < 0.95"| H
     H --> L[link_loans]
+    H -.->|needs_review rows| G["/review inbox, once per merchant"]
     L --> V[v_transactions_enriched]
     V --> W[Dashboards]
     V --> X["agent.transactions, agent.subscriptions"] --> Y[Chat agent]
 ```
 
 Ingestion reads BBVA and CaixaBank PDFs (`apps/api/finance/ingestion/`). A movement's dedup key
-hashes the account, date, amount, description, printed balance and occurrence, so uploading the
-same file twice adds nothing.
+(`apps/api/finance/ingestion/dedup.py`) hashes the account, date, amount, description, printed
+balance and occurrence, so uploading the same file twice adds nothing.
 
 ## Categorization
 
@@ -51,13 +50,13 @@ of yes.
   only at ≥ 0.8 (`merge_threshold` in `apps/api/finance/settings.py`). A merchant the user has
   labelled keeps that label as its default.
 - **Where 0.95 came from.** In the [jev spike](superpowers/spikes/2026-09-23-jev-categorization/README.md)
-  (412 hand-checked rows), jev was right on 99% of the 254 rows it scored at 0.95 or more.
+  (412 labelled rows), jev was right on 99% of the 254 rows it scored at 0.95 or more.
   Between 0.7 and 0.95, a higher score was not more reliable: a 0.88 was about as often right
   as a 0.75.
 
 Deterministic Python owns everything that is not a judgment call: parsing, deduplication,
-transfer pairing, system rules, merchant matching, thresholds and `link_loans`, which links
-each loan row to its loan after save.
+transfer pairing, system rules, exact merchant matching, thresholds and `link_loans`
+(`apps/api/finance/categorization/loans.py`), which links each loan row to its loan after save.
 
 ## Evals
 
@@ -69,6 +68,10 @@ records the run's jev calls as one Langfuse trace. Row-level results stay in the
 The latest line (2026-09-27, 684 golden rows): level-2 accuracy 87.0%, level-1 accuracy 89.2%.
 At the 0.95 threshold, 397 rows are accepted with 98.2% precision and 287 go to review.
 Subscription precision is 50/51 and recall 50/60.
+
+The first 412 labels were drafted by a model blind to jev's answers, and the user reviewed the
+ones that disagreed with jev or were doubtful (see the
+[spike write-up](superpowers/spikes/2026-09-23-jev-categorization/README.md)).
 
 Read the history with two caveats. The golden set grew between lines (412, then 480, then 684
 rows), so the lines are not a trend. And run-to-run noise is about ten rows, so smaller
@@ -107,9 +110,9 @@ amendment.
 
 Known gaps, from [the backlog](backlog.md):
 - The agent is told to answer with a figure it queried in the same turn, but nothing checks that
-  it did (item 8).
-- There are no chat evals (item 6).
-- The agent cannot answer balances yet (item 5).
+  it did ([item 8](backlog.md#8-numbers-the-chat-agent-can-be-trusted-with)).
+- There are no chat evals ([item 6](backlog.md#6-chat-evals)).
+- The agent cannot answer balances yet ([item 5](backlog.md#5-account-balances-in-the-chat)).
 
 ## Money
 
@@ -120,10 +123,12 @@ in the chat comes from `v_transactions_enriched`, under the rules in
 
 ## Privacy
 
-The database is local. jev receives the cleaned bank text and the amount, and Langfuse records
-each jev call. The chat model and Langfuse receive the question, the SQL and the rows it
-returned: merchant names, cleaned bank text, amounts, dates, notes and account names. Neither
-ever receives an IBAN or a raw bank line.
+The database is local. jev receives the cleaned bank text and the amount (`jev_state` in
+`apps/api/finance/categorization/jev_questions.py`), and Langfuse records each jev call. The chat
+model and Langfuse receive the question, the SQL and the rows it returned: merchant names, cleaned
+bank text, amounts, dates, notes and account names (the `agent.transactions` columns in
+`supabase/migrations/20261014130000_display_names.sql`). None of them ever receives an IBAN or a
+raw bank line.
 
 ## Where to read next
 
@@ -134,6 +139,7 @@ ever receives an IBAN or a raw bank line.
 | [evals/HISTORY.md](evals/HISTORY.md) | Every categorization benchmark run |
 | [jev spike](superpowers/spikes/2026-09-23-jev-categorization/README.md) | Seven rounds on real data that set the design and the threshold |
 | [Slice 4 spec](superpowers/specs/2026-10-12-slice-4-chat-design.md) | The chat agent as built |
+| [Chat prompt](../apps/api/finance/agent/prompts/system.md) | The chat agent's system prompt |
 | [v1 spec](superpowers/specs/2026-09-22-personal-finance-agent-v1-design.md) | The original design. Amended: do not read its section 9 as the shipped chat |
 | [backlog.md](backlog.md) | Ideas that are not designed or built yet |
 

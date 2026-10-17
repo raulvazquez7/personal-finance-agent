@@ -21,7 +21,11 @@ language.
 
 ![Shopping in September 2026: monthly bars for the last 12 months, the category treemap and top merchants](docs/images/spending-shopping.png)
 
+<sub>A category page: twelve months of bars, where the money went inside the group, and its top merchants.</sub>
+
 ![A chat answer with the SQL queries behind it opened](docs/images/chat.png)
+
+<sub>The chat answers with the queries it ran, opened above the answer.</sub>
 
 ## How it is built
 
@@ -40,11 +44,12 @@ flowchart LR
 ```
 
 - **jev chooses, Python decides.** [jev](https://typesafe.ai) answers three typed questions
-  per transaction: which fragment of the bank text is the merchant, which category it is, and
-  whether it is a subscription. Each comes back with a probability per option. Deterministic
-  code does everything else: parsing, deduplication, transfer pairing, exact merchant matching
-  and thresholds. [Categorization →](docs/architecture.md#categorization)
-- **Measured, not assumed.** On the latest eval (684 hand-labelled transactions), 87.0% get
+  per transaction ([`Choice`](https://docs.typesafe.ai/primitives/choice) and `Noul`): which
+  fragment of the bank text is the merchant, which category it is, and whether it is a
+  subscription. Each comes back with a probability per option. Deterministic code does
+  everything else: parsing, deduplication, transfer pairing, exact merchant matching and
+  thresholds. [Categorization →](docs/architecture.md#categorization)
+- **Measured, not assumed.** On the latest eval (684 labelled transactions), 87.0% get
   the right category. At the 0.95 threshold the cascade accepts 397 of them with 98.2%
   precision and sends 287 to review. The threshold comes from the spike, where jev was right
   on 99% of the 254 rows it scored at 0.95 or more. [Evals →](docs/architecture.md#evals)
@@ -77,9 +82,10 @@ cd apps/web && npm install && npm run dev   # terminal 2: web on :3000
 Open http://localhost:3000/imports and upload a statement. With `TYPESAFE_API_KEY` set, it is
 categorized right away, and http://localhost:3000/review holds what jev was unsure about.
 
-`supabase db reset` deletes your labels and merchant defaults. Once you have labels, run
-`uv run finance labels export` first, and apply new migrations with `supabase migration up`
-instead. The commands and the restore procedure are in [CLAUDE.md](CLAUDE.md).
+`supabase db reset` wipes the whole local database, including your labels, notes and merchant
+defaults. Once you have labels, run `uv run finance labels export` first, and apply new
+migrations with `supabase migration up` instead. The commands and the restore procedure are in
+[CLAUDE.md](CLAUDE.md).
 
 ## Limits
 
@@ -88,7 +94,8 @@ instead. The commands and the restore procedure are in [CLAUDE.md](CLAUDE.md).
   there are no chat evals.
 - Single-user and local: the tables have no row-level security, so do not host it as is.
 
-More in [docs/architecture.md](docs/architecture.md#limits).
+More in [docs/architecture.md](docs/architecture.md#limits). What leaves your machine is listed
+under [Privacy](docs/architecture.md#privacy).
 
 ## License
 
