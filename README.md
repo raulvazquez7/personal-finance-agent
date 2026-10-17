@@ -49,9 +49,9 @@ flowchart LR
   subscription. Each comes back with a probability per option. Deterministic code does
   everything else: parsing, deduplication, transfer pairing, exact merchant matching and
   thresholds. [Categorization →](docs/architecture.md#categorization)
-- **Measured, not assumed.** On the latest eval (684 labelled transactions), 87.0% get
-  the right category. At the 0.95 threshold the cascade accepts 397 of them with 98.2%
-  precision and sends 287 to review. The threshold comes from the spike, where jev was right
+- **Measured, not assumed.** On the latest eval (824 labelled transactions), 83.0% get
+  the right category. At the 0.95 threshold the cascade accepts 476 of them with 97.1%
+  precision and sends 348 to review. The threshold comes from the spike, where jev was right
   on 99% of the 254 rows it scored at 0.95 or more. [Evals →](docs/architecture.md#evals)
 - **A ReAct agent over a semantic layer.** LangChain `create_agent` with one tool, `run_sql`,
   and a LangGraph Postgres checkpointer for each chat's memory. The agent queries two views

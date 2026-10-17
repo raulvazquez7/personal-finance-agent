@@ -15,8 +15,10 @@ Money rules (what counts as income, spending, transfers): `docs/money-rules.md`.
 
 ## Workflow
 
-- Always work with Superpowers in this repository: brainstorm → spec → plan →
-  subagent-driven development, TDD, verification before claiming done. One plan
+- Always work with Superpowers in this repository, small tasks included: start
+  with `superpowers:brainstorming` (name the path: spike, bounded or
+  architectural, and wait for Raul's yes), then spec → plan → subagent-driven
+  development with reviewers, TDD, verification before claiming done. One plan
   per delivery slice.
 - Prefer subagent-driven development whenever the slice can be split into
   independent tasks and that split is worth it.
@@ -103,6 +105,10 @@ Run the API and web first; pages live at `http://localhost:3000` (`/`, `/spendin
   re-snapshot), e.g. upload a PDF on `/imports` and read the counts.
 - Once per slice, before merge: one `agent-browser skills get dogfood` pass
   over the whole app, report in `dogfood-output/`.
+- Once per slice, before merge: refresh the agent wiki with
+  `OPENWIKI_TELEMETRY_DISABLED=1 npx -y openwiki@0.7.2 code --update` (provider settings: the
+  Run record in `docs/superpowers/plans/2026-10-17-openwiki.md`) and review its diff. Never
+  hand-edit generated `openwiki/` pages. A CI refresh is issue #45.
 - Pass absolute paths to `upload` and `screenshot`: the daemon does not share
   your working directory, and a relative upload path hung the page.
 - Use a named session, stay on localhost, and `close` when done. Screenshots
@@ -142,3 +148,11 @@ Run the API and web first; pages live at `http://localhost:3000` (`/`, `/spendin
 - `gh` on this repo (issues, board, PRs): prefix the command with
   `GH_TOKEN=$(gh auth token -u raulvazquez7)`.
 - Conventional commits (`feat:`, `fix:`, `docs:`, `chore:`, `test:`).
+
+<!-- OPENWIKI:START -->
+
+## OpenWiki
+
+@AGENTS.md
+
+<!-- OPENWIKI:END -->

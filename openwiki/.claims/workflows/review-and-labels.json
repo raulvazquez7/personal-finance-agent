@@ -1,0 +1,270 @@
+{
+  "schemaVersion": 1,
+  "pageVersion": "sha256:8bea46948da52d9b69bb3f98f28e38157800103a1974bc4043afed1230e1a230",
+  "claims": [
+    {
+      "id": "claim_4d0052dbf6504e509390153eb86dd909",
+      "statement": "GET /review builds one merchant card for non-user needs_review rows that share a merchant, a standalone transaction card for rows with no merchant or for money out under an income default, and a separate merge card for every merchant with merge_candidate_id, ordered category cards by absolute total then merge cards by confidence.",
+      "evidence": [
+        {
+          "resource": "repo://apps/api/finance/api/review.py#L20-L54",
+          "version": "repo-lines-v1:sha256:2e9786687753ece0c57812f7bdc885a22cc242c97ee2dc1e52757c93a33ce983:eyJzZWxlY3RlZExpbmVDb3VudCI6MzUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjI4NjA3OTkyNTE4YjFlNDZiZGExZjRkOTU1MzlmNGQ0ZThjZGEwODBjMzVlNWE3YmQ1NDllMTVlMjZjNDFlM2UiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjFhYjQyM2IxNWI0ZmI0NWVjMGVlZjA3OWQ0YzQwOGVlZWY3Mjc4ZjUxMDAzZDg0MzY5ODI0MDFhOGZlZWVhNTciLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImJhMDgzMDNkMzI1Yjk1NDMyNGY5ZWE1ODk3ZjI0NTVlM2RlNzdlZTczOTlkOTBmYjA1ZjNhYjc1MTFkZTNhMDQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImExNGE2MGMxMzMzNTE2YjlhOWNmMGUzNTZjNzhlNTcwZmM1M2E2ZDA0YjhlNzVlYWJkZmZiOGVlN2JmODQ5M2MifQ"
+        },
+        {
+          "resource": "repo://apps/api/finance/categorization/review_queue.py#L101-L163",
+          "version": "repo-lines-v1:sha256:6686786ede084e47a28cdc6b2c71d2542dd11c1a80d30af3267bdf21a907eee1:eyJzZWxlY3RlZExpbmVDb3VudCI6NjMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImIxNzNiYmJkNWNhMTNhMjJlMmQxYzkwZWUxZjhlNzJiZTc0ZjYzNjhhNzNjNWYwY2Y3OGI3ZjM5ZmM3MjU5M2IiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjA0YTcwNmYzMDY3NjdiMzZmN2NjMTRjZTc5M2M4NmY0YTRiNDk3ZjFlMGRjMWRlNTdiY2IxNGVlMTNhNWFjY2IiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjhjYzRhN2QxY2M3OTZhYmEzZTQ2NzIzMzI3ZjUxN2U5ZjgxMTk4MmQyNTBmMDcwMjk4NmU0YjU3NjRhZDk1ODkiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_8934a2faa0ab4f2c8ca3719efa98d149",
+      "statement": "A review suggestion is the category with the highest average probability across rows that have a probability map, with level 1 taken from the taxonomy, and subscription is suggested if any grouped row is flagged. Card numbers in description_raw are masked in the API response while the full number stays in the database.",
+      "evidence": [
+        {
+          "resource": "repo://apps/api/finance/categorization/review_queue.py#L79-L116",
+          "version": "repo-lines-v1:sha256:9ac84ea861696361a40eb4f25da7b1abb99a6b5b88a01696a387f604eac7b985:eyJzZWxlY3RlZExpbmVDb3VudCI6MzgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjYyYTYzM2I2NWE3ZDE4NzNmMTBlNjBjMTYxZWVhM2QyNWQwYWY2MDU3ZWEzZTI0MTMxOTQ3ZjNmMzRlZTg5MGIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjA0ZTlmYmQxY2VjZjAwYjYzYjVlOTZlNzQ3NDRiZDAwZGU5ZTIzYjMzZTFhNjczNGUxZTBlZjliY2FjNWExNmUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjlkNDBlNjM5M2RiMmNlMTVlNDE4NjM5YTRhNmIyMmIwZTNjMDAyNmI2YjQyZDcwNzllZGE1ZWQ5NWUwMzAzZTIifQ"
+        },
+        {
+          "resource": "repo://apps/api/tests/test_review_queue.py#L43-L56",
+          "version": "repo-lines-v1:sha256:9154a7f7e807ae1de19666adaafa07e6e7d642178763e7dd9373346c36c22c9e:eyJzZWxlY3RlZExpbmVDb3VudCI6MTQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjhmYzA2ODg2YmE4ZjZhNmM1Y2VjOTA1ZWFlZWQ4ODI1OTdkMmVjZGRkMDFmYTNiYWVmYzNlZjdkNTU4NjRiYjMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjExNmEzYmEyMjQ4MDU5MGYwZWYyM2JhNDY1Y2NlZDczOGE4NmRjZTU0ZmE2OGIzODE1ZThjOTFhYzRiOGExN2QiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjhjYzRhN2QxY2M3OTZhYmEzZTQ2NzIzMzI3ZjUxN2U5ZjgxMTk4MmQyNTBmMDcwMjk4NmU0YjU3NjRhZDk1ODkiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjJmYzQ1YzhjMWM4OWYxMTJmODBhNjMyY2RjYTk1OTAwODIyZDlhZGNiNGNhMzA1MjZmYTViMWIxZDUwNzRlMDQifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_f88cf7ca6e4249e08eded9f7e2443bd5",
+      "statement": "GET /review/count sets pending to the card count, splits categories and merges, and counts category_source none as uncategorized rather than as cards. The nav badge is pending, times out after 2 seconds, and hides on failure.",
+      "evidence": [
+        {
+          "resource": "repo://apps/api/finance/api/review.py#L38-L74",
+          "version": "repo-lines-v1:sha256:2bec81176517e7476c8417bbba8663e468fb5894fbe32183f8af8daadf952774:eyJzZWxlY3RlZExpbmVDb3VudCI6MzcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjgxNTBkMGRlMzYxOTljZDYxOWU5NThkZWI4OGY1MmNjNzk1MTM1NGVmNjU5NzIwYzczY2E5MTczOTNlYTdjNTYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjMwYzFmMTg4ZjE0MmVkN2E4MjQ2ODBiMjA3MTcyYzU1MTliYzYxNGE0OGZkYTdjZjE2N2VkYjhkZGY3OTk1NmMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjM4YWU2MGEwOWE3ODRiNDdlYTA4NTMxNmJmZjkyYzY4MDExZGQ2NzBkODlmMjhkYWY1ZGE5YmI2YWU0MWJjNDIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        },
+        {
+          "resource": "repo://apps/web/src/components/shell/nav-links.tsx#L85-L95",
+          "version": "repo-lines-v1:sha256:ee5e0e04e00b8fb4d0ab982257f2e8b134e299e54c7950521e70e0a0511abe84:eyJzZWxlY3RlZExpbmVDb3VudCI6MTEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjdlZjU0ZjAxMDRkNmQ0NmQ4YTg1Zjg4NzljOWJmMTViODExZmExOGVjMTdjNzRkMDlkYmMwODgyZWUzMzIxODgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY4NTQxYjlhODAyYmZjMjVmMWE5ODg0NzYzNDU4NzBiNzk0OTFjYTkwZjIxOGJjNDk4ZTgzY2Y5NmNlNTRmZDkiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjI2ZWQzNWIyOGM2NzdiZDZkMWZiMTk2OWIxOGExZTVmYzg4NmEyNTg4NWUxYmIzY2YyZWYxMmI5YWMyNjJlMTEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImM4YWI2ZjU0N2I1MTdkODk3NjM4NmNlYWM0YjdhMDI3NWE2OTdiMDMzOGM1ZTJkNGJhNDE4NjQzODQyZGMzODMifQ"
+        },
+        {
+          "resource": "repo://apps/web/src/lib/api.ts#L54-L64",
+          "version": "repo-lines-v1:sha256:0b091950309aa2959e8b91681e8c063b51bbf772af0a6713d244626cc996b58f:eyJzZWxlY3RlZExpbmVDb3VudCI6MTEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQwMzUwMzU3NGUyNmJmMjAxMzY3NTM3MzQyNDJmOWQzMWQ0MmI2NzdiNmQ4ODlhNjAwMjUxMDgzNDRjYzU5YzAiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjI3ZTU3ODhkNWQ5ZDczZDI0YTgxZGJjMGE1YTc0YmZhODJjOWMzYjNhZjk5ZTUyYWY3OTZlOTBiNDY4YThhM2QiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjY1NmFiZGNiOTBlZjRlYWMyMTZmN2E0MzMxYzBiOTk0MTcwM2JmOTAyZjdlOGEwMzUwYWJjZGM0NTg5ZjgxMTAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImE3YmJjNDQ1MzQ2M2VhZWYyNWJkNzMyYjg0MmNjYmM3YzY5MTY4MzA2NTk1M2ZmZmI0MzNhZDFjMGVjYmI5YjEifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_04b517d3840848899ee872adedb4f802",
+      "statement": "The review page delays each write for 5 seconds so Undo sends nothing, flushes pending writes on leave or pagehide, and restores the card if the request fails. Skip is sessionStorage for the current tab only and does not write to the server.",
+      "evidence": [
+        {
+          "resource": "repo://apps/web/src/app/review/review-list.tsx#L27-L126",
+          "version": "repo-lines-v1:sha256:953c7cd214a5a55bc01fd0406682365dbb82ece50cb2a4797207b552948d9600:eyJzZWxlY3RlZExpbmVDb3VudCI6MTAwLCJmaXJzdFNlbGVjdGVkTGluZUhhc2giOiI1ODFhN2Q1ZjAwMjhhZmJjOWYzNTNkZTFiODJiM2E5NDNiYzljOWUyNjc3YjFhNjlkNjk5NjViYjY5ZTkzNDBlIiwibGFzdFNlbGVjdGVkTGluZUhhc2giOiIyN2U1Nzg4ZDVkOWQ3M2QyNGE4MWRiYzBhNWE3NGJmYTgyYzljM2IzYWY5OWU1MmFmNzk2ZTkwYjQ2OGE4YTNkIiwicHJlY2VkaW5nQ29udGV4dExpbmVDb3VudCI6MywicHJlY2VkaW5nQ29udGV4dEhhc2giOiI2OWUzZGNlNGZlYWU4ZjhiNDZlMDI1OWY0YzljNDFhMzE4YzcyZDE3ODM4N2QyNGFkOTJjODZhMzhlNzllMGQwIiwiZm9sbG93aW5nQ29udGV4dExpbmVDb3VudCI6MywiZm9sbG93aW5nQ29udGV4dEhhc2giOiI3MGY5YzE3NTBkYWJlMTA3YTQxMTE5NDE5MWMxOWE3ZGQ1ZTI2N2I2MzY5NTJmNzQyYmJiYzcxMmE2OTEwOTUyIn0"
+        },
+        {
+          "resource": "repo://apps/web/src/app/review/use-skipped.ts#L5-L38",
+          "version": "repo-lines-v1:sha256:e516f6f2d3362556643110e25703a6c24647b0af47e899f885e5967dea894468:eyJzZWxlY3RlZExpbmVDb3VudCI6MzQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImFmZjRmZGM2ZThlODgxYmFhN2IxZWZmMDQzOTlhMWM4MTQ4YjE4NzliNGRjODUyNTExYWY2ZDdkMjk4MTZmNzIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjJhOGIxYzMzZGY1ZDBhM2M1YTZiYjljMGFlZmFmM2NlNDNjMjEzZTA2MjVhZGQ4OWY3NzQ1MGEyYzg0NDUxNzAiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImI4N2JkMTg2NmNmODU0YjVmOTQ3YjVjMGIwMzMyNWQxMWJmMTA5NzQ5NThmOTVkNTU2ODRjNzU1MGRlNzU3ZjciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_06a21be3bcf44324844ed5d1154271a9",
+      "statement": "Confirming a merchant card posts the category to that merchant, and a merge pick also settles the survivor's category cards and the source's other cards. Yes on a duplicate patches merge_into_id and does not dismiss the survivor's own duplicate card. Confirming a category leaves the duplicate card in place.",
+      "evidence": [
+        {
+          "resource": "repo://apps/api/finance/categorization/labels.py#L183-L185",
+          "version": "repo-lines-v1:sha256:a456574761001ccd0e6ee87f0742552f3b33893cc3e1d93f7f8f746d583380c6:eyJzZWxlY3RlZExpbmVDb3VudCI6MywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNTU0NzNkYjUxY2M2NzU0ODRlOTYyN2VlNjExMWFkZTc0ZDkwOGIzMmNjZTQwZTdhNjQ2ZmYwZjBiMjdiNmYyMyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiY2Q1MGNhNTZkMTMwNTgxZWNkMjZmYmZjZjQ5MDAwZWUxY2ZhYWE1NDc2NDEzNWZhZmFmMWJkZDdlMzRjMDYzNSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiODRhMzQ2NDk0ZGI4YjZhMTM4Yjc5YTdlZDhiMGIwNDc1NWMwZTBlNGE3MmJlZjE5Mzg5NTNmYTQyOGQwMWIyNyIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiYmI5NjhmMjMzZjkzZWViYmNlNTU5NzM2NDMxZjQ1ZjZiNjgwYmFkODdmNmFiYzI1YzY0M2QwZTEzZmQ3MDAwOCJ9"
+        },
+        {
+          "resource": "repo://apps/web/src/app/review/review-list.tsx#L128-L155",
+          "version": "repo-lines-v1:sha256:ba0b38e1925681f1b35bdd83f23eb82376db4ae84b1ba41328051a385c3dbafd:eyJzZWxlY3RlZExpbmVDb3VudCI6MjgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImMxZDRhMDhlOWE5NTAwMjY0NzZiOTE3NjJjYmI1NGZiYjQ0NjRmMzNlYjdmM2JhZWY5ZWJhMjU4MTgyYjBkMTIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjI3ZTU3ODhkNWQ5ZDczZDI0YTgxZGJjMGE1YTc0YmZhODJjOWMzYjNhZjk5ZTUyYWY3OTZlOTBiNDY4YThhM2QiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjVlMTJiNjExODk0M2UzMGMwMDY4MzNlNzgxNjMwYTUzYjMyZjQxN2VmNWY5Nzk1YzNmMTJmMzMwODAyNGM1ZDkiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjY5M2NhOThiMTY4MDhkMzEyNDA2YjUyYWFhYWU1ZDAxYTY5ODEzYTA4ZjFlZjdhNWEzNTFiMGQ5ZjMxZDIxOWMifQ"
+        },
+        {
+          "resource": "repo://apps/web/src/lib/review-settled.ts#L9-L29",
+          "version": "repo-lines-v1:sha256:c024c7900ebf738cd7c2023814b2ec40b8247c580fbe74c749acf08883d210a2:eyJzZWxlY3RlZExpbmVDb3VudCI6MjEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjNhMmNmOTI3NDhkYjA1ZDk3M2QwZjk2MWFkMzIyYzI3MmMwMzQwMDA5M2ZjZWUxMmJhNTgyOTFlNTUzYjY2YmEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjFiNTBlMDczZjVmNjA4MTA1NzFjMDRhOTYxZDVjYjY0MDM3MDE0ZDE4Y2U5ZTllZTlmOWJlZTYzMmZmMWJiNTQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_97f211c9a7004e9fb68af4f87f0d88c7",
+      "statement": "A one-transaction label sets category_source user, clears confidence and needs_review, appends a user transaction_labels row, and does not set a merchant default. An unknown merchant id is 404, a name with no match key is 422, and an income category on money out is 422.",
+      "evidence": [
+        {
+          "resource": "repo://apps/api/finance/api/transactions.py#L61-L84",
+          "version": "repo-lines-v1:sha256:f01c14436ed6ea78d99a928d6085388dd5a6446e2f1b78273250b5daa000cf5b:eyJzZWxlY3RlZExpbmVDb3VudCI6MjQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImJiNGIzZGQ0MzEzNzExNDMxYmZhOWRkNjY0M2NhNWI2YmRlZDU3N2Y4YjEwMDNhMjVlYTEzNmM2YzFkODRlYzkiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImJkNmIzMzVkN2RkNmY5YTJjYjU5ZmJhMjY5MWY3NmEzODk5ZDFlMDY2MjY1YTQ0ODI2MzNkNjYwY2ViMmFiMTMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjgzNGNjMzFlNjQwNGZjZWFmM2QwNDRiOTM0Y2I0ZTQ0NWEyZTdlYzY3Y2JiMGJkN2M0OTg2YmRiMDJkM2YxNjEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjBmZGNiNmFiODgzMmFmOTBiN2I0YzNkYjZmMzM0ZjY1MDhiYjU4N2FiNGU2NGRmODlhM2MyMTlkNWJhYmQyZTEifQ"
+        },
+        {
+          "resource": "repo://apps/api/finance/categorization/labels.py#L27-L117",
+          "version": "repo-lines-v1:sha256:fbd9349b47771d3f4be31363303ceab8e8fbe871b0d8c9f0c9ae5bb87850580b:eyJzZWxlY3RlZExpbmVDb3VudCI6OTEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAwYjU3YTBhNzEzMmVmNTRjMWMzNGZjMzU4YTk0MmQyNzY4NDJjMzNkYzQ0MTI5MGIyNWYzNzgxYWZjMTlkYjAiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjdmOGM0NmM2MzE1NDVjZmI3NWYxMDE2MWQzYTgxZjE4MjMxMWNmMzA5MTA3ODdlMGMwYzdlNTMwNmYwNjg3N2QiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjU4ZWNlMDljNTA0YWQ4YzZlMDE3MmE2OWFjYTIxMWNlNDI5YjE0NmNlMmM4N2QyYTFkYjAwN2I3MDVhMzEzY2QifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_60a6f15c2b9645eda60c241529c21dc9",
+      "statement": "Labelling a paired row as something other than own_accounts clears transfer_pair_id on both sides and sends the other side back to review unless that side is already user-labelled.",
+      "evidence": [
+        {
+          "resource": "repo://apps/api/finance/categorization/labels.py#L50-L55",
+          "version": "repo-lines-v1:sha256:778120e0709efb327b13055b9a3fa11055802e622e77742fb9ae6753eddc4790:eyJzZWxlY3RlZExpbmVDb3VudCI6NiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNjc1MDY5ZjkyZjBhM2M4MTY4YmM5ODRlZDM5MDAxNzE3MzQ5MGMyYWNjOTFhMjViNWNjYzM5NTRhOWMwNzMwYiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiYTMwM2VjZGQ0YTRkMTBmMTljNzNmZDQyZmQxMjQzN2ZkMzM1NGE4MjY4MTYwNWRhNTI1NWE5N2EzOTA2OGRiYiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiYjgxYzYzYWYwZTlmOTExM2E2ZmJhYzJmZTBkZjc0MmEzMmExY2Q1ZTdlNzRmYTYyOWYyNjc0YjRlZDFiODNiZSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNzkwNGYxZjYxNmFhMDE0ZjAxNWQ3NWRjMDdkMmFjYzc0YTE2NTMzYzM4MGEzMGQ1NGQ1YTE0NTBlZmJiMDM4YSJ9"
+        },
+        {
+          "resource": "repo://apps/api/tests/test_labels.py#L251-L292",
+          "version": "repo-lines-v1:sha256:db0d81ff2981c1c8162b009b8c93bb4379057566506faf349120c8d04527362e:eyJzZWxlY3RlZExpbmVDb3VudCI6NDIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjM3MTVlYTY4MmU0NDA4NTY4N2VjYTUxZGFlZjhiYzIwMzBhYTY3ODdiMDMxNjlmMzhlMjRlNDcxMzk0YjgyZmMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImEzYTVhMjg3ZjQ1YzI1ZTA1NzZhNGJkYThiZWJmNTlkZGFjMDYxMjk2NDc5N2QyMzAxZDY5ODE4NmNlYmNmZTYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImMzNjA5NWRjY2FmOTYyNjcwZGExZGExZTAwZjU0OTc0OTVmNTYyOTgyNzA2OWUzN2JkYTI2NzM2YWY3ZmQ1NzIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjVjY2E4OWQwZjU1NWFkMGMxNmFhOTlhM2VhNTI0YTQzMmRkYmYxMGI2YThjZDIyZjkxNmU2OTI5YWU4MTAzNjkifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_eaa9f189f2ff481a8fa02c9595c27a2f",
+      "statement": "Confirming a merchant sets its category default and confirmed, relabels only jev, merchant, and none rows except money out under an income category, writes those rows as source merchant, and appends a user label for each so they join the golden set. User and rule rows are not relabelled. A null subscription answer keeps the merchant flag and each row's own mark.",
+      "evidence": [
+        {
+          "resource": "repo://apps/api/finance/categorization/labels.py#L176-L203",
+          "version": "repo-lines-v1:sha256:29bdcb6f3be064821349e3c2d90b4db6a00bdee29243b54de8810b2e2a3e1acd:eyJzZWxlY3RlZExpbmVDb3VudCI6MjgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ0YzM5YmVjNDIzOWRhYjQxYmI2OWViZWNhM2U3NmMzNTYwOTIzM2RmYTJjZTMyNDE5MjZlZGZmZjVhOTNkOWYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImRjMmI4NzI1YTAwZjM5YzJkMGViOGVjYzBhMTZjYWM2NDQzYzMyNTlmMTQwZmNmNDVhYjNhYjk4ZGNlMzFjMzkiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjYzNjA2N2Q2NGQzYWY1ZTEwZGRiZjRjODk4N2M3ZjNhNzFhNGZiZmFjZDM0ZTRjZjM2NGI0Mzc2ZWU2M2ViMDUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImEzNGYyM2NlYzFlNmIxOWQ0Nzk2ZGQyN2M5NDM2MmQwYmVjOWQ5ZWNiM2M3YWU2YWU2YTA5NzdhNTI0YzE2MjMifQ"
+        },
+        {
+          "resource": "repo://apps/api/finance/categorization/labels.py#L38-L48",
+          "version": "repo-lines-v1:sha256:0e2c91489d67525c8f108b143c2e5621152aa323e92adb7ae1073ea739cafff8:eyJzZWxlY3RlZExpbmVDb3VudCI6MTEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImNkNGQ2YTJkYWFmYWJmMzNjMTMzZWIzYzJjYmFjNDYwMmU4NTRiZTMyYzI5MzcwOThjMDFiYzdkODk4MDJlMTYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImEzMDNlY2RkNGE0ZDEwZjE5YzczZmQ0MmZkMTI0MzdmZDMzNTRhODI2ODE2MDVkYTUyNTVhOTdhMzkwNjhkYmIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjNkOGUzYmU1NTZkYzljM2I4ZjAyNjc1MjY2YjY4YTNiYWU2MTJkNTdmMzlmOWYyMjk0Mjc4NzFkZTZkOGY0YWEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImExN2RkMTRmNzNjMDIzMDZkNDI4MzZmMTIwZGY2NzgzOTk5MDVmZmU1YWZhYWZiYTZiM2RmMGI0NjJhNTcxZWYifQ"
+        },
+        {
+          "resource": "repo://apps/api/tests/test_labels.py#L48-L92",
+          "version": "repo-lines-v1:sha256:51ace13e8d7e852d4005072582e202ab97431436ee3509bc1357c8c832cc4af5:eyJzZWxlY3RlZExpbmVDb3VudCI6NDUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijk1ZGIyN2I5ZTRmMDYxZjY5ZjY5Y2M3ZTBmY2M2MmQ4YmY4YTRjZDEzYWU1Mzk3YzZmOTI3ZjljMTc2ZGQ5NzkiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjJkODQxZWU0YzNjMTE2M2ZhOGQ3YTk5NjNlYjRkYTU3MDQ4ZTA4MjNmMGNlODI0OWYwMjk1MTliZTJlOGJhNDgiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjdkMjkzMDhkMjEzNDJmODYzZTZmMTUyMGFkNjdmOTg3ODg0MzQ2ZTMyYzkzOTQxZjFhYjJjZjI0MGQ0MjJlMDUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImY3OGU4NmY1MjY1NjQyNThiM2ZkMmM2MTQ4MzFhYjE4M2U0ZGIwYjVjYzAzNzg5OTZkYzZiNzQ3ZTZhMmFlMTgifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_909447755d644db18981c8b78ce3484d",
+      "statement": "A confirm that also merges writes the confirmed category onto the survivor, overwriting the survivor's previous default, and moved rows take that category. A rename or merge that is not part of a confirm moves rows and label history, copies a default or cadence only when the survivor lacks one, and inserts no user label.",
+      "evidence": [
+        {
+          "resource": "repo://apps/api/finance/categorization/labels.py#L119-L173",
+          "version": "repo-lines-v1:sha256:26d31cf9c7c66981aa5efc7b5b6e7c8b3d1032b093027a8088c916715744188a:eyJzZWxlY3RlZExpbmVDb3VudCI6NTUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijg0MmY2NzQwNzNmNmJmMDQxYzFjZjQ2N2FhNzI5NjlkMmQ5YmNhMTljYjFlZjNlZTU3NmJlYzkxYWZjYTdjYzgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijk3NDBjYjg5MTcwM2IxMzY0ZTBjYjlmYTNhYTUzMjdiODViMDEzYzM2OTM0NjFhMTM3YzdjZmE3NDE3Y2JmMzkiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImIzZGYyYWNmMDZlOGMzZjAzYzcxMzVjNmU4YWM1YTljYTU0MzJhYmUwNmE3NGFjYTBmZGQ5YTUzYTAwOGY5ODciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjkzM2FhZGY5NTM0MGVlMzkzMTYxMDE4NWIwNTcwYTMxNmVmYTI4Y2U5YmJmMTVjNmZlNzUyNWUwZjEzMGE4MzYifQ"
+        },
+        {
+          "resource": "repo://apps/api/tests/test_labels.py#L198-L227",
+          "version": "repo-lines-v1:sha256:5f2bf0096a7ecb07333ca2261ac40b5ab866d9b523586e71d1fe77a11582ab2e:eyJzZWxlY3RlZExpbmVDb3VudCI6MzAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQzZDhjNjZmZjljNDRmYTZlNWQyMGViYTljN2FkNDQyMmI5OTA5N2I5NzI4NWE4ZTJiMzY0ZDZmYjdmYzA5ZGIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImM2ZGFjYTE1Njk2ZDkxYTIwNmZlMmJlMGM1YjY0OGE1MjEzN2M5MTk0ZDc1MWU5MzNhZjc0MWE2NDQ4MjRhMTkiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjY3MDk4MDhiMDg3ZTBmNTg3ZjgwOTFmMDJiNDc5ZTAyZmY0ZDRlMjBmYTY3ZjkyYTFlYWMyMjllZjM5OTE1NjEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImFjZjQyZTc1OTk2M2E1OTI5ZDU3NzViNzU2M2I4YzI5NGJiZDM4OWFhYTY1MTlkYWU3MTc2ZmVhNzc4MzBmZDcifQ"
+        },
+        {
+          "resource": "repo://apps/api/tests/test_labels.py#L327-L341",
+          "version": "repo-lines-v1:sha256:ce77119eafa938e548918586151f8318444d06eba3a48e8126ffeb3d458f696e:eyJzZWxlY3RlZExpbmVDb3VudCI6MTUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjJlMmRiODc0ZDQ0YWJjZGE3NzM5ZTRhM2ZjNWI1NTgwNWFjZmFlYmVkNTAzYTZlZmIyZmE4NTE1MTNmZmJhZjciLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImUzM2NhNjNhYzNlYTFmODM3NDQwZGQ2YTk5Yjc5OGIzN2MzNzg5OWVmZGZjNTBmOThjYWI5ZGQ0ZjdjOWZmMGEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjY1ZjlhYmI5ZGFmY2RhZjk0MWZhODc5MjQ5YmIwNDQ1NzgyYmNhYmRiZjNkNGFmZWJjM2E5ZjdjODcxOWVjMmYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjJiZDc3ZDkyMTViM2Y1NDUwMDJlODQ2YTI5OWNkNjM0M2VkYjA5Y2IwYTYzMGEwYjhiOWU5NTY4OGMwN2I5NmYifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_9faa60ec0d094710846571c2f9a0387b",
+      "statement": "Clearing a merchant default nulls category_slug and is_subscription and leaves existing row labels unchanged, so later rows go through jev. Dismissing a merge confirms the merchant and clears the candidate, and save writes a new merge pointer only when the merchant is not confirmed.",
+      "evidence": [
+        {
+          "resource": "repo://apps/api/finance/categorization/labels.py#L206-L236",
+          "version": "repo-lines-v1:sha256:1e9aef24ca9659e95ba22a82834cf588912e1d8e63f0308dfb7c626fcded7fbb:eyJzZWxlY3RlZExpbmVDb3VudCI6MzEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjM4Mzc1ZDdhMmMxNDAzYjhjODljODRlYTM4YzQyMWI5NzRlMDJiMWE4ZGY4MDQyYTViN2E0MDE4YjkzMDM5ZjEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImNkMWJkNmY1ZTRhMmVlNGYyZjZjMDhjMWZiZTc4ZmFkNDRjMDUzNjMzN2I5ZTIyODQxYmYyMmNlZDcyZGQ4NGQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjliZmIwNmQxYmZlNGY0OWE4OGRiZjZjNzc3YjdhNGJmN2UzYTg3MWEwM2I5YzhiMmY1NGNhYjM1ZTE0MzY2YTciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQzOTAxODQ1NzVmZjNhOWIzYTU1ZTZmYzNmY2Y1NGY2M2ZkMjQ5MDFhYzk4NWJjYzk3MTg2ODRkYzcxYzVlNzQifQ"
+        },
+        {
+          "resource": "repo://apps/api/finance/categorization/store.py#L136-L142",
+          "version": "repo-lines-v1:sha256:c0c41986e4472e6d03e8c4e1bfee69ce2ea49cfe2cc2c4788cba65933d8886ab:eyJzZWxlY3RlZExpbmVDb3VudCI6NywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiODMwNjAzNzc3MTM4YTk2NWQ4NDZkYWZkNjNmNTM4Mzc2YjljOTIyMjVlYjRlODM5ODI1M2I0ZTVkZjM2ZjcwYSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNTEwMzQ4MWM1N2QwZjBkYzBmNzZjZDJjYzhiMzYwNGM0ZTgyOTZkYTQxMjJhZGQxOWU4MTc0NWRjN2UzMzFhNiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMjQzMmM5Y2IzNmZkNGNkNTA3OTExMDZhYmZmMmUwNmFiN2M3Mzk0MGUwNWM4ZDQ3NWJhNmVhZTMyZmU2ZWUyZSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNzFjNDNiNDMxYWQ3MDUzYTFmNzg4YzYyODMzZDQwODdhMjg4ZGVlMzRiZDA0MjM5OThmZTM0ODBiN2MwYjU5MiJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_fa739d2b2f7e48d4a28b1d5e19cdd421",
+      "statement": "Production categorization does not load or overwrite category_source user, and save skips a row labelled while jev was answering. A merchant default applied by the cascade is source merchant and can be moved by a later confirm or an --all run.",
+      "evidence": [
+        {
+          "resource": "repo://apps/api/finance/categorization/categorizer.py#L63-L75",
+          "version": "repo-lines-v1:sha256:22740e1bd2cfb2bb32f29413c620039caf211d00acd23ebefd5dfd263e15356d:eyJzZWxlY3RlZExpbmVDb3VudCI6MTMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjIwYWQ1NmI0NjA5MzgyNjQ0MjM3MGQzYjY5N2M1OTg0ZTE2ZTRmZjM5NThlYzI2YzE4NWQwN2I5NGY0NGNjYTgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImUyNDUxZDg1OTAxMjNmOTI1NTlkYzcxODYxNWUxMjJhODc5NmNmM2Q5NzY5NWZmYTMwZmM1YjNjY2QxY2IzNjYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImZlODE5ZmU2MjE5MmNjNGVjYmE5MWEwMzAxZDg3ZDM4OWUwNjk2ZTRiYzkxOGFiNzhjMTU2NzczOTFjMzliOTgiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjEzMjQzYTE2YmEzZTU1YmE1MTdjYzUwZTVkOTc0YzBhYTYxNTA2NzRmYzE2NTIzYWQ4ODI4YmUyY2MwZjJjMjQifQ"
+        },
+        {
+          "resource": "repo://apps/api/finance/categorization/store.py#L133-L134",
+          "version": "repo-lines-v1:sha256:60d7f008541fe4745c6eba7bc2bf09a175d532d774aa15c23e31db8184ef440b:eyJzZWxlY3RlZExpbmVDb3VudCI6MiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMGZkMDAzZDE5NDI1MzYzNjJkNjlkMGRhNmZlM2EwNmY0NzE4YmI2YWQyODc1NDIwNjFjNzgwMGFkMGNhNDFhMiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMTRkMGNkN2RmOTM5M2NkZGU3NjllMWI4YTRiMzAwNDdjNjU1MDc0YmM3Yjc0ZDQ2ZjFjNmUzYTQ5YmEwMWEyMSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNWY0YTI2MTJjZTIzZDdkNDJkYTU5MWJlYTQ0MWIzNzEwYThkODA4Y2VkMzZmMGVmMzViY2FkZGNiMmJiODVjZSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMzZmZDFhZmIxMTc3YTRhNGJkYWQyZTdjZDMxZDA0NmRiZjY5MmVhZDUyOTJmOWQ4MjkxYjI3NjU4ODYyY2ViYyJ9"
+        },
+        {
+          "resource": "repo://apps/api/finance/categorization/store.py#L32-L53",
+          "version": "repo-lines-v1:sha256:1f189704ce65a090267a3d121c7c4a3e09e916a32229795e6fe121b5d0ee3f14:eyJzZWxlY3RlZExpbmVDb3VudCI6MjIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijc2MDRkNDQ5YWUxNTk0NjgwMmU1OTFmZjM1MmU2MjhmMTJiMDFhYTYwYzkwOGZmZDQ1MTMzYmQ3OTA2MzUwY2MiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImEzMDNlY2RkNGE0ZDEwZjE5YzczZmQ0MmZkMTI0MzdmZDMzNTRhODI2ODE2MDVkYTUyNTVhOTdhMzkwNjhkYmIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImFlZGI3YzZhZWM3Zjk2NGFlMzVkYjRhNzBlODc2N2I5MDlkYjRiYjFjOThmNzhlMTgwOGNjYjQyNWQ2OTZiZjYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjgwMmQ4NWJmOGRhOTJlY2FmZjRhNGMzZDJkMDZhMDFmYTY3MjA4NmQ1MDE4ZTdmMjcyZGIxMDQzNGUzZTQyMjYifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_5ad1b4ccfc1e49faae720ce7b27366f3",
+      "statement": "finance labels export writes the latest user label per transaction plus note-only rows to a CSV keyed by dedup_key and refuses to overwrite an existing file unless --force is passed. Import reapplies labels and notes by dedup_key, skips missing keys, reports a bad row by line without stopping the rest, and does not restore merchant defaults.",
+      "evidence": [
+        {
+          "resource": "repo://apps/api/finance/cli.py#L93-L120",
+          "version": "repo-lines-v1:sha256:d4cef4d969a09d55d19eaff8677d0d770728691bba8e45fc3c8981e47f088747:eyJzZWxlY3RlZExpbmVDb3VudCI6MjgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjhkZmQ0OTIwYzE3YTE3YjRhZjM3ZjIzNTI1MTBlZjVlNDc5NjU0MjA3ODk3MWFhNWMwMTYxMTU5MzI0YzdlZTEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImRhYjQ5NTFmMjAxZDU0MDUzYTQ1OWZlMjAxYjJmYjQzNWUxYmM0YzJmOTY5ZDE4YmYwZWMzYzg5ZmI5OTAwMjYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImY3MzcyMzIzYzJhODAxZTRmNjA5NTQ4OGZjNGJjMmUyODFlZGUyNjE5OWU2YzU5MGM2NDQ4NDJjMzZmYTU4MDYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjRkODVmMGFiN2EzNTc2NDNjN2M5ZWU2NmZmNzBjYmYyNzdhYjM4ZWQ2ZWUxMGFkMjc3ZTA4MGZjZDJiODU3YmQifQ"
+        },
+        {
+          "resource": "repo://apps/api/finance/evals/labels_io.py#L11-L85",
+          "version": "repo-lines-v1:sha256:5e8f0601294773146ed28f0048f11e3c6f7823c8c85fce0e0fddf677fa5e0cde:eyJzZWxlY3RlZExpbmVDb3VudCI6NzUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjRjNGJlZTg3MjA2NWMwMjU1MGUwYjdmMjZjZWJkZWQwYjA0OGFiNDBjMGFlMzg2MTExZDI4NTg1NGVkYzJiYzAiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImZhMTFjMDU2N2QwYTVmOWU5YjEzNWY2NWNkMjUzNzJkZmQ2Mjg3NzVmN2MxZWQyNTNmOGJhZDQyZGQyZDY2NjkiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImZjZDI4MmVjYWUyYmRjNTBhOWVkMTk2NzdmYmM2NGJlNDEzMmQ5MmM3MWZiZWE3N2JlM2Q1NDhjMDU5YzBmOTciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_8d0aaa3d50674ad5b542c72c6ff62dea",
+      "statement": "The categorization eval scores the latest user label for category, subscription, and merchant with merchant defaults disabled and writes nothing back. Notes are not scored, and a rename or merge alone does not add a golden row.",
+      "evidence": [
+        {
+          "resource": "repo://apps/api/finance/evals/run.py#L25-L36",
+          "version": "repo-lines-v1:sha256:080522900f3561d68e6e63d7fa83b0f192b81cfaad7b671e08d2ec6ed30cc016:eyJzZWxlY3RlZExpbmVDb3VudCI6MTIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImE5ZDJlMDIyYWQ2NjVlYjE5NGJkYzJmOTMwZjgwZDZkNWU4NGZiYWMxNzMwMjMxM2UyOWNlNThlMjhkOTg4YTIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImEzMDNlY2RkNGE0ZDEwZjE5YzczZmQ0MmZkMTI0MzdmZDMzNTRhODI2ODE2MDVkYTUyNTVhOTdhMzkwNjhkYmIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImMwMjE4YThiOTI5MDZhY2I0NGY5ZTg4ODI5M2U3MTI5YTM4ZTg1YWZiNTBlYTExMGJhMDNmMmM5ODNiZTAzMGUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjM0ODA4NjBiYWMyOGQwZjJjN2ZmNWNmZDgyMDFkZTQ2MWY2ZjVmMTQ3YzU1YjlhOWMzMzUxYzIyYTdhNTFmYWEifQ"
+        },
+        {
+          "resource": "repo://apps/api/finance/evals/run.py#L70-L88",
+          "version": "repo-lines-v1:sha256:4fba7a63e3f1969f1bcc9cdaee0a75ef5033ff479a87b91e8ffecc176a3af331:eyJzZWxlY3RlZExpbmVDb3VudCI6MTksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjljN2FmYTA2MzQ5YWZmMWRjYWY0MTQ5MWJjZmJlMTliNjZiN2M2N2I1Yjg3YTYxMTQzNjljNTEyNTU2MTdkOGIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjRlZjgyMWE0NjVlMzAzZmRmZTE5OWNjY2U1MDZjOTcxNDY4M2I3NWJlMWY4ZGM3OTU3Y2Y0OTUyZDA5MzNiNmQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjhjYzRhN2QxY2M3OTZhYmEzZTQ2NzIzMzI3ZjUxN2U5ZjgxMTk4MmQyNTBmMDcwMjk4NmU0YjU3NjRhZDk1ODkiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6Ijc1MmRhZDdhZDZhZDhmMGFmODM2NmI2ODJmNWYwNzliOWNmZTU3NjAzYzExOGY1MjU4M2U0NzBmMDllMzEwNDMifQ"
+        },
+        {
+          "resource": "repo://apps/api/tests/test_eval_run.py#L42-L62",
+          "version": "repo-lines-v1:sha256:7677b72951562af173d5960d738d5bc9058428349de0fcf014ca578f133630e1:eyJzZWxlY3RlZExpbmVDb3VudCI6MjEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImFlMmE1MjY1YjRkMWI2MjAyMTk2Y2JiZmZkNmI1ZDA2ZDhkMzVmZDYxZTdmY2MzOTE1YzY1ODkxNmIxMjI0OGMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjdkODNiZGFiZmI3MjQwMzA3N2EyMGM1ZGJlZGE4ZTUzN2M2MTE3NWNhNTAyM2I3YzQwZDg1ZDJkYjVhMDM1ZjciLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjFmODUxY2QwNmZmZDQyNTIyYmI3NjkxNmJiMjE1NjY4ZWI1YTZlNWM5MWJhOTdmY2RlMzIxMDA5ZDczOGEwYzYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjA4OTg0ZDMyMTMwNDMyNjQ0M2RmZmQ0NGY5ZWQwMTQzZmFmNmY1NTc1MjM4ODY1YTY5OTM4ZjJjN2I3ODdmMDAifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_aa4198761e4a434bbdd3e0a685534d76",
+      "statement": "supabase db reset wipes labels, notes, and merchant defaults. The CSV keeps labels and notes, not defaults, so export must precede a reset and the restore procedure is the one named in CLAUDE.md.",
+      "evidence": [
+        {
+          "resource": "repo://CLAUDE.md#L88-L93",
+          "version": "repo-lines-v1:sha256:f533ecc844ba2bf4a8194b76adbc07ba53edc28c09fff5bf22d8b3a7c4dade39:eyJzZWxlY3RlZExpbmVDb3VudCI6NiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYjI2OTA5ZWY4ODFmZmQ3ODQ3NzhiYjRkZmQ4OGEyN2U2NjViYTgzYmZmOWY1ZTMxYjljODZkNjFjYjdkMTRmOSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiOTI5ZmZiODBlMmZkM2U5ODhiYjVkZmJmODNjYjBjZTNlYTc1YzAxZTQ3NGE3ZGYwOWVjZTliNDhlMDEwMDM4OCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZjkwMDAyYWIzNjRjNzAxMTQzNWJjZmY3Mjg0YzU3YWY4N2NmYjAwN2RhNDYzZTE3NTRjN2U1OTZkYWUzOGQ4ZSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMTNiNWVlNmVjMWE1OWZkMTgwYzI1ZmFhM2E2MGI1NTNiODJlZGI0ZWY0NGRlNmY1MzI3OGY3OTFiNGM1NDBhNSJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_272d1cfb497f493dbb4985e734fe3071",
+      "statement": "Writes that change labels, notes, merchant defaults, renames, or imports must be verified with scratch-database recipe R2 named in CLAUDE.md, not against the real database. The label, review-route, and labels-io tests are integration-only and never run under task test.",
+      "evidence": [
+        {
+          "resource": "repo://CLAUDE.md#L117-L119",
+          "version": "repo-lines-v1:sha256:c7e351b4d7c28e2c5f32de981ddef9bd9044923bf320f086f7f0d794c6c92170:eyJzZWxlY3RlZExpbmVDb3VudCI6MywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZmI4Y2ZkZmMzMzU5NmVlYTA4YTEyMWRmYjFmYzA5ZmY3NjJmOTk1ZmZkZDRkZmY1MTAzOWRkN2U5Y2FjNzcyNSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZjcwOTgwNWVlZmU5ZjdkYTAxNmIxNmNkMTFmM2ZlNTMwNjBiZDg0NjVkMDk2NDIwMjI4MDg1NmQ0ZGVmM2E3MSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiYmIzY2ZhOTA5NzBmMmI3YmEyZGMwMzIyY2JjOTVlOTQwZGM3ZDI5NTEwY2RjZjU3NzE3ZDYxNjE0ZDIzZTEzZiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNzE2ZWIyYzM5OGNhZDRlYjA2MWQ0NTM1NGU4ZjdkYjg4NzYzMDQ5NGJlZmY4MTZmOWQ2Yjc3YWI0MDQwOWU2ZiJ9"
+        },
+        {
+          "resource": "repo://apps/api/tests/test_labels.py#L19-L19",
+          "version": "repo-lines-v1:sha256:cef7f773ba983abbab18d3fedff66bb85806f063456038e8bd00c0562718af00:eyJzZWxlY3RlZExpbmVDb3VudCI6MSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiY2VmN2Y3NzNiYTk4M2FiYmFiMThkM2ZlZGZmNjZiYjg1ODA2ZjA2MzQ1NjAzOGU4YmQwMGMwNTYyNzE4YWYwMCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiY2VmN2Y3NzNiYTk4M2FiYmFiMThkM2ZlZGZmNjZiYjg1ODA2ZjA2MzQ1NjAzOGU4YmQwMGMwNTYyNzE4YWYwMCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiYzI1NjFlOWEwMWM5YmJlZDBkYTJmNTI3NWUzZWVhM2RkNGU5NTk1OWVkOTNlNThmMDM0ZWViYzNlY2VhOGI4MyIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMzIwNzhhNGU4YTY1MWQzYWFkOGM3NDVhNTU0NWFiY2M1ZDkxMjdmYjhkNDdlMTIxNDg3YzQwOGU1MTk4ZmM4ZiJ9"
+        },
+        {
+          "resource": "repo://apps/api/tests/test_labels_io.py#L9-L9",
+          "version": "repo-lines-v1:sha256:cef7f773ba983abbab18d3fedff66bb85806f063456038e8bd00c0562718af00:eyJzZWxlY3RlZExpbmVDb3VudCI6MSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiY2VmN2Y3NzNiYTk4M2FiYmFiMThkM2ZlZGZmNjZiYjg1ODA2ZjA2MzQ1NjAzOGU4YmQwMGMwNTYyNzE4YWYwMCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiY2VmN2Y3NzNiYTk4M2FiYmFiMThkM2ZlZGZmNjZiYjg1ODA2ZjA2MzQ1NjAzOGU4YmQwMGMwNTYyNzE4YWYwMCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMmFkNjM4YWZkNjc2NTFkMjkyM2I3ODNjY2VlYWI1YjZlMzk3ZTc1NjdiOTdmMDI3NDEwYzAwMDQ0ZjMyYTY4MCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMzIwNzhhNGU4YTY1MWQzYWFkOGM3NDVhNTU0NWFiY2M1ZDkxMjdmYjhkNDdlMTIxNDg3YzQwOGU1MTk4ZmM4ZiJ9"
+        },
+        {
+          "resource": "repo://apps/api/tests/test_review_api.py#L9-L9",
+          "version": "repo-lines-v1:sha256:cef7f773ba983abbab18d3fedff66bb85806f063456038e8bd00c0562718af00:eyJzZWxlY3RlZExpbmVDb3VudCI6MSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiY2VmN2Y3NzNiYTk4M2FiYmFiMThkM2ZlZGZmNjZiYjg1ODA2ZjA2MzQ1NjAzOGU4YmQwMGMwNTYyNzE4YWYwMCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiY2VmN2Y3NzNiYTk4M2FiYmFiMThkM2ZlZGZmNjZiYjg1ODA2ZjA2MzQ1NjAzOGU4YmQwMGMwNTYyNzE4YWYwMCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNjgzYTcxOTlmNzJjNzRiMTI3YjIzMzFmNWNiNWU1MTExYWNhNzU3MTA0YjIwNDE4ODUwNWQzOTdlOTgyYjNjZSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNTYwOGZmMjI0ZWZkNzIyODBiMzU2ODRiMDg3ODg4OWY5OTMwODczN2Y4ZDk1OWQwNDI5OTlkYWQ4YjAzZTgyYyJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_81304504aab149718c6841b02787aeac",
+      "statement": "A merge card is written only when same-merchant confidence is at or above merge_suggestion_floor (0.3) and below merge_threshold (0.5). Equal to 0.5 attaches the row to the known merchant and writes no suggestion. Equal to 0.3 creates a separate merchant and stores the suggestion. 0.29 creates a separate merchant with no suggestion.",
+      "evidence": [
+        {
+          "resource": "repo://apps/api/finance/categorization/merchants.py#L86-L103",
+          "version": "repo-lines-v1:sha256:ba9afcda083298fbd3de53647d12b687c4349954dbe0fc9fdf6b2fdbf3d26a77:eyJzZWxlY3RlZExpbmVDb3VudCI6MTgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjU2MzkyMGI5MjQ1MzJjNzUyMjQ4MzkzZmZjZDljNWJkOGRmNDcyZjZlOWE4ZmE3Yjg3MjhhMzc0Zjk4MWZiNzgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImQ0Y2JmNGFjZTRlYzJiYzExZmRlOWY3NGZlMDc3NTlkOTRhYzc1ZDNkZjEwYmE4MzAwMzczMmIzNDNmYjU4NTMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImE4YTQ3ODEyZDRiOGQ1NjBiODVkNTk4YjYyODZmYTJhNGZmNTM2MTVlN2FmY2M2YWZmMDRhZjlkNTAyMjViMmUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        },
+        {
+          "resource": "repo://apps/api/finance/categorization/store.py#L135-L142",
+          "version": "repo-lines-v1:sha256:e1539791e5db6beaa98bb4bacd322e20528c7d9267139a9f1e94d2ac51ef6ac2:eyJzZWxlY3RlZExpbmVDb3VudCI6OCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMDQ2NGY2OTFkMGM4NzM4NTI4MDRmMGE1OTg4ZmNmYjc1NDBjNWU1NmViY2JjMTJlZmI1MDI3N2MwNjRjOWQwOCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNTEwMzQ4MWM1N2QwZjBkYzBmNzZjZDJjYzhiMzYwNGM0ZTgyOTZkYTQxMjJhZGQxOWU4MTc0NWRjN2UzMzFhNiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZmFhYTk2NDkwZmI2ZDI0ZjIyM2NjYWI0MWZiMTQ0NzFmZDY5YTUwNGNhY2RjZjJiNDk1N2M5MzMzMmJhZDI4ZCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNzFjNDNiNDMxYWQ3MDUzYTFmNzg4YzYyODMzZDQwODdhMjg4ZGVlMzRiZDA0MjM5OThmZTM0ODBiN2MwYjU5MiJ9"
+        },
+        {
+          "resource": "repo://apps/api/finance/settings.py#L80-L83",
+          "version": "repo-lines-v1:sha256:714e88ae06d5c48ca7e672ff6732781fd4ba453325c37760d2ced95f3c55ef5a:eyJzZWxlY3RlZExpbmVDb3VudCI6NCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYmQ1ODJiODExNjA5NWNlMWY5NTQyYjU5ZjIzODhkM2YzOWI3NmQyODg4ZTFjOTkwYTcwZjUwZDhhN2E5Y2MzOCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNDliYTdkOGFmMmNlYzJhNzJkM2U2ZDFlMzk5MWY0NDQxZTE3OTc3ZTBjYWEyZmIwYmMxYThhNWMyMjY5MWZjNyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNGU4Njk0OWQ3Y2FkMWM5ZWNkODdhZjg0NzI1NWQ1N2Y2MWI5MDZhYTdmYzNjZDBhNDVhYWJhMzc3NjhhN2ZiYiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNTk5ZGNjNjdhMDNiZWZkYTllYzgzZmRmMDNjNDUwMmUwNTYxMGNlZDQ4OWE3NTU5MzM5OWQ2ZGY2YjgyNGM2NSJ9"
+        },
+        {
+          "resource": "repo://apps/api/tests/test_merchants.py#L79-L90",
+          "version": "repo-lines-v1:sha256:e080cfbbcef8556a53a0d696d20afe0b4db6c1aea356daf9f98f578da3e7b651:eyJzZWxlY3RlZExpbmVDb3VudCI6MTIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImFmMzQ1ODNhNTk4NzY3YmY1NmFlZmViNjVlMjAzM2ExNjUxY2M0YzhkN2U2ZjBhZjNlNWNmZDMyOTNmOTMzYjMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjIwZjI0NmMyOGNkYjk5MTU3MjA4ZmU2ZTNhM2MzNWYyNDg4ZDkwYmQxMWQzOWQzYjkyMzg5ZDFmNjc2MGQ2MzYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjRjYWEyZWM2ZjQ0YjM2ZjEyMjQwNWYxMjc4OGQyMjJiMjAwN2I0MWQ1ODVkYmJiYzMzYzA3MzE3MDkzMWFhN2UiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjNkNjM1ZWMxYzRmMWExMjVmMTk4MTRkZTQ1YjllNjRmZTZkODI4MWY4OGM3OTI5MjgxOWRkMTk0ZDUxYmIyZjkifQ"
+        }
+      ]
+    }
+  ],
+  "verification": {
+    "by": "openwiki/0.7.2",
+    "at": "2026-10-17T21:01:31.912Z"
+  }
+}
