@@ -1,0 +1,26 @@
+name: Idea or feature
+description: Something to build. It goes through a brainstorm and a spec before any code.
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: >
+        This repo is public: no real amounts, account digits, names or paid services.
+        Use made-up examples.
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem
+      description: What the user cannot do today, or what goes wrong.
+    validations:
+      required: true
+  - type: textarea
+    id: exists
+    attributes:
+      label: What exists already
+      description: Code, specs, tables or issues this builds on.
+  - type: textarea
+    id: questions
+    attributes:
+      label: Open questions
+      description: What the brainstorm has to answer first.

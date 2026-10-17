@@ -77,8 +77,10 @@ class Settings(BaseSettings):
     jev_concurrency: int = Field(default=8, ge=1)
     category_threshold: float = 0.95
     brand_threshold: float = 0.5
-    merge_threshold: float = 0.8
-    merge_suggestion_floor: float = 0.5
+    # jev picks the right known merchant but with low confidence: 0.5 cuts duplicates by 40% with
+    # no new wrong join (docs/evals/HISTORY.md, 2026-10-17). 0.3 to 0.5 is a /review suggestion.
+    merge_threshold: float = 0.5
+    merge_suggestion_floor: float = 0.3
     subscription_threshold: float = 0.7
     chat: ChatSettings = ChatSettings()
 

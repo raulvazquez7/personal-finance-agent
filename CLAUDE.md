@@ -9,8 +9,8 @@ Open-source, local-first personal finance assistant. Bank PDF statements are
 imported into Supabase Postgres, categorized through a cascade (rules → jev →
 human review), shown in Next.js dashboards, and queryable through a LangChain
 agent over a semantic layer. Design: `docs/superpowers/specs/`. Plans:
-`docs/superpowers/plans/`. Ideas not yet designed: `docs/backlog.md`. Read the
-spec before touching architecture.
+`docs/superpowers/plans/`. Ideas, bugs and work in flight: GitHub issues (see
+Work tracking). Read the spec before touching architecture.
 Money rules (what counts as income, spending, transfers): `docs/money-rules.md`.
 
 ## Workflow
@@ -25,10 +25,12 @@ Money rules (what counts as income, spending, transfers): `docs/money-rules.md`.
 - Spec and plan usually live in one chat; implementation starts in a fresh
   context. Keep a small change in the same chat when a new context would only
   add friction.
+- Models: in Claude Code, the session and every subagent run on Opus 5.5
+  (`.claude/settings.json` sets `model` and `CLAUDE_CODE_SUBAGENT_MODEL`); in
+  Cursor, Grok 4.7 Extra High. Never pass a smaller model to the Agent tool for
+  implementation or review work.
 - On Grok 4.7, hand off to a new chat with a clean context when the session
   reaches or nears 500K tokens.
-- Models: the session and every subagent run on Grok 4.7 Extra High. `.claude/settings.json`
-  sets `model`; never pass a smaller model to the Agent tool for implementation or review work.
 - Everything in English: code, comments, docs, commits, UI copy.
 - Simplicity is a requirement: 15 readable lines beat 30 clever ones, use
   libraries the way their docs recommend, one responsibility per file, no
@@ -44,6 +46,23 @@ Money rules (what counts as income, spending, transfers): `docs/money-rules.md`.
   is not the check.
 - Do not reuse code, prompts or domain logic from Raul's former employer's
   repos. Generic conventions only.
+
+## Work tracking
+
+- GitHub issues on the board (https://github.com/users/raulvazquez7/projects/1)
+  are the source of truth for what to build: ideas, bugs and follow-ups. Not
+  memory, not a backlog file.
+- When a conversation with Raul surfaces a new idea, bug or follow-up, create
+  the issue yourself (sections of `.github/ISSUE_TEMPLATE/feature.yml`: problem,
+  what exists, open questions; labels `enhancement`, `bug`, `documentation` or
+  `accessibility`), add it to the board as Backlog, and give Raul the link.
+- Board status: Backlog → Ready (spec and plan agreed) → In progress (branch
+  started) → In review (PR open) → Done (merged or closed). Move cards yourself
+  and tell Raul.
+- Specs and plans name their issue (`Issue: #N`); PR bodies say `Closes #N`.
+- The repo is public: issues carry no real amounts, account digits, names or
+  paid services, same as docs and commits.
+- Memory keeps how Raul works, not the state of the work.
 
 ## Commands
 
@@ -86,6 +105,10 @@ Run the API and web first; pages live at `http://localhost:3000` (`/`, `/spendin
   re-snapshot), e.g. upload a PDF on `/imports` and read the counts.
 - Once per slice, before merge: one `agent-browser skills get dogfood` pass
   over the whole app, report in `dogfood-output/`.
+- Once per slice, before merge: refresh the agent wiki with
+  `OPENWIKI_TELEMETRY_DISABLED=1 npx -y openwiki@0.7.2 code --update` (provider settings: the
+  Run record in `docs/superpowers/plans/2026-10-17-openwiki.md`) and review its diff. Never
+  hand-edit generated `openwiki/` pages. A CI refresh is issue #45.
 - Pass absolute paths to `upload` and `screenshot`: the daemon does not share
   your working directory, and a relative upload path hung the page.
 - Use a named session, stay on localhost, and `close` when done. Screenshots
@@ -122,6 +145,8 @@ Run the API and web first; pages live at `http://localhost:3000` (`/`, `/spendin
 - Remote is the personal account `raulvazquez7`; the active `gh` account is a
   different one. Push with:
   `git -c credential.helper='!f() { echo username=raulvazquez7; echo password=$(gh auth token -u raulvazquez7); }; f' push`
+- `gh` on this repo (issues, board, PRs): prefix the command with
+  `GH_TOKEN=$(gh auth token -u raulvazquez7)`.
 - Conventional commits (`feat:`, `fix:`, `docs:`, `chore:`, `test:`).
 
 <!-- OPENWIKI:START -->

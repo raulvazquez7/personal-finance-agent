@@ -1,5 +1,6 @@
 """Benchmark metrics over (golden, predicted) rows; a pure function (spec 13.1)."""
 
+from collections import defaultdict
 from uuid import UUID
 
 from pydantic import BaseModel
@@ -69,6 +70,8 @@ class Metrics(BaseModel):
     subscription_precision: Ratio
     subscription_recall: Ratio
     merchant: Ratio
+    merchant_duplicates: int
+    merchant_wrong_joins: int
 
 
 def _level(scored: list[tuple[bool, float]]) -> LevelMetrics:
@@ -95,6 +98,14 @@ def _level(scored: list[tuple[bool, float]]) -> LevelMetrics:
     )
 
 
+def _extra(pairs: list[tuple[str, str]]) -> int:
+    """Per first name, the second names it came with beyond one."""
+    seen: dict[str, set[str]] = defaultdict(set)
+    for first, second in pairs:
+        seen[first].add(second)
+    return sum(len(names) - 1 for names in seen.values())
+
+
 def compute_metrics(rows: list[EvalRow]) -> Metrics:
     level2 = [(r.predicted_slug == r.golden_slug, r.confidence or 0.0) for r in rows]
     level1 = [(r.predicted_level1 == r.golden_level1, r.level1_confidence or 0.0) for r in rows]
@@ -103,6 +114,13 @@ def compute_metrics(rows: list[EvalRow]) -> Metrics:
     flagged = [r for r in labelled if r.outgoing and r.predicted_subscription]
     truly = [r for r in labelled if r.golden_subscription]
     named = [r for r in rows if r.golden_merchant]
+    # Duplicates: one golden merchant under several predicted names. Wrong joins: one predicted
+    # name over several golden merchants. A row with no predicted name votes for neither.
+    pairs = [
+        (match_key(r.golden_merchant), match_key(r.predicted_merchant))
+        for r in named
+        if r.predicted_merchant
+    ]
     return Metrics(
         rows=len(rows),
         level2=_level(level2),
@@ -121,4 +139,6 @@ def compute_metrics(rows: list[EvalRow]) -> Metrics:
             ),
             total=len(named),
         ),
+        merchant_duplicates=_extra(pairs),
+        merchant_wrong_joins=_extra([(p, g) for g, p in pairs]),
     )

@@ -60,6 +60,9 @@ def render_markdown(meta: EvalMeta, metrics: Metrics) -> str:
         f"- Subscription precision {sp.hits}/{sp.total}, recall {sr.hits}/{sr.total}"
         " (noul > 0.7, expenses)",
         f"- Merchant name right {m.hits}/{m.total} (same match key)",
+        f"- Merchant duplicates {metrics.merchant_duplicates}, wrong joins"
+        f" {metrics.merchant_wrong_joins} (extra predicted names per golden merchant, extra"
+        " golden merchants per predicted name)",
         "",
     ]
     return "\n".join(lines)
@@ -68,7 +71,7 @@ def render_markdown(meta: EvalMeta, metrics: Metrics) -> str:
 def history_line(meta: EvalMeta, metrics: Metrics) -> str:
     at = metrics.level2.at(ACCEPT)
     sp, sr = metrics.subscription_precision, metrics.subscription_recall
-    # The failed count rides in the note cell, so the table keeps its ten columns.
+    # The failed count rides in the note cell, so the table keeps its eleven columns.
     failed = f"failed={meta.failed}" if meta.failed else ""
     # A pipe or a line break in the note would break the Markdown table.
     typed = " ".join(meta.note.replace("|", "/").split())
@@ -83,6 +86,7 @@ def history_line(meta: EvalMeta, metrics: Metrics) -> str:
         _pct(at.precision()),
         str(at.review),
         f"{sp.hits}/{sp.total} · {sr.hits}/{sr.total}",
+        f"{metrics.merchant_duplicates} / {metrics.merchant_wrong_joins}",
         note,
     ]
     return "| " + " | ".join(cells) + " |"
