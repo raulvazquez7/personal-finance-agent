@@ -128,7 +128,7 @@ The history table is the comparison surface. Its columns, in order:
 | jev | Model string returned by the call. Current lines are `jev-1.13.0`. |
 | Golden rows | Rows scored, not rows left out. A `failed=N` note means N golden rows were excluded. |
 | L2 acc | Level-2 accuracy: predicted slug equals the golden slug, over every scored row. A missing confidence counts as 0 for the buckets, not as a skip. |
-| L1 acc | Level-1 accuracy, using level-1 confidence (the sum of the chosen group's leaf probabilities). A wrong leaf in the right group is still right here. |
+| L1 acc | Level-1 accuracy: the predicted level-1 group equals the golden level-1 group, over every scored row. The confidence beside that comparison is level-1 confidence. A wrong leaf in the right group is still right here. |
 | Precision @0.95 | Of rows whose level-2 confidence is at least 0.95, the share whose slug matched. This is the acceptance threshold (`category_threshold`, default 0.95). |
 | Review @0.95 | Scored rows below 0.95. The report's threshold table also has 0.80, 0.85, and 0.90. The history line does not. |
 | Subs P / R | Subscription precision and recall as `hits/total · hits/total`, expenses only, flag on when noul is above 0.7. |
@@ -152,7 +152,7 @@ Compare a line only with another line of the same golden-set size, and say which
 
 jev noise is about ten rows between identical runs. The 2026-09-23 v7 and v7b lines exist to measure that: 83.3% then 84.0% level-2 on the same 412 rows. A move smaller than about ten rows is noise. On 684 rows, ten rows is about 1.5 percentage points. The 2026-09-26 hint lines (86.0%, 85.8%, 86.8%, 87.0% level-2) sit inside that band. Do not call a one-point move a win.
 
-The latest line in the file, 2026-09-27, 684 golden rows, jev-1.13.0: level-2 87.0%, level-1 89.2%, precision at 0.95 of 98.2%, 287 rows to review, subscription precision 50/51 and recall 50/60. The note is `restaurants not_for: Amazon and Prime Video`. That line is a measurement of that wording on that set, not a target and not a trend endpoint.
+The latest line in the file, 2026-09-27, 684 golden rows, jev-1.13.0: level-2 87.0%, level-1 89.2%, precision at 0.95 of 98.2%, 287 rows to review, subscription precision 50/51 and recall 50/60. The note is a prompt-hint change. That line is a measurement of that change on that set, not a target and not a trend endpoint.
 
 ## What this command is not
 

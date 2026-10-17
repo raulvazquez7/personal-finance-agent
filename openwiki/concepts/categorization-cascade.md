@@ -67,7 +67,7 @@ Change pairing, rules, questions, merchants, thresholds, or loans here. The surr
 | `POST /imports` | After a successful PDF import, queues `run_categorization_logged` for pending rows only. The import response does not wait for jev. |
 | `POST /categorize/run` | Returns 202 and queues the same background function. `?all=true` re-runs every row whose `category_source` is not `user`. |
 | `finance categorize` | Synchronous. `--all` is the same re-run. `--rules-only` never calls jev. |
-| `finance import` | Imports, then calls `run_categorization()`. A categorization exception is printed; the import already succeeded. |
+| `finance import` | Imports every file, then calls `run_categorization()` once. A categorization exception is printed; the imports already succeeded. |
 
 A missing `TYPESAFE_API_KEY` is the same as rules-only for the jev step: pairing and rules still run, the summary says `jev skipped: TYPESAFE_API_KEY is not set`, and unmatched rows stay `category_source = 'none'`.
 
@@ -206,7 +206,7 @@ It selects rows whose slug is `loan_received` or `loan_payment` and whose `merch
 
 ## Failure isolation and the run lock
 
-One bad jev row does not fail the run. `asyncio.gather(..., return_exceptions=True)` keeps going. A failed first call, a failed `same_merchant` call, or a malformed answer (unknown slug, missing confidence) is logged as a warning with the transaction id and the exception type only — never the jev state or the description — and that id is omitted from results. `save` writes the rest. The omitted row stays `category_source = 'none'` and is pending on the next run. Pairing and rule rows are already in the result map, so they are saved even when every jev call fails.
+One bad jev row does not fail the run. `asyncio.gather(..., return_exceptions=True)` keeps going. A failed first call, a failed `same_merchant` call, or a malformed answer (unknown slug, missing confidence) is logged as a warning with the transaction id and the exception repr (`%r`) — never the jev state or the description — and that id is omitted from results. `save` writes the rest. The omitted row stays `category_source = 'none'` and is pending on the next run. Pairing and rule rows are already in the result map, so they are saved even when every jev call fails.
 
 `failed` on the summary is `len(rows) - len(results)` for a jev run, and 0 for rules-only. Cancellation is re-raised: it is not treated as a per-row failure.
 

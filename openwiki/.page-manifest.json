@@ -2,84 +2,84 @@
   "schemaVersion": 1,
   "pages": {
     "/openwiki/architecture/data-model.md": {
-      "pageVersion": "sha256:efc17db79cf3e110ce1940a47a9727ce2f71d738090dd472b4ff4a35c3591986",
+      "pageVersion": "sha256:ba21a7807e8bf63d53e2cebc7749a162cd78513c951ea0c185fba5822fb35d95",
       "completedBy": "openwiki/0.7.2",
       "completedRunId": "16a4947b-0833-4b84-b8c6-174ac1518ee3",
       "gitHead": "ad4118e273bdf31b5e9ff40f80960e3fcf0124f4",
       "sourceFingerprint": "sha256:6b8fd843d7fa02e97daa0708749968fbd1a0a427efafbe6a7ca451d5d9aa201f"
     },
     "/openwiki/architecture/system-map.md": {
-      "pageVersion": "sha256:49651229a4fce47782edc3f953a258e8a8b75518b2ebdf11ff36ab8def1b354b",
+      "pageVersion": "sha256:fda943b3f04205f1b2de628cad91c679a9d1eb9b3c800811fdaab5027e51af86",
       "completedBy": "openwiki/0.7.2",
       "completedRunId": "16a4947b-0833-4b84-b8c6-174ac1518ee3",
       "gitHead": "ad4118e273bdf31b5e9ff40f80960e3fcf0124f4",
       "sourceFingerprint": "sha256:6b8fd843d7fa02e97daa0708749968fbd1a0a427efafbe6a7ca451d5d9aa201f"
     },
     "/openwiki/concepts/categorization-cascade.md": {
-      "pageVersion": "sha256:46d6316fc9de1c6e6b7589de3ad09b9297862761a813e22eee9f28145fafa6f9",
+      "pageVersion": "sha256:99b543ccdc099424bcc88c030ae5dc1444d80948fa294359b4990917b14c8771",
       "completedBy": "openwiki/0.7.2",
       "completedRunId": "16a4947b-0833-4b84-b8c6-174ac1518ee3",
       "gitHead": "ad4118e273bdf31b5e9ff40f80960e3fcf0124f4",
       "sourceFingerprint": "sha256:6b8fd843d7fa02e97daa0708749968fbd1a0a427efafbe6a7ca451d5d9aa201f"
     },
     "/openwiki/concepts/chat-agent.md": {
-      "pageVersion": "sha256:3357d07304076875f550bc2a837eba824097b92a8499fdf1fdbda663e42a728d",
+      "pageVersion": "sha256:7c2d864547a5a22e6edbccef21469bdc6e3a04a6813f34c9d8be2cba9d38b06f",
       "completedBy": "openwiki/0.7.2",
       "completedRunId": "16a4947b-0833-4b84-b8c6-174ac1518ee3",
       "gitHead": "ad4118e273bdf31b5e9ff40f80960e3fcf0124f4",
       "sourceFingerprint": "sha256:6b8fd843d7fa02e97daa0708749968fbd1a0a427efafbe6a7ca451d5d9aa201f"
     },
     "/openwiki/concepts/money-rules.md": {
-      "pageVersion": "sha256:27ff14cf35d88c95427981e86c9b30dc05865c2bcee5c33abe4bf86c22dcfdc5",
+      "pageVersion": "sha256:d03cc674859c5ad86f83ff944d547e248017df23d97e97a00877b51692d2e589",
       "completedBy": "openwiki/0.7.2",
       "completedRunId": "16a4947b-0833-4b84-b8c6-174ac1518ee3",
       "gitHead": "ad4118e273bdf31b5e9ff40f80960e3fcf0124f4",
       "sourceFingerprint": "sha256:6b8fd843d7fa02e97daa0708749968fbd1a0a427efafbe6a7ca451d5d9aa201f"
     },
     "/openwiki/operations/configuration.md": {
+      "gitHead": "ad4118e273bdf31b5e9ff40f80960e3fcf0124f4",
+      "sourceFingerprint": "sha256:6b8fd843d7fa02e97daa0708749968fbd1a0a427efafbe6a7ca451d5d9aa201f",
       "pageVersion": "sha256:1fd221fff79abc37957acb1f99245af08ed5be48a332aebe2e4427a38c02bfae",
       "completedBy": "openwiki/0.7.2",
-      "completedRunId": "16a4947b-0833-4b84-b8c6-174ac1518ee3",
-      "gitHead": "ad4118e273bdf31b5e9ff40f80960e3fcf0124f4",
-      "sourceFingerprint": "sha256:6b8fd843d7fa02e97daa0708749968fbd1a0a427efafbe6a7ca451d5d9aa201f"
+      "completedRunId": "16a4947b-0833-4b84-b8c6-174ac1518ee3"
     },
     "/openwiki/operations/verify-a-change.md": {
-      "pageVersion": "sha256:c5da10fe45c5622d1be17e0245548884780408b9d6824ece24d388a3cf4004db",
+      "pageVersion": "sha256:29735c201ea56d392b8e4d6ae0df4a6191ddb612cd80ff8fde0a742d84d388c1",
       "completedBy": "openwiki/0.7.2",
       "completedRunId": "16a4947b-0833-4b84-b8c6-174ac1518ee3",
       "gitHead": "ad4118e273bdf31b5e9ff40f80960e3fcf0124f4",
       "sourceFingerprint": "sha256:6b8fd843d7fa02e97daa0708749968fbd1a0a427efafbe6a7ca451d5d9aa201f"
     },
     "/openwiki/quickstart.md": {
-      "pageVersion": "sha256:6df17bb5b04210839df0ccb456d1dfaeef03035e147463db16d0e66822855d68",
+      "pageVersion": "sha256:6ac98661fa17fcb6a0bb5ab2210d618c3e7066c3c32ed01ca5f21fb6dd9abc3b",
       "completedBy": "openwiki/0.7.2",
       "completedRunId": "16a4947b-0833-4b84-b8c6-174ac1518ee3",
       "gitHead": "ad4118e273bdf31b5e9ff40f80960e3fcf0124f4",
       "sourceFingerprint": "sha256:6b8fd843d7fa02e97daa0708749968fbd1a0a427efafbe6a7ca451d5d9aa201f"
     },
     "/openwiki/workflows/ask-a-question.md": {
+      "gitHead": "ad4118e273bdf31b5e9ff40f80960e3fcf0124f4",
+      "sourceFingerprint": "sha256:6b8fd843d7fa02e97daa0708749968fbd1a0a427efafbe6a7ca451d5d9aa201f",
       "pageVersion": "sha256:62f318204961b660d887696b60589636418455bcef45ab9d62a3c3e0f720d3e9",
       "completedBy": "openwiki/0.7.2",
-      "completedRunId": "16a4947b-0833-4b84-b8c6-174ac1518ee3",
-      "gitHead": "ad4118e273bdf31b5e9ff40f80960e3fcf0124f4",
-      "sourceFingerprint": "sha256:6b8fd843d7fa02e97daa0708749968fbd1a0a427efafbe6a7ca451d5d9aa201f"
+      "completedRunId": "16a4947b-0833-4b84-b8c6-174ac1518ee3"
     },
     "/openwiki/workflows/import-to-dashboard.md": {
-      "pageVersion": "sha256:0754cb0c19687eccc346e66459efb174a56f54a60148283c0d7a062081f69b7c",
+      "pageVersion": "sha256:8d3e513815cb5b28bc4fd8b20d34526829fbda5e649161056b4e43afdf53608c",
       "completedBy": "openwiki/0.7.2",
       "completedRunId": "16a4947b-0833-4b84-b8c6-174ac1518ee3",
       "gitHead": "ad4118e273bdf31b5e9ff40f80960e3fcf0124f4",
       "sourceFingerprint": "sha256:6b8fd843d7fa02e97daa0708749968fbd1a0a427efafbe6a7ca451d5d9aa201f"
     },
     "/openwiki/workflows/review-and-labels.md": {
+      "gitHead": "ad4118e273bdf31b5e9ff40f80960e3fcf0124f4",
+      "sourceFingerprint": "sha256:6b8fd843d7fa02e97daa0708749968fbd1a0a427efafbe6a7ca451d5d9aa201f",
       "pageVersion": "sha256:1d4098111311c1d25cc163a50157d521ecf57b34253ae7690613491fe42195f2",
       "completedBy": "openwiki/0.7.2",
-      "completedRunId": "16a4947b-0833-4b84-b8c6-174ac1518ee3",
-      "gitHead": "ad4118e273bdf31b5e9ff40f80960e3fcf0124f4",
-      "sourceFingerprint": "sha256:6b8fd843d7fa02e97daa0708749968fbd1a0a427efafbe6a7ca451d5d9aa201f"
+      "completedRunId": "16a4947b-0833-4b84-b8c6-174ac1518ee3"
     },
     "/openwiki/workflows/run-categorization-eval.md": {
-      "pageVersion": "sha256:1fe81fd4fe6ad24ef07f12b8a446f62c995cdf3ea88200381b5c837c1a8dee27",
+      "pageVersion": "sha256:222becd3b423ce1a5123a3fb1d87e4583cae5e0adec8a10234205789f6ff3f4e",
       "completedBy": "openwiki/0.7.2",
       "completedRunId": "16a4947b-0833-4b84-b8c6-174ac1518ee3",
       "gitHead": "ad4118e273bdf31b5e9ff40f80960e3fcf0124f4",

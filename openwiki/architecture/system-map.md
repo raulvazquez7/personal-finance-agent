@@ -98,7 +98,7 @@ Owned systems and the data they hand off. The eval reads the production cascade 
 ## How a statement becomes a number
 
 1. `POST /imports` or `finance import` parses a BBVA or CaixaBank PDF, resolves the account by IBAN, and inserts rows. `on conflict (dedup_key) do nothing` makes a second upload of the same movement a no-op.
-2. The same call schedules categorization in the background. The CLI runs it in the same process after the insert. Pairing and system rules always run. jev runs only when `TYPESAFE_API_KEY` is set and the caller did not pass `--rules-only`.
+2. `POST /imports` schedules categorization in the background. `finance import` categorizes once, after every file. Pairing and system rules always run. jev runs only when `TYPESAFE_API_KEY` is set and the caller did not pass `--rules-only`.
 3. Saved categories, including user labels, flow into `v_transactions_enriched`. Dashboard SQL and the agent's `agent.transactions` view both read that view. A total that bypasses it will disagree with every page and the chat.
 4. The browser never opens Postgres. Pages call the API at `NEXT_PUBLIC_API_URL` (default `http://localhost:8000`).
 

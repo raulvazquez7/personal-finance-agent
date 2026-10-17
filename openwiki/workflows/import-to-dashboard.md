@@ -87,7 +87,7 @@ Who owns each package is [System map](../architecture/system-map.md). What the n
 | `GET /dashboard/overview`, `GET /spending/detail` | Period, totals, breakdowns, and the latest rows |
 | `/`, `/spending/*`, `/income` | Display of those responses. They do not recompute spend |
 
-`finance import` uses the same `import_statement`. It categorizes in the same process after every file, and prints a categorization exception instead of scheduling it. A bad file there is a line on stderr and exit code 1; the other files in the same command still import.
+`finance import` uses the same `import_statement`. It categorizes once, after every file, in the same process, and prints a categorization exception instead of scheduling it. A bad file there is a line on stderr and exit code 1; the other files in the same command still import.
 
 ## From the PDF to the ledger
 
@@ -163,9 +163,9 @@ Until that run finishes, new rows are visible to the dashboard as uncategorized 
 
 ## What the web reads
 
-Dashboard SQL does not read `transactions` for money. It sums `v_transactions_enriched`, whose `spend` and `income` follow `tx_type`. Transfers are zero in both. A month with no imported row is `has_data = false`, not a zero. Do not recompute those columns in a page.
+Dashboard SQL does not read `transactions` for money. It sums `v_transactions_enriched`, whose `spend` and `income` follow `tx_type`. Transfers are zero in both. How a month with no imported row is drawn is the Comparisons section of [Money rules](../../docs/money-rules.md). Do not restate it, and do not recompute those columns in a page.
 
-Every dashboard read takes the period query: `period` (default `month`), optional `month`, `start` and `end` for `custom`, and repeated `account_id`. `resolve_request` anchors a relative period on the latest `booked_at` of the selected accounts, or today when there is no row. The previous period is the same length. When the latest imported day falls inside the current period, deltas use a cut of that previous period. `has_previous` looks at the whole previous period. The cumulative chart's previous line is the whole previous period, not the cut.
+Every dashboard read takes the period query: `period` (default `month`), optional `month`, `start` and `end` for `custom`, and repeated `account_id`. `resolve_request` anchors a relative period on the latest `booked_at` of the selected accounts, or today when there is no row. How a previous period is cut, and when no change is shown, is the Comparisons section of [Money rules](../../docs/money-rules.md). Do not restate it. The cumulative chart does not use that cut.
 
 `GET /dashboard/overview` is the home page. KPIs use `totals` with no type filter. Group, category, and merchant charts use `breakdown` on expenses. The current cumulative line is omitted when there is no latest day. `group_slots` ranks groups by all-time spend so a period change does not recolor them. The subscription card is `summary(active_subscriptions)`, which reads `v_subscriptions` and ignores the account filter. The page says so.
 
@@ -205,6 +205,6 @@ Do not use the file hash as the duplicate rule. Overlapping statements are dedup
 From `apps/api`:
 
 - Unit, no database: `tests/test_adapters.py`, `tests/test_bbva_pdf.py`, `tests/test_caixabank_pdf.py`, `tests/test_balance_chain.py`, `tests/test_dedup.py`, `tests/test_importer.py` (the pure `transaction_rows` cases), and `tests/test_api.py` for 415, 422, 403, and a 201 that still reports counts when categorization raises.
-- Integration, local Supabase: `tests/test_importer.py` re-imports the sample PDFs and expects the second pass to add nothing. `tests/test_views.py` and `tests/test_dashboard_api.py` lock the read side. `uv run task test-integration` is not CI.
+- Integration, local Supabase: `tests/test_importer.py` uses real statements in `data/raw` and skips if none are there. `tests/test_views.py` and `tests/test_dashboard_api.py` lock the read side. `uv run task test-integration` is not CI.
 
 A UI import writes the ledger. Check it with agent-browser on scratch-database recipe R2, named in [CLAUDE.md](../../CLAUDE.md). Do not invent that recipe's steps. Do not describe `data/` or paste statement contents into a test or a page.

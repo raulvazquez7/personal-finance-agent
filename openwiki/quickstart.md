@@ -95,7 +95,7 @@ A new bank is a new adapter plus a `bank` enum value, not a change to the cascad
 | Command | Role |
 | --- | --- |
 | `uv run task api` | FastAPI on port 8000 (`uvicorn finance.api.main:app --reload`) |
-| `uv run finance import <pdf>` | Parse and insert, then categorize in the same process |
+| `uv run finance import <pdf>` | Parse and insert every file, then categorize once |
 | `uv run finance seed` | Upsert taxonomy and system rules from `supabase/seed` |
 | `uv run finance categorize [--all] [--rules-only]` | Pairing, rules, and jev unless `--rules-only` |
 | `uv run finance labels export` or `import` | Golden set and notes as CSV, keyed by `dedup_key` |

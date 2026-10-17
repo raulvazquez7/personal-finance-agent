@@ -49,7 +49,7 @@ CI is `.github/workflows/ci.yml`. It runs on every push to `main` and on every p
 | `api` | `apps/api` | `astral-sh/setup-uv@v5` with cache, then `uv sync --group dev` | `uv run task lint`, then `uv run task test` |
 | `web` | `apps/web` | Node 22, npm cache on `apps/web/package-lock.json`, then `npm ci` | `npm run lint`, then `npm run build` |
 
-The OpenWiki update workflow is a separate scheduled job. It does not lint or test this repository.
+There is no scheduled OpenWiki workflow in this repository. Refresh the wiki by hand with `openwiki code --update` before a slice merges. That command does not lint or test this repository. CI is only the two jobs above.
 
 ```mermaid
 flowchart TD

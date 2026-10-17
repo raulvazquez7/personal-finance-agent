@@ -33,6 +33,7 @@ README instead.
 - Plans in docs/superpowers/plans/ are task history, not instructions, and are not readable here.
 - The scratch-database recipes R2 and R3 live in plans you cannot read. Name them and point to
   CLAUDE.md, which says where they are; do not describe their steps.
+- There is no scheduled OpenWiki workflow in this repository. The wiki is refreshed by hand with `openwiki code --update` before a slice merges.
 
 ## Never
 
@@ -42,3 +43,5 @@ README instead.
 - Copy the README or `docs/architecture.md`. Link them.
 - Present conversation_history/ or skills/ as repository directories: they are OpenWiki's own
   mounts.
+- Restate money rules (comparison semantics, failure cases, subscription cadence or active windows): link docs/money-rules.md instead.
+- Quote merchant names, even from docs/evals/HISTORY.md notes.

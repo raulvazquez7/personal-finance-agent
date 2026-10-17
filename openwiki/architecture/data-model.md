@@ -250,13 +250,7 @@ Slice 3's data migration aligns already-categorized rows to `categories.tx_type`
 
 `v_monthly_summary` and `v_spend_by_category` group that view. Nothing in the dashboard queries them. Totals, series, and breakdowns select `v_transactions_enriched` directly so a period and account scope can be applied before the aggregate. Savings rate is computed in Python after the accounts are summed, not stored. Treat the two summary views as the SQL form of the contract and as what `tests/test_views.py` locks; do not invent a third definition beside them.
 
-`v_subscriptions` was recreated by [subscription cadence](../../supabase/migrations/20261014120000_subscription_cadence.sql). It keeps flagged money-out expense rows that have a merchant, and emits one row per merchant. The current shape, which replaces the slice 3 median-amount version:
-
-- Cadence is `merchants.cadence` when set (`cadence_source = 'user'`), otherwise the median gap: up to 60 days monthly, 61–200 quarterly, over 200 yearly. A single charge, whose gap is null, is monthly. Source is then `auto`.
-- `latest_amount` is the latest charge; two charges on that day take the larger one. `monthly_equivalent` divides it by 1, 3, or 12.
-- `active` is measured from the latest imported `transactions.booked_at`, not from today: 45, 120, or 400 days by cadence.
-
-`PATCH /merchants/{id}/cadence` writes the override. Null returns the row to auto. The subscriptions page reads the view and splits on `active` in Python.
+`v_subscriptions` was recreated by [subscription cadence](../../supabase/migrations/20261014120000_subscription_cadence.sql). It emits one row per merchant and replaces the slice 3 median-amount version. Cadence, the latest charge, and the active window are the Subscriptions section of [Money rules](../../docs/money-rules.md). Do not restate them. `PATCH /merchants/{id}/cadence` writes the override. Null clears it. The subscriptions page reads the view and splits active rows in Python.
 
 Display names are appended to `v_transactions_enriched` with `CREATE OR REPLACE`, which only allows new columns at the end. `category_name` and `group_name` coalesce the seeded name, else the slug fallback. Replacing in place keeps grants on the view. Dropping it would not.
 
@@ -270,9 +264,9 @@ Display names are appended to `v_transactions_enriched` with `CREATE OR REPLACE`
 
 `agent_reader` is `NOLOGIN`, created only if missing, because roles are cluster-wide and a re-run would otherwise fail. It has `USAGE` on `agent` and `SELECT` on the views there. The migration also grants the role to `CURRENT_USER` with `INHERIT FALSE, SET TRUE`. Postgres 16+ does not give the role's creator that `SET` right on Supabase (`createrole_self_grant` is empty), and without it the API cannot `SET LOCAL ROLE`.
 
-Every agent query goes through `agent_session`:
+Every agent query goes through `agent_session`. The transaction is opened first and always rolls back. Inside it, in order:
 
-1. `SET TRANSACTION READ ONLY`, then a transaction that always rolls back.
+1. `SET TRANSACTION READ ONLY`.
 2. `SET LOCAL ROLE agent_reader`.
 3. `SET LOCAL search_path = agent`.
 4. `SET LOCAL statement_timeout` from chat settings.

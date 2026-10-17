@@ -111,22 +111,11 @@ Savings rate is `savings_rate` in `apps/api/finance/dashboard/periods.py`: savin
 
 ### Comparisons and empty months
 
-Period comparison is Python around the same sums, in `resolve_request` (`apps/api/finance/api/periods.py`):
-
-- The previous period is the same length (`previous`). Year to date is the same dates a year earlier.
-- If the latest imported day falls inside the current period, `until_same_day` cuts the previous period after as many days. Tiles and breakdown deltas use that cut. The cumulative chart's previous line is the whole previous period.
-- `has_previous` looks at the whole previous period, not only its first days. No imported row there means no delta, not a delta against zero.
-- `data_months` reads `transactions`, not the enriched view. `month_series` marks a month absent from that set as `has_data = false` with null amounts. A month that has rows but no spend or income is zero, and that is different.
-
-A chart that fills a missing month with 0 contradicts the contract even if it sums the view.
+Period comparison, including how a previous period is cut and when a month is "no data" rather than zero, is the Comparisons section of [Money rules](../../docs/money-rules.md). Do not restate it. `resolve_request` in `apps/api/finance/api/periods.py` applies that contract around the same sums. A chart that fills a missing month with 0 contradicts the contract even if it sums the view.
 
 ## Subscriptions
 
-`v_subscriptions` was recreated by [subscription cadence](../../supabase/migrations/20261014120000_subscription_cadence.sql). It reads `v_transactions_enriched` and keeps rows that are flagged, `tx_type = 'expense'`, money out, and have a merchant. One row per merchant. The dashboard then splits on `active` in `active_subscriptions` and sets the yearly total to twelve times the monthly total of the active rows.
-
-Cadence is `merchants.cadence` when set. `PATCH /merchants/{merchant_id}/cadence` writes that column; null clears it. The view reports `cadence_source = 'user'` or `'auto'`. Clearing the column returns the row to the gap rule. The merchant profile left-joins the view, so a merchant with no flagged charges has null cadence fields rather than a list row.
-
-Do not reimplement cadence, the latest charge, or the active window in the page handler. Change the view, then check `agent.subscriptions`, which is a projection of it.
+`v_subscriptions` was recreated by [subscription cadence](../../supabase/migrations/20261014120000_subscription_cadence.sql). It reads `v_transactions_enriched` and emits one row per merchant. Cadence, the latest charge, and the active window are the Subscriptions section of [Money rules](../../docs/money-rules.md). Do not restate them, and do not reimplement them in the page handler. `PATCH /merchants/{merchant_id}/cadence` writes `merchants.cadence`; null clears it. The merchant profile left-joins the view, so a merchant with no flagged charges has null cadence fields rather than a list row. Change the view, then check `agent.subscriptions`, which is a projection of it.
 
 ## What the agent sums
 
@@ -150,15 +139,9 @@ Startup is the check that this stays true. `open_chat` calls `validate_layer`, w
 
 ## What a bypass breaks
 
-A new total that selects `transactions.amount`, or sums `direction`, has its own money rules. Dashboards and chat then disagree, and a category change no longer moves the number the contract says it should.
+A new total that selects `transactions.amount`, or sums `direction`, has its own money rules. Dashboards and chat then disagree, and a category change no longer moves the number the contract says it should. The failure cases are [Money rules](../../docs/money-rules.md). Do not restate them.
 
-Concrete failures:
-
-- A refund counted by sign becomes income. The expense category stops reducing spend.
-- A transfer, including loan money received and an own-account move, enters income or expenses. Both columns on the view are 0 for `tx_type = 'transfer'`.
-- Savings rate averaged across months or accounts is not the rate. Both the dashboard helper and the `savings_rate` metric divide after the sum.
-- A subscription total that scans `is_subscription` without the view's filters counts a flagged refund, a flagged transfer, or a flagged row with no merchant.
-- A chat metric that is not in `metrics.yaml`, or that the projection does not expose, fails `EXPLAIN` at startup. If you skip that check and query `public` from the tool, you also widen what `agent_reader` can see. Do not grant it `public`.
+A chat metric that is not in `metrics.yaml`, or that the projection does not expose, fails `EXPLAIN` at startup. If you skip that check and query `public` from the tool, you also widen what `agent_reader` can see. Do not grant it `public`.
 
 The safe extension is a new column on `v_transactions_enriched` (or a view that only aggregates it), then a projection column if chat should see it, then a metric or attribute in the semantic YAML. `CREATE OR REPLACE VIEW` can only append columns. A reorder or drop needs a new `GRANT SELECT` to `agent_reader`. [Data model](../architecture/data-model.md) has the migration order.
 
@@ -171,7 +154,7 @@ These are integration tests against the views, not unit tests of the prose in `d
 | `tests/test_views.py` `test_monthly_summary_follows_the_money_rules` | January 1999 fixture: income 2000.00, expenses 455.00, savings 1545.00. February fashion refund of 30.00 is expenses −30.00. Transfers stay out. |
 | `test_spend_by_category_nets_refunds_and_keeps_uncategorized` | Same fixture, net spend by category, including `uncategorized` 10.00. |
 | `test_enriched_rows_carry_spend_income_and_note` | A money-in fashion row has spend −80.00, income 0, direction incoming. |
-| Subscription tests in the same file | Monthly, quarterly, and yearly cadence; a user cadence wins and clear returns to auto; two charges on the latest day take the larger; active windows of 45, 120, and 400 days from the latest imported day. |
+| Subscription tests in the same file | The subscription view against [Money rules](../../docs/money-rules.md): cadence, a user cadence, and the active window. Do not restate those rules here. |
 | `tests/test_taxonomy.py` | `tx_type_of` follows the category, including a money-in expense category. |
 | `tests/test_semantic_layer.py` and `tests/test_catalog_db.py` | Metric names, and `validate_layer` against the live `agent` views. |
 

@@ -172,7 +172,7 @@ The unknown-function rule is the barrier for built-ins that run SQL from a strin
 
 ### Role and transaction
 
-The guard is not the guarantee. `agent_session` takes a pooled connection and, inside a transaction that is always rolled back:
+The guard is not the guarantee. `agent_session` takes a pooled connection, opens a transaction that is always rolled back, and only then runs these statements inside it:
 
 ```sql
 SET TRANSACTION READ ONLY;
@@ -193,7 +193,7 @@ Schema `agent` is not exposed by the Supabase Data API. The views are thin proje
 
 `agent.transactions` projects `booked_at`, `month`, `account`, `bank`, `amount`, `direction`, `tx_type`, `spend`, `income`, `category`, `category_group`, `merchant`, `bank_text`, `bank_operation`, `note`, `is_subscription`, `needs_review`, `category_name`, and `group_name`. `category` and `category_group` coalesce to `uncategorized`, which is not the category `uncategorized_expense`. Display names were added by [display names](../../supabase/migrations/20261014130000_display_names.sql). The model filters on the slug and says the display name.
 
-`agent.subscriptions` was recreated by [subscription cadence](../../supabase/migrations/20261014120000_subscription_cadence.sql): `merchant`, `charges`, `last_charge`, `latest_amount`, `cadence`, `cadence_source`, `monthly_equivalent`, `active`. Cadence is the merchant's own value when set (`cadence_source = 'user'`), otherwise the median gap. Active is measured from the latest imported movement, not from today. The slice 4 spec's subscription column list (`typical_amount`, no cadence source) is stale. Trust the migration and `tests/test_agent_views.py`.
+`agent.subscriptions` was recreated by [subscription cadence](../../supabase/migrations/20261014120000_subscription_cadence.sql): `merchant`, `charges`, `last_charge`, `latest_amount`, `cadence`, `cadence_source`, `monthly_equivalent`, `active`. Cadence and the active window are the Subscriptions section of [Money rules](../../docs/money-rules.md). Do not restate them. The slice 4 spec's subscription column list (`typical_amount`, no cadence source) is stale. Trust the migration and `tests/test_agent_views.py`.
 
 Balances are absent on purpose. `balance_after` exists on the ledger, but the order of movements within a day is not stored, so a balance on a date could pick the wrong row. That is backlog item 5, not a grant to add.
 
