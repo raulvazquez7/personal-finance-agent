@@ -46,7 +46,7 @@ export function MonthHeader({ month, detail, today, onOpenChange }: Props) {
       >
         {label}
       </PopoverTrigger>
-      <PopoverContent className="w-72">
+      <PopoverContent side="right" align="start" className="w-72">
         <PopoverHeader>
           <PopoverTitle>{monthLabel(month)}</PopoverTitle>
           {empty && <PopoverDescription>No statement for this month yet.</PopoverDescription>}
