@@ -7,7 +7,7 @@ import { BreakdownDonut } from "@/components/charts/breakdown-donut";
 import { Card, CardAction, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import type { BreakdownItem } from "@/lib/breakdown";
-import { OTHER_COLOR } from "@/lib/colors";
+import { FOLDED_COLOR, FOLDED_FILL, OTHER_COLOR } from "@/lib/colors";
 import type { Delta } from "@/lib/delta";
 import type { Dimension } from "@/lib/labels";
 
@@ -16,14 +16,18 @@ const HEADERS: Record<Dimension, string> = { group: "Group", category: "Category
 type Props = { views: Record<Dimension, BreakdownItem[]>; total: string | null; change: Delta; versus: string; subtitle: string };
 
 /** "Where your money went" (spec 7.1): donut + table, Groups by default. The Groups view gives
- * every group with spend its own row and slice, grey without a colour slot; the Categories and
- * Merchants views paint each slice and row with its group's colour (spec 7.2). */
+ * every group with spend its own row and slice in its slot's colour; the Categories and Merchants
+ * views paint each slice and row with its group's colour, and hatch the folded "Other" (spec 8.2). */
 export function WhereMoneyWent({ views, total, change, versus, subtitle }: Props) {
   const [dimension, setDimension] = useState<Dimension>("group");
   const items = views[dimension];
   const slices = items
     .filter((item) => Number(item.amount) > 0)
-    .map((item) => ({ name: item.name, value: Number(item.amount), fill: item.color ?? OTHER_COLOR }));
+    .map((item) =>
+      item.folded
+        ? { name: item.name, value: Number(item.amount), fill: FOLDED_FILL, swatch: FOLDED_COLOR }
+        : { name: item.name, value: Number(item.amount), fill: item.color ?? OTHER_COLOR },
+    );
   return (
     // overflow-clip, not the card's overflow-hidden: a hidden overflow makes the card a scroll
     // container, and the sticky donut below would stick to the card instead of the page.

@@ -35,7 +35,7 @@ def overview(conn: Db, query: PeriodQuery) -> Overview:
     spend = replace(scope, tx_type="expense")
     before = resolved.comparable
     latest = resolved.out.latest_day
-    # Every group: the web gives each its own row, coloured by group_slots (grey without one).
+    # Every group: the web gives each its own row, coloured by its slot in group_slots.
     by_group = breakdown(conn, "group", "spend", spend, resolved.current, before, top=None)
     _fill_top_categories(
         by_group,

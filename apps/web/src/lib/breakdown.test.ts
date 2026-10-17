@@ -48,7 +48,20 @@ describe("breakdownItems", () => {
       amount: "268.40",
     });
     expect(groceries.delta).toMatchObject({ tone: "good", text: "−4%" });
-    expect(other).toMatchObject({ name: "Other categories", hint: "2 categories", href: null, color: "var(--chart-other)" });
+    expect(other).toMatchObject({ name: "Other categories", hint: "2 categories", href: null, folded: true });
+    expect(other.color).toBeUndefined();
+    expect(groceries.folded).toBe(false);
+  });
+
+  it("paints a row without a group with the uncategorized slot", () => {
+    const [unknown] = breakdownItems([row({ key: "uncategorized" })], "category", {
+      categories,
+      slots: { shopping: 1, uncategorized: 7 },
+      filters: august,
+      good: "down",
+      type: "expense",
+    });
+    expect(unknown.color).toBe("var(--chart-7)");
   });
 
   it("opens a merchant with its type and links a row without a merchant to transactions", () => {

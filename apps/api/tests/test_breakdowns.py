@@ -142,14 +142,30 @@ def test_merchants_without_a_merchant_fall_back_to_their_category(db_conn, make_
 
 
 def test_group_slots_rank_all_time_spend(db_conn, make_tx):
-    # Two synthetic rows whose spend dwarfs any real ledger take the first two slots.
-    for amount, slug in (("-9000000000.00", "fashion"), ("-5000000000.00", "restaurants_bars")):
+    # Seven synthetic rows whose spend dwarfs any real ledger take the first seven slots, in order;
+    # the row without a category ranks as the group "uncategorized".
+    spends = (
+        ("-9000000000.00", "fashion"),
+        ("-8000000000.00", "restaurants_bars"),
+        ("-7000000000.00", "fuel"),
+        ("-6000000000.00", "flights"),
+        ("-5000000000.00", "pharmacy"),
+        ("-4000000000.00", "courses"),
+        ("-3000000000.00", None),
+    )
+    for amount, slug in spends:
         tx = make_tx(amount, "ZZTEST BIG SPEND", iban=IBAN, booked_at=date(1999, 3, 1))
-        db_conn.execute(
-            "update transactions t set category_slug = c.slug, tx_type = c.tx_type,"
-            " category_source = 'user' from categories c where c.slug = %s and t.id = %s",
-            (slug, tx),
-        )
+        if slug:
+            _set_category(db_conn, tx, slug)
     slots = group_slots(db_conn)
-    assert sorted(slots.values()) == list(range(1, len(slots) + 1)) and len(slots) <= 5
-    assert slots["shopping"] == 1 and slots["leisure"] == 2
+    assert sorted(slots.values()) == list(range(1, len(slots) + 1))
+    ranked = sorted(slots, key=slots.__getitem__)
+    assert ranked[:7] == [
+        "shopping",
+        "leisure",
+        "transport",
+        "travel",
+        "health",
+        "education",
+        "uncategorized",
+    ]

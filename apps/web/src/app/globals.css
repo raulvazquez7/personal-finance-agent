@@ -20,6 +20,9 @@
   --color-sidebar-primary: var(--sidebar-primary);
   --color-sidebar-foreground: var(--sidebar-foreground);
   --color-sidebar: var(--sidebar);
+  --color-chart-8: var(--chart-8);
+  --color-chart-7: var(--chart-7);
+  --color-chart-6: var(--chart-6);
   --color-chart-5: var(--chart-5);
   --color-chart-4: var(--chart-4);
   --color-chart-3: var(--chart-3);
@@ -49,6 +52,15 @@
   --radius-3xl: calc(var(--radius) * 2.2);
   --radius-4xl: calc(var(--radius) * 2.6);
   --color-chart-other: var(--chart-other);
+  --color-chart-folded: var(--chart-folded);
+  --color-chart-grey-1: var(--chart-grey-1);
+  --color-chart-grey-2: var(--chart-grey-2);
+  --color-chart-grey-3: var(--chart-grey-3);
+  --color-chart-grey-4: var(--chart-grey-4);
+  --color-chart-grey-5: var(--chart-grey-5);
+  --color-chart-grey-6: var(--chart-grey-6);
+  --color-chart-grey-7: var(--chart-grey-7);
+  --color-chart-grey-8: var(--chart-grey-8);
   --color-chart-previous: var(--chart-previous);
   --color-chart-grid: var(--chart-grid);
   --color-ramp-1: var(--ramp-1);
@@ -84,13 +96,26 @@
   --input: #e6e6eb;
   --ring: #4f46e5;
   --radius: 0.625rem;
-  /* Group palette, validated on the light surface. Colour = group (Overview.group_slots), never rank. */
+  /* Group palette, validated on the light surface. Colour = group (Overview.group_slots), never
+     rank (spec 8.2): slots 1-8 are hues, 9 and later the greys in order, darkest last. */
   --chart-1: #4f46e5;
   --chart-2: #eb6834;
   --chart-3: #1baf7a;
   --chart-4: #eda100;
   --chart-5: #e87ba4;
-  --chart-other: #d4d4dc;
+  --chart-6: #0891b2;
+  --chart-7: #7c3aed;
+  --chart-8: #b45309;
+  --chart-grey-1: #b9b9c2;
+  --chart-grey-2: #9a9aa6;
+  --chart-grey-3: #7d7d8a;
+  --chart-grey-4: #62626e;
+  --chart-grey-5: #4a4a55;
+  --chart-grey-6: #3a3a44;
+  --chart-grey-7: #2c2c34;
+  --chart-grey-8: #1f1f26;
+  --chart-other: #d4d4dc; /* a group with no slot (no expense rows ever): none of the greys */
+  --chart-folded: #ececf1; /* the folded "Other" row: the ground under the hatch, not a slot */
   /* One-hue ramp for the categories inside a group page: darkest = largest. */
   --ramp-1: #4f46e5;
   --ramp-2: #6d66ee;
@@ -135,11 +160,24 @@
   --border: oklch(1 0 0 / 10%);
   --input: oklch(1 0 0 / 15%);
   --ring: oklch(0.556 0 0);
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
+  /* The same hues, lighter, so they stay apart on the dark surface; 7 and 8 sit lower, or they
+     would read as 1 and 2. The greys run the other way: lightest last. */
+  --chart-1: oklch(0.75 0.128 277);
+  --chart-2: oklch(0.75 0.155 40.6);
+  --chart-3: oklch(0.75 0.141 162.1);
+  --chart-4: oklch(0.75 0.157 75.1);
+  --chart-5: oklch(0.75 0.141 357.4);
+  --chart-6: oklch(0.75 0.111 221.7);
+  --chart-7: oklch(0.64 0.213 293);
+  --chart-8: oklch(0.64 0.146 49);
+  --chart-grey-1: oklch(0.4 0.01 285);
+  --chart-grey-2: oklch(0.47 0.01 285);
+  --chart-grey-3: oklch(0.54 0.01 285);
+  --chart-grey-4: oklch(0.61 0.01 285);
+  --chart-grey-5: oklch(0.68 0.01 285);
+  --chart-grey-6: oklch(0.75 0.01 285);
+  --chart-grey-7: oklch(0.82 0.01 285);
+  --chart-grey-8: oklch(0.89 0.01 285);
   --sidebar: oklch(0.205 0 0);
   --sidebar-foreground: oklch(0.985 0 0);
   --sidebar-primary: oklch(0.488 0.243 264.376);
@@ -148,6 +186,12 @@
   --sidebar-accent-foreground: oklch(0.985 0 0);
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.556 0 0);
+}
+
+/* The folded "Other" row's table dot: the donut's hatch (BreakdownDonut) as a CSS stripe, since a
+   colour token cannot carry a gradient. 135deg draws the same "/" stripe as the pattern's rotate(45). */
+@utility folded-hatch {
+  background: repeating-linear-gradient(135deg, #9a9aa6 0 1.5px, var(--chart-folded) 1.5px 4.5px);
 }
 
 @layer base {

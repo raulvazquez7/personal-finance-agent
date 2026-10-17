@@ -10,7 +10,8 @@ import { moneyWhole } from "@/lib/format";
 
 import { moneyRow } from "./money-tooltip";
 
-export type Slice = { name: string; value: number; fill: string };
+/** `swatch`: the tooltip key's colour when `fill` is a pattern (a url() is no CSS background). */
+export type Slice = { name: string; value: number; fill: string; swatch?: string };
 
 type Props = { slices: Slice[]; total: string | null; change: Delta; versus: string; title: string };
 
@@ -25,6 +26,14 @@ export function BreakdownDonut({ slices, total, change, versus, title }: Props) 
       <ChartContainer config={{}} className="aspect-square size-full">
         {/* aria-label, not title: an SVG <title> also shows as the browser's hover tooltip, over ours. */}
         <PieChart accessibilityLayer={false} aria-label={title} desc="The table beside it lists the same rows.">
+          {/* The folded "Other" slice's hatch (FOLDED_FILL); its table dot is the folded-hatch utility.
+              Recharts 3 renders a chart's own SVG children as they are. */}
+          <defs>
+            <pattern id="folded-hatch" patternUnits="userSpaceOnUse" width="6" height="6" patternTransform="rotate(45)">
+              <rect width="6" height="6" fill="var(--chart-folded)" />
+              <line x1="0" y1="0" x2="0" y2="6" stroke="#9a9aa6" strokeWidth="2" />
+            </pattern>
+          </defs>
           <ChartTooltip content={<ChartTooltipContent hideLabel formatter={moneyRow({})} />} />
           <Pie
             data={slices}

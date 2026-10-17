@@ -105,11 +105,10 @@ def breakdown(
 
 
 def group_slots(conn: Connection) -> dict[str, int]:
-    """Colour slots 1..5 for the groups with the most all-time spend: a period filter never
-    repaints them (spec 7.2)."""
+    """A colour slot for every expense group, 1 for the most all-time spend; rows without a
+    category rank as "uncategorized". A period filter never repaints a group (spec 8.2)."""
     rows = conn.execute(
-        "select level1 from v_transactions_enriched"
-        " where tx_type = 'expense' and level1 is not null"
-        " group by level1 order by sum(spend) desc, level1 limit 5"
+        "select coalesce(level1, 'uncategorized') as level1 from v_transactions_enriched"
+        " where tx_type = 'expense' group by 1 order by sum(spend) desc, 1"
     ).fetchall()
     return {row["level1"]: slot for slot, row in enumerate(rows, start=1)}

@@ -14,6 +14,9 @@ type RowProps = {
   item: BreakdownItem;
   showShare: boolean;
   compared: boolean;
+  /** The table has colour dots (the overview): decided once per table, so the folded row, its
+   * children and their guide line stay aligned. */
+  dotted: boolean;
   /** Indents a child of the folded row under a guide line. Padding on the tr itself does not move
    * a table cell. */
   indent?: boolean;
@@ -28,8 +31,8 @@ export function treeIndent(hasDot: boolean) {
 }
 
 /** One row of the breakdown table. The folded row and its children share this, so the cells stay one copy. */
-export function BreakdownTableRow({ item, showShare, compared, indent = false, name }: RowProps) {
-  const tree = treeIndent(Boolean(item.color));
+export function BreakdownTableRow({ item, showShare, compared, dotted, indent = false, name }: RowProps) {
+  const tree = treeIndent(dotted);
   return (
     <TableRow>
       {/* wrap-anywhere, not break-words: a long name without spaces must also shrink the column's
@@ -39,12 +42,12 @@ export function BreakdownTableRow({ item, showShare, compared, indent = false, n
             the folded row's chevron. */}
         {indent && <span aria-hidden className={cn("absolute inset-y-0 w-px bg-border", tree.guide)} />}
         <div className="flex items-center gap-2.5">
-          {item.color && (
+          {dotted && (
             <span
               aria-hidden
               data-slot="series-dot"
-              className="size-2.5 shrink-0 rounded-[3px]"
-              style={{ background: item.color }}
+              className={cn("size-2.5 shrink-0 rounded-[3px]", item.folded && "folded-hatch")}
+              style={item.folded ? undefined : { background: item.color }}
             />
           )}
           <div className="min-w-0">
@@ -76,6 +79,7 @@ export function BreakdownTableRow({ item, showShare, compared, indent = false, n
 export function BreakdownTable({ items, nameHeader, versus, showShare = true }: Props) {
   if (items.length === 0) return <p className="text-sm text-muted-foreground">Nothing in this period.</p>;
   const compared = items.some((item) => item.delta.kind !== "hidden");
+  const dotted = items.some((item) => item.color);
   return (
     <Table>
       <TableHeader>
@@ -90,9 +94,9 @@ export function BreakdownTable({ items, nameHeader, versus, showShare = true }: 
       <TableBody>
         {items.map((item) =>
           item.key === "_other" && item.rows.length > 0 ? (
-            <FoldedRows key={item.key} item={item} showShare={showShare} compared={compared} />
+            <FoldedRows key={item.key} item={item} showShare={showShare} compared={compared} dotted={dotted} />
           ) : (
-            <BreakdownTableRow key={item.key} item={item} showShare={showShare} compared={compared} />
+            <BreakdownTableRow key={item.key} item={item} showShare={showShare} compared={compared} dotted={dotted} />
           ),
         )}
       </TableBody>
