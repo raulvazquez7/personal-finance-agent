@@ -9,24 +9,58 @@ Open-source, local-first personal finance assistant. Bank PDF statements are
 imported into Supabase Postgres, categorized through a cascade (rules → jev →
 human review), shown in Next.js dashboards, and queryable through a LangChain
 agent over a semantic layer. Design: `docs/superpowers/specs/`. Plans:
-`docs/superpowers/plans/`. Ideas not yet designed: `docs/backlog.md`. Read the
-spec before touching architecture.
+`docs/superpowers/plans/`. Ideas, bugs and work in flight: GitHub issues (see
+Work tracking). Read the spec before touching architecture.
 Money rules (what counts as income, spending, transfers): `docs/money-rules.md`.
 
 ## Workflow
 
-- Superpowers: brainstorm → spec → plan → subagent-driven-development, TDD,
-  verification before claiming done. One plan per delivery slice.
-- Models: the session and every subagent run on Opus. `.claude/settings.json`
-  sets `model` and `CLAUDE_CODE_SUBAGENT_MODEL`; never pass a smaller model to
-  the Agent tool for implementation or review work.
+- Always work with Superpowers in this repository: brainstorm → spec → plan →
+  subagent-driven development, TDD, verification before claiming done. One plan
+  per delivery slice.
+- Prefer subagent-driven development whenever the slice can be split into
+  independent tasks and that split is worth it.
+- Spec and plan usually live in one chat; implementation starts in a fresh
+  context. Keep a small change in the same chat when a new context would only
+  add friction.
+- Models: in Claude Code, the session and every subagent run on Opus 5.5
+  (`.claude/settings.json` sets `model` and `CLAUDE_CODE_SUBAGENT_MODEL`); in
+  Cursor, Grok 4.7 Extra High. Never pass a smaller model to the Agent tool for
+  implementation or review work.
+- On Grok 4.7, hand off to a new chat with a clean context when the session
+  reaches or nears 500K tokens.
 - Everything in English: code, comments, docs, commits, UI copy.
 - Simplicity is a requirement: 15 readable lines beat 30 clever ones, use
   libraries the way their docs recommend, one responsibility per file, no
-  abstraction for a single caller. Check `context7` or official docs for
-  version-sensitive APIs (LangChain, Langfuse, typesafe-sdk, Next.js, shadcn).
+  abstraction for a single caller.
+- Before writing version-sensitive library code, read the current docs through
+  Context7, or the official docs when Context7 has no page. Match the
+  library's documented practice (LangChain, Langfuse, typesafe-sdk, Next.js,
+  shadcn, the AI SDK, and whatever else the change touches).
+- When an implementation changes something a person can see or operate, verify
+  that flow with [agent-browser](https://github.com/vercel-labs/agent-browser)
+  before claiming it works. Load `agent-browser skills get core` first. Open
+  the page, do the action, and read the result back. A first-render screenshot
+  is not the check.
 - Do not reuse code, prompts or domain logic from Raul's former employer's
   repos. Generic conventions only.
+
+## Work tracking
+
+- GitHub issues on the board (https://github.com/users/raulvazquez7/projects/1)
+  are the source of truth for what to build: ideas, bugs and follow-ups. Not
+  memory, not a backlog file.
+- When a conversation with Raul surfaces a new idea, bug or follow-up, create
+  the issue yourself (sections of `.github/ISSUE_TEMPLATE/feature.yml`: problem,
+  what exists, open questions; labels `enhancement`, `bug`, `documentation` or
+  `accessibility`), add it to the board as Backlog, and give Raul the link.
+- Board status: Backlog → Ready (spec and plan agreed) → In progress (branch
+  started) → In review (PR open) → Done (merged or closed). Move cards yourself
+  and tell Raul.
+- Specs and plans name their issue (`Issue: #N`); PR bodies say `Closes #N`.
+- The repo is public: issues carry no real amounts, account digits, names or
+  paid services, same as docs and commits.
+- Memory keeps how Raul works, not the state of the work.
 
 ## Commands
 
@@ -64,10 +98,9 @@ Run the API and web first; pages live at `http://localhost:3000` (`/`, `/spendin
 `/income`, `/merchants/<id>`, `/transactions`, `/subscriptions`, `/chat`, `/chat/<id>`, `/review`,
 `/imports`, `/settings`).
 
-- Before claiming a task or PR that touches `apps/web` is done: check the
-  affected flow with `agent-browser skills get core` (open, snapshot, act,
-  re-snapshot), e.g. upload a PDF on `/imports` and read the counts. Not on
-  every small edit.
+- Before claiming an implementation that changes a user-visible flow is done:
+  check that flow with `agent-browser skills get core` (open, snapshot, act,
+  re-snapshot), e.g. upload a PDF on `/imports` and read the counts.
 - Once per slice, before merge: one `agent-browser skills get dogfood` pass
   over the whole app, report in `dogfood-output/`.
 - Pass absolute paths to `upload` and `screenshot`: the daemon does not share
@@ -92,6 +125,8 @@ Run the API and web first; pages live at `http://localhost:3000` (`/`, `/spendin
 - jev (`typesafe-sdk`) is used only for transaction categorization; the chat
   agent is an LLM (grok) over the semantic layer. Deterministic code for dedup,
   transfer pairing, SQL safety, aggregations.
+- The product chat agent stays LangGraph in `apps/api`. The AI SDK
+  (`useChat`) is only the browser transport.
 - The chat agent reads only the `agent` schema, as `agent_reader` in a
   read-only transaction; never widen its grants.
 - Pydantic models at every API boundary; SQL migrations in
@@ -104,4 +139,6 @@ Run the API and web first; pages live at `http://localhost:3000` (`/`, `/spendin
 - Remote is the personal account `raulvazquez7`; the active `gh` account is a
   different one. Push with:
   `git -c credential.helper='!f() { echo username=raulvazquez7; echo password=$(gh auth token -u raulvazquez7); }; f' push`
+- `gh` on this repo (issues, board, PRs): prefix the command with
+  `GH_TOKEN=$(gh auth token -u raulvazquez7)`.
 - Conventional commits (`feat:`, `fix:`, `docs:`, `chore:`, `test:`).
