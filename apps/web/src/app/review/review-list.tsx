@@ -3,6 +3,7 @@
 import { CheckCircle2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
+import { flushSync } from "react-dom";
 import { toast } from "sonner";
 
 import { Progress } from "@/components/ui/progress";
@@ -24,6 +25,7 @@ type Transaction = Schemas["ReviewTransaction"];
 type Pending = { id: string; timer: ReturnType<typeof setTimeout>; commit: (keepalive: boolean) => void };
 
 const UNDO_MS = 5000;
+const FOCUSABLE = "button:not(:disabled), input:not(:disabled)";
 let seq = 0;
 
 type Props = {
@@ -43,6 +45,7 @@ export function ReviewList({ initialItems, categories, merchants, count }: Props
   const [sort, setSort] = useState<ReviewSort>("amount");
   const [skipped, skip] = useSkipped();
   const pending = useRef(new Map<string, Pending>()); // by row key: at most one change per row
+  const list = useRef<HTMLUListElement>(null);
   const { uncategorized } = count;
 
   useEffect(() => {
@@ -169,6 +172,19 @@ export function ReviewList({ initialItems, categories, merchants, count }: Props
 
   const done = Math.max(total - items.length, 0);
   const shown = reviewOrder(items, filter, sort, skipped);
+
+  function skipCard(item: Item) {
+    const index = shown.indexOf(item);
+    const from = document.activeElement;
+    flushSync(() => skip(item.key));
+    // Keyboard focus stays in the list: on the card that now sits in this place, or on the same Skip
+    // when the card was already the last one.
+    if (index === shown.length - 1) {
+      if (from instanceof HTMLElement) from.focus();
+    } else {
+      list.current?.children[index]?.querySelector<HTMLElement>(FOCUSABLE)?.focus();
+    }
+  }
   return (
     <section className="flex flex-col gap-6">
       <header className="flex flex-col gap-3">
@@ -230,7 +246,7 @@ export function ReviewList({ initialItems, categories, merchants, count }: Props
       ) : shown.length === 0 ? (
         <p className="py-8 text-center text-sm text-muted-foreground">Nothing to review under this filter.</p>
       ) : (
-        <ul className="flex flex-col gap-3">
+        <ul ref={list} className="flex flex-col gap-3">
           {shown.map((item) => {
             const { merchant, merge } = item;
             if (item.kind === "merge" && merchant && merge) {
@@ -240,7 +256,7 @@ export function ReviewList({ initialItems, categories, merchants, count }: Props
                   item={item}
                   onYes={() => mergeYes(item, merchant, merge)}
                   onNo={() => mergeNo(item, merchant)}
-                  onSkip={() => skip(item.key)}
+                  onSkip={() => skipCard(item)}
                 />
               );
             }
@@ -252,7 +268,7 @@ export function ReviewList({ initialItems, categories, merchants, count }: Props
                 merchants={merchants}
                 onConfirm={(d) => confirm(item, d)}
                 onLabelOne={(tx, d) => labelOne(item, tx, d, "Labelled")}
-                onSkip={() => skip(item.key)}
+                onSkip={() => skipCard(item)}
               />
             );
           })}

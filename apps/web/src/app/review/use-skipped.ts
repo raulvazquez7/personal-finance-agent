@@ -1,5 +1,7 @@
 import { useSyncExternalStore } from "react";
 
+import { parseSkipped } from "@/lib/review-skipped";
+
 /** Review cards skipped in this tab (spec 9), last skipped last, kept in sessionStorage so a reload
  * keeps them and a new tab starts unskipped. */
 const KEY = "review-skip:v1";
@@ -22,7 +24,7 @@ function read(): string {
 export function useSkipped(): [string[], (key: string) => void] {
   // The server snapshot is empty: hydration matches the server HTML, then React reads the tab's skips.
   const raw = useSyncExternalStore(subscribe, read, () => EMPTY);
-  const skipped: string[] = JSON.parse(raw);
+  const skipped = parseSkipped(raw);
 
   function skip(key: string) {
     try {
