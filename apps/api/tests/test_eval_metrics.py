@@ -63,12 +63,29 @@ def test_subscription_and_merchant_scores():
     assert (metrics.merchant.hits, metrics.merchant.total) == (1, 2)
 
 
+def test_duplicate_merchants_and_wrong_joins():
+    rows = [
+        _row("groceries", "groceries", 0.99, merchant="ACME", named="ACME"),
+        _row("groceries", "groceries", 0.99, merchant="Acme", named="ACME FOODS"),
+        _row("groceries", "groceries", 0.99, merchant="ACME", named="ACME SOMETOWN"),
+        _row("fashion", "fashion", 0.99, merchant="GLOBEX", named="INITECH"),
+        _row("fashion", "fashion", 0.99, merchant="INITECH", named="INITECH"),
+        _row("fashion", "fashion", 0.99, merchant="UMBRELLA", named=None),
+    ]
+    metrics = compute_metrics(rows)
+    # ACME came back under three names; INITECH took two golden merchants; no name is no vote.
+    assert (metrics.merchant_duplicates, metrics.merchant_wrong_joins) == (2, 1)
+
+
 def test_report_and_history_line():
     metrics = compute_metrics(ROWS)
     assert "| 0.95 | 2 | 1 |" in render_markdown(META, metrics)
+    assert "- Merchant duplicates 1, wrong joins 0" in render_markdown(META, metrics)
     line = history_line(META, metrics)
-    assert line.startswith("| 2026-09-24 | eval | jev-1.13.0 | 4 | 50.0% | 75.0% | 50.0% | 2 |")
-    assert line.count("|") == 11
+    assert line.startswith(
+        "| 2026-09-24 | eval | jev-1.13.0 | 4 | 50.0% | 75.0% | 50.0% | 2 | 1/1 · 1/2 | 1 / 0 |"
+    )
+    assert line.count("|") == 12
     assert "failed" not in line
 
 
@@ -78,14 +95,14 @@ def test_rows_jev_failed_on_are_reported_in_the_note_cell():
     assert "2 left out: jev failed" in render_markdown(meta, metrics)
     line = history_line(meta, metrics)
     assert line.endswith("| synthetic · failed=2 |")
-    assert line.count("|") == 11  # still the ten columns of docs/evals/HISTORY.md
+    assert line.count("|") == 12  # still the eleven columns of docs/evals/HISTORY.md
 
 
 def test_a_note_cannot_break_the_history_table():
     meta = META.model_copy(update={"note": "wording | criteria\nround 2"})
     line = history_line(meta, compute_metrics(ROWS))
     assert line.endswith("| wording / criteria round 2 |")
-    assert line.count("|") == 11 and "\n" not in line
+    assert line.count("|") == 12 and "\n" not in line
 
 
 def test_the_fingerprint_follows_the_order_jev_sees_the_categories_in():
