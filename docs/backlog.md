@@ -88,3 +88,13 @@ appear in a query result of the turn; if one does not, nudge the model once to r
 otherwise show a warning. Measure with repeated runs of the same questions (with backlog 6).
 The same work can fix two format slips seen live: the "How I counted it" heading left in
 English in Spanish answers, and a category slug shown in an answer.
+
+## 9. Keep the agent wiki fresh in CI
+
+Run `openwiki code --update --print` on a schedule (OpenWiki ships `examples/openwiki-update.yml`
+for GitHub Actions) and open a docs PR when the wiki changes. Needs a provider key in the repo
+secrets and accepts a small daily spend. Until then, run `npx -y openwiki@0.7.2 code --update`
+before a slice merges. The OpenWiki block in `AGENTS.md` already says a scheduled workflow
+refreshes the wiki: that sentence is OpenWiki's own text, rewritten on every run, and it stays
+wrong until this is built. `openwiki --init` writes `.github/workflows/openwiki-update.yml` when
+none exists; it was deleted here, so after a future `--init` delete or review that file.
