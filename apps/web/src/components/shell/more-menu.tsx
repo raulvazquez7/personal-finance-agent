@@ -12,7 +12,7 @@ import { cn } from "@/lib/utils";
 import { MORE_ITEMS } from "./nav-links";
 
 /** Imports and Settings, behind one button at the end of the top bar (spec section 3). The items
- * are Base UI link items: real links, so they open in a new tab and announce as links. */
+ * are Base UI link items: real links (they open in a new tab), announced as menu items. */
 export function MoreMenu() {
   const pathname = usePathname();
   const active = MORE_ITEMS.some((item) => item.active(pathname));
