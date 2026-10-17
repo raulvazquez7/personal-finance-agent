@@ -127,8 +127,8 @@ The database is local. jev receives the cleaned bank text and the amount (`jev_s
 `apps/api/finance/categorization/jev_questions.py`), and Langfuse records each jev call. The chat
 model and Langfuse receive the question, the SQL and the rows it returned: merchant names, cleaned
 bank text, amounts, dates, notes and account names (the `agent.transactions` columns in
-`supabase/migrations/20261014130000_display_names.sql`). None of them ever receives an IBAN or a
-raw bank line.
+`supabase/migrations/20261014130000_display_names.sql`). None of them receives an account's IBAN or
+the raw bank description (`description_raw`).
 
 ## Where to read next
 

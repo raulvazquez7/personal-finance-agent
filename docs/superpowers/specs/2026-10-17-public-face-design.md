@@ -23,7 +23,7 @@ The audience is people. Agents get the wiki in delivery 2. `CLAUDE.md` is not to
 |---|---|
 | Name | tally ai (the web app's title). The repo stays `personal-finance-agent` |
 | Shape | A short `README.md` and a new `docs/architecture.md`. Specs, plans, money rules and the eval history are linked, never copied |
-| Screens | Three, from the real UI: overview `/`, `/spending/shopping`, and one chat answer. Light theme, 1440×900 viewport |
+| Screens | Three, from the real UI: overview `/`, `/spending/shopping`, and one chat answer. Light theme, 1440 px wide; the height grows until the captured content is complete (overview 975, shopping 1400, chat 1940) |
 | Data | Twelve synthetic months (October 2025 to September 2026). See section 5 |
 | Chat capture | One real turn of the production agent (xAI grok) on the synthetic database, with Langfuse off. Fallback: a stored thread (section 6.3) |
 | Machinery | A temporary generator and loader, plus their test. Deleted in the last task. The PR is squash-merged, so `main` never contains them |
@@ -66,8 +66,8 @@ Every figure and mechanism below was checked against the code on 2026-10-17
   (item 5). Only BBVA and CaixaBank PDFs are read. The `public` tables have no row-level
   security, so this is a single-user local app, not a hosted one.
 - **Privacy.** The database is local. jev receives the cleaned description. The chat model
-  receives the question, the SQL and the rows it returned. Neither ever receives an IBAN or a
-  raw bank line.
+  receives the question, the SQL and the rows it returned. Neither receives an account's IBAN or
+  the raw bank description (`description_raw`).
 
 ## 4. Pages
 
@@ -91,8 +91,7 @@ In this order:
 6. **Run it locally**: requirements, `.env` with the keys that matter (`SUPABASE_DB_URL`
    required; `TYPESAFE_API_KEY` categorizes; `XAI_API_KEY` enables the chat), `supabase start`,
    migrations, `finance seed`, the API, the web. The warning that `supabase db reset` wipes
-   labels (export first). The full command list lives in `CLAUDE.md` and the architecture page,
-   not here.
+   labels (export first). The full command list lives in `CLAUDE.md`, not here.
 7. **Limits**: three bullets taken from section 3.
 8. License.
 
@@ -163,8 +162,8 @@ That makes these totals:
 - A few one-off purchases: electronics in November, December gifts and home goods, a summer
   trip with flights in July and lodging in August.
 - Groceries take whatever remains of each month's expense target, split over twelve tickets.
-  The month then lands on its target to the cent, and groceries stay between about 600 and
-  1,050 €.
+  The month then lands on its target to the cent, and groceries stay between about 570 and
+  1,000 €.
 
 Each month also moves 2,500 € from Everyday to Savings as a paired `own_accounts` transfer,
 which counts in neither total. A prototype of the generator produced 557 rows that match every
@@ -186,15 +185,16 @@ real database.
 ## 6. Screenshots
 
 Captured with `agent-browser` (load `agent-browser skills get core` first) in session
-`public-face`. The API runs on :8001 against `scratch_docs`. The web runs as a production
-build on :3001 with `NEXT_PUBLIC_API_URL=http://localhost:8001`. Paths are absolute. The
-console has no errors before `close`.
+`public-face`, light theme, 1440 px wide, each page as tall as its captured content
+(overview 975, shopping 1400, chat 1940). The API runs on :8001 against `scratch_docs`. The web
+runs as a production build on :3001 with `NEXT_PUBLIC_API_URL=http://localhost:8001`. Paths are
+absolute. The console has no errors before `close`.
 
 | File | Page | Alt text |
 |---|---|---|
 | `docs/images/overview.png` | `/` | tally ai overview for September 2026 with synthetic data: income, expenses, savings and the last 12 months |
-| `docs/images/spending-shopping.png` | `/spending/shopping` | Shopping in September 2026: 12-month bars by category, the category treemap and top merchants |
-| `docs/images/chat.png` | `/chat/<id>` | A chat answer with its SQL query opened beside it |
+| `docs/images/spending-shopping.png` | `/spending/shopping` | Shopping in September 2026: monthly bars for the last 12 months, the category treemap and top merchants |
+| `docs/images/chat.png` | `/chat/<id>` | A chat answer with the SQL queries behind it opened |
 
 ### 6.1 Overview and category page
 

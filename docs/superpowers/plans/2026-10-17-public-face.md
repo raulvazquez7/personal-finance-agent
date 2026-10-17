@@ -553,7 +553,7 @@ Expected:
 
 ```bash
 psql -d scratch_docs -tAc "select count(*) from transactions where category_source <> 'user' or needs_review"
-psql -d scratch_docs -tAc "select merchant, cadence, active from v_subscriptions order by merchant"
+psql -d scratch_docs -tAc "select merchant_name, cadence, active from v_subscriptions order by merchant_name"
 psql -d scratch_docs -tAc "select category_slug, sum(spend) from v_transactions_enriched where month = '2026-09' and level1 = 'shopping' group by 1 order by 2 desc"
 ```
 
@@ -587,7 +587,7 @@ The worktree has no `.env`. In one shell, export only the xAI key from the main 
 
 ```bash
 cd apps/api && uv sync --group dev
-set -a; source <(grep '^XAI_API_KEY=' "/Users/raulvazquez/Documents/AI Engineer/personal-finance-agent/.env"); set +a; \
+set -a; source <(grep '^XAI_API_KEY=' "<main checkout>/.env"); set +a; \
   cd apps/api && SUPABASE_DB_URL=postgresql://postgres:postgres@127.0.0.1:54322/scratch_docs \
   CORS_ORIGINS='["http://localhost:3001"]' TYPESAFE_API_KEY= LANGFUSE_TRACING_ENABLED=false \
   LANGFUSE_PUBLIC_KEY= LANGFUSE_SECRET_KEY= \
@@ -1034,7 +1034,7 @@ The name check reads the real database (a count, nothing else). Only `SUPABASE_D
 taken from the main checkout's `.env`, without echoing it, in this one shell:
 
 ```bash
-set -a; source <(grep '^SUPABASE_DB_URL=' "/Users/raulvazquez/Documents/AI Engineer/personal-finance-agent/.env"); set +a; \
+set -a; source <(grep '^SUPABASE_DB_URL=' "<main checkout>/.env"); set +a; \
   cd apps/api && uv run python - <<'PY'
 import os
 import psycopg

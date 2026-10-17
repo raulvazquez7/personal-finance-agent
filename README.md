@@ -1,8 +1,8 @@
 # tally ai
 
-Local-first personal finance. Import your bank's PDF statements, let a rules → jev → human
-cascade categorize every movement, see where each month went, and ask questions in plain
-language.
+Local-first personal finance. Import your bank's PDF statements, let a rules → jev (a
+classification model) → human cascade categorize every movement, see where each month went, and
+ask questions in plain language.
 
 ![tally ai overview for September 2026 with synthetic data: income, expenses, savings and the last 12 months](docs/images/overview.png)
 
@@ -16,8 +16,8 @@ language.
   review inbox, one decision per merchant.
 - **Shows the month.** Income, spending, savings rate, a 12-month trend, every category and
   merchant, and the subscriptions you pay.
-- **Answers questions.** A chat agent queries your data with read-only SQL and shows the query
-  behind every answer.
+- **Answers questions.** A chat agent queries your data with read-only SQL and shows the queries
+  behind its answers.
 
 ![Shopping in September 2026: monthly bars for the last 12 months, the category treemap and top merchants](docs/images/spending-shopping.png)
 
@@ -83,9 +83,9 @@ Open http://localhost:3000/imports and upload a statement. With `TYPESAFE_API_KE
 categorized right away, and http://localhost:3000/review holds what jev was unsure about.
 
 `supabase db reset` wipes the whole local database, including your labels, notes and merchant
-defaults. Once you have labels, run `uv run finance labels export` first, and apply new
-migrations with `supabase migration up` instead. The commands and the restore procedure are in
-[CLAUDE.md](CLAUDE.md).
+defaults. Once you have labels, run `(cd apps/api && uv run finance labels export)` first, and
+apply new migrations with `supabase migration up` instead. The commands and the restore
+procedure are in [CLAUDE.md](CLAUDE.md).
 
 ## Limits
 
