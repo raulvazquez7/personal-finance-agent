@@ -1,20 +1,20 @@
 "use client";
 
-import { useRouter, useSearchParams } from "next/navigation";
-import { useLayoutEffect, useRef, useState, type FormEvent } from "react";
+import { useRouter } from "next/navigation";
+import { useLayoutEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 
 import { CategoryPicker } from "@/components/pickers/category-picker";
-import { MerchantPicker, type MerchantChoice } from "@/components/pickers/merchant-picker";
 import { CadenceSelect } from "@/components/subscriptions/cadence-select";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Field, FieldContent, FieldDescription, FieldGroup, FieldLabel, FieldTitle } from "@/components/ui/field";
-import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
-import { ApiError, apiDelete, apiPatch, apiPost, type Schemas } from "@/lib/api";
+import { ApiError, apiDelete, apiPost, type Schemas } from "@/lib/api";
 import { plural } from "@/lib/labels";
 import type { Direction } from "@/lib/pickers";
+
+import { MerchantNameControls, type RunRequest } from "./merchant-name-controls";
 
 type Props = {
   profile: Schemas["MerchantProfile"];
@@ -24,26 +24,22 @@ type Props = {
   direction: Direction;
 };
 
-/** The merchant's controls (spec 7): its default category, subscription flag, cadence, name and
- * merge. Every change refreshes the page; a failure toasts the API's reason and keeps focus. */
+/** The merchant's controls (spec 7): its default category, subscription flag and cadence, then its
+ * name and merge. Every change refreshes the page; a failure toasts the API's reason and keeps focus. */
 export function MerchantControls({ profile, categories, merchants, direction }: Props) {
   const router = useRouter();
-  const search = useSearchParams();
   const [categorySlug, setCategorySlug] = useState(profile.category_slug ?? "");
   const [subscription, setSubscription] = useState(profile.is_subscription === true);
-  const [name, setName] = useState(profile.name);
-  const [mergeInto, setMergeInto] = useState<MerchantChoice | null>(null);
   const [seen, setSeen] = useState(profile);
   const [pending, setPending] = useState(false);
   // The control that started the request: disabling it drops its focus, and a disabled button
   // ignores focus(), so it gets focus back once pending clears.
   const focusAfter = useRef<HTMLElement | null>(null);
-  // A refresh brings the saved values. A name being typed stays unless the name itself changed.
+  // A refresh brings the saved values.
   if (profile !== seen) {
     setSeen(profile);
     setCategorySlug(profile.category_slug ?? "");
     setSubscription(profile.is_subscription === true);
-    if (profile.name !== seen.name) setName(profile.name);
   }
 
   useLayoutEffect(() => {
@@ -53,12 +49,12 @@ export function MerchantControls({ profile, categories, merchants, direction }: 
   }, [pending]);
 
   const current = categories.find((category) => category.slug === profile.category_slug);
-  const others = merchants.filter((merchant) => merchant.id !== profile.id);
-  const typedName = name.trim();
+  // Only money out is a subscription (spec 6): an income or transfer default has no switch to flip.
+  const subscriptionAllowed = current?.tx_type === "expense";
 
-  /** True when the request succeeded; a failure toasts the API's reason. */
-  async function run(request: () => Promise<void>, fallback: string): Promise<boolean> {
-    focusAfter.current = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+  /** A failure toasts the API's reason. */
+  const run: RunRequest = async (request, fallback, after) => {
+    focusAfter.current = after ?? (document.activeElement instanceof HTMLElement ? document.activeElement : null);
     setPending(true);
     try {
       await request();
@@ -69,7 +65,7 @@ export function MerchantControls({ profile, categories, merchants, direction }: 
     } finally {
       setPending(false);
     }
-  }
+  };
 
   async function saveCategory(slug: string) {
     if (pending || slug === profile.category_slug) return;
@@ -83,42 +79,20 @@ export function MerchantControls({ profile, categories, merchants, direction }: 
   async function clearDefault() {
     if (pending) return;
     const cleared = await run(() => apiDelete(`/merchants/${profile.id}/default`), "Could not clear the default category.");
-    if (cleared) router.refresh();
+    if (!cleared) return;
+    // The button goes away with the default: focus moves to the picker, not back to the button.
+    focusAfter.current = null;
+    document.getElementById("merchant-category")?.focus();
+    router.refresh();
   }
 
   async function saveSubscription(checked: boolean) {
-    if (pending || !profile.category_slug) return;
+    if (pending || !profile.category_slug || !subscriptionAllowed) return;
     setSubscription(checked);
     const body = { category_slug: profile.category_slug, is_subscription: checked };
     const saved = await run(() => apiPost(`/merchants/${profile.id}/review`, body), "Could not update the subscription flag.");
     if (saved) router.refresh();
     else setSubscription(profile.is_subscription === true);
-  }
-
-  /** The survivor of a rename or merge: another merchant opens with the same period and filters. */
-  function open(id: string) {
-    if (id === profile.id) router.refresh();
-    else router.push(`/merchants/${id}?${search.toString()}`);
-  }
-
-  async function rename(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    if (pending || !typedName || typedName === profile.name) return;
-    await run(async () => {
-      const { id } = await apiPatch<Schemas["MerchantRef"]>(`/merchants/${profile.id}`, { name: typedName });
-      // A name another merchant already has merges into it.
-      if (id !== profile.id) toast.success(`Merged into the merchant named ${typedName}.`);
-      open(id);
-    }, "Could not rename this merchant.");
-  }
-
-  async function merge() {
-    const target = mergeInto?.id;
-    if (pending || !target) return;
-    await run(async () => {
-      const { id } = await apiPatch<Schemas["MerchantRef"]>(`/merchants/${profile.id}`, { merge_into_id: target });
-      open(id);
-    }, "Could not merge this merchant.");
   }
 
   return (
@@ -165,20 +139,22 @@ export function MerchantControls({ profile, categories, merchants, direction }: 
               </>
             )}
           </Field>
-          <Field orientation="horizontal" data-disabled={!profile.category_slug || undefined}>
+          <Field orientation="horizontal" data-disabled={!subscriptionAllowed || undefined}>
             <Switch
               id="merchant-subscription"
               checked={subscription}
-              disabled={!profile.category_slug || pending}
+              disabled={!subscriptionAllowed || pending}
               onCheckedChange={saveSubscription}
               aria-describedby="merchant-subscription-help"
             />
             <FieldContent>
               <FieldLabel htmlFor="merchant-subscription">Subscription</FieldLabel>
               <FieldDescription id="merchant-subscription-help">
-                {profile.category_slug
-                  ? "Applies to the transactions you or a rule did not label."
-                  : "Set a default category first."}
+                {!profile.category_slug
+                  ? "Set a default category first."
+                  : subscriptionAllowed
+                    ? "Applies to the transactions you or a rule did not label."
+                    : "Only money out can be a subscription."}
               </FieldDescription>
             </FieldContent>
           </Field>
@@ -196,50 +172,7 @@ export function MerchantControls({ profile, categories, merchants, direction }: 
             </div>
           </Field>
         </FieldGroup>
-        <FieldGroup>
-          <form onSubmit={rename}>
-            <Field>
-              <FieldLabel htmlFor="merchant-name">Name</FieldLabel>
-              <div className="flex gap-2">
-                <Input
-                  id="merchant-name"
-                  value={name}
-                  onChange={(event) => setName(event.target.value)}
-                  aria-describedby="merchant-name-help"
-                />
-                <Button type="submit" disabled={pending || !typedName || typedName === profile.name}>
-                  Save
-                </Button>
-              </div>
-              <FieldDescription id="merchant-name-help">
-                A name another merchant already has merges this one into it.
-              </FieldDescription>
-            </Field>
-          </form>
-          <Field>
-            <FieldLabel htmlFor="merchant-merge">Merge into</FieldLabel>
-            {/* Above the field: from sm the picker's "Showing 50 of N" hint hangs under it. */}
-            <FieldDescription id="merchant-merge-help">
-              Moves every transaction to the merchant you pick, and this merchant is gone.
-            </FieldDescription>
-            <div className="flex gap-2">
-              <div className="relative min-w-0 flex-1">
-                <MerchantPicker
-                  id="merchant-merge"
-                  merchants={others}
-                  value={mergeInto}
-                  onChange={setMergeInto}
-                  allowCreate={false}
-                  ariaLabel="Merge into"
-                  ariaDescribedBy="merchant-merge-help"
-                />
-              </div>
-              <Button variant="outline" onClick={merge} disabled={pending || !mergeInto?.id}>
-                Merge
-              </Button>
-            </div>
-          </Field>
-        </FieldGroup>
+        <MerchantNameControls profile={profile} merchants={merchants} pending={pending} run={run} />
       </CardContent>
     </Card>
   );
