@@ -4,7 +4,7 @@ okf_version: "0.2"
 
 # Files
 
-- [Tally AI quickstart](quickstart.md) - Init page for coding agents. Routes a change to the owning package and wiki page without restating working rules or copying the README.
+- [Tally AI quickstart](quickstart.md) - Init page for coding agents. Routes a change to the owning package and wiki page.
 
 # Directories
 

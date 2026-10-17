@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "pageVersion": "sha256:ba21a7807e8bf63d53e2cebc7749a162cd78513c951ea0c185fba5822fb35d95",
+  "pageVersion": "sha256:c1a79337c94cbd74606d57afd8958a8f2111dcc8b5a335d5506036fe5a7f4d3d",
   "claims": [
     {
       "id": "claim_9e2052c8872442bdba3d295db6a09af4",
@@ -306,15 +306,23 @@
     },
     {
       "id": "claim_cbb71fac1d744b63bde1441a8030130b",
-      "statement": "Public tables have no row-level security. The schema is safe only as a single-user local database and must not be hosted or exposed through the Data API as-is.",
+      "statement": "Public tables have no row-level security. The schema is safe only as a single-user local database and must not be hosted or exposed through the Data API as-is. Architecture records that limit and points ideas and known bugs at GitHub issues rather than at a design file. Those issues are not tables, views, or roles. A linked issue is not a schema object.",
       "evidence": [
+        {
+          "resource": "repo://CLAUDE.md#L50-L54",
+          "version": "repo-lines-v1:sha256:0cb0bc3697cdf80d03fc4d835bf47a0deddb96504bf683ddc390a81ccb95a597:eyJzZWxlY3RlZExpbmVDb3VudCI6NSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiODYyYjdjNDJlY2JkZWU4MmUwZTIyMGViYjM1Nzk2MGZmMmVjODI0OWUwMWVmM2IyNTY4M2I1N2VjNzAwYjkyYyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiYWVjZWU1MjRmYjk0NGQxYWRjOTUyNjExNDQ2Mjg2Yzc0YzJjNGNmYjFkNGQ1MjUzNjU4NTBjNDhlOTdkZmJmMiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiYTU2OGQ0NTRiOWFhYTVkNWFmOWQyMDkyODNkNzdmZDMyZjUzYjM1YTlhMDE3MzgxZDk4OWRhNzI1OWMxOTU3YSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMDcwNzY3NjJmMWEzMzI4YmJkZjc4ZGExNzE3MTlkNzlhNjI3ZmNjMWM2MDU5ZmIxODM4N2FlZmZiMDlhMThkOSJ9"
+        },
         {
           "resource": "repo://README.md#L90-L95",
           "version": "repo-lines-v1:sha256:b9da39776737d8a3726670a1c0d461a0f7da689a8b771b011e60838330ffba04:eyJzZWxlY3RlZExpbmVDb3VudCI6NiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiOWY2NmRhYWZmYTc1ODlkYzZjMjVlNDQ5YWM0OTU3YjQxMmQ3OTIyNzY5YzMxZDcyMjJjNmYwYjI4OWVlYmQ2NSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMjVkY2M3Y2ZkZmEwNDkyZDExODcxNmFmMmY4Njk0YzNiZjAyNzE1YTkzOWZmNDc4ZTUyNTY0YzQwMWNmN2RhOCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZDIyYzlmMWJlNGRmYWQ2ZWIyZjcxYTc4NWQ1NmEyM2MwYmZkNTBjYjE2ZTc5ZDUxNmVkMWU1N2Y0NjNjN2E0MSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiYjRhMTFhOWQ5OTYxNTZlMmU0NzljZTJiYjFiYWVjNmUxYTAzNDA3N2NmOTJiMTI3MWFmMDk3MWFlZDBhNTQ0YSJ9"
         },
         {
-          "resource": "repo://docs/architecture.md#L146-L151",
-          "version": "repo-lines-v1:sha256:60668d046ce2d58209888ea6c8e8f52a50375b2dcdbf8c1b62586d16a55085d2:eyJzZWxlY3RlZExpbmVDb3VudCI6NiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiOWY2NmRhYWZmYTc1ODlkYzZjMjVlNDQ5YWM0OTU3YjQxMmQ3OTIyNzY5YzMxZDcyMjJjNmYwYjI4OWVlYmQ2NSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMGYzNWQ0MWRlMTcwOTY1NzUyYzE4MjY3NjJkZDFjYjllNzc1MWU1OGJjOGFhYzU1MGE0M2EzZDM0ZGFiZTdhYSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZWFjNzFjNjE3MDkxNmVhMjBlOTZlZTYyNDFiYzkxZjUyMDA1N2YyOGRmNmUwOWJhY2JhMDlmNjYyNzdhYmJkNiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjEsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiYzg0OTc3ODcyYTgyMmFhZTY5YTRhYjYzOGQzY2FjYjQ3MDcyZGQxMDYyMTJhMWY2ZGFmNTlkY2ZiZWRkYThkYSJ9"
+          "resource": "repo://docs/architecture.md#L115-L119",
+          "version": "repo-lines-v1:sha256:0bf0af109686a9f607dc8017a9625c15fb51982953d2a338f200227369a7769a:eyJzZWxlY3RlZExpbmVDb3VudCI6NSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMTM5MzJkMmYzM2I4MDFkMmM4YWE1ZGM1ZDZiZmU1YWE5MWMxNGYzYjlmNGRkMDAyNzZhNjE3OGI3ZTdkMDJkOCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZDRhN2ExMTZjNWU3NTNmZWE1NGU3Y2JhZTc5YzkwMTM5YjRiZTMzYTM2ZmRmZWUzOTVmNDBkNmEyZmI2MjY4MyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiYzU2M2Q5ZmQ3ZjNlZTZiZjMwMjUzMGY1NDU2YmIwNzJjZDk3N2Q3Y2Y0YzI0YjA5YzI4NTMwNDRhNGQwYmI0ZCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiYjc2NjI0MDM3ZDFjZDgwZGE1NDM2OGYyYWVkMDQ0YmQ5YTFlYjA5OWQwMTA3ODY5NjZlZDBkZDk3ZWViYzU2NiJ9"
+        },
+        {
+          "resource": "repo://docs/architecture.md#L146-L156",
+          "version": "repo-lines-v1:sha256:36779707d6d01c9288b17d74e00f4454d5917365aed7a27b55a5c16cab02e80d:eyJzZWxlY3RlZExpbmVDb3VudCI6MTEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjczMmEwN2YxYzhiZmRjYjY1ZDMwMjEyZjU0OGNmZDNkZGI2MWU0Y2MzYmI4NzViMzg4M2FhYjJjZWE4YWY2OTEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjBmMzVkNDFkZTE3MDk2NTc1MmMxODI2NzYyZGQxY2I5ZTc3NTFlNThiYzhhYWM1NTBhNDNhM2QzNGRhYmU3YWEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjcwZWNkNzMyNTE3OTZiODNjZjE3YzFhMDFjYzNkN2Q5Yzc2YWQzNzcxYjUwYjhhMWI4ZjcxODAyNjVkYmU2ZTEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImM4NDk3Nzg3MmE4MjJhYWU2OWE0YWI2MzhkM2NhY2I0NzA3MmRkMTA2MjEyYTFmNmRhZjU5ZGNmYmVkZGE4ZGEifQ"
         },
         {
           "resource": "repo://supabase/migrations/20261012000000_slice4_chat.sql#L4-L7",
@@ -343,6 +351,6 @@
   ],
   "verification": {
     "by": "openwiki/0.7.2",
-    "at": "2026-10-17T19:58:49.962Z"
+    "at": "2026-10-17T21:18:38.741Z"
   }
 }

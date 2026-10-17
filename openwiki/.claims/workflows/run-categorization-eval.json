@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "pageVersion": "sha256:222becd3b423ce1a5123a3fb1d87e4583cae5e0adec8a10234205789f6ff3f4e",
+  "pageVersion": "sha256:af3e7d17c6fa9b8d61705f357b69092c12022ff0394e12e241f51df0e762c2db",
   "claims": [
     {
       "id": "claim_5d1757e7398942888740fe848077b2f5",
@@ -56,7 +56,7 @@
     },
     {
       "id": "claim_813d1c2b742741818ec275369ef635ff",
-      "statement": "Each successful run opens one Langfuse span named eval, nests TypesafeJev generations tagged eval under it, and writes a git-ignored eval-output timestamp directory containing report.md, summary.json, and rows.csv, then appends one metrics-only line to docs/evals/HISTORY.md.",
+      "statement": "Each successful run opens one Langfuse span named eval, nests TypesafeJev generations tagged eval under it, and writes a git-ignored eval-output timestamp directory containing report.md, summary.json, and rows.csv, then appends one eleven-cell metrics-only line to docs/evals/HISTORY.md.",
       "evidence": [
         {
           "resource": "repo://.gitignore#L47-L47",
@@ -67,12 +67,16 @@
           "version": "repo-lines-v1:sha256:efa8527506acdd277c73ba53d3e5a3cefa28036718bad2492edc81c145ffb229:eyJzZWxlY3RlZExpbmVDb3VudCI6MzEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjZlMjk2NTdjZGZiODI1ODllMjExMTc3NTIyMTE4NTQ2M2FjMzliYzE3Y2Q3ZDAxNTA4M2M5MTIzNTc1NDJkYzUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImQ1NGZhZTIwNjQzMDA3OGQ0NzU0NWViMzY4YzllYzEwNzA0MzU5OWRjNjU1MWZhODZjNTE2MmRmNzIwYzAwZGIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjczM2U4NDg3Yzg1ZGZkY2Y5ZmE3YjkzYzc0NmM5NDYyNWFlNDdlMTIwYzc5N2U3OTFlNzM3ZjllZDdmZmM3M2QiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjE3YWI1MTk1ZmFhYTQxNDRkMjNkZDQ1N2IxZjE0NjJiYzhmNWEwYmQ1NzMyMmZkZTgyMzAzN2YzZTU5MjNkODcifQ"
         },
         {
-          "resource": "repo://apps/api/finance/evals/report.py#L43-L88",
-          "version": "repo-lines-v1:sha256:fdfdceb445541aa01506fd5a54cd2f91dff0763a98423be10c26f9599c39dd12:eyJzZWxlY3RlZExpbmVDb3VudCI6NDYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjVmZWY3NTM3YmQ3Y2MyMWI2YTc2YTRjZWY3MDFlMDViZDQwM2M0N2JiMjRjODIyZTAxOGIxNDk5YjM0ZGI5MTciLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjcyMjIwMDU4ZjUxNWU0MjM5NGMyNjM5MTZkM2ZjMDNiNDhlMTE5OTMyNzlkNGNhYjYwZTBlZThiZTM3Y2E1YWMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjVlNjVlZGFkODRhMjczMmVjZTY5ZDI4OTRiYTdjZjMyMGZlMGM3NTFiOWU0NzRhNWI1NTM2ZGVlYjFmZmZmY2EiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+          "resource": "repo://apps/api/finance/evals/report.py#L71-L92",
+          "version": "repo-lines-v1:sha256:fd8bf15598f67ae125fbad41b6f1eeae2f97fb497fc43813b9b1c3bc1969210b:eyJzZWxlY3RlZExpbmVDb3VudCI6MjIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjhhNzM2MmJhOTA1ZGQ1MGFjZDA0ZjZlZmU4ZDVlOGY4OTc5OGY3ODRiNTZkZTRlNjhjODA1MTk1ZDkxNDgwZmYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjcyMjIwMDU4ZjUxNWU0MjM5NGMyNjM5MTZkM2ZjMDNiNDhlMTE5OTMyNzlkNGNhYjYwZTBlZThiZTM3Y2E1YWMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjMxMWQ3YjQ3ODQ0NjA2YTI0OGYzOWE1Y2EwNzg4YTIzOTcyNmJhMzQ1ZTJlMWE1ZTUxYTBhYjllNWZmYjMyNDEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
         },
         {
           "resource": "repo://apps/api/finance/evals/run.py#L108-L140",
           "version": "repo-lines-v1:sha256:ea172de75d9d9f7c346850ec71d06065f50c5bcb555bc7d8b3e1f904b264f54d:eyJzZWxlY3RlZExpbmVDb3VudCI6MzMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImU5M2Q3ZTRmZmU3MjRiZjVkZWEyMjdjZDlkNWFmMDhjYmY0YWE3M2QzNDA5NzI3MDRmODI3NDYyZjUyNmMxYzciLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjhhYTE1NjdiOTE5ZGEyM2NmZTliODk4NjZkMjVjMzcxNGFmMWU2M2Q1NWI3ODVjN2RkZDI0YWI5YTc2MDg3NGYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImU4NTM1MzZhYjIwYjJhMTM5MjU4ZmIyNWJkOTcyZjQyYzMxZWIwMjAyMWQyMDQ2YmI2MmZiOWRhNThjMDRhNDAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjU0NTI2YWZkNzhlMmJiZGM0N2QwODZmNjliOTdhZjYwZTQ5MjAzZDNjNDlhMTAwMDNmNTQxNzEyODlmOTYxZTQifQ"
+        },
+        {
+          "resource": "repo://apps/api/tests/test_eval_metrics.py#L80-L99",
+          "version": "repo-lines-v1:sha256:e92f8d9f78b42b3fda5c7366ac3310147db2177ae415a84d6be2cb447844a98e:eyJzZWxlY3RlZExpbmVDb3VudCI6MjAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImNmNjcwZTRiZTM4OWM5ZTA2NjgxYWVhMDg0OWQxZGM5YmJhYzU2YzE2MTFkMjdjNzNhODEwNzUzNTMzYjc1ZWUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjEyMzA0ZjM4NWNkNDQ1ZGE4YTllYTM5MWVhNzcwMjdhMGYwNjVlYjM2M2ZiNTk4MzVkOGJhN2E2YTlkYWEwZjMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjUzNTBjNDY1Mzk5MTY2NWZjMTU5NWEwNzFiMjY3NTNlMWE1MWRkNjFhYWY0ZGUwOGNlMmFjZDhlZDUzN2Q0ZjkifQ"
         },
         {
           "resource": "repo://apps/api/tests/test_eval_run.py#L106-L142",
@@ -82,69 +86,117 @@
     },
     {
       "id": "claim_6a12d18c9ae4443e933affad0abb0442",
-      "statement": "HISTORY.md lines are not a trend: the golden set is 412 rows through 2026-09-24, 480 on 2026-09-25, and 684 from 2026-09-26, and jev noise between identical runs is about ten rows, so smaller differences mean nothing. The 2026-09-23 spike lines are jev-only, not the production cascade.",
+      "statement": "HISTORY.md lines are not a trend: the golden set is 412 rows through 2026-09-24, 480 on 2026-09-25, 684 from 2026-09-26, and 824 on 2026-10-17, and before the 2026-10-17 evals merchants were merged and 22 rows of one bank text took an existing label. jev noise between identical runs is about ten rows, so smaller differences mean nothing. The 2026-09-23 spike lines are jev-only, not the production cascade.",
       "evidence": [
         {
           "resource": "repo://apps/api/finance/evals/report.py#L43-L53",
           "version": "repo-lines-v1:sha256:c59354e7ce0ed268f7d24b6f0946fcf0f7209dfbebb0a7a97d8661456bc4e906:eyJzZWxlY3RlZExpbmVDb3VudCI6MTEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjVmZWY3NTM3YmQ3Y2MyMWI2YTc2YTRjZWY3MDFlMDViZDQwM2M0N2JiMjRjODIyZTAxOGIxNDk5YjM0ZGI5MTciLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImU3ZDBlYmU3ZDhkZDU2MzZiNmMzMDJkYTFlMmI0NTJhMDM4ZTU2ZjIxNTdmNWM3OGYxOTA2M2JmYmZkYjA3NDAiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjVlNjVlZGFkODRhMjczMmVjZTY5ZDI4OTRiYTdjZjMyMGZlMGM3NTFiOWU0NzRhNWI1NTM2ZGVlYjFmZmZmY2EiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjIwOTk4ZDBiMzc4YzJiNzRjZjgzZTBmMzIzZmE4MzA3YWVlMjZhMjRiNTNiMDI4ZWQxOGUzZTMwNDUzZTRhZDUifQ"
         },
         {
-          "resource": "repo://docs/evals/HISTORY.md#L1-L31",
-          "version": "repo-lines-v1:sha256:abeafbaf05922b885856434f647b52b193d73b2f53c7245412f729a0b3a82b79:eyJzZWxlY3RlZExpbmVDb3VudCI6MzEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjZjZDE0MzYyODA5ZGUwZGViYTUzY2Q2OGJjZmExYTc2ZjBhYzQyOTIxYjA4YTYyMmY4M2UyZmY4YTEzN2Q3NTQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjA1MzYyNGExZjY4NGExNGM1YmQ2NTEwOWEyODY0YmRkNThiOThiNTE1MzAwYTFkMWFhMmQ4MDgwZWY0OWUzMzAiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjowLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+          "resource": "repo://docs/architecture.md#L68-L82",
+          "version": "repo-lines-v1:sha256:a04545445457fb0da8399f1275dd1cee778ee4be9cf7dd1316e0e4895cbe8b3e:eyJzZWxlY3RlZExpbmVDb3VudCI6MTUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImZlYjRlNGM1OGU4OWE2NTE0ZmYzOTkyY2Q3MDk3NDBhOGU1OWIxNzg5MWMyZDE3ZjUwOGU3YzMyMDI5MzgxYWUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImU2NmMxMDA1ZWZmZjQxYzE1ZDM5ODcxMTViYzMxNjNlYWFjODkyZDAyMGNlZmJhNjI5MmMyZDY3ZjY2Mjc1N2EiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjUxNDE1ZWZmZTAyYzM3OTI5MGJhN2Q4NTc0NDJjNzJmZTFkZjFkNTMyODc4NzJiZjNiMjNkYWY1MDk2YTkyZGUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImU5ODM0MjI2MmMzZDFhYjM5NTM3ZWJkMmUyODEyYjQ1OTY4NDczNDM1NDk3ZDc4YTcxMzBmMjE4NDcwOWI5OGQifQ"
+        },
+        {
+          "resource": "repo://docs/evals/HISTORY.md#L1-L44",
+          "version": "repo-lines-v1:sha256:3f999f3e6ff2ca63ba96a94fa64589147319bab91d77bb52b23bc95c9f40b362:eyJzZWxlY3RlZExpbmVDb3VudCI6NDQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjZjZDE0MzYyODA5ZGUwZGViYTUzY2Q2OGJjZmExYTc2ZjBhYzQyOTIxYjA4YTYyMmY4M2UyZmY4YTEzN2Q3NTQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijc3ODc3YzJjYzExYTg4ZTEwZGYxZjQ2MTczOWJlZWJjMjRhOTkzYTEzMDA3N2RmZjM2ODQ2Y2Y0OTU1ZmFlMzciLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjowLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
         }
       ]
     },
     {
       "id": "claim_61390ec6458d43c5b7a35fa94ff7c6bf",
-      "statement": "History columns report level-2 and level-1 accuracy over scored rows, level-2 precision and review count at the 0.95 acceptance threshold, and subscription precision and recall for expenses flagged when noul is above 0.7. Merchant match_key accuracy and the other confidence thresholds appear in the report and summary, not in the history table.",
+      "statement": "history_line writes eleven cells: level-2 and level-1 accuracy over scored rows, level-2 precision and review count at the 0.95 acceptance threshold, subscription precision and recall for expenses flagged when noul is above 0.7, and merchant duplicates over wrong joins. Merchant match_key accuracy and the other confidence thresholds appear in the report and summary, not in the history table.",
       "evidence": [
         {
-          "resource": "repo://apps/api/finance/evals/metrics.py#L9-L10",
-          "version": "repo-lines-v1:sha256:39353b23f3db552ec0987438436035508bef1f00389db44df5be6894f3b9cdd8:eyJzZWxlY3RlZExpbmVDb3VudCI6MiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNGUyZjNkOWY1NWM3YTg4Y2RkMjQwYzRiNDdhMDRhMTNmNTgwOTE3YTIyZTUzOGI3Nzc5ZTgzODVlNWVkMTg4YiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNjAxYWZjODhjYjViYzEzYjEzMTIwYzM5NjAxMDVlOTQxNmM0OTg4ODEwZmZhYWQ3NGU2ZGY3ZGMwNGJlZDk1NiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMTk5MThiZTQ5NTEwZjA5NmZlODFhOTNhYTMyNTQ4ODlkMzdkMTkwNDZlY2UwZWJlYjUwODAxNDlmZmY3ZTg5OCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiYjI0MDFmZGMyYzNjMDIxMDgzODU5MGEzYzE3YjRlMWY1ZjNjMTViNzdmZGE4ZjcxZTEzYzRmOTZiZDc3MmJjYyJ9"
+          "resource": "repo://apps/api/finance/evals/metrics.py#L109-L144",
+          "version": "repo-lines-v1:sha256:9abb5e713a72ddf8c23c1516cdcd668994763d0e56cee4b79862ed4b8a13658f:eyJzZWxlY3RlZExpbmVDb3VudCI6MzYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImE5NjQ5MWNmZDY3OThmMmRlM2VhOWRlMDQ1ZDJlNDQzZWM0NTI5NjI2ODkxZDIzYmY0NDY1NWVjMDhmYTY5YTQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjMwYzFmMTg4ZjE0MmVkN2E4MjQ2ODBiMjA3MTcyYzU1MTliYzYxNGE0OGZkYTdjZjE2N2VkYjhkZGY3OTk1NmMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjIzNmQ1MDk3NDdiOTNhY2EwODZkZGY1YjU0MWNhYzI2Zjg1NTYxMDkyOWFhMjRhNzRmNzg5YWExNDJhYTExYmYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
         },
         {
-          "resource": "repo://apps/api/finance/evals/metrics.py#L98-L124",
-          "version": "repo-lines-v1:sha256:6fbcfc01804b7cfb287845c9dd760f8c99fc3cb68d8dbc62a55df754aedc06e6:eyJzZWxlY3RlZExpbmVDb3VudCI6MjcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImE5NjQ5MWNmZDY3OThmMmRlM2VhOWRlMDQ1ZDJlNDQzZWM0NTI5NjI2ODkxZDIzYmY0NDY1NWVjMDhmYTY5YTQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjMwYzFmMTg4ZjE0MmVkN2E4MjQ2ODBiMjA3MTcyYzU1MTliYzYxNGE0OGZkYTdjZjE2N2VkYjhkZGY3OTk1NmMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjhjYzRhN2QxY2M3OTZhYmEzZTQ2NzIzMzI3ZjUxN2U5ZjgxMTk4MmQyNTBmMDcwMjk4NmU0YjU3NjRhZDk1ODkiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+          "resource": "repo://apps/api/finance/evals/metrics.py#L9-L11",
+          "version": "repo-lines-v1:sha256:f5c22858ab0393e00c8a58b911f34b24a65671f858916b2cd5bc48b1b1fb8c65:eyJzZWxlY3RlZExpbmVDb3VudCI6MywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMDFiYTQ3MTljODBiNmZlOTExYjA5MWE3YzA1MTI0YjY0ZWVlY2U5NjRlMDljMDU4ZWY4Zjk4MDVkYWNhNTQ2YiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNjAxYWZjODhjYjViYzEzYjEzMTIwYzM5NjAxMDVlOTQxNmM0OTg4ODEwZmZhYWQ3NGU2ZGY3ZGMwNGJlZDk1NiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMjE4NjBkOTcwNWE1Y2I0YmJlMWI3NWU2NzY3YWE1N2Y1MWQxOWYwNmQ4MDlmODE4MjYxMjFlNTdmN2VlOGI0NyIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiYjI0MDFmZGMyYzNjMDIxMDgzODU5MGEzYzE3YjRlMWY1ZjNjMTViNzdmZGE4ZjcxZTEzYzRmOTZiZDc3MmJjYyJ9"
         },
         {
-          "resource": "repo://apps/api/finance/evals/report.py#L43-L88",
-          "version": "repo-lines-v1:sha256:fdfdceb445541aa01506fd5a54cd2f91dff0763a98423be10c26f9599c39dd12:eyJzZWxlY3RlZExpbmVDb3VudCI6NDYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjVmZWY3NTM3YmQ3Y2MyMWI2YTc2YTRjZWY3MDFlMDViZDQwM2M0N2JiMjRjODIyZTAxOGIxNDk5YjM0ZGI5MTciLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjcyMjIwMDU4ZjUxNWU0MjM5NGMyNjM5MTZkM2ZjMDNiNDhlMTE5OTMyNzlkNGNhYjYwZTBlZThiZTM3Y2E1YWMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjVlNjVlZGFkODRhMjczMmVjZTY5ZDI4OTRiYTdjZjMyMGZlMGM3NTFiOWU0NzRhNWI1NTM2ZGVlYjFmZmZmY2EiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+          "resource": "repo://apps/api/finance/evals/report.py#L43-L92",
+          "version": "repo-lines-v1:sha256:4e375c3722d248175757b75d4bf99941735f4134464ebb6825e32579d73a09da:eyJzZWxlY3RlZExpbmVDb3VudCI6NTAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjVmZWY3NTM3YmQ3Y2MyMWI2YTc2YTRjZWY3MDFlMDViZDQwM2M0N2JiMjRjODIyZTAxOGIxNDk5YjM0ZGI5MTciLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjcyMjIwMDU4ZjUxNWU0MjM5NGMyNjM5MTZkM2ZjMDNiNDhlMTE5OTMyNzlkNGNhYjYwZTBlZThiZTM3Y2E1YWMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjVlNjVlZGFkODRhMjczMmVjZTY5ZDI4OTRiYTdjZjMyMGZlMGM3NTFiOWU0NzRhNWI1NTM2ZGVlYjFmZmZmY2EiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
         },
         {
-          "resource": "repo://apps/api/finance/evals/report.py#L9-L9",
-          "version": "repo-lines-v1:sha256:f0540b46dd16eb22778882c4789bd91f22fad1b77c68b932dfa42932eb5504ca:eyJzZWxlY3RlZExpbmVDb3VudCI6MSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZjA1NDBiNDZkZDE2ZWIyMjc3ODg4MmM0Nzg5YmQ5MWYyMmZhZDFiNzdjNjhiOTMyZGZhNDI5MzJlYjU1MDRjYSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZjA1NDBiNDZkZDE2ZWIyMjc3ODg4MmM0Nzg5YmQ5MWYyMmZhZDFiNzdjNjhiOTMyZGZhNDI5MzJlYjU1MDRjYSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMjVmY2NmNTI4Zjk5NGU5NGIyYzExYTkwOGFlZWE1MTk4Zjc5ZDc4NDQwMTEyNjgxYjNlNjk1MGVlYjI2Yjg4ZSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiN2FiYWRhMWJjY2Y2N2Y5MjU2ZjZkNTg0OGVhNjZiNTI1N2Y2Y2I2NGYzN2U5NWYxYWNiN2Q1MTBhNGY5ZjA4YyJ9"
+          "resource": "repo://apps/api/finance/settings.py#L78-L84",
+          "version": "repo-lines-v1:sha256:5a2c7dcb722e6120f54d17e251e4866f8517aa6dfd49d95d05bd8f9636d74371:eyJzZWxlY3RlZExpbmVDb3VudCI6NywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMzI2MjIyMDEyNjcwMmY0OTc4NWY3YjQxYTJiNWQ1NTJlY2IzMWVjM2EyODk0MTVlZmFlYWUwM2JhNWIwYWNkOCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNjQzNmMxY2RkMWQwZmJiZjQxYjdlY2YxZjkzMTZjOGU0ZDQyMDk1ZDdkNWYwYTM1OTI3N2RiZTdmYzY1ZmZjZiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiYjM5YjhlYTEyNDJmNzYzN2M0MGRkMGE5ZmI5ZWRlMzhmNzNjZjhlOTY5ZGY5MGEwYWZlNjg0YTgyZGYzYjQ1OCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMDU1NDQ2YjI1YmQxNzc5NzA2ZDcwMjk5ODdiNmIyYzAwZGJhZWQ0YTkxMTlhM2Q4NjBhMGYwMWUzZmRmM2FhNSJ9"
         },
         {
-          "resource": "repo://apps/api/finance/settings.py#L78-L82",
-          "version": "repo-lines-v1:sha256:1743f97df7a380e920fed6232ab0785392ac63da5fe175f7a40bd8ff597ceed6:eyJzZWxlY3RlZExpbmVDb3VudCI6NSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMzI2MjIyMDEyNjcwMmY0OTc4NWY3YjQxYTJiNWQ1NTJlY2IzMWVjM2EyODk0MTVlZmFlYWUwM2JhNWIwYWNkOCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNjQzNmMxY2RkMWQwZmJiZjQxYjdlY2YxZjkzMTZjOGU0ZDQyMDk1ZDdkNWYwYTM1OTI3N2RiZTdmYzY1ZmZjZiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiYjM5YjhlYTEyNDJmNzYzN2M0MGRkMGE5ZmI5ZWRlMzhmNzNjZjhlOTY5ZGY5MGEwYWZlNjg0YTgyZGYzYjQ1OCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMDU1NDQ2YjI1YmQxNzc5NzA2ZDcwMjk5ODdiNmIyYzAwZGJhZWQ0YTkxMTlhM2Q4NjBhMGYwMWUzZmRmM2FhNSJ9"
+          "resource": "repo://apps/api/tests/test_eval_metrics.py#L80-L99",
+          "version": "repo-lines-v1:sha256:e92f8d9f78b42b3fda5c7366ac3310147db2177ae415a84d6be2cb447844a98e:eyJzZWxlY3RlZExpbmVDb3VudCI6MjAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImNmNjcwZTRiZTM4OWM5ZTA2NjgxYWVhMDg0OWQxZGM5YmJhYzU2YzE2MTFkMjdjNzNhODEwNzUzNTMzYjc1ZWUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjEyMzA0ZjM4NWNkNDQ1ZGE4YTllYTM5MWVhNzcwMjdhMGYwNjVlYjM2M2ZiNTk4MzVkOGJhN2E2YTlkYWEwZjMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjUzNTBjNDY1Mzk5MTY2NWZjMTU5NWEwNzFiMjY3NTNlMWE1MWRkNjFhYWY0ZGUwOGNlMmFjZDhlZDUzN2Q0ZjkifQ"
         },
         {
-          "resource": "repo://docs/evals/HISTORY.md#L8-L12",
-          "version": "repo-lines-v1:sha256:c423d083f7f2d7e9347e710118fa3434f32f69acfd3f1d76c47545a894aeeb45:eyJzZWxlY3RlZExpbmVDb3VudCI6NSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNjc0NmQ3ZWY4MTA2ZmZiZGFmNjUyMWRhODczMThkMTlkZjY4NDUzZjEyZWEwY2FkYTAxNzVjYTkxOWY1YzM5YiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiYzMyNTE5YjU1MzcwZDJhZjk1ZWY5ZjMzNDJkZjdhYjAxMzhmZTExMjMyNmYyY2I5N2FhMzZjMWQ3N2Q1ZTViMCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMWE3MDJjMDVkZTBjODJiNWU3MjZjZWI1ZTYwYTVhYmY3ODk5MGU0MTQ1YTYzMjJmZGUyMjA4YmU1M2NlZjJhYyIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiYThhYmQ4OWU5ZjU0ZGFkODU1YzVlMjlkNDEwNjg5YjQ1NzIxNGUyNWJkM2YwM2JkMzEwZWNlMGI1M2QzMWQwYyJ9"
+          "resource": "repo://docs/evals/HISTORY.md#L8-L26",
+          "version": "repo-lines-v1:sha256:b6c42b5489136ace1d6ceca0c3368467f4524796c60118b7270acedb230737c6:eyJzZWxlY3RlZExpbmVDb3VudCI6MTksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3NDZkN2VmODEwNmZmYmRhZjY1MjFkYTg3MzE4ZDE5ZGY2ODQ1M2YxMmVhMGNhZGEwMTc1Y2E5MTlmNWMzOWIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjlmZTJmZWJjYzUyYWVmYzg0YTgzYTQyNTg4NmRmZTA1MWM5NGUzODQ1MjQ4NGU2YTY1MDYwZDg0MWY5NDY3NDYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjFhNzAyYzA1ZGUwYzgyYjVlNzI2Y2ViNWU2MGE1YWJmNzg5OTBlNDE0NWE2MzIyZmRlMjIwOGJlNTNjZWYyYWMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImMyYjcyZDYzYTQwN2RjZDIzMzRlODY3NTEwMzZiN2FiOWM2MDdkOTkyNWM5ZmJmNzFjOThhY2IwZDZkMWQwM2MifQ"
         }
       ]
     },
     {
       "id": "claim_a276fd979f6543dea337ddb0042df8f3",
-      "statement": "There is no chat eval command. Chat evals are backlog item 6, a golden set of questions with reference SQL that has not been built, and the categorization command does not score the chat agent.",
+      "statement": "There is no chat eval command. docs/architecture.md links the missing chat evals as issue #27 (https://github.com/raulvazquez7/personal-finance-agent/issues/27). That issue is not built. Ideas and known bugs are GitHub issues. The categorization command does not score the chat agent.",
       "evidence": [
+        {
+          "resource": "repo://apps/api/finance/cli.py#L131-L141",
+          "version": "repo-lines-v1:sha256:b6a6bfffb1139ee93906e874dafbff3ccb94677e7c64e67220e607ee9b4c2ba1:eyJzZWxlY3RlZExpbmVDb3VudCI6MTEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjcwODhjMTkxYjIyMTU0MjY0YWQwYTYyZmU1YjAzOTM2ZTI3YjI2YTNhMWYzOTdmNDg3M2VkZWU0ODQ3M2ZlODMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjU5YjY4MWQzODE1ZDExNDkxNWM1YTMxOTUyNTg1ZTJkZDgxZGVhMTUwYTAzYTlmNDYzNzFhOTQyNzA0NDZlZmEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjFiMzVkODhlYzk4M2QyOGEwMGE3YWVlYTI2YzQzNjFiYjRlN2RlYmNjYjc4YmQwZTNjZGU1ZDRjN2U1ZmUzYWIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        },
         {
           "resource": "repo://apps/api/finance/cli.py#L77-L90",
           "version": "repo-lines-v1:sha256:d2bb250803b6d54946aa6db4b56d0269445f9cd4819ea2336bedc856b914b309:eyJzZWxlY3RlZExpbmVDb3VudCI6MTQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjRlODIyOTZiOGI2ZWFjOWMzOGRmMDZkOTAxZjM4NTE1ZjIxNTUxYTllM2JiOWU3ZWE0NTlkYjMzMWI3ODM1NGIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImEzMWM4MTRjNWM0NzI3MzRlZjZhOWMzMTkwYzU2NDk4NjBlNzlkZTVhMDc5YTI5NDM2Nzg4YTYyMzcwMDM3NGUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjA5MDM4MGM2NzA3ZTE3MGE0OWNlNjgxOGIzNTczMjM5MmExZTY3Njk5N2FhOGZjM2RkNDgzNGZkZWRjZDI4YTgiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImYwOTU3ZDMyYzE0YzVmMmQ3MzYwYzE3ZDRhZTViYWNkZmI0MGZhMDg0ZWRhNDI0YmVmOTFmMGEwMGNlZjViMTAifQ"
         },
         {
-          "resource": "repo://docs/architecture.md#L111-L115",
-          "version": "repo-lines-v1:sha256:082624e5d014662a61a110558943a112acd961d66c9a431cb35fed742e63cd14:eyJzZWxlY3RlZExpbmVDb3VudCI6NSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYjhiOTA3NDcyNjFlYmI4M2NkOWRjNjdjNDU2ZjUyODM5YmVjYzBlYzNjMGVmMDdjMjFjZGNkYWVlMDAwYTFhNyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNTEzNzhjZDNiZGVmMTk2NTdmYmY0YjU3MTUzYzVmNzQxZThlNTk0OTJlNmRlMDYyMzAxMDMwZGFiZWYxZDM3NyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiYzU2M2Q5ZmQ3ZjNlZTZiZjMwMjUzMGY1NDU2YmIwNzJjZDk3N2Q3Y2Y0YzI0YjA5YzI4NTMwNDRhNGQwYmI0ZCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiYjc2NjI0MDM3ZDFjZDgwZGE1NDM2OGYyYWVkMDQ0YmQ5YTFlYjA5OWQwMTA3ODY5NjZlZDBkZDk3ZWViYzU2NiJ9"
+          "resource": "repo://docs/architecture.md#L115-L119",
+          "version": "repo-lines-v1:sha256:0bf0af109686a9f607dc8017a9625c15fb51982953d2a338f200227369a7769a:eyJzZWxlY3RlZExpbmVDb3VudCI6NSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMTM5MzJkMmYzM2I4MDFkMmM4YWE1ZGM1ZDZiZmU1YWE5MWMxNGYzYjlmNGRkMDAyNzZhNjE3OGI3ZTdkMDJkOCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZDRhN2ExMTZjNWU3NTNmZWE1NGU3Y2JhZTc5YzkwMTM5YjRiZTMzYTM2ZmRmZWUzOTVmNDBkNmEyZmI2MjY4MyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiYzU2M2Q5ZmQ3ZjNlZTZiZjMwMjUzMGY1NDU2YmIwNzJjZDk3N2Q3Y2Y0YzI0YjA5YzI4NTMwNDRhNGQwYmI0ZCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiYjc2NjI0MDM3ZDFjZDgwZGE1NDM2OGYyYWVkMDQ0YmQ5YTFlYjA5OWQwMTA3ODY5NjZlZDBkZDk3ZWViYzU2NiJ9"
         },
         {
-          "resource": "repo://docs/backlog.md#L66-L71",
-          "version": "repo-lines-v1:sha256:c9dec3e064edf40c3565824b890ee6ba197d2d8f30b3e74dc0b1f19680e812ec:eyJzZWxlY3RlZExpbmVDb3VudCI6NiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMDkzZmYwZWEyMWYwYmFjZDI2Yjc1OWMzNjU3OTI0OWUxYzgzODFkMDRlYTAyYjM1ZWY1N2YzYzk3ZTg2ZTRkMCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNmYwNmRiNmYyMDFmYmIxMGY1MWQyYjIxNjRhYWQxNjg4OGZiOGI4MWQ0ZTE2ZWI1NzI0NTM4ZDZiYTViMDE2ZiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMTFjODUzYmZhNDE5ZWY5ZDk2ZmIzOWEwYmYyM2JkZjYwM2YwNGNiNzUxMzdhYjJhMmMwNjQyZGNjODFlOTcxNyIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNDE2MTkzZGYxNGQ2NjA4ZDIxNTlkMmJmZDlkY2M3YmM0ZTdhMzc4ODFlMDBkYmRkMzMxYmQyNWZiODhkMzQxZCJ9"
+          "resource": "repo://docs/architecture.md#L145-L148",
+          "version": "repo-lines-v1:sha256:e6815668a8a43f8abc3e24b35b5dccb2775c886b1379c3d05ab41cdf906eccf2:eyJzZWxlY3RlZExpbmVDb3VudCI6NCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNTNmOTBhMWFiN2E4Y2ZmYThhZGQ3OGRmOTg3MDVjNTY4YThiMzA1NzA2NGNkZDNjMjU2YTNiOTNhMDYwNTFlZSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiYTRmMWI5OTc0ZmYzZTY2MTRkM2E5NDgzZDc1ZDU4YTVjZTZhOWIxOWFhMDIwY2RmNmIyMDE1MDUyODM4YzhkMSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNmRiYTlmYzhkNjQ4ZWViZjE4ZTI3MWQyY2JjYTEyN2Q1ODVhOTlkZmRkYzQ1ZTRhYTlhOTU1MmYwOWZlN2FiMCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiODg4ZDI2OGQ5MWI3OGVmODM0NjM0NWU2YzcyNjdiNjkxNzdkMjY1ZWM2NTFjMTYyODEzNGZkM2NmZTM4N2NkYiJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_029f28de52d147d1aa5529b2a672c36a",
+      "statement": "Merchant duplicates are extra predicted match_key names per golden merchant, and wrong joins are extra golden merchants per predicted name. A row with a golden merchant but no predicted name is in the merchant-accuracy denominator and votes for neither count.",
+      "evidence": [
+        {
+          "resource": "repo://apps/api/finance/categorization/jev_questions.py#L31-L33",
+          "version": "repo-lines-v1:sha256:7949406352a9c4e1e2a6cce71a451b19df9508dbe4c74b292384ec75ad9a00d0:eyJzZWxlY3RlZExpbmVDb3VudCI6MywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYmJmZWUwNjMyMjNkZTQzNjNiY2E5N2YxYjMxYTE4MDkxYzJhNDhhZWVmMTQzMTUyNDVmYjViMmE2N2FlMWZhNiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMGM4NDg5YTI0ZGFiMjRlMTM5NWQxYTY0ZmViZGJiNWVlNWNjNDA2MzJmYmM2NDhhZmU5MzQyMzg4NjMwMDlmNSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMGI0NjhhZDBhYmQ1ZGY4NjIwYmI5NGJkZmZlODVmNDIxMTBlY2RhOGFmNzY0YTRkNWMzYmEwNmJhYTVmNzczZiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNmYzNDM5NGUzMDRmZmY3YjI5MGNiNTIyYWM3NGI5MDA1MDM0M2Y4Y2EyODFhYzkwMTc3ZjdlYWI4MTExZWIxYSJ9"
+        },
+        {
+          "resource": "repo://apps/api/finance/evals/metrics.py#L101-L144",
+          "version": "repo-lines-v1:sha256:4c8b28a1dd88e20d01f299b9ec80d003dd4a2f78f7e094672add6ccba84072a4:eyJzZWxlY3RlZExpbmVDb3VudCI6NDQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjczNTU4ZTZiZjM2Njk1MjI5MzkyY2Y1NTliNTNlN2IzMTVkNjU5MmE0ZTcxNjkwYTI4YWM3NjdlYzg0YmM3NmUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjMwYzFmMTg4ZjE0MmVkN2E4MjQ2ODBiMjA3MTcyYzU1MTliYzYxNGE0OGZkYTdjZjE2N2VkYjhkZGY3OTk1NmMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjhjYzRhN2QxY2M3OTZhYmEzZTQ2NzIzMzI3ZjUxN2U5ZjgxMTk4MmQyNTBmMDcwMjk4NmU0YjU3NjRhZDk1ODkiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        },
+        {
+          "resource": "repo://apps/api/tests/test_eval_metrics.py#L66-L77",
+          "version": "repo-lines-v1:sha256:d469aba496994e0a7c812d5f5279e3fd5fe367afe9141c93db0e8e10d057589d:eyJzZWxlY3RlZExpbmVDb3VudCI6MTIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijc2MTQwNjRiZGIzMmVmZjI3NzA1NDUzY2QxNGM4ZTM0YzFjMzBlOTc4ZGMwZDkyNGZiYjAyNGRjZjg4YWY4NWUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjI0Y2U5Zjc4MWVhNzhkY2UxN2M4YmMwZTExZmZlNTA2YWJkYmIxMTQzZTZmMzcwZTkxZjc1ZDZlYzI3OWZhNjkiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjUwYzY3YmE1MWQwZGE3Yzc0YjdmZGY0Yjk1MjIwNjg5ODI4MGFiOWYwMmQzYjM3NWU1NDdjMWE5N2IxODkxMjgiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjgyMmRhYTdiZTA3MWM3NzM4MjVjOTcyMGJmMzUzYTEzNzczOGE1MTIxMDQ2OWU2NWM1NmQ3MDAwYTI5ZWNmOGYifQ"
+        },
+        {
+          "resource": "repo://docs/evals/HISTORY.md#L8-L14",
+          "version": "repo-lines-v1:sha256:9dee519084578ae86ccd8c6b81bf668bba9d7f81cf192a24bcc90da4c7a4819c:eyJzZWxlY3RlZExpbmVDb3VudCI6NywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNjc0NmQ3ZWY4MTA2ZmZiZGFmNjUyMWRhODczMThkMTlkZjY4NDUzZjEyZWEwY2FkYTAxNzVjYTkxOWY1YzM5YiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiYzMyNTE5YjU1MzcwZDJhZjk1ZWY5ZjMzNDJkZjdhYjAxMzhmZTExMjMyNmYyY2I5N2FhMzZjMWQ3N2Q1ZTViMCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMWE3MDJjMDVkZTBjODJiNWU3MjZjZWI1ZTYwYTVhYmY3ODk5MGU0MTQ1YTYzMjJmZGUyMjA4YmU1M2NlZjJhYyIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiYThhYmQ4OWU5ZjU0ZGFkODU1YzVlMjlkNDEwNjg5YjQ1NzIxNGUyNWJkM2YwM2JkMzEwZWNlMGI1M2QzMWQwYyJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_75cffdbb8b1f432ba3e1d81eb5ba27b4",
+      "statement": "The latest kept HISTORY.md line is 2026-10-17 on 824 golden rows with merge at 0.5 and suggest from 0.3: L2 83.0%, L1 85.1%, precision at 0.95 of 97.1%, 348 to review, subscription 56/58 and 56/66, merchants 26 / 2. Experiment lines marked not kept are not the shipped default.",
+      "evidence": [
+        {
+          "resource": "repo://apps/api/finance/settings.py#L78-L84",
+          "version": "repo-lines-v1:sha256:5a2c7dcb722e6120f54d17e251e4866f8517aa6dfd49d95d05bd8f9636d74371:eyJzZWxlY3RlZExpbmVDb3VudCI6NywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMzI2MjIyMDEyNjcwMmY0OTc4NWY3YjQxYTJiNWQ1NTJlY2IzMWVjM2EyODk0MTVlZmFlYWUwM2JhNWIwYWNkOCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNjQzNmMxY2RkMWQwZmJiZjQxYjdlY2YxZjkzMTZjOGU0ZDQyMDk1ZDdkNWYwYTM1OTI3N2RiZTdmYzY1ZmZjZiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiYjM5YjhlYTEyNDJmNzYzN2M0MGRkMGE5ZmI5ZWRlMzhmNzNjZjhlOTY5ZGY5MGEwYWZlNjg0YTgyZGYzYjQ1OCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMDU1NDQ2YjI1YmQxNzc5NzA2ZDcwMjk5ODdiNmIyYzAwZGJhZWQ0YTkxMTlhM2Q4NjBhMGYwMWUzZmRmM2FhNSJ9"
+        },
+        {
+          "resource": "repo://docs/architecture.md#L68-L73",
+          "version": "repo-lines-v1:sha256:c68ea240e275a8a47a88f61b9ca3317e0265a3ac8868be140b366cbe8b420351:eyJzZWxlY3RlZExpbmVDb3VudCI6NiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZmViNGU0YzU4ZTg5YTY1MTRmZjM5OTJjZDcwOTc0MGE4ZTU5YjE3ODkxYzJkMTdmNTA4ZTdjMzIwMjkzODFhZSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMmJhYmRkZTc0ODE5MTRlMzQ5ODQxY2YwMjNlNzYwOTM1MWE0OWNhMGUzNGM0ZTMyODkxMzBkMjBjZjA2N2E5OSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNTE0MTVlZmZlMDJjMzc5MjkwYmE3ZDg1NzQ0MmM3MmZlMWRmMWQ1MzI4Nzg3MmJmM2IyM2RhZjUwOTZhOTJkZSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiYjgzYzliYzE1NGQ1ZmU5N2YyNmM4ZjcwMDgwNGVkZWI0NzRkZmQyY2E1YjA4ODFlMDc0YWZlMmFmYzc0NGU0YiJ9"
+        },
+        {
+          "resource": "repo://docs/evals/HISTORY.md#L37-L44",
+          "version": "repo-lines-v1:sha256:c92ec90b8f5776ffeebb110a5d7113ae376abb71a9e0cb0dac94dd714ce6db80:eyJzZWxlY3RlZExpbmVDb3VudCI6OCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNGQwNTI2NmUzYWJkOGNiZTJhYTljZGQyN2QyOTJhMzc4NTk2ZDhhMGE4ZTYxNjU3MjE0ODY0NGE1NDIzNWRkMyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNzc4NzdjMmNjMTFhODhlMTBkZjFmNDYxNzM5YmVlYmMyNGE5OTNhMTMwMDc3ZGZmMzY4NDZjZjQ5NTVmYWUzNyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMmMwN2RjOGIzZGE2YmU4NGI4NzhmODZkZWUzOGY4NTdjZTc1MWRlMWM1NWNiYTNhZTNlNjNhY2YyODg5MTAzMiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjAsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZTNiMGM0NDI5OGZjMWMxNDlhZmJmNGM4OTk2ZmI5MjQyN2FlNDFlNDY0OWI5MzRjYTQ5NTk5MWI3ODUyYjg1NSJ9"
         }
       ]
     }
   ],
   "verification": {
     "by": "openwiki/0.7.2",
-    "at": "2026-10-17T19:58:49.962Z"
+    "at": "2026-10-17T21:18:38.741Z"
   }
 }

@@ -5,7 +5,7 @@ description: Public ledger tables, money views, the agent schema, and which migr
 tags: [schema, migrations, views, agent-schema, money-rules]
 verified:
   - by: openwiki/0.7.2
-    at: 2026-10-17T19:58:49.962Z
+    at: 2026-10-17T21:18:38.741Z
 sources:
   - id: openwiki-source-6d0c43afc2897cff99344bbc
     resource: repo://apps/api/finance/agent/catalog.py
@@ -55,6 +55,8 @@ sources:
     resource: repo://apps/api/tests/test_sql_runner_db.py
   - id: openwiki-source-2266554e08129681aa07c138
     resource: repo://apps/api/tests/test_views.py
+  - id: openwiki-source-a2371d6362e5db4bc834ad03
+    resource: repo://CLAUDE.md
   - id: openwiki-source-115b2dad781e2a2c5b5a980d
     resource: repo://docs/architecture.md
   - id: openwiki-source-23775c3de52f3ab95a13cb8b
@@ -73,7 +75,7 @@ sources:
     resource: repo://supabase/migrations/20261014120000_subscription_cadence.sql
   - id: openwiki-source-462b0f61aae61181f05c2689
     resource: repo://supabase/migrations/20261014130000_display_names.sql
-generated: { by: "openwiki/0.7.2", at: "2026-10-17T19:58:49.962Z" }
+generated: { by: "openwiki/0.7.2", at: "2026-10-17T21:01:31.912Z" }
 ---
 
 # Data model and migrations
@@ -191,7 +193,7 @@ Ledger, taxonomy, money views, the agent projections, and the chat UI tables. `v
 | schema `agent`, `agent_reader`, `chat_threads`, `chat_messages` | [slice 4 chat](../../supabase/migrations/20261012000000_slice4_chat.sql); both agent views reshaped later | Chat store writes the two tables | `run_sql`, chat UI |
 | LangGraph checkpoint tables | `AsyncPostgresSaver.setup()` at chat startup, not a migration | The checkpointer | The agent graph |
 
-Public tables have no row-level security. That is acceptable only because this is a single-user local app. Do not expose them through the Supabase Data API or host the project as-is. The `agent` schema is already outside that API.
+Public tables have no row-level security. That is acceptable only because this is a single-user local app. Do not expose them through the Supabase Data API or host the project as-is. The `agent` schema is already outside that API. [Architecture](../../docs/architecture.md) records the same limit, and it points ideas and known bugs at GitHub issues rather than at a design file. Those issues are not tables, views, or roles. A linked issue is not a schema object. `balance_after` on `transactions` is not a balance view. The agent still cannot answer balances ([#26](https://github.com/raulvazquez7/personal-finance-agent/issues/26)), and nothing in this schema adds that capability.
 
 ## Ledger
 

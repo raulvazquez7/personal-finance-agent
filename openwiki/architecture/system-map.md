@@ -1,11 +1,8 @@
 ---
 type: system map
 title: System map
-description: Owned-systems map of ingestion, categorization, dashboard, agent, evals, the FastAPI surface, web routes, and Postgres, so a change starts with the right owner.
+description: Owned-systems map of ingestion, categorization, dashboard, agent, evals, the FastAPI surface, the split shell, and Postgres, so a change starts with the right owner.
 tags: [architecture, ownership, api, web, postgres]
-verified:
-  - by: openwiki/0.7.2
-    at: 2026-10-17T19:58:49.962Z
 sources:
   - id: openwiki-source-6d0c43afc2897cff99344bbc
     resource: repo://apps/api/finance/agent/catalog.py
@@ -19,22 +16,30 @@ sources:
     resource: repo://apps/api/finance/agent/sql_runner.py
   - id: openwiki-source-1a9f2372272ddbcf8ee7b1b6
     resource: repo://apps/api/finance/api/chat.py
+  - id: openwiki-source-14bf78647b1830347bba54f7
+    resource: repo://apps/api/finance/api/dashboard.py
   - id: openwiki-source-40546be375b33e38583ad241
     resource: repo://apps/api/finance/api/imports.py
   - id: openwiki-source-93a650e15d829c7b5182b732
     resource: repo://apps/api/finance/api/main.py
   - id: openwiki-source-ba82ed278ec1910952d1d20d
     resource: repo://apps/api/finance/categorization/categorizer.py
+  - id: openwiki-source-27ff1f909b76856ba6837b9a
+    resource: repo://apps/api/finance/categorization/jev_questions.py
   - id: openwiki-source-937a0f7cd896722af471182a
     resource: repo://apps/api/finance/categorization/labels.py
   - id: openwiki-source-bf17c4ad7b41784893505d89
     resource: repo://apps/api/finance/categorization/loans.py
+  - id: openwiki-source-791d270f45e9e862a70309e2
+    resource: repo://apps/api/finance/categorization/merchants.py
   - id: openwiki-source-9dd3cf13b667f0d594767a5b
     resource: repo://apps/api/finance/categorization/seed.py
   - id: openwiki-source-be202f0a191b0f5bedaec28d
     resource: repo://apps/api/finance/categorization/store.py
   - id: openwiki-source-83c03eca02f158255cf5b496
     resource: repo://apps/api/finance/cli.py
+  - id: openwiki-source-e9a4dd74372a9bf4cd6235d7
+    resource: repo://apps/api/finance/dashboard/breakdowns.py
   - id: openwiki-source-96d9c417b9c763b4264b37fd
     resource: repo://apps/api/finance/dashboard/filters.py
   - id: openwiki-source-38be2e651acb6602bdc04d5a
@@ -49,12 +54,28 @@ sources:
     resource: repo://apps/api/finance/settings.py
   - id: openwiki-source-b2697db94ca37e702a50682a
     resource: repo://apps/api/pyproject.toml
-  - id: openwiki-source-deba80bf5b4e6fbdad344120
-    resource: repo://apps/web/src/app/page.tsx
+  - id: openwiki-source-ebacbce0ac9f7bcd4dedfcb5
+    resource: repo://apps/api/tests/test_api.py
+  - id: openwiki-source-1b0034a386fac29277bedee0
+    resource: repo://apps/api/tests/test_imports_api.py
+  - id: openwiki-source-4272657610b863ffc4eda7d0
+    resource: repo://apps/api/tests/test_merchants.py
+  - id: openwiki-source-9c046f0fe4126ef833ee77fe
+    resource: repo://apps/web/src/app/imports/page.tsx
+  - id: openwiki-source-4248fadde2ffe13f055a3c59
+    resource: repo://apps/web/src/app/settings/category-browser.tsx
+  - id: openwiki-source-6aed12626cfb1aff7b8a521a
+    resource: repo://apps/web/src/app/settings/page.tsx
+  - id: openwiki-source-48b55c8d65dd0c81daf7b6e8
+    resource: repo://apps/web/src/components/shell/mobile-nav.tsx
+  - id: openwiki-source-08c3f3251a21a51be376202e
+    resource: repo://apps/web/src/components/shell/more-menu.tsx
   - id: openwiki-source-38bb240f1e74292d148ecad8
     resource: repo://apps/web/src/components/shell/nav-links.tsx
   - id: openwiki-source-ac9b852a2fa621958d429bb8
     resource: repo://apps/web/src/lib/api.ts
+  - id: openwiki-source-e59c85756d0cdc0d720c9597
+    resource: repo://apps/web/src/lib/breakdown.ts
   - id: openwiki-source-7075d7cde7fc19a3aed9885a
     resource: repo://apps/web/src/lib/chat-api.ts
   - id: openwiki-source-115b2dad781e2a2c5b5a980d
@@ -63,12 +84,15 @@ sources:
     resource: repo://supabase/migrations/20260925110000_slice3_views.sql
   - id: openwiki-source-f9d5db85cdb980ec957e98ef
     resource: repo://supabase/migrations/20261012000000_slice4_chat.sql
-generated: { by: "openwiki/0.7.2", at: "2026-10-17T19:58:49.962Z" }
+verified:
+  - by: openwiki/0.7.2
+    at: 2026-10-17T21:01:31.912Z
+generated: { by: "openwiki/0.7.2", at: "2026-10-17T21:01:31.912Z" }
 ---
 
 # System map
 
-tally ai is a local single-user app. Python in `apps/api/finance` owns ingestion, categorization, the dashboard reads, the chat agent, and evals. Next.js in `apps/web` is the browser. Supabase Postgres is the ledger. What the product does and how to run it is in [README](../../README.md). Why each part is built this way is in [Architecture](../../docs/architecture.md). This page only says who owns a change. Code and tests win over both documents. Specs in `docs/superpowers/specs/` explain why; [Backlog](../../docs/backlog.md) is not built.
+tally ai is a local single-user app. Python in `apps/api/finance` owns ingestion, categorization, the dashboard reads, the chat agent, and evals. Next.js in `apps/web` is the browser. Supabase Postgres is the ledger. What the product does and how to run it is in [README](../../README.md). Why each part is built this way is in [Architecture](../../docs/architecture.md). This page only says who owns a change. Code and tests win over both documents. Specs in `docs/superpowers/specs/` explain why a design was chosen; they are not a second implementation. Ideas and known bugs are GitHub issues this page cannot read. Do not treat a linked issue as built.
 
 The money contract is [Money rules](../../docs/money-rules.md). Do not restate it. Column and view ownership is [Data model](data-model.md).
 
@@ -112,18 +136,18 @@ A new bank is a new adapter plus a `bank` enum value, not a change to the cascad
 
 ## Categorization
 
-Owner: `apps/api/finance/categorization`. The cascade, not the HTTP route, is the system.
+Owner: `apps/api/finance/categorization`. The cascade, not the HTTP route, is the system. Thresholds live on `Settings` in [Configuration](../operations/configuration.md).
 
 `categorize_pending` is the production run. It pairs transfers, loads rows whose `category_source` is `none` (or every non-`user` row when `--all` / `?all=true`), then:
 
 - A paired own-account transfer is `own_accounts` from the rule path. It never calls jev.
 - An enabled system rule (`rules`, seeded from `supabase/seed/rules.yaml`) assigns its category. A refund rule only changes the category options jev sees.
-- Everything else is one jev call with three typed questions: merchant fragment, level-2 category, subscription. Python then exact-matches merchants, merges at `merge_threshold` (0.8), lets a confirmed merchant default win, and derives level 1 from the level-2 probabilities.
+- Everything else is one jev call with three typed questions: merchant fragment, level-2 category, subscription. Python then exact-matches merchants, merges at `merge_threshold` (0.5, inclusive), records a `/review` suggestion from `merge_suggestion_floor` (0.3, inclusive) up to that threshold, lets a confirmed merchant default win, and derives level 1 from the level-2 probabilities. Inclusive comparisons are locked by `test_merge_and_suggestion_thresholds_are_inclusive` in `apps/api/tests/test_merchants.py`. Do not put 0.8 back, and do not treat 0.5 as the suggestion floor.
 - `needs_review` is set when the jev category confidence is under `category_threshold` (0.95) or merchant resolution dropped the name.
 
 `save` refuses to overwrite `category_source = 'user'`. A row jev cannot answer stays pending. After save, `link_loans` attaches a loan row to the merchant of its contract number. One process-wide lock serializes background runs so two uploads cannot create the same merchant twice.
 
-User decisions live in `labels.py`, not in the cascade. Labelling one transaction writes `category_source = 'user'` and a `transaction_labels` row. Confirming a merchant sets its default and relabels only rows still sourced `jev`, `merchant`, or `none`, then records those as user labels. That history is the golden set.
+User decisions live in `labels.py`, not in the cascade. Labelling one transaction writes `category_source = 'user'` and a `transaction_labels` row. Confirming a merchant sets its default and relabels only rows still sourced `jev`, `merchant`, or `none`, then records those as user labels. That history is the golden set. The review path is [Review and labels](../workflows/review-and-labels.md).
 
 `finance seed` upserts `categories`, `category_groups`, and `rules` from `supabase/seed` and disables rules removed from the YAML. Migrations do not load that YAML.
 
@@ -131,13 +155,13 @@ User decisions live in `labels.py`, not in the cascade. Labelling one transactio
 
 Owner: `apps/api/finance/dashboard`. It only reads.
 
-Every aggregate goes through `v_transactions_enriched` with the shared `WHERE` in `filters.py` (period, accounts, type, group, category, merchant). `totals`, `month_series`, `cumulative`, `breakdown`, and `scope_months` are the reads. A month with no imported data is `has_data = false`, not zeros. `transactions.page` is the filtered list. `subscriptions` reads `v_subscriptions`.
+Every aggregate goes through `v_transactions_enriched` with the shared `WHERE` in `filters.py` (period, accounts, type, group, category, merchant). `totals`, `month_series`, `cumulative`, `breakdown`, and `scope_months` are the reads. A month with no imported data is `has_data = false`, not zeros. `transactions.page` is the filtered list. `subscriptions` reads `v_subscriptions`. `group_slots` assigns a stable colour slot to every expense group from all-time spend. The overview calls it, and `GET /dashboard/group-slots` returns the same function so Settings can colour groups without loading the overview.
 
 Do not put categorization writes here. Do not recompute spend or income in the web app. `apps/web/src/lib` formats, filters, and lays out numbers the API already computed. KPI wording in `definitions.ts` is quoted from the money rules; change the rules first.
 
 ## Agent
 
-Owner: `apps/api/finance/agent`.
+Owner: `apps/api/finance/agent`. See [Chat agent](../concepts/chat-agent.md).
 
 `open_chat` is the lifecycle, used by the API lifespan and `finance chat`. It loads the YAML semantic layer, checks it against the live `agent` views, `EXPLAIN`s every metric and example, opens an `AsyncPostgresSaver`, and builds one `create_agent` ReAct loop whose only tool is `run_sql`. A missing `SUPABASE_DB_URL`, or an `xai:` model without `XAI_API_KEY`, yields `None`. Dashboard routes keep working; chat routes return 503.
 
@@ -163,22 +187,26 @@ Owner: `apps/api/finance/api`. Routers are thin. They validate, open a request-s
 
 | Prefix | Owner it calls | Role |
 |---|---|---|
-| `/imports` | ingestion, then categorization | Upload a PDF, list recent imports |
+| `/imports` | ingestion, then categorization | Upload a PDF, list every import |
 | `/categorize` | categorization | Queue another cascade run |
 | `/review` | categorization | Inbox of `needs_review` rows, one card per merchant, plus merge suggestions |
 | `/transactions` | dashboard reads, categorization writes | List, label one row, set a note |
 | `/merchants` | categorization | List, rename or merge, confirm a default, dismiss a merge, set cadence |
 | `/categories` | taxonomy tables | Read-only picker data and the slug check used by label routes |
 | `/accounts` | `accounts` | List (last four of the IBAN only) and rename |
-| `/dashboard` | dashboard | Overview and subscriptions |
+| `/dashboard` | dashboard | Overview, subscriptions, and group colour slots |
 | `/spending` | dashboard | One group, category, merchant, or income scope |
 | `/chat` | agent | Threads, streamed turns, feedback |
 
 `POST /imports` returns as soon as the insert commits. Categorization is a background task and must not fail the upload. `POST /categorize/run` only queues that same task.
 
+`GET /imports` returns every import. There is no 100-row cap. Order is `period_end desc nulls last`, then account name, then `imported_at desc`. The coverage board on `/imports` reads that whole list. `test_the_import_list_has_no_cap` asserts the list SQL contains no `limit`; a handful of rows cannot prove the cap is gone. The integration test locks the order, including null periods last.
+
 ## Web routes
 
-Owner: `apps/web/src/app`. The shell nav is Overview, Transactions, Subscriptions, Chat, Review, Imports, Settings. Spending, income, and merchant pages are reached from those views, not from the nav.
+Owner: `apps/web/src/app`. The shell is not one nav list.
+
+`MAIN_ITEMS` in `nav-links.tsx` are the everyday row: Overview, Transactions, Subscriptions, Chat, Review. From `lg` that row is the visible nav, and it scrolls sideways if it overflows. `MORE_ITEMS` are Imports and Settings. From `lg` they live in `more-menu.tsx`, a round button at the end of the top bar (after the period filters when those show). Below `lg`, `mobile-nav.tsx` opens a sheet: the everyday links, a separator, then Imports and Settings. The more-menu button is hidden below `lg`. Spending, income, and merchant routes are reached from views, not from either list. Overview's active check treats `/spending`, `/income`, and `/merchants` as overview, because those pages sit under it.
 
 | Route | Reads | Writes |
 |---|---|---|
@@ -190,8 +218,12 @@ Owner: `apps/web/src/app`. The shell nav is Overview, Transactions, Subscription
 | `/merchants/[id]` | `/spending/detail`, `/merchants/{id}` | merchant default, rename, merge |
 | `/chat`, `/chat/[id]` | `/chat/threads` and messages | stream via `useChat` to the thread messages route |
 | `/review` | `/review`, `/review/count` | confirm, dismiss, label |
-| `/imports` | `/imports` | PDF upload |
-| `/settings` | `/accounts`, `/categories` | account rename only; categories are read-only |
+| `/imports` | `/imports`, `/accounts` | PDF upload |
+| `/settings` | `/accounts`, `/categories`, `/dashboard/group-slots` | account rename only; categories are read-only |
+
+`/imports` is upload, then the coverage board (only when at least one import exists), then history grouped by the month of `period_end`. Coverage is computed in the browser from the uncapped import list: a month is covered, partial, a gap, or outside. The current month is never missing. The server passes its own calendar day; the client does not recompute "today". History does not render the filename, though `ImportRecord` still carries it.
+
+`/settings` keeps account rename in compact rows. Categories are cards, grouped by type, showing `category.name` as stored. Expense groups take their colour from `group_slots`; income and transfers do not. Names are not editable from this page.
 
 `apps/web/src/lib/api.ts` is the JSON client. `chat-api.ts` is the only chat transport: AI SDK `useChat` posts the new question to the Python agent and renders the SSE stream. The agent does not run in the browser.
 
@@ -220,6 +252,9 @@ Owner: `supabase/migrations`, applied in timestamp order. The files are the sche
 - One money view. Dashboard SQL and `agent.transactions` both start from `v_transactions_enriched`.
 - The agent stays on `agent_reader`, one `SELECT`, no schema qualifier. Do not add a second tool or point it at `public`.
 - Background categorization is single-flight in one API process. A second API process would not share that lock.
+- Merge at 0.5 inclusive, suggest from 0.3 inclusive. A new name at exactly 0.5 joins the known merchant; exactly 0.3 creates a new merchant and a review suggestion; 0.29 creates a separate merchant with no suggestion.
+- `GET /imports` stays uncapped and in statement order. A cap, or a sort that ignores null periods, breaks the coverage board.
+- Imports and Settings stay off the everyday row. Putting them back into `MAIN_ITEMS`, or linking spending, income, or merchant pages from the nav, undoes the shell split.
 - `public` has no row-level security. This is a local app. Do not host it as-is.
 - jev sees cleaned bank text and the amount. The chat model sees the question, the SQL, and the agent-view rows. Neither receives an IBAN or `description_raw`.
 
@@ -231,6 +266,6 @@ CORS defaults to `http://localhost:3000`. Trusted hosts include `testserver` so 
 
 ## Verify
 
-From `apps/api`: `uv run task test` (no database, no network), `uv run task lint`, and `uv run task test-integration` against local Supabase. Focused tests for this map: `test_importer.py` and `test_dedup.py` for ingestion, `test_categorizer.py` for the cascade, `test_views.py` and `test_dashboard_api.py` for the money read, `test_sql_guard.py` and `test_agent_graph.py` for the agent, `test_eval_run.py` for the dry run, `test_api.py` for the router mount.
+From `apps/api`: `uv run task test` (no database, no network), `uv run task lint`, and `uv run task test-integration` against local Supabase. Focused tests for this map: `test_importer.py` and `test_dedup.py` for ingestion, `test_categorizer.py` for the cascade, `test_merchants.py` for the inclusive merge and suggestion floors, `test_imports_api.py` and `test_api.py` for the uncapped import list, `test_views.py` and `test_dashboard_api.py` for the money read, `test_sql_guard.py` and `test_agent_graph.py` for the agent, `test_eval_run.py` for the dry run.
 
 UI flows are checked with agent-browser, not Playwright. Checks that write data use scratch-database recipe R2. Chat checks use scripted models and recipe R3. Both recipes are named in [CLAUDE.md](../../CLAUDE.md); do not invent their steps. How to run the checks is [Verify a change](../operations/verify-a-change.md).

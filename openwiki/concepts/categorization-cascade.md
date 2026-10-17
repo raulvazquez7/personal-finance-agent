@@ -3,9 +3,6 @@ type: categorization pipeline
 title: Categorization cascade
 description: How a production run pairs own-account transfers, applies system rules, asks jev once, resolves merchants, applies defaults, and gates review without overwriting user labels.
 tags: [categorization, jev, merchants, review, rules]
-verified:
-  - by: openwiki/0.7.2
-    at: 2026-10-17T19:58:49.962Z
 sources:
   - id: openwiki-source-47309ad41be2fadc3b480bdb
     resource: repo://apps/api/finance/api/categorize.py
@@ -49,7 +46,10 @@ sources:
     resource: repo://apps/api/tests/test_pairing.py
   - id: openwiki-source-7a2736a58143d678ac390b5c
     resource: repo://apps/api/tests/test_store.py
-generated: { by: "openwiki/0.7.2", at: "2026-10-17T19:58:49.962Z" }
+generated: { by: "openwiki/0.7.2", at: "2026-10-17T21:01:31.912Z" }
+verified:
+  - by: openwiki/0.7.2
+    at: 2026-10-17T21:01:31.912Z
 ---
 
 # Categorization cascade
@@ -157,9 +157,9 @@ After the first calls return, merchants are resolved one row at a time in `(book
 3. Brand confidence below `brand_threshold` (default 0.5): drop the name and set `dropped`. Brand confidence sums probabilities of fragments nested in the chosen name (`ACME` plus `ACME FOODS`), excluding `none`. The gate is inclusive at 0.5.
 4. Otherwise shortlist known merchants that share a significant word (longer than two characters, not a legal suffix or filler such as `SL`, `SA`, `DE`). No overlap: create the merchant.
 5. Shortlist hit: ask `known_merchant` over those names plus `none`.
-   - Confidence `>= merge_threshold` (default 0.8): use the known merchant. Inclusive.
-   - Confidence `>= merge_suggestion_floor` (default 0.5) and below the merge threshold: create a new merchant and record a merge candidate. Inclusive at 0.5.
-   - Otherwise create a separate merchant.
+   - Confidence `>= merge_threshold` (default 0.5): use the known merchant. Inclusive.
+   - Confidence `>= merge_suggestion_floor` (default 0.3) and below the merge threshold: create a new merchant and record a merge candidate. Inclusive at 0.3.
+   - Otherwise create a separate merchant. `test_merge_and_suggestion_thresholds_are_inclusive` locks 0.5 as a merge, 0.3 as a suggestion, and 0.29 as a separate merchant. Do not change those comparisons. The settings comment points at [eval history](../../docs/evals/HISTORY.md) (2026-10-17) for why 0.5 is the merge default. Lines in that file marked not kept are not the shipped default. Do not quote merchant names from its notes.
 
 `save` inserts new merchants by `match_key` and writes `merge_candidate_id` only when the new merchant is not yet `confirmed`. A merchant deleted or merged in review while jev was answering is left out of the id map and recreated by name if a result still names it. A merge candidate that disappeared is dropped rather than written as a dangling id.
 
@@ -185,8 +185,8 @@ Defaults live on `Settings` and are read from the repo-root `.env` once. They ar
 | `category_threshold` | 0.95 | `confidence < threshold` | A `jev`-sourced category goes to review. Equal to 0.95 is accepted. |
 | `subscription_threshold` | 0.7 | `noul > threshold` | Marks a subscription. Equal to 0.7 is not a subscription. |
 | `brand_threshold` | 0.5 | `brand < threshold` | New name is dropped. Equal to 0.5 creates it. |
-| `merge_threshold` | 0.8 | `same.confidence >= threshold` | Reuse the known merchant. |
-| `merge_suggestion_floor` | 0.5 | `>= floor` and below merge | New merchant plus a reviewable merge suggestion. |
+| `merge_threshold` | 0.5 | `same.confidence >= threshold` | Reuse the known merchant. Equal to 0.5 merges. |
+| `merge_suggestion_floor` | 0.3 | `>= floor` and below merge | New merchant plus a reviewable merge suggestion. Equal to 0.3 suggests; 0.29 stays separate. |
 | `transfer_window_days` | 2 | `days <= window` | Pairing window. |
 | `jev_concurrency` | 8 | `ge=1` | Parallel first calls. Zero is rejected: a semaphore of 0 would block forever. |
 
@@ -220,7 +220,7 @@ Background runs (`run_categorization_logged`) hold a process-local `threading.Lo
 - Do not write `category_source = 'user'` from the cascade. User labels are the golden set. Eval reads the latest user row in `transaction_labels`.
 - Do not apply an income merchant default to money out, and do not mark a refund or a transfer as a subscription.
 - Do not resolve merchants concurrently on one roster. Booking order is the duplicate-prevention mechanism.
-- A new threshold comparison must match the existing edges: category and brand are inclusive at the accept/create boundary; subscription is strict greater-than; merge and suggestion floors are inclusive.
+- A new threshold comparison must match the existing edges: category and brand are inclusive at the accept/create boundary; subscription is strict greater-than; merge is inclusive at 0.5 and the suggestion floor is inclusive at 0.3.
 - Rules-only and a missing API key must still pair, apply rules, and link loans. They must not call jev.
 - Loan merchants are `merchant_source = 'rule'`. A re-save that clears that case will drop renamed loans on the next `--all` run.
 

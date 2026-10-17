@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "pageVersion": "sha256:99b543ccdc099424bcc88c030ae5dc1444d80948fa294359b4990917b14c8771",
+  "pageVersion": "sha256:6b1a4ffc6384987ea80538332983b20fd68d6ac7ca9e8c2c6a6384d8452e2296",
   "claims": [
     {
       "id": "claim_0dcc9f27c3c54d81b324bb1d12a2dc46",
@@ -210,19 +210,19 @@
     },
     {
       "id": "claim_cf8be6a1683649f1ae21909400a8789d",
-      "statement": "A new name that shares a significant word with known merchants gets a same_merchant jev call. Confidence at or above merge_threshold (default 0.8) reuses the known merchant; at or above merge_suggestion_floor (default 0.5) and below the merge threshold creates a new merchant plus a merge suggestion; below the floor creates a separate merchant.",
+      "statement": "A new name that shares a significant word with known merchants gets a same_merchant jev call. Confidence at or above merge_threshold (default 0.5) reuses the known merchant; at or above merge_suggestion_floor (default 0.3) and below the merge threshold creates a new merchant plus a merge suggestion; below the floor creates a separate merchant. The inclusive edges are 0.5 merge, 0.3 suggestion, and 0.29 separate.",
       "evidence": [
         {
           "resource": "repo://apps/api/finance/categorization/merchants.py#L85-L103",
           "version": "repo-lines-v1:sha256:0c823aeddfe284546b565b8a202ddf67eeb9a55ed6cfd793669e7c1d23ccad35:eyJzZWxlY3RlZExpbmVDb3VudCI6MTksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImJmMzRhZGRjZmU1NWRlODNiYmFiY2RhZWEyZjM5YzQ2OWM1MWZhOWMwNmZhNjg3YzMxODQ2ZDBmNTNhYTJlZTkiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImQ0Y2JmNGFjZTRlYzJiYzExZmRlOWY3NGZlMDc3NTlkOTRhYzc1ZDNkZjEwYmE4MzAwMzczMmIzNDNmYjU4NTMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjNjZjM1YzJjODNiOTU3MGQzODZiOWMxZTJjOTEzM2JkY2NlODMyNzU1NTczZjFmYTEyODA5OTE2NmM2MDBmODMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
         },
         {
-          "resource": "repo://apps/api/finance/settings.py#L80-L81",
-          "version": "repo-lines-v1:sha256:6c86fe42ce519c0a8abbca72fa152311fc3bab1f8e01c0def1b53d6dfaa22fd1:eyJzZWxlY3RlZExpbmVDb3VudCI6MiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNDg1MzFmMjcxZTllNWQwNzg1ZWJkOTk4MDRmNDcwYzdmOWY4NTc5ZmQzM2NjNmMzOTZkMjU5NTY4MzY5NTQ3NyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiM2I4MjVjOTYyM2U1YjExM2U5YjlkNmM0NGVkZTUxY2NhZWVkNTVmZWYwMjRkYWZkMzVhMTIyMjZlN2JjNDYwOSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNGU4Njk0OWQ3Y2FkMWM5ZWNkODdhZjg0NzI1NWQ1N2Y2MWI5MDZhYTdmYzNjZDBhNDVhYWJhMzc3NjhhN2ZiYiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNTk5ZGNjNjdhMDNiZWZkYTllYzgzZmRmMDNjNDUwMmUwNTYxMGNlZDQ4OWE3NTU5MzM5OWQ2ZGY2YjgyNGM2NSJ9"
+          "resource": "repo://apps/api/finance/settings.py#L80-L83",
+          "version": "repo-lines-v1:sha256:714e88ae06d5c48ca7e672ff6732781fd4ba453325c37760d2ced95f3c55ef5a:eyJzZWxlY3RlZExpbmVDb3VudCI6NCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYmQ1ODJiODExNjA5NWNlMWY5NTQyYjU5ZjIzODhkM2YzOWI3NmQyODg4ZTFjOTkwYTcwZjUwZDhhN2E5Y2MzOCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNDliYTdkOGFmMmNlYzJhNzJkM2U2ZDFlMzk5MWY0NDQxZTE3OTc3ZTBjYWEyZmIwYmMxYThhNWMyMjY5MWZjNyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNGU4Njk0OWQ3Y2FkMWM5ZWNkODdhZjg0NzI1NWQ1N2Y2MWI5MDZhYTdmYzNjZDBhNDVhYWJhMzc3NjhhN2ZiYiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNTk5ZGNjNjdhMDNiZWZkYTllYzgzZmRmMDNjNDUwMmUwNTYxMGNlZDQ4OWE3NTU5MzM5OWQ2ZGY2YjgyNGM2NSJ9"
         },
         {
-          "resource": "repo://apps/api/tests/test_merchants.py#L64-L89",
-          "version": "repo-lines-v1:sha256:2f97bbbf7d20125df203fad0a14f5f3a79f69d999dcae0faed0d390582a22c0d:eyJzZWxlY3RlZExpbmVDb3VudCI6MjYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjgzZWZmOGJjYzFiODczZmIwZmM4YTdhM2MzY2FmNTc2MTM3YjNlMmFlOTBhNWFhNzQ5ZGI1ZDQ3MjI4MmM0ZDUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjIwZjI0NmMyOGNkYjk5MTU3MjA4ZmU2ZTNhM2MzNWYyNDg4ZDkwYmQxMWQzOWQzYjkyMzg5ZDFmNjc2MGQ2MzYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImRhMTE5ZTNhMWQyYTdhMThjMGMxODE5NjMyYWFhOTI2N2RlNGE5NGJhOWJkYjhhNzhiODZmNzE3YjE1ZDBkNTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjNkNjM1ZWMxYzRmMWExMjVmMTk4MTRkZTQ1YjllNjRmZTZkODI4MWY4OGM3OTI5MjgxOWRkMTk0ZDUxYmIyZjkifQ"
+          "resource": "repo://apps/api/tests/test_merchants.py#L79-L90",
+          "version": "repo-lines-v1:sha256:e080cfbbcef8556a53a0d696d20afe0b4db6c1aea356daf9f98f578da3e7b651:eyJzZWxlY3RlZExpbmVDb3VudCI6MTIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImFmMzQ1ODNhNTk4NzY3YmY1NmFlZmViNjVlMjAzM2ExNjUxY2M0YzhkN2U2ZjBhZjNlNWNmZDMyOTNmOTMzYjMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjIwZjI0NmMyOGNkYjk5MTU3MjA4ZmU2ZTNhM2MzNWYyNDg4ZDkwYmQxMWQzOWQzYjkyMzg5ZDFmNjc2MGQ2MzYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjRjYWEyZWM2ZjQ0YjM2ZjEyMjQwNWYxMjc4OGQyMjJiMjAwN2I0MWQ1ODVkYmJiYzMzYzA3MzE3MDkzMWFhN2UiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjNkNjM1ZWMxYzRmMWExMjVmMTk4MTRkZTQ1YjllNjRmZTZkODI4MWY4OGM3OTI5MjgxOWRkMTk0ZDUxYmIyZjkifQ"
         }
       ]
     },
@@ -246,19 +246,19 @@
     },
     {
       "id": "claim_8232ce8946f84c90b8cc6a2341c8a864",
-      "statement": "A jev category needs review only when its confidence is strictly below category_threshold (default 0.95). A subscription is set only when noul is strictly above subscription_threshold (default 0.7) and the row is an outgoing expense. Equal category confidence is accepted; equal subscription score is not a subscription.",
+      "statement": "A jev category needs review only when its confidence is strictly below category_threshold (default 0.95). A subscription is set only when noul is strictly above subscription_threshold (default 0.7) and the row is an outgoing expense. Equal category confidence is accepted; equal subscription score is not a subscription. The shipped merge and suggestion floors are 0.5 and 0.3, not the review or subscription gates.",
       "evidence": [
         {
           "resource": "repo://apps/api/finance/categorization/categorizer.py#L60-L93",
           "version": "repo-lines-v1:sha256:b450a4904850f8f518a575f5e9d0c717d3cbde37b2a6fa7e5371890a0080dba1:eyJzZWxlY3RlZExpbmVDb3VudCI6MzQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjUyNDI0NjZjMWUzOTY2MWNjY2Q3MDY3MzBhYzVjOGJjNmFjZDA2MzcwYjlhNDNmZTQ4OTQ1NGUwYjBhMTJhNDQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjI4ZDNhODNiNzBlMGQxYjk3ODA4MDhjYzdhMWUxM2ZjZWE3NjIyYmVlMWMxYWZkMTZhMDRhOTY4ZGYxMmJjOTQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImI5MTBiZmU2Nzc1YWRkMjk0MGQxYTNkODJhYmMxMjE4NmNlMTY1NmZmYWVjZDA1YTEzMGUyMmNlNjk3NGMyNmEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImYxOTEwMjdkY2U4NTg2MDMwYmZjNTkxMmRjMDQ5MWY1N2RjZDQ2OGFlYjAyZmRjY2NlMmRmMmIwYjhmNDU0YzYifQ"
         },
         {
-          "resource": "repo://apps/api/finance/settings.py#L78-L82",
-          "version": "repo-lines-v1:sha256:1743f97df7a380e920fed6232ab0785392ac63da5fe175f7a40bd8ff597ceed6:eyJzZWxlY3RlZExpbmVDb3VudCI6NSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMzI2MjIyMDEyNjcwMmY0OTc4NWY3YjQxYTJiNWQ1NTJlY2IzMWVjM2EyODk0MTVlZmFlYWUwM2JhNWIwYWNkOCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNjQzNmMxY2RkMWQwZmJiZjQxYjdlY2YxZjkzMTZjOGU0ZDQyMDk1ZDdkNWYwYTM1OTI3N2RiZTdmYzY1ZmZjZiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiYjM5YjhlYTEyNDJmNzYzN2M0MGRkMGE5ZmI5ZWRlMzhmNzNjZjhlOTY5ZGY5MGEwYWZlNjg0YTgyZGYzYjQ1OCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMDU1NDQ2YjI1YmQxNzc5NzA2ZDcwMjk5ODdiNmIyYzAwZGJhZWQ0YTkxMTlhM2Q4NjBhMGYwMWUzZmRmM2FhNSJ9"
+          "resource": "repo://apps/api/finance/settings.py#L78-L84",
+          "version": "repo-lines-v1:sha256:5a2c7dcb722e6120f54d17e251e4866f8517aa6dfd49d95d05bd8f9636d74371:eyJzZWxlY3RlZExpbmVDb3VudCI6NywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMzI2MjIyMDEyNjcwMmY0OTc4NWY3YjQxYTJiNWQ1NTJlY2IzMWVjM2EyODk0MTVlZmFlYWUwM2JhNWIwYWNkOCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNjQzNmMxY2RkMWQwZmJiZjQxYjdlY2YxZjkzMTZjOGU0ZDQyMDk1ZDdkNWYwYTM1OTI3N2RiZTdmYzY1ZmZjZiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiYjM5YjhlYTEyNDJmNzYzN2M0MGRkMGE5ZmI5ZWRlMzhmNzNjZjhlOTY5ZGY5MGEwYWZlNjg0YTgyZGYzYjQ1OCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMDU1NDQ2YjI1YmQxNzc5NzA2ZDcwMjk5ODdiNmIyYzAwZGJhZWQ0YTkxMTlhM2Q4NjBhMGYwMWUzZmRmM2FhNSJ9"
         },
         {
-          "resource": "repo://apps/api/tests/test_categorizer.py#L156-L239",
-          "version": "repo-lines-v1:sha256:aa6a3118f254da49b917e77941b531c487076508dbdffd0919730bbd0c7b350f:eyJzZWxlY3RlZExpbmVDb3VudCI6ODQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjNlZGIwODhhMDliMWNkZWEzYzdkYjk2YWE4M2ExMGMxNDU0NGM1NGQ3ODU2ODg2ODc3ZWMzNjZkMzIxYjkwMzIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjJiMjAwZjkwYjFlYWY5MmYxOGIxOGUxMDg0NjA4ZDk3NzFlM2EwYmIyN2ViMmNlYTliMGM3Yzc0ZjM1MjliNGEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjhjYzRhN2QxY2M3OTZhYmEzZTQ2NzIzMzI3ZjUxN2U5ZjgxMTk4MmQyNTBmMDcwMjk4NmU0YjU3NjRhZDk1ODkiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjM4ZDdlNzhkODI5ZjkyMjU1NTYzYjdiMGYxNDJjNTdjZTgxN2QyNjA3ZGM2M2M1ZjYzYWQ5NDgzMTM5YTVlMmUifQ"
+          "resource": "repo://apps/api/tests/test_categorizer.py#L230-L239",
+          "version": "repo-lines-v1:sha256:295c63bf677245ad18a543a42b1d2b349eec0682f91f278ccd41f97684289303:eyJzZWxlY3RlZExpbmVDb3VudCI6MTAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjRjY2U3YjQzZjk2MzIzYTUxZjAxNDVjY2Y0YjM4M2UzMjY1OGExZDlmOWMxZDM3ODA2YjQ5MmMyNzBmNjdmZTQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjJiMjAwZjkwYjFlYWY5MmYxOGIxOGUxMDg0NjA4ZDk3NzFlM2EwYmIyN2ViMmNlYTliMGM3Yzc0ZjM1MjliNGEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImQ3MzU4NDUxNDNmNjEwYTgxYTZlYTBjZTg4MjIzZjIzMGE2MGE4NjQ4MWZhNTIwODA3NjhlMDg3NWMzY2I4YTEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjM4ZDdlNzhkODI5ZjkyMjU1NTYzYjdiMGYxNDJjNTdjZTgxN2QyNjA3ZGM2M2M1ZjYzYWQ5NDgzMTM5YTVlMmUifQ"
         }
       ]
     },
@@ -365,6 +365,6 @@
   ],
   "verification": {
     "by": "openwiki/0.7.2",
-    "at": "2026-10-17T19:58:49.962Z"
+    "at": "2026-10-17T21:01:31.912Z"
   }
 }

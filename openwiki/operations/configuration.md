@@ -1,11 +1,8 @@
 ---
 type: configuration
 title: Configuration and tracing
-description: Repo-root settings, secret boundaries, host and origin checks, and what jev, the chat model, and Langfuse receive so a config change does not leak data or disable a safety check.
+description: Repo-root settings, the shipped merge defaults, secret boundaries, host and origin checks, and what jev, the chat model, and Langfuse receive so a settings change does not leak data.
 tags: [configuration, secrets, tracing, privacy, cors]
-verified:
-  - by: openwiki/0.7.2
-    at: 2026-10-17T19:58:49.962Z
 sources:
   - id: openwiki-source-5f5b95b3d6a215fa02ceb945
     resource: repo://.env.example
@@ -49,24 +46,33 @@ sources:
     resource: repo://apps/api/finance/settings.py
   - id: openwiki-source-d0c4cf431bf1135fc5356c15
     resource: repo://apps/api/finance/tracing.py
+  - id: openwiki-source-577d7c34408ed456cbaf0678
+    resource: repo://apps/api/tests/test_agent_views.py
   - id: openwiki-source-ebacbce0ac9f7bcd4dedfcb5
     resource: repo://apps/api/tests/test_api.py
+  - id: openwiki-source-4272657610b863ffc4eda7d0
+    resource: repo://apps/api/tests/test_merchants.py
   - id: openwiki-source-e685539581b23581324d6a46
     resource: repo://apps/api/tests/test_settings.py
   - id: openwiki-source-115b2dad781e2a2c5b5a980d
     resource: repo://docs/architecture.md
+  - id: openwiki-source-99266e9b02d0a104ddcc727e
+    resource: repo://docs/evals/HISTORY.md
   - id: openwiki-source-f9d5db85cdb980ec957e98ef
     resource: repo://supabase/migrations/20261012000000_slice4_chat.sql
   - id: openwiki-source-462b0f61aae61181f05c2689
     resource: repo://supabase/migrations/20261014130000_display_names.sql
-generated: { by: "openwiki/0.7.2", at: "2026-10-17T19:58:49.962Z" }
+generated: { by: "openwiki/0.7.2", at: "2026-10-17T21:01:31.912Z" }
+verified:
+  - by: openwiki/0.7.2
+    at: 2026-10-17T21:01:31.912Z
 ---
 
 # Configuration and tracing
 
 Settings are one cached `Settings` object, read from the repo-root `.env` (four parents above `apps/api/finance/settings.py`). Unknown keys are ignored. Nested chat fields use the delimiter `__`, so `CHAT__REASONING_EFFORT` sets `settings.chat.reasoning_effort`. Copy [`.env.example`](../../.env.example) to `.env`. Name keys in docs and logs. Never print, invent, or quote secret values.
 
-What leaves the machine, and what must not, is [Privacy](../../docs/architecture.md#privacy). This page states the boundary from code and does not copy that section. How those knobs change a categorization run is [Categorization cascade](../concepts/categorization-cascade.md). How they bound a chat turn is [Chat agent](../concepts/chat-agent.md). How to check a settings change is [Verify a change](verify-a-change.md).
+[Privacy](../../docs/architecture.md#privacy) and [Limits](../../docs/architecture.md#limits) stay in the architecture doc. Link them. Do not copy either section. Limits mentions linked issues that are not built. Do not present those issues as implemented. The outbound boundary is the code, not that prose: `jev_state` does not send `description_raw`, and the agent views do not expose IBANs or `description_raw`. How these knobs change a categorization run is [Categorization cascade](../concepts/categorization-cascade.md). How they bound a chat turn is [Chat agent](../concepts/chat-agent.md). How to check a settings change is [Verify a change](verify-a-change.md).
 
 ## What is a secret
 
@@ -82,7 +88,7 @@ Five fields are `repr=False`: `supabase_db_url`, `typesafe_api_key`, `xai_api_ke
 
 `langfuse()` copies those three values into `os.environ` with `setdefault` only when they are non-empty, because the SDK reads `LANGFUSE_*` itself. `open_chat` does the same for `XAI_API_KEY` before `init_chat_model`. Do not log the process environment after startup.
 
-`get_settings()` is `lru_cache`d. Tests that need a different object pass `Settings(...)` or `Settings(_env_file=None)` directly. A process that already called `get_settings()` does not see a later `.env` edit until it restarts.
+`get_settings()` is `lru_cache`d. Tests that need a different object pass `Settings(...)` or `Settings(_env_file=None)` directly. A process that already called `get_settings()` does not reread `.env` until restart.
 
 ## When chat or jev is skipped
 
@@ -118,7 +124,7 @@ The API adds three checks in `apps/api/finance/api/main.py` and `deps.py`. None 
 
 `CORSMiddleware` allows `cors_origins`, default `http://localhost:3000`, with every method and header. CORS does not stop a foreign page from sending a request. `same_origin` is a dependency on the whole app. For `POST`, `PUT`, `PATCH`, and `DELETE`, a present `Origin` must be in `cors_origins` or the handler returns 403 and the route body does not run. A missing `Origin` is allowed, so the CLI, curl, and tests can call unsafe methods. `GET` is not origin-checked.
 
-The database URL is one role for the API, the CLI, and chat. `public` tables have no row-level security. `agent_reader` is `nologin` and can `SELECT` only the `agent` views, and only after the API runs `SET LOCAL ROLE` inside a read-only transaction. That is not a substitute for RLS on `public`. This is a single-user local app. Do not host it as-is, and do not open `SUPABASE_DB_URL` to a network.
+The database URL is one role for the API, the CLI, and chat. `public` tables have no row-level security. That is also the last bullet of [Limits](../../docs/architecture.md#limits). The other bullets there name linked issues that are not built. Do not present those issues as implemented, and do not copy the section. `agent_reader` is `nologin` and can `SELECT` only the `agent` views, and only after the API runs `SET LOCAL ROLE` inside a read-only transaction. That is not a substitute for RLS on `public`. This is a single-user local app. Do not host it as-is, and do not open `SUPABASE_DB_URL` to a network.
 
 Changing `cors_origins` or `trusted_hosts` to a wildcard, or removing `same_origin`, disables a check that is doing real work. Add a host or origin explicitly if a local client needs it.
 
@@ -129,15 +135,17 @@ These are plain `Settings` fields, not nested under `CHAT__`. They are code deci
 | Field | Default | Effect of changing it |
 | --- | --- | --- |
 | `category_threshold` | 0.95 | A jev category whose confidence is below this is `needs_review`. Merchant-default labels are not gated by it. |
-| `brand_threshold` | 0.5 | A new merchant name below this is dropped and the row needs review. Names already on the roster skip this gate. |
-| `merge_threshold` | 0.8 | A same-merchant answer at or above this attaches the row to the known merchant. |
-| `merge_suggestion_floor` | 0.5 | Between this and `merge_threshold`, the new merchant is kept and a merge suggestion is stored. |
+| `brand_threshold` | 0.5 | A new merchant name below this is dropped and the row needs review. A name exactly at 0.5 is kept. Names already on the roster skip this gate. |
+| `merge_threshold` | 0.5 | A same-merchant answer at or above this attaches the row to the known merchant. Inclusive: 0.5 merges. |
+| `merge_suggestion_floor` | 0.3 | At or above this and below `merge_threshold`, the new merchant is kept and a merge suggestion is stored. Inclusive: 0.3 suggests; 0.29 does not. |
 | `subscription_threshold` | 0.7 | jev's subscription score must be strictly above this. A merchant default overrides it. Only an outgoing expense can remain a subscription. |
 | `transfer_pattern` | `TRASPASO\|TRANSFER\|BIZUM\|TRF` | Case-insensitive regex on `description_raw`. A bad pattern raises when the run compiles it. |
 | `transfer_window_days` | 2 | Opposite equal amounts on different accounts pair only inside this many days. |
 | `jev_concurrency` | 8 | Parallel jev calls per run. |
 
 The 0.95 review gate is an eval result, not an arbitrary default. Lowering `category_threshold` accepts more rows without a person. Raising it sends more to review. It does not change what jev is sent.
+
+`merge_threshold` 0.5 and `merge_suggestion_floor` 0.3 are the shipped defaults in `Settings`. Both comparisons are `>=`, locked by `test_merge_and_suggestion_thresholds_are_inclusive` in `apps/api/tests/test_merchants.py`: 0.5 merges, 0.3 stores a suggestion, and 0.29 creates a separate merchant. The settings comment points at [eval history](../../docs/evals/HISTORY.md) (2026-10-17) for why 0.5 is the merge default. Lines in that file marked not kept are not the shipped default. Do not put 0.8 back, and do not treat 0.5 as the suggestion floor. Do not quote merchant names from those notes. `category_threshold` stays 0.95, `brand_threshold` stays 0.5, and `subscription_threshold` stays 0.7. A settings change uses these defaults.
 
 ## Chat knobs
 

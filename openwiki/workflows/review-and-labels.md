@@ -3,9 +3,6 @@ type: workflow
 title: Review and labels
 description: How a person corrects a merchant once, how that label and its default persist, and how those writes are checked on a scratch database and exported as the golden set.
 tags: [review, labels, merchants, golden-set, workflow]
-verified:
-  - by: openwiki/0.7.2
-    at: 2026-10-17T19:58:49.962Z
 sources:
   - id: openwiki-source-65544d550aababb627d3eaf0
     resource: repo://apps/api/finance/api/review.py
@@ -15,6 +12,8 @@ sources:
     resource: repo://apps/api/finance/categorization/categorizer.py
   - id: openwiki-source-937a0f7cd896722af471182a
     resource: repo://apps/api/finance/categorization/labels.py
+  - id: openwiki-source-791d270f45e9e862a70309e2
+    resource: repo://apps/api/finance/categorization/merchants.py
   - id: openwiki-source-a49e82ec44046e1f1872da03
     resource: repo://apps/api/finance/categorization/review_queue.py
   - id: openwiki-source-be202f0a191b0f5bedaec28d
@@ -25,12 +24,16 @@ sources:
     resource: repo://apps/api/finance/evals/labels_io.py
   - id: openwiki-source-aca7b65d058b5d247f8196e0
     resource: repo://apps/api/finance/evals/run.py
+  - id: openwiki-source-03ce6f667ac18e4ea0a87710
+    resource: repo://apps/api/finance/settings.py
   - id: openwiki-source-3f082313f7464eeb112370d9
     resource: repo://apps/api/tests/test_eval_run.py
   - id: openwiki-source-2784e2cc37aad4e95d52bcc0
     resource: repo://apps/api/tests/test_labels_io.py
   - id: openwiki-source-dfec3651ec6037da9c38cd02
     resource: repo://apps/api/tests/test_labels.py
+  - id: openwiki-source-4272657610b863ffc4eda7d0
+    resource: repo://apps/api/tests/test_merchants.py
   - id: openwiki-source-a33ee7fa6260a8db7ce5d0ca
     resource: repo://apps/api/tests/test_review_api.py
   - id: openwiki-source-5c0b46900e1d468b2aa65aa6
@@ -47,7 +50,10 @@ sources:
     resource: repo://apps/web/src/lib/review-settled.ts
   - id: openwiki-source-a2371d6362e5db4bc834ad03
     resource: repo://CLAUDE.md
-generated: { by: "openwiki/0.7.2", at: "2026-10-17T19:58:49.962Z" }
+generated: { by: "openwiki/0.7.2", at: "2026-10-17T21:01:31.912Z" }
+verified:
+  - by: openwiki/0.7.2
+    at: 2026-10-17T21:01:31.912Z
 ---
 
 # Review and labels
@@ -95,7 +101,7 @@ Category cards are ordered by largest absolute total, then key. The page can re-
 
 ### Merge cards are a second question
 
-Any merchant with `merge_candidate_id` set is a `kind: "merge"` card, key `merge:<source id>`, even when it has no review rows. The cascade writes that pointer when a new name shares a word with a known merchant and the same-merchant confidence sits between `merge_suggestion_floor` (0.5) and `merge_threshold` (0.8). Merge cards follow the category cards, most confident first.
+Any merchant with `merge_candidate_id` set is a `kind: "merge"` card, key `merge:<source id>`, even when it has no review rows. The cascade writes that pointer when a new name shares a word with a known merchant and the same-merchant confidence is at or above `merge_suggestion_floor` (0.3) and below `merge_threshold` (0.5). Both comparisons are inclusive at the lower edge. 0.5 attaches the row to the known merchant and writes no card. 0.3 creates a separate merchant and stores the suggestion. 0.29 creates a separate merchant and stores nothing. Do not put 0.8 back, and do not treat 0.5 as the suggestion floor. Merge cards follow the category cards, most confident first. The settings comment points at [eval history](../../docs/evals/HISTORY.md) (2026-10-17) for why 0.5 is the merge default. Lines in that file marked not kept are not the shipped default. Do not quote merchant names from its notes. How the cascade asks the question is [Categorization cascade](../concepts/categorization-cascade.md). The setting itself is [Configuration](../operations/configuration.md).
 
 Confirming a category does not dismiss the duplicate. The page copy treats them as separate questions, and `confirm_merchant` leaves `merge_candidate_id` in place unless the confirm itself renames or merges. `GET /review/count` sets `pending` to the card count, `merges` to merge cards, and `categories` to the rest. The nav badge is `pending`, loaded by the root layout from `reviewCount()` with a 2-second timeout. A slow or down API hides the badge (`null`) rather than blocking the page. After a saved change the review list calls `router.refresh()` so the badge reloads. The root layout does not re-render on client navigation by itself.
 

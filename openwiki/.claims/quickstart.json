@@ -1,28 +1,32 @@
 {
   "schemaVersion": 1,
-  "pageVersion": "sha256:6ac98661fa17fcb6a0bb5ab2210d618c3e7066c3c32ed01ca5f21fb6dd9abc3b",
+  "pageVersion": "sha256:b4ab9379e01e37ce161dc49992af1210a19d5e8aea8bca8062297757e18e7c55",
   "claims": [
     {
       "id": "claim_53d5959d48cc48e39f905eea270d47a9",
-      "statement": "Coding agents should start at the quickstart and follow one link rather than preloading the wiki. Code and tests win over documents, specs in docs/superpowers/specs explain why, and docs/backlog.md items must not be presented as built.",
+      "statement": "Coding agents start at the quickstart and follow one link rather than preloading the wiki. Code and tests win over documents, and specs in docs/superpowers/specs explain why. Ideas and known bugs are GitHub issues, which some docs link (for example docs/architecture.md). A linked issue must not be presented as built.",
       "evidence": [
+        {
+          "resource": "repo://.github/ISSUE_TEMPLATE/feature.yml#L1-L24",
+          "version": "repo-lines-v1:sha256:a7f0b43de2347ca1a36b6c7214ba04b3939fcf47bdc18f22844b678a67ba730a:eyJzZWxlY3RlZExpbmVDb3VudCI6MjQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImJiNzMxMjZlYTE3ZjNjMDk0YjZiMDBkMmJjYTdjMjI0MTQ1ZmY5YzJmMjczNjgzYTUzMTlhMGE1NWIyODViMzMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjUyMWMxYzljYjZhOTIxN2ZjYWY4NzZkY2U1ZjBhNTdhZGMyN2ZmNDgxOTBmN2U3YjMwMGRkZmM5N2E0ZDAxYTAiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjowLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoyLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6Ijk2Yjc5MmY0ZGNhOWQ2ZWE5NGE3ODE4NDBkMzM4YmQ0YmFhMDAxMzFjM2Q3OWUyZDhjNWM0YThlZDQ0MThmYzcifQ"
+        },
         {
           "resource": "repo://AGENTS.md#L1-L16",
           "version": "repo-lines-v1:sha256:8926524de63a1266e7592d9f1256ec367b67e9fa0583f343808e3e51f19d4990:eyJzZWxlY3RlZExpbmVDb3VudCI6MTYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjVmMTgwZjljMTI2OTAzYmNjMzMxYWE5NTQ1NmU0OTQ0NGE3ZDRkMDExZThhMmE4M2Y1ZGM4NzAyMzkxODEyZDAiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjA5Zjc4NzE0ODkzYWE3Nzk0MmNlYTFjNGEyZTAyMzFkYmI3ZmEyYTQxYTcwYzgxNDYwYTNjNjc1NjJkYTNhYWEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjowLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
         },
         {
-          "resource": "repo://CLAUDE.md#L6-L14",
-          "version": "repo-lines-v1:sha256:ee5b28e0281edc3c47f2e70773f05b8fd4c66674b1b0c60ae9a152d30db75b46:eyJzZWxlY3RlZExpbmVDb3VudCI6OSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYjIwNmJkOWUwZTIyYzQ1Yjc5MjdmZjdiODJjYjViZDJkYTMwNWMxODAxMjFhNDcyMmFjNzY4MWRhMzY5ZmUxNiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiYjRiOTVhNTVhYTUwOWQ0NzM4NTM1MTc1ZDJjNDI0MWVkYWZkZDIwODc4NWYxYTc5MDRiYTZiMGVmMDJmODk5NyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiYTAyMGQ0MzliZmYyM2NkODY2ZWYxMTVmNWNiZTY5ODdkZGYxZDNmYWYwZGJmZjI0M2E3ZGZjNDkyMmY0YjZjZCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiODY1YTIzMDM5MDdlNmVlYWUxNTAxZWU5NDUzOTIwNjc3ODI1NTgxODc2MzBkNWE5ZDNlNjc1MGVhODhlNjE4NyJ9"
+          "resource": "repo://CLAUDE.md#L50-L54",
+          "version": "repo-lines-v1:sha256:0cb0bc3697cdf80d03fc4d835bf47a0deddb96504bf683ddc390a81ccb95a597:eyJzZWxlY3RlZExpbmVDb3VudCI6NSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiODYyYjdjNDJlY2JkZWU4MmUwZTIyMGViYjM1Nzk2MGZmMmVjODI0OWUwMWVmM2IyNTY4M2I1N2VjNzAwYjkyYyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiYWVjZWU1MjRmYjk0NGQxYWRjOTUyNjExNDQ2Mjg2Yzc0YzJjNGNmYjFkNGQ1MjUzNjU4NTBjNDhlOTdkZmJmMiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiYTU2OGQ0NTRiOWFhYTVkNWFmOWQyMDkyODNkNzdmZDMyZjUzYjM1YTlhMDE3MzgxZDk4OWRhNzI1OWMxOTU3YSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMDcwNzY3NjJmMWEzMzI4YmJkZjc4ZGExNzE3MTlkNzlhNjI3ZmNjMWM2MDU5ZmIxODM4N2FlZmZiMDlhMThkOSJ9"
         },
         {
-          "resource": "repo://docs/architecture.md#L107-L144",
-          "version": "repo-lines-v1:sha256:e25792d97d08e489789c9c6d428ac0425a51b9c28668f46af2777623f7513c3c:eyJzZWxlY3RlZExpbmVDb3VudCI6MzgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImZkYjJjMTMwNzA0YTBiOGM0Zjk0MTYxNjdkZjBhZWY0ODYyYTVmNTMxMWQyZDhmYzRkOTYyMWZhYjhmYzRjYWIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjliYjhkNWVlY2VlY2U3ZDdmM2MxNTRmYjMwMDU0ZWIyZTRlZmUxNjc4NTdkMWI0MzE4ZDBkNGY0NjA5NWZmNjciLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjFjMTYwY2U2NTVlNzM4N2JlZTNlMTRkMTdiYjI1MmY3ZTc1NTViMTAyZjE3NDliZTk4N2Y2NDE3ZWY2YzEyNTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjRhMThkMjM0NTU0ZTQ3NjQ3NmVkOWEzNDRmMGM3YWU4YzU0NGQ3NmRmYmY0M2VmNTgxMTA2MDc2MzIwNGIzMGQifQ"
+          "resource": "repo://docs/architecture.md#L115-L148",
+          "version": "repo-lines-v1:sha256:8d55f509a1274cbc3a04b0bd674b495f1a74a476c57666ec4fa1bee7fe274066:eyJzZWxlY3RlZExpbmVDb3VudCI6MzQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjEzOTMyZDJmMzNiODAxZDJjOGFhNWRjNWQ2YmZlNWFhOTFjMTRmM2I5ZjRkZDAwMjc2YTYxNzhiN2U3ZDAyZDgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImE0ZjFiOTk3NGZmM2U2NjE0ZDNhOTQ4M2Q3NWQ1OGE1Y2U2YTliMTlhYTAyMGNkZjZiMjAxNTA1MjgzOGM4ZDEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImM1NjNkOWZkN2YzZWU2YmYzMDI1MzBmNTQ1NmJiMDcyY2Q5NzdkN2NmNGMyNGIwOWMyODUzMDQ0YTRkMGJiNGQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6Ijg4OGQyNjhkOTFiNzhlZjgzNDYzNDVlNmM3MjY3YjY5MTc3ZDI2NWVjNjUxYzE2MjgxMzRmZDNjZmUzODdjZGIifQ"
         }
       ]
     },
     {
       "id": "claim_59e9437aa75744a6bd97af2f3bfb98d3",
-      "statement": "Python in apps/api/finance owns ingestion, categorization, dashboard reads, the chat agent, and evals. Next.js in apps/web is the browser and never opens Postgres. Supabase Postgres is the ledger.",
+      "statement": "Python in apps/api/finance owns ingestion, categorization, dashboard reads, the chat agent, and evals. Next.js in apps/web is the browser and never opens Postgres. Supabase Postgres is the ledger. Pages call the API at NEXT_PUBLIC_API_URL, defaulting to http://localhost:8000.",
       "evidence": [
         {
           "resource": "repo://README.md#L62-L63",
@@ -37,26 +41,46 @@
           "version": "repo-lines-v1:sha256:7286d884527057c0ac947e98fb86d4d7be4d214e88795697eda1e1a1f1a6642a:eyJzZWxlY3RlZExpbmVDb3VudCI6MTIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImE2ZmIwOGZkYTFhY2I5NTdiNjExNmJkMzc4MTFhMWZlNDFhMDE2MTFjMDYzMWVkYmY3ODZkNjg4OWEyN2E1NWMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjRkNWNkMmZiNGYzZGY4ODQ1MTUyNTViMzk1MjNmMmY4YjU0NzJiZWVhOWY1NjZmZmNhMjA0ZGI4MDI1NjEwNDEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjowLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6Ijc3ZTdiZGJmNjY3MDU4ZDMzMTJjY2U2NmQyMjA2Yzk0ZmNjNGU0ZTM5ZTY3OWU0NDI2OTZmYjQwNDg5ZWEzZmYifQ"
         },
         {
+          "resource": "repo://apps/web/src/lib/api.ts#L1-L12",
+          "version": "repo-lines-v1:sha256:09a0bce2e2ed80455e006785e9d4d31c7afd510b863e24f7a885ac9135dbe564:eyJzZWxlY3RlZExpbmVDb3VudCI6MTIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjMzMjMzYWM5ZDc3ZTM3MDM0OWQzNjE2MmVmMDg0ZWM3ZjUzNmU1YTZhOTJkMzEyM2E5MTVhZTQ5MzUyNzgxYmYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjowLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImY3YTQ5YTA5MWQ4MWE2NzA0Y2ExMGI0ZDA5MWEwODdjZWEzYjE5OWI3YTdiOWNjYjc4ODU3OTRhOWI2YmNhNzIifQ"
+        },
+        {
           "resource": "repo://docs/architecture.md#L1-L23",
-          "version": "repo-lines-v1:sha256:2c7d31c949991f7ff3cd48278d313b722074374db57c99e69e3a7987da320ae3:eyJzZWxlY3RlZExpbmVDb3VudCI6MjMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImE4NjE2OThjNTMyNWNlYTI5YzlhYmFkZTZlNDE5ODliNmY2ZGIzM2Q3NzRiZTFiZDkwMDU4ZWExNjc3ZDlmNjYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjowLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImYyZTQ5OGQ5YTcwNmQ2MmY1M2ZiODU0MjNlNGIwMDJjOWRlMjUyZDIxYzNlMTM2MjQ1Mzk0MjRmYmZkYjQ5NTQifQ"
+          "version": "repo-lines-v1:sha256:5bd332b302aaf8d15d47b3fb1a46ea748315389c8e8953ab160e983169eb5411:eyJzZWxlY3RlZExpbmVDb3VudCI6MjMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImE4NjE2OThjNTMyNWNlYTI5YzlhYmFkZTZlNDE5ODliNmY2ZGIzM2Q3NzRiZTFiZDkwMDU4ZWExNjc3ZDlmNjYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjowLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImYyZTQ5OGQ5YTcwNmQ2MmY1M2ZiODU0MjNlNGIwMDJjOWRlMjUyZDIxYzNlMTM2MjQ1Mzk0MjRmYmZkYjQ5NTQifQ"
         }
       ]
     },
     {
       "id": "claim_7ddc0ca2904040ca946f0af6013bac6b",
-      "statement": "A PDF adapter, dedup, or import_statement change belongs in apps/api/finance/ingestion. A new bank is a new adapter plus a bank enum value, not a change to the cascade. Pairing, rules, jev, merchants, thresholds, and link_loans belong in apps/api/finance/categorization.",
+      "statement": "A PDF adapter, dedup, or import_statement change belongs in apps/api/finance/ingestion. A new bank is a new adapter plus a bank enum value, not a change to the cascade. Pairing, rules, jev, merchants, thresholds, and link_loans belong in apps/api/finance/categorization. GET /imports returns every import with no row cap, and the coverage board reads that whole list.",
       "evidence": [
         {
-          "resource": "repo://apps/api/finance/categorization/store.py",
-          "version": "repo-file-v1:sha256:6970b6bed2a8ce6db9500fac9e17a21562834fdd7f87fe3361997bb4c7bb6508"
+          "resource": "repo://apps/api/finance/api/imports.py#L43-L54",
+          "version": "repo-lines-v1:sha256:93f0fd26f2f75b2be7d924538c43cc7836e50c5781de04213beefcf4ecf3d816:eyJzZWxlY3RlZExpbmVDb3VudCI6MTIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjFmOWI1MWI4N2Y5NDA1YTNiNDBhNGM5ODMyZGRlNDg1MzdiNTNkODgwMzM2OGQ4YmU4N2Y3NjczMDk5NzhhOTQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjlmNGMwN2ZmYTgwNDNiYjk2MDMzN2U1YTNlZjhhOWQ0ZDI0MWJiYWI3MGIxNGI4M2FlZTk3ZTFkZWNlOGY0MjciLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjA5NjU4ZmNiYjkyYmU5YTZjMGYyMWJiY2IyMTRkYjBiOWZkMGRjMzRjZTkwYzhiODM3MTk4NDdlOGYzMWZlNDciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
         },
         {
           "resource": "repo://apps/api/finance/cli.py#L32-L74",
           "version": "repo-lines-v1:sha256:15fbc403ea6d045a7138bbcbe62ea081e29ecc7e31d2d666a7a116c7c4cea6c4:eyJzZWxlY3RlZExpbmVDb3VudCI6NDMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjFlMWZhMWU0YmI0ZDNhYmI3MjA1M2NhN2QwMWVjNjExNzg0YjM1YzZkOTU5NmMxMmJiMGI1YjgzNDEwMTMwYTEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImU2ZTdlNTYwNDNkNzJkZDI5YTExNjEzYmJhZjlmMTIyY2FhNTkwM2MyNTgzMTNlMTY4YmQ4ZWFiMmI2NTdjNzgiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6Ijg1NzY5MzJiNzExNDVhZDk3YjBiZWY4Zjc3YzdhMWEwMzM2NGQ3ZjliYmJiNWM1ZDQ3OTQyY2QwMjgyMmU1ZTMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjNiZTk1OGYwMDdkN2M1NTkwYTUyNThiNjY4M2I2ZWZlOGNjMTkyZDc5YmUyNGYxMzdkODQzMGY0YTNjZmZmMjkifQ"
         },
         {
+          "resource": "repo://apps/api/finance/ingestion/adapters/__init__.py#L16-L30",
+          "version": "repo-lines-v1:sha256:10b8ceb0c77a5250e35d25cb38fbaa458e9e9573ac0bbf180c9fb4858b0146ae:eyJzZWxlY3RlZExpbmVDb3VudCI6MTUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjIzMDg1ZDFmN2U3MGFiYmExNzgyMzU4MTRlMDhjZGNiMTI5YTFkNTMwZWE5OGE1MGM3NmYzMTBhZjkwMzY1NjciLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjMwYzFmMTg4ZjE0MmVkN2E4MjQ2ODBiMjA3MTcyYzU1MTliYzYxNGE0OGZkYTdjZjE2N2VkYjhkZGY3OTk1NmMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6Ijk1NDI1Zjc5Y2IyMjY3NWJmY2FmMGNiMmNlZmNjZDU1YTY5OTEzYjJiZTczMTgyODAxNmE5MzcwZjRkN2ZkZDciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        },
+        {
+          "resource": "repo://apps/api/finance/models.py#L10-L10",
+          "version": "repo-lines-v1:sha256:5497178f772c90538df7e7e7041d0bfee9fc27f9bc3817ed866c4e6e6872dbfe:eyJzZWxlY3RlZExpbmVDb3VudCI6MSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNTQ5NzE3OGY3NzJjOTA1MzhkZjdlN2U3MDQxZDBiZmVlOWZjMjdmOWJjMzgxN2VkODY2YzRlNmU2ODcyZGJmZSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNTQ5NzE3OGY3NzJjOTA1MzhkZjdlN2U3MDQxZDBiZmVlOWZjMjdmOWJjMzgxN2VkODY2YzRlNmU2ODcyZGJmZSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMDIzYjYwYzQzYWZiYWZhOTQ3NTQ4MTc0Njc1ZGRiMDkxZDNkMzI1YTk1MDc4ODY2ZmExN2M2NzEyMjRlNzRhNCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMGVhMGVhNjljZTQ5NDI0NmEyM2NjY2FmNjJkMzViY2JlMTYzOTI3YWM1N2M4NThhMTU3MThiNTJlNGQzZDRhMCJ9"
+        },
+        {
+          "resource": "repo://apps/api/tests/test_api.py#L172-L174",
+          "version": "repo-lines-v1:sha256:0780840a2d573a25ea4c757e618ce6e1a6fd31d78185c35ce7b831f32823af1b:eyJzZWxlY3RlZExpbmVDb3VudCI6MywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYzNkNjViMTZhZmQ4ODU5YTAwZjc5ODI5NDYyMTg2NDZiMjQ4NmE2ZTY3MWY5Yjc0OWM5ZWY4ZGUyYjViMWRhYiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiYjM4ZDhmNGE4YTUyMGE1ODc3YTk1ZTJkMjQ2MTY4MzA3M2RlNzI0MWJiMjU0YzFhMjQxZGI2YjZiNDczOTBkNSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMzEyMTA2ZDRlMTY4ZWU0MjU4YzMxYWQwYTg0N2E1ZDA5OTllZTM4Nzk3YWMyMjM4N2Y5ZDU2NzY0NWZhNjcwNiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjAsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZTNiMGM0NDI5OGZjMWMxNDlhZmJmNGM4OTk2ZmI5MjQyN2FlNDFlNDY0OWI5MzRjYTQ5NTk5MWI3ODUyYjg1NSJ9"
+        },
+        {
           "resource": "repo://docs/architecture.md#L24-L59",
-          "version": "repo-lines-v1:sha256:a02b13e695dffcebcdf188c96232174b2733c5ab03eafd199a86ff6bd824f523:eyJzZWxlY3RlZExpbmVDb3VudCI6MzYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjVlZTFiZWIxZGE5YmZmNDQyY2RlODFiMmFmYTI4ZGM2NTdjNTY1MjhmN2IyMjVkZTJjMDA2YjczZTYwY2M4Y2MiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjdlNTQ0YTcxNDU5Zjk0ODllOTI0NzRlZGY4MGIyYjgxYmI3N2U5YWQyNjZiODk0Yzc3NzBlMDRhMjc2MGI0NjIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImQ1MDdkYTlmYWRkZGM3YWE3YjU3OTMxZWZjMDllNTQxYWQ4MjdkM2NlOGQ2NDNhNDU5MzA3MTRjN2U0ZDhlYTkiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImFiYjVmZTc4ZjFkYjViOTk2YmJlYzgwOGFlYmZiMWM4MjlkMTM3Yzc3MTE3MWI2YzYzN2FjMjJiMTQ1NTc3OGEifQ"
+          "version": "repo-lines-v1:sha256:7506e94e5ff29eadaa356c688b7bb7b6cae38a9f96d23ee5ca5d91d2c7e1cd05:eyJzZWxlY3RlZExpbmVDb3VudCI6MzYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjVlZTFiZWIxZGE5YmZmNDQyY2RlODFiMmFmYTI4ZGM2NTdjNTY1MjhmN2IyMjVkZTJjMDA2YjczZTYwY2M4Y2MiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjdlNTQ0YTcxNDU5Zjk0ODllOTI0NzRlZGY4MGIyYjgxYmI3N2U5YWQyNjZiODk0Yzc3NzBlMDRhMjc2MGI0NjIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImQ1MDdkYTlmYWRkZGM3YWE3YjU3OTMxZWZjMDllNTQxYWQ4MjdkM2NlOGQ2NDNhNDU5MzA3MTRjN2U0ZDhlYTkiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImFiYjVmZTc4ZjFkYjViOTk2YmJlYzgwOGFlYmZiMWM4MjlkMTM3Yzc3MTE3MWI2YzYzN2FjMjJiMTQ1NTc3OGEifQ"
+        },
+        {
+          "resource": "repo://supabase/migrations/20260922000000_init.sql#L3-L3",
+          "version": "repo-lines-v1:sha256:df6e951534de4c4dd97ca8b19c5123983a1711107bc7cf4c4ac6a09311a7ef27:eyJzZWxlY3RlZExpbmVDb3VudCI6MSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZGY2ZTk1MTUzNGRlNGM0ZGQ5N2NhOGIxOWM1MTIzOTgzYTE3MTExMDdiYzdjZjRjNGFjNmEwOTMxMWE3ZWYyNyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZGY2ZTk1MTUzNGRlNGM0ZGQ5N2NhOGIxOWM1MTIzOTgzYTE3MTExMDdiYzdjZjRjNGFjNmEwOTMxMWE3ZWYyNyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjIsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZGE3M2ExYTc1OThiY2FmZTczZTkxYzZhM2I5NDkyNTMzMDc2YjQ2NWZlM2ZjYTZjN2ZjMmU0YTlkOGI2NDQ0MiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZGQ5ODgzYmI1ZGRkMjlhN2U4ZDNlNDg2ODgxNTAwZTFmN2I3ZTU0OTg2ZDM4ZDc4ZjMzZTVhMjE3ZmFlY2Y3MCJ9"
         }
       ]
     },
@@ -69,7 +93,7 @@
           "version": "repo-lines-v1:sha256:b4b95a55aa509d4738535175d2c4241edafdd208785f1a7904ba6b0ef02f8997:eyJzZWxlY3RlZExpbmVDb3VudCI6MSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYjRiOTVhNTVhYTUwOWQ0NzM4NTM1MTc1ZDJjNDI0MWVkYWZkZDIwODc4NWYxYTc5MDRiYTZiMGVmMDJmODk5NyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiYjRiOTVhNTVhYTUwOWQ0NzM4NTM1MTc1ZDJjNDI0MWVkYWZkZDIwODc4NWYxYTc5MDRiYTZiMGVmMDJmODk5NyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiYmJiNzZjZjBhMGExMmQ3NTA1NjYxODA0ZjQyZjY1NDU2ZmNjZmRlMThjNzBiZWYwYWRlYjlkMzE5ZmYyMzY4MCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiODY1YTIzMDM5MDdlNmVlYWUxNTAxZWU5NDUzOTIwNjc3ODI1NTgxODc2MzBkNWE5ZDNlNjc1MGVhODhlNjE4NyJ9"
         },
         {
-          "resource": "repo://docs/architecture.md#L117-L122",
+          "resource": "repo://docs/architecture.md#L121-L126",
           "version": "repo-lines-v1:sha256:c3740425651889933c0f1c744cbf213186e0b6b80203d05c72513a012a3d36fe:eyJzZWxlY3RlZExpbmVDb3VudCI6NiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMmM5YzAxNjVhZWVkNjk4ZDVkYjEzYzNhNmQyM2I3M2Q1MTFiZWY5MGZjODNiNjk2YzBhNjRkZTY3ZGRkNjU5OSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiYzdiYzc1YWNkMmYwMjYyYTkyNjk5MzM2NzFlMzk1NDJhY2U5MTRmM2YzMTQ5NjljZTFiYjJiOTBlMTFkYzBjZiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiYTU3ZmU0ZmE4MDE4MzgxMDc0ZDI4M2MwZTZmYmQ2YjBiZGZlMjY3ZTkxMjY3ODhhYzJiNDhmZjVlNTMzMzIxNSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNjA3N2FlNDM1YjhhYThmZWQ0NWE0ZDIwYTc1MWY4MjYyYTgyMjZiNzMxNjIwYTVkZGExYjc5YWU4ZTU4NTA0YiJ9"
         },
         {
@@ -83,7 +107,7 @@
       "statement": "The shipped chat is one LangChain ReAct agent with a single run_sql tool and no router. The v1 spec section 9 jev router was superseded by the slice 4 spec section 16. Metrics and examples live in apps/api/finance/agent/semantic and are checked at startup. agent_reader must not be granted beyond the agent schema.",
       "evidence": [
         {
-          "resource": "repo://CLAUDE.md#L111-L116",
+          "resource": "repo://CLAUDE.md#L134-L139",
           "version": "repo-lines-v1:sha256:f078ec2c06a7d155b675e4a65aee128176f0e55e74705953d16f469035ed30e8:eyJzZWxlY3RlZExpbmVDb3VudCI6NiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMmI0YWRlZjE3Y2JiZjUzMDA3YjQyYzI3NDVlNDEyZWI3ZjJiMmFiOGVlNjA0MjhiNWU0ODc3NDdmOWFlMDk4ZiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiODMzOWI5MjdkMjZjYzMyM2U3MTczYjE5YWY5ZWVmNTZmNjlhYTNiMjgzNDllYTNiN2ViMjI1OGM4Y2FhNmJkNCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiOWIwM2ViN2Y4YTc5ZmIwZTRjM2ZjZDlkYTE4YTZjYzE2OTExNzE2N2RhNjRjODczMTJjMzZmN2U4ODFlNzJhZCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNmRkNjNlNGVkNWRlZDI1MzAyYTY4Y2IzYWEyMzQ1MTZmNTExZGE5MzAzYTQ3N2NlN2I1ZTczYWEwYWQzYzBjYiJ9"
         },
         {
@@ -91,7 +115,7 @@
           "version": "repo-file-v1:sha256:709f7169cd69372d4047a96e16e886b203ad9da1a90f1d612b6270e9b1180a8f"
         },
         {
-          "resource": "repo://docs/architecture.md#L80-L109",
+          "resource": "repo://docs/architecture.md#L84-L113",
           "version": "repo-lines-v1:sha256:eeba84146d161773be3784927bfb0335cdfc0275ae38456d964bb2f82068e4ab:eyJzZWxlY3RlZExpbmVDb3VudCI6MzAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImQ5NmYxNDE0ZTM5MTdkOTdlODFiMjRhOThlNTZkZGVjZWIwODA4OWY1NDAxOTBkZDZjZDNjMTMyMmU1MTkwNWUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjYzZDg3MmY3MzQ4OGVhOWYyZWViY2NmOGVkODc3M2Q2YzUzZTZiMGRjNmRmNWViNGNhNzdmNjM3NTUzYmEyZGQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjJjMmEwMWMyYTJmOTlkNWY1ODY2NmU0ZjIyOThlMGUyMzZlYzljNjIwMDVjYWMyY2I3NjFlNDk1OTZhNWM3YTkiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjM5YWNjYjdlMGFjN2YzMzcxMmIxZDI0NzA5YTAyNjczNjk5MTRhYjBhYWEzMDBhMmJiMjdlNzg1MzZhMzg4NjIifQ"
         },
         {
@@ -105,7 +129,7 @@
       "statement": "The finance CLI is the pyproject script finance.cli:app. import parses then categorizes in-process, seed upserts taxonomy and rules from supabase/seed, categorize supports --all and --rules-only, labels export/import move the golden set by dedup_key, eval-categorization is a paid dry run, and chat is the same agent as the web.",
       "evidence": [
         {
-          "resource": "repo://CLAUDE.md#L48-L66",
+          "resource": "repo://CLAUDE.md#L67-L85",
           "version": "repo-lines-v1:sha256:f7a75c83ea7f2a9a413365528d43d4688dc6715f75aa540a4c53e43506ffd307:eyJzZWxlY3RlZExpbmVDb3VudCI6MTksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImI0YzVlZjcwZjA5N2UyZGZlZDk4Mzk3NjliMWUwMDllZGJmNjUxNjM1YmI3YTg3YTkxMmFjNGNiMWQ2YjZhMzQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjdjNTZiMjBhMzBhNTM2OGNhNGI4NmNhYmQzYmQ3ZjY0YzY3M2Y4ZmIxYjg3NmQ2ZDgwNGRlNTNjMzNlMTBlNDUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImE1NjhkNDU0YjlhYWE1ZDVhZjlkMjA5MjgzZDc3ZmQzMmY1M2IzNWE5YTAxNzM4MWQ5ODlkYTcyNTljMTk1N2EiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImM4NDMwN2YyMzY4ZGViZTg0ZDI1YjA2NmQxMDQ3NDYwZTliOTA5MTczYWQ0ODQzYWE1MjI3NzcwZWI5ZWY5ZmQifQ"
         },
         {
@@ -131,40 +155,52 @@
           "version": "repo-lines-v1:sha256:ee9394fa70815160a0574b2e61dc8935d90b6c95e89353564340c30fb159df55:eyJzZWxlY3RlZExpbmVDb3VudCI6NiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNDRmMzk3OWUzZjk4NjkxNmE5OWQ1NmFkN2Q1MGZjYzVlYzJlYWViYmE5MzI4NTYyMzFlNTg4ZTVjYmM5YzJkMiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZTlkZmZmODM3YzE3YWVlMWQ1YWZiM2ZmMTBkMjZiYjhiYTFjNTlhZTk3YmI2OTU1M2M1MzY2Njk1Y2ZkMGY1NSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMDkyODIyZDdjNTYyOTU0ZGE1NDFmMTE4N2I0NTc0OTBiMDk1OTI5OTdlYmRkMzQyMDZkYTA0ZmNkYWRjNmQxZiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNTcwMjE1YTM3ODk4YTYzYTI1OWZhZTA1NDY5NjIzMDk4MDU1YmE2NjM5MTkzNDg2YzNmNzY4NzRhMTIyZDIxYyJ9"
         },
         {
-          "resource": "repo://docs/architecture.md#L80-L84",
+          "resource": "repo://docs/architecture.md#L84-L88",
           "version": "repo-lines-v1:sha256:5867ce846e07321a7d2fb6c45bbe2fc72577446d1b8504146ad6ee3cefdb4257:eyJzZWxlY3RlZExpbmVDb3VudCI6NSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZDk2ZjE0MTRlMzkxN2Q5N2U4MWIyNGE5OGU1NmRkZWNlYjA4MDg5ZjU0MDE5MGRkNmNkM2MxMzIyZTUxOTA1ZSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZWUyZmQ5NjQ5YjY3ZjkxZGIwMjIxZjdmZmFmMWZiYjA5ZmNlY2E5NWMzMTgzY2NhYjIzYzA0MWUyOWJmNzU2NiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMmMyYTAxYzJhMmY5OWQ1ZjU4NjY2ZTRmMjI5OGUwZTIzNmVjOWM2MjAwNWNhYzJjYjc2MWU0OTU5NmE1YzdhOSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNzVmODM5YTJkYmJjOTcxZGI4YWE0NDgxNmVjY2QwMmZiM2UxYTM1YzUwNmIxZDNmNGUyZjMzMzkxNWM4MmYzZSJ9"
         }
       ]
     },
     {
       "id": "claim_6c4eff1c75c3407aa7640a1df08a7c74",
-      "statement": "The web app runs from apps/web on port 3000. Routes include /, transactions, subscriptions, spending, income, merchants, chat, review, imports, and settings. The AI SDK useChat is only the browser transport; the agent stays in Python.",
+      "statement": "The web app runs from apps/web on port 3000. Routes include /, transactions, subscriptions, spending, income, merchants, chat, review, imports, and settings. MAIN_ITEMS are Overview, Transactions, Subscriptions, Chat, and Review. Imports and Settings are MORE_ITEMS, behind the menu from lg and after a separator in the sheet below lg. Spending, income, and merchant pages are not nav items. The AI SDK useChat is only the browser transport; the agent stays in Python.",
       "evidence": [
         {
-          "resource": "repo://CLAUDE.md#L76-L113",
-          "version": "repo-lines-v1:sha256:8b934300dff84888346b5df6e3361ae731cfdf0d5673a0279157a54fe2ce0c55:eyJzZWxlY3RlZExpbmVDb3VudCI6MzgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImZjYWViNDNkNDZiMTM1MjM1OTY2YmJkODc2YzE4ZWY4ZDIwMDRkMjFjNmFlYmQ0ZTZkMzViOGI0MGI3MDUwYjkiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImIyOWM0OWIzMjc3MmE2ZDc4YmViN2Q4NzE0ZGE4ODJjMDgwODYyMGVlNTVlMzcwOGMzZDQxYmUwMDM4ZjhmMDYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImQzOGI5YTIyZDY1NWFkMjljODA4YTQ2NTkxMTY4ZDgyYzY3ZDg4NTk3MjI3ZDJiNzE0ZWZlZTA3MGQ5NzE0ZDgiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImQzOTE1Mjk3OTA5NWMwMzJiMzNhODVmM2Q1M2JhMTMxYjQ5ZDE3ZmFkMzM3YTc1NjIyYzY1ZjZiYjQ4MGUxNWEifQ"
+          "resource": "repo://CLAUDE.md#L95-L101",
+          "version": "repo-lines-v1:sha256:2edd4283f5b90d4ccfffca8140417b52791b235f81d05c176abb46f44f87730a:eyJzZWxlY3RlZExpbmVDb3VudCI6NywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZmNhZWI0M2Q0NmIxMzUyMzU5NjZiYmQ4NzZjMThlZjhkMjAwNGQyMWM2YWViZDRlNmQzNWI4YjQwYjcwNTBiOSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiN2ZjNmQ4N2U3NTcxNjYzMWM4MGZmZWIwMDBhNGRjNDVmNGZjN2JkNzA1NDA0ZDNiZGI0ZDBlNGVmMjJiNjBlMyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZDM4YjlhMjJkNjU1YWQyOWM4MDhhNDY1OTExNjhkODJjNjdkODg1OTcyMjdkMmI3MTRlZmVlMDcwZDk3MTRkOCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiY2IzMjkwNDZiYWRlNGRkMDJlOTc4NTVmMTEwMWI3MTUwYTA0NDM3ODEwOGMxNTIwMWMxZjBmYjQyNzgzNmUxNyJ9"
         },
         {
           "resource": "repo://apps/web/package.json#L5-L16",
           "version": "repo-lines-v1:sha256:6d0ed12d8393ec85f9356914fdcf638af132fa5f7902fade6ca6fdddf9aa4642:eyJzZWxlY3RlZExpbmVDb3VudCI6MTIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjM0ODMzZDU5NDljMDNhNDBjYTk1MjQ5MTYxMGE2NjU5NjQ0YjNhYTQ2NjM2MmY3OTkwMjBkYmYxOTgxNTQ3ZGIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImNjOTk0NTY4MzcwYWU5NGVjZjM3MzA0Njk1OGNhYWFiNDk0YjRiOTBjNWU0ZWE1YTllNzM1YTZmN2FlMDBmN2QiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjUwZGU3MmFiOTMyMTA4MGZkY2YyZDYyYjk3Y2QwZjNmMDk2MjBhOWM2MjA5NmY2YWRmYmMyMWI1ZGVhMjAwYzgiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImExMDgxMjU2N2JlNTViMmM0MjkxZjI1NjlkMDc1YmNkZGQ0MmVmYzFjYmYzZDEzYTE3MTg0ODEyNzVlMWMwZWMifQ"
         },
         {
-          "resource": "repo://docs/architecture.md#L101-L103",
+          "resource": "repo://apps/web/src/components/shell/mobile-nav.tsx#L16-L58",
+          "version": "repo-lines-v1:sha256:31419d53b32ffd1df0f10733466e21dc0e19256a6fa9c6a768020f486bfaf21e:eyJzZWxlY3RlZExpbmVDb3VudCI6NDMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjM1ZDJmMmU5ZDFhNzdmMDI1NDU1OGU4OGFiYWJiZDg5NDZlYjQ2NTg5NTg5ZTVlNzI5YjI3ZDQ4Y2VjNDMxNDYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY5M2Q1OTQ5YWYyZDU3OTE3YmI1YWJkOTY5ZGQ4Y2YwYTExNDM5ZDg0MGU2YzI0YzJiMzA5OTZiZGIzNWJkZWUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjNlNzdhMWM3YThmM2JhMWE1MTJiOTU5MzhkMjA4MTU0MDMzYzZmMTM4MTJlYjBiYmRkMjRlMGI3OGNhMjllY2EiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjNlYWI4MWY2ZTNkMTJlZjNjMmI1Yzg0OTU3OTY0ODQyZmExNTM2Yzc4ZWNmZWNmNzBlYzg3NWExN2VkNmY1Y2EifQ"
+        },
+        {
+          "resource": "repo://apps/web/src/components/shell/more-menu.tsx#L14-L31",
+          "version": "repo-lines-v1:sha256:5065503e8c2f7a018eb4ac0debf7b3569d48d92e3fde098e95987835bf76b443:eyJzZWxlY3RlZExpbmVDb3VudCI6MTgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjNmNjUwZGE4NmQ3MWVkMjI5MDI4YTAxZmU5MGY4ZjA4NzZiYjlkZjg1ZjI0NzI2ZTEwZGRiYjBmYzVjZmRiNTUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImQ2ZjQ3OTY0OTgxZWQ3YTgyMjk0YTlkNjhkZjA2NjcyNDMwOGQzNmU5ZWVlMjlhNDdkNjJiZmQ5MTgzYmM5N2QiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjU5ZGNlOGMwMWIwMTFmYTMxM2Y4MjJhM2Q5ZTg3OWVmODI1YmFkMGI1YjVlZTc4NzBiYzE5NWFlMWUxMTQ0ZmUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjdjOGVmYzFjM2QzZGViNzkyNzU1NjA2YzdlZjAyOTVhNGVmYTEzNjAxNjE2OGFhZWQxNzNkMTc2ZTJhY2EwODEifQ"
+        },
+        {
+          "resource": "repo://apps/web/src/components/shell/nav-links.tsx#L15-L48",
+          "version": "repo-lines-v1:sha256:2703fe01fa7ad8507e07b01f0fe6e618d825aa303f5ddbf7e4438109f0e72186:eyJzZWxlY3RlZExpbmVDb3VudCI6MzQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjRhZmZmMWE1Njc4OTI4ODE4MzMzNjFlYmVjYzk2ZDhhNjE3YTQ4ZTNiMmZhZTNjNWVlOGUyYWIyNTZmNWY1NTEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImIwMmQyYzBkNmRjNWU3NGQ5MmZhMTRiOTFkYmVhMjY0MDkwYmViMzVmZGI5MTg4ZDliMzQxMTgxZGNlOWY0Y2UiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjI4MDA3NzQ5MmQwYjY3MDgyN2IzNDNjYWI1ZDhkNTRkNzRjNWU4MDgzZTc2YjVkODUwM2UyMWQzODhjMGVkZjkiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImRlZTZlNzc2MTA3MzA3NDViZmQyNmY5N2QzY2M4NTQyNzIzMWQwYTYwNGZlOTI1ZjhiMjViYmQ0ZjA3YTFmMDQifQ"
+        },
+        {
+          "resource": "repo://docs/architecture.md#L105-L107",
           "version": "repo-lines-v1:sha256:53cef07cec8dfd89f57f824784f2f95eab5a32b17e613aeb5aac343622e99141:eyJzZWxlY3RlZExpbmVDb3VudCI6MywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMjk4MTRjMTIzYmUwMDFlNWUwOTJhNGZlY2UzYjNmOWUxYWE0NjgxOWFlMjQwZTllY2QxNjE0MDcxZDBhN2FhOCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiYmFhNmQzYjlkYzhjNDU1NmU3MzAzNjA3ZDVlYjAzMzI5MjMwYTM4M2ZiNmY2ZDEyZmI0N2M5YzZmNzE1YWI0YSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMDBjNjQxODQ0ODdkNTFkZTdjMTRkYmM2Y2QzMGE5M2FiN2U4MWM3Y2E4MTQ2MjI1MjRiMzcwNGQ1OWU3OTViZSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMWMxNjBjZTY1NWU3Mzg3YmVlM2UxNGQxN2JiMjUyZjdlNzU1NWIxMDJmMTc0OWJlOTg3ZjY0MTdlZjZjMTI1NSJ9"
         }
       ]
     },
     {
       "id": "claim_ada608d9779645e985d7d60c201dd915",
-      "statement": "CI runs API lint and unit tests plus web lint and build. Integration tests, vitest, Playwright, and agent-browser are not CI. User-visible flows are checked with agent-browser. Writes use scratch-database recipe R2 and chat checks use recipe R3 with the scripted chat server. Both recipes are named in CLAUDE.md, which says where they live. Their steps are not restated here.",
+      "statement": "CI runs API lint and unit tests plus web lint and build. Integration tests, vitest, Playwright, and agent-browser are not CI. User-visible flows are checked with agent-browser. Writes use scratch-database recipe R2 and chat checks use recipe R3 with the scripted chat server. Both recipes are named in CLAUDE.md, which says where they live. Their steps are not restated here. There is no scheduled OpenWiki workflow; the wiki is refreshed by hand with openwiki code --update before a slice merges.",
       "evidence": [
         {
           "resource": "repo://.github/workflows/ci.yml#L1-L37",
           "version": "repo-lines-v1:sha256:86df202f0b04e27bfe9e941921330d00a56201a3dead931cb49f1ab967bae151:eyJzZWxlY3RlZExpbmVDb3VudCI6MzcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjA2ZTFiMzJmYTA5MDc5YWUyZjAwMDFmZmYwZWNhMjdiNDk4NTk1N2Q0ZWI0ODU3OTI5YjNjZjA1OGZhYWU1NDEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImZmYzRlNTVlYmEwZTczODQxYzY5NDNkYTkwZGM2NjgyNjg0MTIyMjNhYTIwNWFmZDcwNDExMTFhOTAyZTc3MWYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjowLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
         },
         {
-          "resource": "repo://CLAUDE.md#L76-L99",
-          "version": "repo-lines-v1:sha256:b4efc1d73d47e9a2819e1d1906cb04bf8a50e55774423a878d60466aaff49290:eyJzZWxlY3RlZExpbmVDb3VudCI6MjQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImZjYWViNDNkNDZiMTM1MjM1OTY2YmJkODc2YzE4ZWY4ZDIwMDRkMjFjNmFlYmQ0ZTZkMzViOGI0MGI3MDUwYjkiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijk5OWJkN2QzZTQ0MWZlZmE2NjI3ODJmMDY3NmY5ZWRiN2I3NzMzYjRjNDcxZDg1NGVjMDk5M2JmNDE3ZDU5M2UiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImQzOGI5YTIyZDY1NWFkMjljODA4YTQ2NTkxMTY4ZDgyYzY3ZDg4NTk3MjI3ZDJiNzE0ZWZlZTA3MGQ5NzE0ZDgiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjJjNDU4YzYwMjQ4NTI0MmZiMmM4MjRmYjhjNGYwMjQwYzVmMzJlZGQzY2E4MmZlNzMyNDZhZWIzOGRmM2U5YzQifQ"
+          "resource": "repo://CLAUDE.md#L95-L122",
+          "version": "repo-lines-v1:sha256:5fb90962a51bcb21a1db4578debb1a3c781a2a05df40c838890cd47799e5fb3b:eyJzZWxlY3RlZExpbmVDb3VudCI6MjgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImZjYWViNDNkNDZiMTM1MjM1OTY2YmJkODc2YzE4ZWY4ZDIwMDRkMjFjNmFlYmQ0ZTZkMzViOGI0MGI3MDUwYjkiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijk5OWJkN2QzZTQ0MWZlZmE2NjI3ODJmMDY3NmY5ZWRiN2I3NzMzYjRjNDcxZDg1NGVjMDk5M2JmNDE3ZDU5M2UiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImQzOGI5YTIyZDY1NWFkMjljODA4YTQ2NTkxMTY4ZDgyYzY3ZDg4NTk3MjI3ZDJiNzE0ZWZlZTA3MGQ5NzE0ZDgiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjJjNDU4YzYwMjQ4NTI0MmZiMmM4MjRmYjhjNGYwMjQwYzVmMzJlZGQzY2E4MmZlNzMyNDZhZWIzOGRmM2U5YzQifQ"
         },
         {
           "resource": "repo://apps/api/pyproject.toml#L43-L53",
@@ -181,7 +217,7 @@
       "statement": "supabase db reset wipes labels, notes, and merchant defaults and is not a verification command. Labels must be exported first. The restore procedure lives in CLAUDE.md.",
       "evidence": [
         {
-          "resource": "repo://CLAUDE.md#L69-L74",
+          "resource": "repo://CLAUDE.md#L88-L93",
           "version": "repo-lines-v1:sha256:f533ecc844ba2bf4a8194b76adbc07ba53edc28c09fff5bf22d8b3a7c4dade39:eyJzZWxlY3RlZExpbmVDb3VudCI6NiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYjI2OTA5ZWY4ODFmZmQ3ODQ3NzhiYjRkZmQ4OGEyN2U2NjViYTgzYmZmOWY1ZTMxYjljODZkNjFjYjdkMTRmOSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiOTI5ZmZiODBlMmZkM2U5ODhiYjVkZmJmODNjYjBjZTNlYTc1YzAxZTQ3NGE3ZGYwOWVjZTliNDhlMDEwMDM4OCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZjkwMDAyYWIzNjRjNzAxMTQzNWJjZmY3Mjg0YzU3YWY4N2NmYjAwN2RhNDYzZTE3NTRjN2U1OTZkYWUzOGQ4ZSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMTNiNWVlNmVjMWE1OWZkMTgwYzI1ZmFhM2E2MGI1NTNiODJlZGI0ZWY0NGRlNmY1MzI3OGY3OTFiNGM1NDBhNSJ9"
         },
         {
@@ -192,21 +228,35 @@
     },
     {
       "id": "claim_559ab5bd3dcb4b999b41c7976ce90ded",
-      "statement": "Plans under docs/superpowers/plans/ are task history, not instructions. Personal amounts, account numbers, IBANs, merchant names, and ignored data/ paths must not be copied into docs or tests. conversation_history/ and skills/ are not repository source directories.",
+      "statement": "Plans under docs/superpowers/plans/ are task history, not instructions. Personal amounts, account numbers, IBANs, merchant names, and ignored data/ paths must not be copied into docs or tests. conversation_history/ and skills/ are OpenWiki mounts, not repository source directories.",
       "evidence": [
         {
-          "resource": "repo://CLAUDE.md#L95-L107",
-          "version": "repo-lines-v1:sha256:177979e23a9042f27dc3abc793016654f44adc946b9665569cd552158898c655:eyJzZWxlY3RlZExpbmVDb3VudCI6MTMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjM1MTNlZTJhMDRmNGM0ZGNmYWZkMzFlODc3ZDcyZDA5NTMzMWFlMjI0MjcxMjVjMWNlYzQzOGZjNGNmZTU5MjYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImFjNDJmYTJlZmUzOTBhYzE4MGVlNmQxYjA3OWVlMjYwZWFlMDhkMTQ5MzkxZWNmODA5MTRmMmQ4NTQzZTA0OTciLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjEwZjY0MTVkN2ZkNDM3NzdkNzFmZjQ2YTM4MTdkNGY5MzMyMjQyYWJlNzRkOWM0OWU0MDhhN2ZhMjg3MjExMDAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjliMDNlYjdmOGE3OWZiMGU0YzNmY2Q5ZGExOGE2Y2MxNjkxMTcxNjdkYTY0Yzg3MzEyYzM2ZjdlODgxZTcyYWQifQ"
+          "resource": "repo://CLAUDE.md#L124-L131",
+          "version": "repo-lines-v1:sha256:0acfee6c8a83b070dcb032d118493d584c04d94eca3c4cf0f7d179a4950485ad:eyJzZWxlY3RlZExpbmVDb3VudCI6OCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYzFlY2RmMDliMTcyNzJmZGRkMWQxMWE4MWYzNWMxNTgxZjAyMWZkOTYwNzVjYjRiNDljNmFhOTNkZmM1NmJjZSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMTljY2Q3ODRmYTkzYmZkYWZmMjU0OGNmNWJiYjdjYjI1Y2Q4NmU3NzE5NGZmNTQzNWRhNTYxMjQ2MzA1YTNiOCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMjdmZTZhZDM1NDk1N2VhZmZjMDNmNTMxODA4ODhhNjZhOWQyZDNlYzZiYzFmMjA4Y2I0NGYwODZkMzY1M2JkZSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiOThkODVjMWNiNmE3MDE5YjQ2YjI5NTVlYWVhM2Q2ZTIzZmIzOTE3NzY2N2FmNjc4MGUwNTdkMzU4MmRhYzkwYyJ9"
         },
         {
-          "resource": "repo://docs/architecture.md#L111-L144",
-          "version": "repo-lines-v1:sha256:36b4c4d5cc8f81c2cc80f1a3e387cd0b75ef162e9b737b3229ba62d5e08b128c:eyJzZWxlY3RlZExpbmVDb3VudCI6MzQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImI4YjkwNzQ3MjYxZWJiODNjZDlkYzY3YzQ1NmY1MjgzOWJlY2MwZWMzYzBlZjA3YzIxY2RjZGFlZTAwMGExYTciLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjliYjhkNWVlY2VlY2U3ZDdmM2MxNTRmYjMwMDU0ZWIyZTRlZmUxNjc4NTdkMWI0MzE4ZDBkNGY0NjA5NWZmNjciLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImM1NjNkOWZkN2YzZWU2YmYzMDI1MzBmNTQ1NmJiMDcyY2Q5NzdkN2NmNGMyNGIwOWMyODUzMDQ0YTRkMGJiNGQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjRhMThkMjM0NTU0ZTQ3NjQ3NmVkOWEzNDRmMGM3YWU4YzU0NGQ3NmRmYmY0M2VmNTgxMTA2MDc2MzIwNGIzMGQifQ"
+          "resource": "repo://docs/architecture.md#L137-L149",
+          "version": "repo-lines-v1:sha256:cc3b7f9894037d386165d37b29cd58124b8f3a5f32a54e01a7eecfd939729f80:eyJzZWxlY3RlZExpbmVDb3VudCI6MTMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImQxNjYwOTIxYzJkYWNlY2ViYTU5YjU4ZWNlZDBmNTA1ZmI4MmJjNzZkZGJiZDUzM2U4YjFlZmMxN2IxMzQ2NjIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjlkMjYyYjQyNjMzOWQ1ZDljOWMwYjNjNzJkZTlmZTMzZDhjMjcyYTVmOTdlN2NkODI1NzM5ZjVlODEwMjhlNTMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImYwYmY0YjUxMzc0OTM4MGQwOTE4M2FlMjZlYjljNzQwNGQ0MDk0YjlkYTZkNDAyZTE5ODg1NjEyYzJhZTVlYWMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjRhMThkMjM0NTU0ZTQ3NjQ3NmVkOWEzNDRmMGM3YWU4YzU0NGQ3NmRmYmY0M2VmNTgxMTA2MDc2MzIwNGIzMGQifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_33226f6c9a9046e5857bc76e925246c7",
+      "statement": "Shipped merchant merge defaults are merge_threshold 0.5 and merge_suggestion_floor 0.3. A router must not restore 0.8 or treat 0.5 as the suggestion floor. Inclusive comparison rules are owned by the cascade and configuration pages, not restated here.",
+      "evidence": [
+        {
+          "resource": "repo://apps/api/finance/settings.py#L78-L84",
+          "version": "repo-lines-v1:sha256:5a2c7dcb722e6120f54d17e251e4866f8517aa6dfd49d95d05bd8f9636d74371:eyJzZWxlY3RlZExpbmVDb3VudCI6NywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMzI2MjIyMDEyNjcwMmY0OTc4NWY3YjQxYTJiNWQ1NTJlY2IzMWVjM2EyODk0MTVlZmFlYWUwM2JhNWIwYWNkOCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNjQzNmMxY2RkMWQwZmJiZjQxYjdlY2YxZjkzMTZjOGU0ZDQyMDk1ZDdkNWYwYTM1OTI3N2RiZTdmYzY1ZmZjZiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiYjM5YjhlYTEyNDJmNzYzN2M0MGRkMGE5ZmI5ZWRlMzhmNzNjZjhlOTY5ZGY5MGEwYWZlNjg0YTgyZGYzYjQ1OCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMDU1NDQ2YjI1YmQxNzc5NzA2ZDcwMjk5ODdiNmIyYzAwZGJhZWQ0YTkxMTlhM2Q4NjBhMGYwMWUzZmRmM2FhNSJ9"
+        },
+        {
+          "resource": "repo://docs/architecture.md#L45-L51",
+          "version": "repo-lines-v1:sha256:ac4fec5ea73c179bb3257ab7d833c43ea5efe8aa67cfb16f6b16de1f8503a62d:eyJzZWxlY3RlZExpbmVDb3VudCI6NywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYzU3YzU4MmNhZjllMTJkMDRiYjJlMGI2YmJkY2M0NDE1YzEzMzI4ZjlmOTk2NDJlMjNiZTM3NmZhMTZhNTYyZiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZmJiM2Y2MTg0YjUyNWY1M2UxYWYyMzEyMTdmOTliMzZhNjQzMTc3NDBjNWM2MjY2Y2ZjYmJlNTE2NDgyNDZjYSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNTY2MGU4YzExYjJkOWFlZDFhOGVkOTcwNzkyNTkyN2QzMTQ3NGY3YWJjYTdiNmY1YjliNmNmN2VjNDg5ZTQyMyIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMzY2MDY0OGE5YTE0NWJhMzUwNmNlZWYwOTM3NDU4NjQ4MGVlZjU0YWViMDQ3Y2U2ZjgzOGU3YTViYTA4MjZkZiJ9"
         }
       ]
     }
   ],
   "verification": {
     "by": "openwiki/0.7.2",
-    "at": "2026-10-17T19:58:49.962Z"
+    "at": "2026-10-17T21:18:38.741Z"
   }
 }

@@ -3,9 +3,6 @@ type: chat agent
 title: Chat agent
 description: The shipped household-finance chat is one ReAct agent with a single read-only SQL tool, a YAML semantic layer checked at startup, and separate stores for agent memory and the history the user sees.
 tags: [chat, agent, sql, semantic-layer, read-only]
-verified:
-  - by: openwiki/0.7.2
-    at: 2026-10-17T19:58:49.962Z
 sources:
   - id: openwiki-source-6d0c43afc2897cff99344bbc
     resource: repo://apps/api/finance/agent/catalog.py
@@ -15,6 +12,8 @@ sources:
     resource: repo://apps/api/finance/agent/middleware.py
   - id: openwiki-source-24fafe81e5989f6cb589515a
     resource: repo://apps/api/finance/agent/prompt.py
+  - id: openwiki-source-11b4bf7430eb44510693f2b1
+    resource: repo://apps/api/finance/agent/prompts/system.md
   - id: openwiki-source-a32f31c4e25b5edb1f653071
     resource: repo://apps/api/finance/agent/runtime.py
   - id: openwiki-source-32f3e0a3ce36b836d1da4117
@@ -37,6 +36,8 @@ sources:
     resource: repo://apps/api/finance/api/chat.py
   - id: openwiki-source-93a650e15d829c7b5182b732
     resource: repo://apps/api/finance/api/main.py
+  - id: openwiki-source-83c03eca02f158255cf5b496
+    resource: repo://apps/api/finance/cli.py
   - id: openwiki-source-576f357713b862813ab841d1
     resource: repo://apps/api/tests/test_agent_graph.py
   - id: openwiki-source-577d7c34408ed456cbaf0678
@@ -53,15 +54,18 @@ sources:
     resource: repo://apps/api/tests/test_sql_runner_db.py
   - id: openwiki-source-4cc97881fc7841807d77391b
     resource: repo://apps/api/tests/test_sql_runner.py
-  - id: openwiki-source-2c150224c03b91cd2e1fdd33
-    resource: repo://docs/backlog.md
+  - id: openwiki-source-115b2dad781e2a2c5b5a980d
+    resource: repo://docs/architecture.md
   - id: openwiki-source-c1a96cc508bd4bf6069931b1
     resource: repo://docs/superpowers/specs/2026-10-12-slice-4-chat-design.md
   - id: openwiki-source-f9d5db85cdb980ec957e98ef
     resource: repo://supabase/migrations/20261012000000_slice4_chat.sql
   - id: openwiki-source-462b0f61aae61181f05c2689
     resource: repo://supabase/migrations/20261014130000_display_names.sql
-generated: { by: "openwiki/0.7.2", at: "2026-10-17T19:58:49.962Z" }
+generated: { by: "openwiki/0.7.2", at: "2026-10-17T21:01:31.912Z" }
+verified:
+  - by: openwiki/0.7.2
+    at: 2026-10-17T21:01:31.912Z
 ---
 
 # Chat agent
@@ -70,7 +74,7 @@ The chat answers questions about the household's own imported bank data. It is o
 
 The agent never writes. It reads two views in schema `agent`, as the `agent_reader` role, inside a read-only transaction. What those views mean in money is [Money rules](../../docs/money-rules.md). Which objects own the columns is [Data model](../architecture/data-model.md). How a question reaches this agent from the web is [Ask a question](../workflows/ask-a-question.md). Knobs live in [Configuration](../operations/configuration.md).
 
-Three things are not built. Chat evals, a check that every stated amount appeared in a query of the turn, and account balances are ideas in [Backlog](../../docs/backlog.md) (items 6, 8, and 5). Do not describe them as existing, and do not widen `agent_reader` so the agent can reach balances or other tables.
+Three things are not built. [Architecture](../../docs/architecture.md) names them as known gaps and links GitHub issues: no check that a stated figure was queried, no chat evals, and no balances. Those issues are not code. Do not describe a proposed design as if it were shipped, and do not widen `agent_reader` so the agent can reach balances or other tables.
 
 ## What one turn does
 
@@ -131,7 +135,7 @@ Three models come from `ChatSettings` through `init_chat_model`:
 
 `prompts/system.md` is static. It names no table, and of the money columns it names only `spend`, `income`, and `amount`. The data model arrives as the data context, so a view change rarely touches the prompt, and a prompt change does not break a stored thread.
 
-Rule priority, when two rules conflict: data integrity, then money rules, then numeric correctness, then clarity, then style. The workflow the model is told to follow is lookup, then one final query. A filter value must be an allowed value or the result of a lookup. Totals, shares, averages, and deltas are computed in SQL. Every number in the answer is supposed to come from a `run_sql` result of this turn, because earlier results may have been cleared. That is a prompt rule, not a code check. Backlog item 8 exists because a live run stated an amount no query returned.
+Rule priority, when two rules conflict: data integrity, then money rules, then numeric correctness, then clarity, then style. The workflow the model is told to follow is lookup, then one final query. A filter value must be an allowed value or the result of a lookup. Totals, shares, averages, and deltas are computed in SQL. Every number in the answer is supposed to come from a `run_sql` result of this turn, because earlier results may have been cleared. That is a prompt rule, not a code check. Nothing verifies that a stated figure appeared in a query of the turn. That check is not built.
 
 `render_data_context` rebuilds the second system block every turn: model knowledge and columns with live Postgres types, allowed values, metric expressions, the twelve examples, today's date, and the latest imported movement. Category and group values come from `categories` (seed order) plus the synthetic `uncategorized`. Account values come from `accounts` joined to `imports` coverage. Merchants, notes, bank text, and bank operations have no value list. The model must look them up.
 
@@ -195,7 +199,7 @@ Schema `agent` is not exposed by the Supabase Data API. The views are thin proje
 
 `agent.subscriptions` was recreated by [subscription cadence](../../supabase/migrations/20261014120000_subscription_cadence.sql): `merchant`, `charges`, `last_charge`, `latest_amount`, `cadence`, `cadence_source`, `monthly_equivalent`, `active`. Cadence and the active window are the Subscriptions section of [Money rules](../../docs/money-rules.md). Do not restate them. The slice 4 spec's subscription column list (`typical_amount`, no cadence source) is stale. Trust the migration and `tests/test_agent_views.py`.
 
-Balances are absent on purpose. `balance_after` exists on the ledger, but the order of movements within a day is not stored, so a balance on a date could pick the wrong row. That is backlog item 5, not a grant to add.
+Balances are not available to the agent. `agent.transactions` does not project `balance_after`, and the semantic layer says account balances are not a use of that view because the balance after each movement is not available there. Answering balances is not built. Do not add a balance column or grant `agent_reader` the ledger to fill the gap.
 
 ## Semantic layer
 
@@ -243,7 +247,7 @@ Scores written after the save, when a trace id exists: `sql_calls`, `sql_errors`
 3. Stay inside the guard. One `SELECT`, no writes, no `set_config`, no schema-qualified functions, no function outside the ones sqlglot types plus `age` and `make_date`.
 4. If the expression needs a new column, add it to the `agent` view in a migration and describe it in the model YAML in the same change. Do not grant `agent_reader` the base table. A recreated view needs `GRANT SELECT` again.
 5. Start the API, or run the integration check. `validate_layer` refuses to boot on a mismatch or an `EXPLAIN` failure. `uv run task test` covers the guard and the YAML shape. `uv run task test-integration` runs `tests/test_catalog_db.py`, `tests/test_agent_views.py`, and `tests/test_sql_runner_db.py`.
-6. A prompt change is a different edit (`prompts/system.md` or `prompts/summary.md`). It bumps `PROMPT_VERSION` and does not rewrite checkpoints. It also does not prove the model will state only queried numbers. There is no chat eval harness yet ([Backlog](../../docs/backlog.md) item 6).
+6. A prompt change is a different edit (`prompts/system.md` or `prompts/summary.md`). It bumps `PROMPT_VERSION` and does not rewrite checkpoints. It also does not prove the model will state only queried numbers. There is no chat eval command. `finance eval-categorization` benchmarks the categorizer, not this agent. Chat evals are not built.
 
 A column rename that skips the YAML fails startup with `not a column` or `not described`, listing every mismatch. A metric pointed at an unknown model fails `check_layer`. A metric or example that does not compile fails with `semantic layer SQL does not compile`.
 

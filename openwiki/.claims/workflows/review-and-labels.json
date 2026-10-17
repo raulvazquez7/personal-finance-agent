@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "pageVersion": "sha256:1d4098111311c1d25cc163a50157d521ecf57b34253ae7690613491fe42195f2",
+  "pageVersion": "sha256:8bea46948da52d9b69bb3f98f28e38157800103a1974bc4043afed1230e1a230",
   "claims": [
     {
       "id": "claim_4d0052dbf6504e509390153eb86dd909",
@@ -39,7 +39,7 @@
           "version": "repo-lines-v1:sha256:2bec81176517e7476c8417bbba8663e468fb5894fbe32183f8af8daadf952774:eyJzZWxlY3RlZExpbmVDb3VudCI6MzcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjgxNTBkMGRlMzYxOTljZDYxOWU5NThkZWI4OGY1MmNjNzk1MTM1NGVmNjU5NzIwYzczY2E5MTczOTNlYTdjNTYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjMwYzFmMTg4ZjE0MmVkN2E4MjQ2ODBiMjA3MTcyYzU1MTliYzYxNGE0OGZkYTdjZjE2N2VkYjhkZGY3OTk1NmMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjM4YWU2MGEwOWE3ODRiNDdlYTA4NTMxNmJmZjkyYzY4MDExZGQ2NzBkODlmMjhkYWY1ZGE5YmI2YWU0MWJjNDIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
         },
         {
-          "resource": "repo://apps/web/src/components/shell/nav-links.tsx#L65-L75",
+          "resource": "repo://apps/web/src/components/shell/nav-links.tsx#L85-L95",
           "version": "repo-lines-v1:sha256:ee5e0e04e00b8fb4d0ab982257f2e8b134e299e54c7950521e70e0a0511abe84:eyJzZWxlY3RlZExpbmVDb3VudCI6MTEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjdlZjU0ZjAxMDRkNmQ0NmQ4YTg1Zjg4NzljOWJmMTViODExZmExOGVjMTdjNzRkMDlkYmMwODgyZWUzMzIxODgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY4NTQxYjlhODAyYmZjMjVmMWE5ODg0NzYzNDU4NzBiNzk0OTFjYTkwZjIxOGJjNDk4ZTgzY2Y5NmNlNTRmZDkiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjI2ZWQzNWIyOGM2NzdiZDZkMWZiMTk2OWIxOGExZTVmYzg4NmEyNTg4NWUxYmIzY2YyZWYxMmI5YWMyNjJlMTEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImM4YWI2ZjU0N2I1MTdkODk3NjM4NmNlYWM0YjdhMDI3NWE2OTdiMDMzOGM1ZTJkNGJhNDE4NjQzODQyZGMzODMifQ"
         },
         {
@@ -213,7 +213,7 @@
       "statement": "supabase db reset wipes labels, notes, and merchant defaults. The CSV keeps labels and notes, not defaults, so export must precede a reset and the restore procedure is the one named in CLAUDE.md.",
       "evidence": [
         {
-          "resource": "repo://CLAUDE.md#L69-L74",
+          "resource": "repo://CLAUDE.md#L88-L93",
           "version": "repo-lines-v1:sha256:f533ecc844ba2bf4a8194b76adbc07ba53edc28c09fff5bf22d8b3a7c4dade39:eyJzZWxlY3RlZExpbmVDb3VudCI6NiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYjI2OTA5ZWY4ODFmZmQ3ODQ3NzhiYjRkZmQ4OGEyN2U2NjViYTgzYmZmOWY1ZTMxYjljODZkNjFjYjdkMTRmOSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiOTI5ZmZiODBlMmZkM2U5ODhiYjVkZmJmODNjYjBjZTNlYTc1YzAxZTQ3NGE3ZGYwOWVjZTliNDhlMDEwMDM4OCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZjkwMDAyYWIzNjRjNzAxMTQzNWJjZmY3Mjg0YzU3YWY4N2NmYjAwN2RhNDYzZTE3NTRjN2U1OTZkYWUzOGQ4ZSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMTNiNWVlNmVjMWE1OWZkMTgwYzI1ZmFhM2E2MGI1NTNiODJlZGI0ZWY0NGRlNmY1MzI3OGY3OTFiNGM1NDBhNSJ9"
         }
       ]
@@ -223,7 +223,7 @@
       "statement": "Writes that change labels, notes, merchant defaults, renames, or imports must be verified with scratch-database recipe R2 named in CLAUDE.md, not against the real database. The label, review-route, and labels-io tests are integration-only and never run under task test.",
       "evidence": [
         {
-          "resource": "repo://CLAUDE.md#L94-L96",
+          "resource": "repo://CLAUDE.md#L117-L119",
           "version": "repo-lines-v1:sha256:c7e351b4d7c28e2c5f32de981ddef9bd9044923bf320f086f7f0d794c6c92170:eyJzZWxlY3RlZExpbmVDb3VudCI6MywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZmI4Y2ZkZmMzMzU5NmVlYTA4YTEyMWRmYjFmYzA5ZmY3NjJmOTk1ZmZkZDRkZmY1MTAzOWRkN2U5Y2FjNzcyNSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZjcwOTgwNWVlZmU5ZjdkYTAxNmIxNmNkMTFmM2ZlNTMwNjBiZDg0NjVkMDk2NDIwMjI4MDg1NmQ0ZGVmM2E3MSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiYmIzY2ZhOTA5NzBmMmI3YmEyZGMwMzIyY2JjOTVlOTQwZGM3ZDI5NTEwY2RjZjU3NzE3ZDYxNjE0ZDIzZTEzZiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNzE2ZWIyYzM5OGNhZDRlYjA2MWQ0NTM1NGU4ZjdkYjg4NzYzMDQ5NGJlZmY4MTZmOWQ2Yjc3YWI0MDQwOWU2ZiJ9"
         },
         {
@@ -239,10 +239,32 @@
           "version": "repo-lines-v1:sha256:cef7f773ba983abbab18d3fedff66bb85806f063456038e8bd00c0562718af00:eyJzZWxlY3RlZExpbmVDb3VudCI6MSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiY2VmN2Y3NzNiYTk4M2FiYmFiMThkM2ZlZGZmNjZiYjg1ODA2ZjA2MzQ1NjAzOGU4YmQwMGMwNTYyNzE4YWYwMCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiY2VmN2Y3NzNiYTk4M2FiYmFiMThkM2ZlZGZmNjZiYjg1ODA2ZjA2MzQ1NjAzOGU4YmQwMGMwNTYyNzE4YWYwMCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNjgzYTcxOTlmNzJjNzRiMTI3YjIzMzFmNWNiNWU1MTExYWNhNzU3MTA0YjIwNDE4ODUwNWQzOTdlOTgyYjNjZSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNTYwOGZmMjI0ZWZkNzIyODBiMzU2ODRiMDg3ODg4OWY5OTMwODczN2Y4ZDk1OWQwNDI5OTlkYWQ4YjAzZTgyYyJ9"
         }
       ]
+    },
+    {
+      "id": "claim_81304504aab149718c6841b02787aeac",
+      "statement": "A merge card is written only when same-merchant confidence is at or above merge_suggestion_floor (0.3) and below merge_threshold (0.5). Equal to 0.5 attaches the row to the known merchant and writes no suggestion. Equal to 0.3 creates a separate merchant and stores the suggestion. 0.29 creates a separate merchant with no suggestion.",
+      "evidence": [
+        {
+          "resource": "repo://apps/api/finance/categorization/merchants.py#L86-L103",
+          "version": "repo-lines-v1:sha256:ba9afcda083298fbd3de53647d12b687c4349954dbe0fc9fdf6b2fdbf3d26a77:eyJzZWxlY3RlZExpbmVDb3VudCI6MTgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjU2MzkyMGI5MjQ1MzJjNzUyMjQ4MzkzZmZjZDljNWJkOGRmNDcyZjZlOWE4ZmE3Yjg3MjhhMzc0Zjk4MWZiNzgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImQ0Y2JmNGFjZTRlYzJiYzExZmRlOWY3NGZlMDc3NTlkOTRhYzc1ZDNkZjEwYmE4MzAwMzczMmIzNDNmYjU4NTMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImE4YTQ3ODEyZDRiOGQ1NjBiODVkNTk4YjYyODZmYTJhNGZmNTM2MTVlN2FmY2M2YWZmMDRhZjlkNTAyMjViMmUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        },
+        {
+          "resource": "repo://apps/api/finance/categorization/store.py#L135-L142",
+          "version": "repo-lines-v1:sha256:e1539791e5db6beaa98bb4bacd322e20528c7d9267139a9f1e94d2ac51ef6ac2:eyJzZWxlY3RlZExpbmVDb3VudCI6OCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMDQ2NGY2OTFkMGM4NzM4NTI4MDRmMGE1OTg4ZmNmYjc1NDBjNWU1NmViY2JjMTJlZmI1MDI3N2MwNjRjOWQwOCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNTEwMzQ4MWM1N2QwZjBkYzBmNzZjZDJjYzhiMzYwNGM0ZTgyOTZkYTQxMjJhZGQxOWU4MTc0NWRjN2UzMzFhNiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZmFhYTk2NDkwZmI2ZDI0ZjIyM2NjYWI0MWZiMTQ0NzFmZDY5YTUwNGNhY2RjZjJiNDk1N2M5MzMzMmJhZDI4ZCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNzFjNDNiNDMxYWQ3MDUzYTFmNzg4YzYyODMzZDQwODdhMjg4ZGVlMzRiZDA0MjM5OThmZTM0ODBiN2MwYjU5MiJ9"
+        },
+        {
+          "resource": "repo://apps/api/finance/settings.py#L80-L83",
+          "version": "repo-lines-v1:sha256:714e88ae06d5c48ca7e672ff6732781fd4ba453325c37760d2ced95f3c55ef5a:eyJzZWxlY3RlZExpbmVDb3VudCI6NCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYmQ1ODJiODExNjA5NWNlMWY5NTQyYjU5ZjIzODhkM2YzOWI3NmQyODg4ZTFjOTkwYTcwZjUwZDhhN2E5Y2MzOCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNDliYTdkOGFmMmNlYzJhNzJkM2U2ZDFlMzk5MWY0NDQxZTE3OTc3ZTBjYWEyZmIwYmMxYThhNWMyMjY5MWZjNyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNGU4Njk0OWQ3Y2FkMWM5ZWNkODdhZjg0NzI1NWQ1N2Y2MWI5MDZhYTdmYzNjZDBhNDVhYWJhMzc3NjhhN2ZiYiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNTk5ZGNjNjdhMDNiZWZkYTllYzgzZmRmMDNjNDUwMmUwNTYxMGNlZDQ4OWE3NTU5MzM5OWQ2ZGY2YjgyNGM2NSJ9"
+        },
+        {
+          "resource": "repo://apps/api/tests/test_merchants.py#L79-L90",
+          "version": "repo-lines-v1:sha256:e080cfbbcef8556a53a0d696d20afe0b4db6c1aea356daf9f98f578da3e7b651:eyJzZWxlY3RlZExpbmVDb3VudCI6MTIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImFmMzQ1ODNhNTk4NzY3YmY1NmFlZmViNjVlMjAzM2ExNjUxY2M0YzhkN2U2ZjBhZjNlNWNmZDMyOTNmOTMzYjMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjIwZjI0NmMyOGNkYjk5MTU3MjA4ZmU2ZTNhM2MzNWYyNDg4ZDkwYmQxMWQzOWQzYjkyMzg5ZDFmNjc2MGQ2MzYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjRjYWEyZWM2ZjQ0YjM2ZjEyMjQwNWYxMjc4OGQyMjJiMjAwN2I0MWQ1ODVkYmJiYzMzYzA3MzE3MDkzMWFhN2UiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjNkNjM1ZWMxYzRmMWExMjVmMTk4MTRkZTQ1YjllNjRmZTZkODI4MWY4OGM3OTI5MjgxOWRkMTk0ZDUxYmIyZjkifQ"
+        }
+      ]
     }
   ],
   "verification": {
     "by": "openwiki/0.7.2",
-    "at": "2026-10-17T19:58:49.962Z"
+    "at": "2026-10-17T21:01:31.912Z"
   }
 }

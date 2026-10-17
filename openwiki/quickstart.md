@@ -1,28 +1,43 @@
 ---
 type: task router
 title: Tally AI quickstart
-description: Init page for coding agents. Routes a change to the owning package and wiki page without restating working rules or copying the README.
+description: Init page for coding agents. Routes a change to the owning package and wiki page.
 tags: [quickstart, routing, agents, ownership]
-verified:
-  - by: openwiki/0.7.2
-    at: 2026-10-17T19:58:49.962Z
 sources:
+  - id: openwiki-source-f1a5f4bd59b319f6cae29137
+    resource: repo://.github/ISSUE_TEMPLATE/feature.yml
   - id: openwiki-source-164e2da859b5277df81c7d94
     resource: repo://.github/workflows/ci.yml
   - id: openwiki-source-8037e2358a2c4f9b2c722a11
     resource: repo://AGENTS.md
   - id: openwiki-source-0011b8802b9af62cecf9cb86
     resource: repo://apps/api/finance/agent/graph.py
+  - id: openwiki-source-40546be375b33e38583ad241
+    resource: repo://apps/api/finance/api/imports.py
   - id: openwiki-source-93a650e15d829c7b5182b732
     resource: repo://apps/api/finance/api/main.py
-  - id: openwiki-source-be202f0a191b0f5bedaec28d
-    resource: repo://apps/api/finance/categorization/store.py
   - id: openwiki-source-83c03eca02f158255cf5b496
     resource: repo://apps/api/finance/cli.py
+  - id: openwiki-source-88763fc8b13bd378d91f8944
+    resource: repo://apps/api/finance/ingestion/adapters/__init__.py
+  - id: openwiki-source-fa2816e54b2ba6a0580926d6
+    resource: repo://apps/api/finance/models.py
+  - id: openwiki-source-03ce6f667ac18e4ea0a87710
+    resource: repo://apps/api/finance/settings.py
   - id: openwiki-source-b2697db94ca37e702a50682a
     resource: repo://apps/api/pyproject.toml
+  - id: openwiki-source-ebacbce0ac9f7bcd4dedfcb5
+    resource: repo://apps/api/tests/test_api.py
   - id: openwiki-source-99de51df25f29bfc72caf823
     resource: repo://apps/web/package.json
+  - id: openwiki-source-48b55c8d65dd0c81daf7b6e8
+    resource: repo://apps/web/src/components/shell/mobile-nav.tsx
+  - id: openwiki-source-08c3f3251a21a51be376202e
+    resource: repo://apps/web/src/components/shell/more-menu.tsx
+  - id: openwiki-source-38bb240f1e74292d148ecad8
+    resource: repo://apps/web/src/components/shell/nav-links.tsx
+  - id: openwiki-source-ac9b852a2fa621958d429bb8
+    resource: repo://apps/web/src/lib/api.ts
   - id: openwiki-source-a2371d6362e5db4bc834ad03
     resource: repo://CLAUDE.md
   - id: openwiki-source-115b2dad781e2a2c5b5a980d
@@ -33,16 +48,23 @@ sources:
     resource: repo://docs/superpowers/specs/2026-10-12-slice-4-chat-design.md
   - id: openwiki-source-23775c3de52f3ab95a13cb8b
     resource: repo://README.md
-generated: { by: "openwiki/0.7.2", at: "2026-10-17T19:58:49.962Z" }
+  - id: openwiki-source-9aa52b496223af6ebbb398ec
+    resource: repo://supabase/migrations/20260922000000_init.sql
+generated: { by: "openwiki/0.7.2", at: "2026-10-17T21:01:31.912Z" }
+verified:
+  - by: openwiki/0.7.2
+    at: 2026-10-17T21:18:38.741Z
 ---
 
 # Tally AI quickstart
 
-Coding agents start here, then follow one link. Do not preload the rest of the wiki. Code and tests win over every document. Specs in `docs/superpowers/specs/` explain why. [Backlog](../docs/backlog.md) lists ideas that are not built. Do not present one as existing.
+Coding agents start here, then follow one link. Do not preload the rest of the wiki. Code and tests win over every document. Specs in `docs/superpowers/specs/` explain why. Ideas and known bugs are GitHub issues. Some docs link them, for example [Architecture](../docs/architecture.md). Do not present an idea or a linked issue as built.
 
 What the product does and how to run it is [README](../README.md). Why each part is built this way is [Architecture](../docs/architecture.md). Working rules stay in [CLAUDE.md](../CLAUDE.md). This page does not restate them and does not copy those documents.
 
 The money contract is [Money rules](../docs/money-rules.md). Link it. Do not restate it. The v1 spec's section 9 (a jev router in front of the chat) was superseded by [slice 4, section 16](../docs/superpowers/specs/2026-10-12-slice-4-chat-design.md). The shipped chat is one ReAct agent with no router.
+
+There is no scheduled OpenWiki workflow. `AGENTS.md` mentions one; the workflows directory has only CI. Refresh the wiki by hand with `openwiki code --update` before a slice merges. [CLAUDE.md](../CLAUDE.md) names that command. Do not hand-edit generated pages unless asked.
 
 ## Where a change lives
 
@@ -76,6 +98,7 @@ Pick the owner, then open the page that owns the behavior. [System map](architec
 | You are changing | Start in | Then read |
 | --- | --- | --- |
 | A PDF adapter, dedup, balance chain, or `import_statement` | `apps/api/finance/ingestion` | [Import to dashboard](workflows/import-to-dashboard.md) |
+| The imports list, the coverage board, or import history | `finance/api/imports.py` and `apps/web/src/app/imports` | [Import to dashboard](workflows/import-to-dashboard.md) |
 | Pairing, system rules, jev questions, merchants, thresholds, or `link_loans` | `apps/api/finance/categorization` | [Categorization cascade](concepts/categorization-cascade.md) |
 | A review card, a label, a merchant default, a rename, or a note | `categorization/labels.py`, `review_queue.py`, and the `/review` route | [Review and labels](workflows/review-and-labels.md) |
 | `spend`, `income`, a dashboard aggregate, or a subscription total | `apps/api/finance/dashboard` and `v_transactions_enriched` | [Money rules contract](concepts/money-rules.md) |
@@ -84,9 +107,16 @@ Pick the owner, then open the page that owns the behavior. [System map](architec
 | The categorization benchmark or how to read a history line | `apps/api/finance/evals` | [Run the categorization eval](workflows/run-categorization-eval.md) |
 | A table, view, grant, or `agent_reader` | `supabase/migrations` | [Data model and migrations](architecture/data-model.md) |
 | An env key, CORS, trusted hosts, or what a trace receives | `finance/settings.py`, `finance/tracing.py` | [Configuration and tracing](operations/configuration.md) |
+| `MAIN_ITEMS`, `MORE_ITEMS`, or a route that is not a nav item | `apps/web/src/components/shell` | [System map](architecture/system-map.md) |
 | Which command proves the change | the matching task or recipe | [Verify a change](operations/verify-a-change.md) |
 
 A new bank is a new adapter plus a `bank` enum value, not a change to the cascade. A new total sums `v_transactions_enriched`. Do not recompute spend or income in the web app. A new chat metric or example lives in `apps/api/finance/agent/semantic/` and is checked at startup. Do not add a second agent tool, and do not grant `agent_reader` beyond the `agent` schema.
+
+`GET /imports` returns every import. There is no row cap. The coverage board on `/imports` reads that whole list. Do not add a `limit`. Merchant merge defaults live in `Settings`: merge at 0.5 and a suggestion floor of 0.3, both inclusive. Do not put 0.8 back, and do not treat 0.5 as the suggestion floor. Comparison rules stay on [Categorization cascade](concepts/categorization-cascade.md) and [Configuration and tracing](operations/configuration.md).
+
+## Shell
+
+`MAIN_ITEMS` are Overview, Transactions, Subscriptions, Chat, and Review. From `lg` that is the visible row. Imports and Settings are `MORE_ITEMS`: behind the menu button from `lg`, and after a separator in the sheet below `lg`. Spending, income, and merchant pages are not nav items. Overview treats those paths as the overview page.
 
 ## Entrypoints
 
@@ -120,7 +150,7 @@ A flow a person can see or operate is checked with agent-browser against the run
 
 ## Do not treat as built or as repo layout
 
-- Chat evals, a check that every stated amount appeared in a query of the turn, and account balances in the chat are backlog items. They are not implemented.
+- Chat evals, a check that every stated amount appeared in a query of the turn, and account balances in the chat are not implemented. [Architecture](../docs/architecture.md) links those gaps as issues. A linked issue is not code.
 - Plans under `docs/superpowers/plans/` are task history, not instructions.
 - `conversation_history/` and `skills/` are OpenWiki mounts, not repository directories. Do not treat them as source.
 - Do not describe `data/` or other ignored paths. Do not copy personal amounts, account numbers, IBANs, or merchant names into docs or tests. Fixtures stay short synthetic text.

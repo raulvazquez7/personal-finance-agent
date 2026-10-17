@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "pageVersion": "sha256:8d3e513815cb5b28bc4fd8b20d34526829fbda5e649161056b4e43afdf53608c",
+  "pageVersion": "sha256:76fb7165520194aed473712b3a3e4c979593fba2e10090a5b2d3a6d354207654",
   "claims": [
     {
       "id": "claim_0957cb0478cd4fa5bd3084af1ac82798",
@@ -240,19 +240,19 @@
     },
     {
       "id": "claim_20b6ef2711a54d5fac6c721ba8199071",
-      "statement": "The imports page lists the last 100 import records and uploads each selected PDF as its own POST /imports, showing new and duplicate counts, then refreshes the history without waiting for categorization.",
+      "statement": "The imports page loads every import and every account, then renders UploadForm, CoverageBoard only when there is at least one import, and ImportHistory. UploadForm posts each selected PDF alone to POST /imports, shows new and duplicate counts, and refreshes without waiting for categorization. POST /imports still returns 201 after the insert and queues a pending-only categorization run.",
       "evidence": [
         {
-          "resource": "repo://apps/api/finance/api/imports.py#L43-L49",
-          "version": "repo-lines-v1:sha256:04fe4e8749f8c3facfe507a3ae4cb31a6befe581c0cd1aad3867a06f5e12e283:eyJzZWxlY3RlZExpbmVDb3VudCI6NywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiODRmNDAzMTcyYTY0OTdiOWJiZGEyYmZlYzIxYzgzOWQxYWMyNWNiMzMyMjQ5ZGYwNDgzNzVlMTBlZTRhZjA5NyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiOWY0YzA3ZmZhODA0M2JiOTYwMzM3ZTVhM2VmOGE5ZDRkMjQxYmJhYjcwYjE0YjgzYWVlOTdlMWRlY2U4ZjQyNyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMDk2NThmY2JiOTJiZTlhNmMwZjIxYmJjYjIxNGRiMGI5ZmQwZGMzNGNlOTBjOGI4MzcxOTg0N2U4ZjMxZmU0NyIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjAsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZTNiMGM0NDI5OGZjMWMxNDlhZmJmNGM4OTk2ZmI5MjQyN2FlNDFlNDY0OWI5MzRjYTQ5NTk5MWI3ODUyYjg1NSJ9"
+          "resource": "repo://apps/api/finance/api/imports.py#L31-L39",
+          "version": "repo-lines-v1:sha256:378644129a9ebf7c0eb9a03d6020e044c1896d4dc84500bd2ce78b100b403098:eyJzZWxlY3RlZExpbmVDb3VudCI6OSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNGJjMzUyMDcyODlhZDZiNDQxNzMxOGUxZmMxZmFmOWY5ODkyNmM4MjcxZjg3ZGRiY2RhN2YxNTEwZWY2ZTNlYiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNzZiMDcyNDljYzJiYjg2MzZhMGM1N2ExYzE2NmZjZTlmNjg4NTQyZmI2ZWM0NmRiMTdlOGFhYzM0ZjU2MzAyYiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiOTBmNTA5OTllM2I3YzViZjMzYWVkNmUzMmMzNmI2MDg2MjkyODIzMTJjNTBlZmVkZWEyMmI2ODhmNWNkOTNjYyIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMDk2NThmY2JiOTJiZTlhNmMwZjIxYmJjYjIxNGRiMGI5ZmQwZGMzNGNlOTBjOGI4MzcxOTg0N2U4ZjMxZmU0NyJ9"
         },
         {
-          "resource": "repo://apps/web/src/app/imports/page.tsx#L14-L29",
-          "version": "repo-lines-v1:sha256:ce4467cdacd7635513454f4f4ea60c658c98f9a856d975304f7325b74886d564:eyJzZWxlY3RlZExpbmVDb3VudCI6MTYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjA5OWZjNGE4N2Q5ODAyYTY1ZGEyYWZiNTJhOWMyNmExNDFhYzc0MjYzNTgzZjEyZDY2MjM1NzhjZjU0NzQxMTUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ4M2Q5YjcxZDMwMjE5Y2Q3N2ZhYTViMmJjODAyNDlmY2M2N2FmNDkyOGVmNGU5ZmEwYjdhMjNiNGY5NWU2NzYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjMyM2ZkN2VkZDA5OGQ5MTExYTJmNzdjOWQ2YmVlYzI4YTBkNjIyNTNiYWNmMDJiZTc3M2IwZDIxMjllOWQ4ZmYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjZjMjM2YzQ5Y2MxMzNmZjVjZGI1NzY5NzU3ZDMzOWFjNmY3M2M0Yjc2ZGY2MzU1YTEzYmMxODg5MDI0ZjI0NjMifQ"
+          "resource": "repo://apps/web/src/app/imports/page.tsx#L14-L43",
+          "version": "repo-lines-v1:sha256:627551d2c39a69e4095ae0d03d8d55b60baf38a968202c76ef6bade1aa691ce4:eyJzZWxlY3RlZExpbmVDb3VudCI6MzAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjA5OWZjNGE4N2Q5ODAyYTY1ZGEyYWZiNTJhOWMyNmExNDFhYzc0MjYzNTgzZjEyZDY2MjM1NzhjZjU0NzQxMTUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjI0YWM1ZTVjNzU3YTA2NTNhMzIxMTIwYjM0NDk0MzE4MTVhYzFmMzUyZTg5NGZlOWIyZTAzNTA5ODY0ZWU0ZDAiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjMyM2ZkN2VkZDA5OGQ5MTExYTJmNzdjOWQ2YmVlYzI4YTBkNjIyNTNiYWNmMDJiZTc3M2IwZDIxMjllOWQ4ZmYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjYzMzI5Njc4NjBhYjgyMjdkZWQzNjk4Yjk2ODMxZDJiNTIzZjgwODMzMmExOTIxYTExYzdiNjcyZDBmODgyNmIifQ"
         },
         {
-          "resource": "repo://apps/web/src/app/imports/upload-form.tsx#L17-L51",
-          "version": "repo-lines-v1:sha256:9757944a588a041028a8a726e84b39c137815188f1217fc10d0b6eb6a835ddb6:eyJzZWxlY3RlZExpbmVDb3VudCI6MzUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAzODA1NDkzY2FlMDUyMjY4YWY1NDU0OGRhYjdjNTFmNThmZTYwZTlmZjk5YzA3MWIwZjUzMDM5YTlhMGNlNzciLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ4OTNmNDBlMzc4MWViODk2YzgyZDA0NmEwODA2N2ExMWUzNWNkZjJmMWRmYWYyNmZlYTkwYjhkYjY2NzY0MTMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImI1NGQwYTZhMzk0MzQ1ZDY5ZTZjNzJjNmNmMGI0ZGNkM2NiNTA3MTE3NjYwY2MyYTllMGEzNzZlNjYzZjFiYzYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjYzMzAyZmI5NDExYzU4NGVlMGUwMDA3MDlhNzYzMDYzNTk0M2RmOGExYzM4MjYzMGFkNjI1Mzk4YTAyNGJjOTQifQ"
+          "resource": "repo://apps/web/src/app/imports/upload-form.tsx#L21-L58",
+          "version": "repo-lines-v1:sha256:76f42eb0913f2df10a239afe1d4d9f2f494c3ea7feee141a971f1d8ea5239055:eyJzZWxlY3RlZExpbmVDb3VudCI6MzgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImIwMzUwYmE4MzMyNDI1MmY1NzkzYzQ3ZjdmNDhiYWJkNTk3OTcwYjE2ZTFjNGQ5ZTI5YjQxY2UzZTE2Njk2ODYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ4OTNmNDBlMzc4MWViODk2YzgyZDA0NmEwODA2N2ExMWUzNWNkZjJmMWRmYWYyNmZlYTkwYjhkYjY2NzY0MTMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImYzYjQzYjBhYWQ1Njc1ODVjZTI4YWJhYzU0MDU4M2ExYzZiYjY4NWM4ODFkNzNhZDg3OWU5OWMwZjgwMjZhOGEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjYzMzAyZmI5NDExYzU4NGVlMGUwMDA3MDlhNzYzMDYzNTk0M2RmOGExYzM4MjYzMGFkNjI1Mzk4YTAyNGJjOTQifQ"
         }
       ]
     },
@@ -291,10 +291,96 @@
           "version": "repo-lines-v1:sha256:e5a71a3fd4bc9b47ac25cbb47be2fc1c49e933597a68706154d864fbe41348d3:eyJzZWxlY3RlZExpbmVDb3VudCI6NywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNDkxNDRiMTI2NTdmMjZiMDBkOWY1YmMxMjNjZjE2ZDI1ZGI5ZmVmYzkwNjRkYmM0MjY1NTQyNGYxNTlmZGE5ZSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNWNjNzk3YTVkNzViN2ZhN2QzNzhkMmI2ZjJmMjA1ZDRkYzMzMzI2OGY2ZGJmYTliYzEyZmZjOTY5NGViMGM5YSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiODNkZDVmNzNkNjk4ZTE0ODExOTJiNmEzY2UzZTI3Y2NiOGQ5OGMwYTM0NzRkYTI3NTJiNGVkZjVhYzk1ZjdiYiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNTA4YWQyZjFiN2Q2YWU4NjdjYTQzMDdlYTc5ZTM3ODY5NzcwZmY4ZTMyNWY3ZWE2MDIwMGFjMzRhNzZkZjFiMCJ9"
         }
       ]
+    },
+    {
+      "id": "claim_c578cb760f61418aa4944d1c0767b57f",
+      "statement": "GET /imports is uncapped and ordered by period_end descending with nulls last, then account name, then imported_at descending, because the coverage board reads the whole list. LIST_IMPORTS_SQL contains no limit.",
+      "evidence": [
+        {
+          "resource": "repo://apps/api/finance/api/imports.py#L43-L54",
+          "version": "repo-lines-v1:sha256:93f0fd26f2f75b2be7d924538c43cc7836e50c5781de04213beefcf4ecf3d816:eyJzZWxlY3RlZExpbmVDb3VudCI6MTIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjFmOWI1MWI4N2Y5NDA1YTNiNDBhNGM5ODMyZGRlNDg1MzdiNTNkODgwMzM2OGQ4YmU4N2Y3NjczMDk5NzhhOTQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjlmNGMwN2ZmYTgwNDNiYjk2MDMzN2U1YTNlZjhhOWQ0ZDI0MWJiYWI3MGIxNGI4M2FlZTk3ZTFkZWNlOGY0MjciLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjA5NjU4ZmNiYjkyYmU5YTZjMGYyMWJiY2IyMTRkYjBiOWZkMGRjMzRjZTkwYzhiODM3MTk4NDdlOGYzMWZlNDciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        },
+        {
+          "resource": "repo://apps/api/tests/test_api.py#L172-L174",
+          "version": "repo-lines-v1:sha256:0780840a2d573a25ea4c757e618ce6e1a6fd31d78185c35ce7b831f32823af1b:eyJzZWxlY3RlZExpbmVDb3VudCI6MywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYzNkNjViMTZhZmQ4ODU5YTAwZjc5ODI5NDYyMTg2NDZiMjQ4NmE2ZTY3MWY5Yjc0OWM5ZWY4ZGUyYjViMWRhYiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiYjM4ZDhmNGE4YTUyMGE1ODc3YTk1ZTJkMjQ2MTY4MzA3M2RlNzI0MWJiMjU0YzFhMjQxZGI2YjZiNDczOTBkNSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMzEyMTA2ZDRlMTY4ZWU0MjU4YzMxYWQwYTg0N2E1ZDA5OTllZTM4Nzk3YWMyMjM4N2Y5ZDU2NzY0NWZhNjcwNiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjAsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZTNiMGM0NDI5OGZjMWMxNDlhZmJmNGM4OTk2ZmI5MjQyN2FlNDFlNDY0OWI5MzRjYTQ5NTk5MWI3ODUyYjg1NSJ9"
+        },
+        {
+          "resource": "repo://apps/api/tests/test_imports_api.py#L37-L66",
+          "version": "repo-lines-v1:sha256:64990e34490d8c4abe5e73f5d73b1d4d44766a461b89478f8e2e66edb52edac5:eyJzZWxlY3RlZExpbmVDb3VudCI6MzAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImJiZmQ0NDZkNDIwMTcyOTUzMTViYmE4OTMzYjNjMzY0ZjVmN2ViNThkMmU3OTliNGQ2NWNlNWNiMTAzM2FkMTciLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImM0MjdlZjZkYjQwYmViY2FmMzM5MzZhNWE4YTZlMjZlNzkzZjVlNTQxNmZhMGUzZjA5OTRjYmMxZmRlZDY2NTMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImVlYmM1YjA2YTM4YjE5NGMzNTZiMTk4MTYzZTEwMDRmZWU1YzIxOGYxZDBhYjI2Yzc4ZTk3YzdhMmJjMzhkMGUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_4dd23ba59a6747e3beabb0f4428946c5",
+      "statement": "Imports is a MORE_ITEMS destination, not a main nav pill. From lg up it opens from the Imports and settings menu; below lg the sheet lists it after the main pages. Its link does not keep period or account filters.",
+      "evidence": [
+        {
+          "resource": "repo://apps/web/src/components/shell/mobile-nav.tsx#L16-L58",
+          "version": "repo-lines-v1:sha256:31419d53b32ffd1df0f10733466e21dc0e19256a6fa9c6a768020f486bfaf21e:eyJzZWxlY3RlZExpbmVDb3VudCI6NDMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjM1ZDJmMmU5ZDFhNzdmMDI1NDU1OGU4OGFiYWJiZDg5NDZlYjQ2NTg5NTg5ZTVlNzI5YjI3ZDQ4Y2VjNDMxNDYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY5M2Q1OTQ5YWYyZDU3OTE3YmI1YWJkOTY5ZGQ4Y2YwYTExNDM5ZDg0MGU2YzI0YzJiMzA5OTZiZGIzNWJkZWUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjNlNzdhMWM3YThmM2JhMWE1MTJiOTU5MzhkMjA4MTU0MDMzYzZmMTM4MTJlYjBiYmRkMjRlMGI3OGNhMjllY2EiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjNlYWI4MWY2ZTNkMTJlZjNjMmI1Yzg0OTU3OTY0ODQyZmExNTM2Yzc4ZWNmZWNmNzBlYzg3NWExN2VkNmY1Y2EifQ"
+        },
+        {
+          "resource": "repo://apps/web/src/components/shell/more-menu.tsx#L14-L55",
+          "version": "repo-lines-v1:sha256:8bfa1d6f4efb5ceb546f343d3f82be6dbf40b32521c9c1fb63163b4b03ef5bfe:eyJzZWxlY3RlZExpbmVDb3VudCI6NDIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjNmNjUwZGE4NmQ3MWVkMjI5MDI4YTAxZmU5MGY4ZjA4NzZiYjlkZjg1ZjI0NzI2ZTEwZGRiYjBmYzVjZmRiNTUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImZmZWQ3MzIyNzAzMDBhYjBjZDFhNzk3ZTgwMWU2YjI4YzczZmI3Zjc5NzIyYmU4MmRlMDAwYTllZmY4NTFjNTAiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjU5ZGNlOGMwMWIwMTFmYTMxM2Y4MjJhM2Q5ZTg3OWVmODI1YmFkMGI1YjVlZTc4NzBiYzE5NWFlMWUxMTQ0ZmUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjM1Njc4MGYyY2JmNThiNTQxZjUxMDI4NGIxY2M0YWM3M2Y2N2M1NjRhY2UxMWYyNThhZjkxMGVjOWRjNmZjOWEifQ"
+        },
+        {
+          "resource": "repo://apps/web/src/components/shell/nav-links.tsx#L15-L48",
+          "version": "repo-lines-v1:sha256:2703fe01fa7ad8507e07b01f0fe6e618d825aa303f5ddbf7e4438109f0e72186:eyJzZWxlY3RlZExpbmVDb3VudCI6MzQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjRhZmZmMWE1Njc4OTI4ODE4MzMzNjFlYmVjYzk2ZDhhNjE3YTQ4ZTNiMmZhZTNjNWVlOGUyYWIyNTZmNWY1NTEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImIwMmQyYzBkNmRjNWU3NGQ5MmZhMTRiOTFkYmVhMjY0MDkwYmViMzVmZGI5MTg4ZDliMzQxMTgxZGNlOWY0Y2UiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjI4MDA3NzQ5MmQwYjY3MDgyN2IzNDNjYWI1ZDhkNTRkNzRjNWU4MDgzZTc2YjVkODUwM2UyMWQzODhjMGVkZjkiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImRlZTZlNzc2MTA3MzA3NDViZmQyNmY5N2QzY2M4NTQyNzIzMWQwYTYwNGZlOTI1ZjhiMjViYmQ0ZjA3YTFmMDQifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_11bfe11fc23d42a48d1b160400df8551",
+      "statement": "A filled coverage month means a statement period covers that account-month. The four states are covered, partial, gap, and outside. The current month is never a gap, because a month is expected only after its last day is before today. Two partials that together fill a month stay partial.",
+      "evidence": [
+        {
+          "resource": "repo://apps/web/src/lib/coverage.test.ts#L44-L79",
+          "version": "repo-lines-v1:sha256:9fd61fbf5432967a380acebb57de4be4442e1bddb961a3c8e4e17454c910135a:eyJzZWxlY3RlZExpbmVDb3VudCI6MzYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjNmODJhNzkzMDViOTcxYjE0OGRhODIwMGMyNTBjYTQ3NjUwZGUzOTRjMGZhMjgwNzQwZjdiZmQ5ZDZkNDdiZGEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjNhM2U0NmY5NDI3NmI2ZjZmNGVkMWYwMmFmNzhiZWY2YTJlZTFjNDM5ZGQ1NTg0Yjk3Mzk0ODMxMzIxNGQyYjciLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImI3NzlkMTE4ZDZlM2NiZjQ1MDUzOTc0OGRlZTdhNDMwN2FjYmU2NDQ2Y2JhMjk3ZjI3NjBmYTVkMGJiYTFiYzIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjkwZjNmNjU5NTJlYmEyN2EzNWQ1ZDkzM2IzODMwOTU0YWQ1MTM2MWIyYzIzMDNjZDA4Njg4OTRmODg2NTQ4MDUifQ"
+        },
+        {
+          "resource": "repo://apps/web/src/lib/coverage.ts#L46-L52",
+          "version": "repo-lines-v1:sha256:1cb9d85d2c7b327adb4b41b283c16846d3427c3b92e260ae9ca57fef880125a7:eyJzZWxlY3RlZExpbmVDb3VudCI6NywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNmUyYzgzNzdhMDliY2E3YWFkODc0ZmU4NzU1NWZlZmUzMTUyNGY3Y2FlNjkwYmVlMDI5YmM3NTA4MzlkZGJlYyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNDEyY2EzNDVjY2Y3NWJmOWMwODA2YmNlNjk1YmU4ZGU4MDhiNzk5ODQyNTFhN2E1NGQyMDJjZjYxMDFkZDQ1MSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZDJlNGUwODI3ZjExNmU3MmYxMmYyMmQ2ODY5ZjdmODkwYTI4NDE3YTJiYTMyYmM0NDhmYmI0NDljZjY4MzNiNSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiY2NlODkwNDYzMDZmMTBmZjI1MDJkYWQ1NTRiNGQ5ZjVmNWJlMDMzZWU5N2U2ZDg0NWM0ZTdiY2Q5ZWI4MmI5ZCJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_30bea4b9c0aa4d3986f870e10988026d",
+      "statement": "The coverage board opens on the year of the latest dated period_end. Its year arrows run from the earliest dated period_start year to the later of that year and the current year. The missing line lists the visible year's gaps, newest month first. A month popover does not filter or link.",
+      "evidence": [
+        {
+          "resource": "repo://apps/web/src/app/imports/coverage-board.tsx#L25-L80",
+          "version": "repo-lines-v1:sha256:6c648617f519c49dfce936909ac597cbc454655aeeac68b6153fca5b10fec42b:eyJzZWxlY3RlZExpbmVDb3VudCI6NTYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImRiMjlmOGI0MjAzMWViZmE2NWMxNDA3MGEzZWFlN2NkYTI5YmQ4YjA0MTk3MGFlZTQ4YTBjZTM3NGE3NzhkOGEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjA4ODNlODNhNjM2NzFlMjhjOTVmZmVmZjA2NTA3ODE3MzU1Mzk3OTBlNTU4MTU1YTk1ZGZiYzJlYjA0ZTQ2NTkiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjI2MDIxNDYwOWI4MWQ3MWI1ZjBjNjNlYjAyNzg5YmQzM2RhOTQ4YmY0YjY0YzdmOGE2ODc2YzFhYWZiNGVjYWQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjNhZjE5ZjZmMzk0YTIwYjY5N2EwYmQ3ZTY4YzY0Y2E4M2M5ODZjNTA4NTgzZGUzYWExYTVjYjhlZjNhNzgxOWUifQ"
+        },
+        {
+          "resource": "repo://apps/web/src/app/imports/month-header.tsx#L25-L52",
+          "version": "repo-lines-v1:sha256:49df97542c761a5084f2074886a49a248706405ade500ca2428d85fb202c72a8:eyJzZWxlY3RlZExpbmVDb3VudCI6MjgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjFhMTg3NjQ0NzFkYWEzZDYyZGQyZTNjNjc5ZjljZWEyNGM2YzA2Yzg5YjI4MDhmYTNjYTBjODI1Y2Q3MWI4YTEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImEzZGY3OTE5NzAyODdlNDI4ZDRjYzcyMWRiNjQzNmYyNTM5MTQyM2ExNjVkOGU1ZWI3ZWJiZjg5OTIwMDk1ZmMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjdiZTYyMTJmZTc5OGIxNWNmNmYxNDkxZTA0OWU0NjA0Njc2NGYxZjNjYmVkODM2M2NjZTQ5NWE4ZmZkYTE4OTYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjBlYTg4ODc3NjNhYTg4ODAxZTNjMTJlZDhkMGQ1NDQ4MTM0N2EyZTQwYWI2NGViMTMxZDNjYjVlNmQzNjQxYTgifQ"
+        },
+        {
+          "resource": "repo://apps/web/src/lib/coverage.ts#L80-L97",
+          "version": "repo-lines-v1:sha256:d68f558e940a296fae088abbb6ba861b676e813c6629311d6afb0c3eedcae2bf:eyJzZWxlY3RlZExpbmVDb3VudCI6MTgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImFkYTA2ZDEzNTQ3MzM1YWEwNTAwNWIxMjhlOGQyZDVjYzFiMmVhOWU1M2ViMzRhNzYyYWQ3NDNhYTU1MTNkNTciLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImNkOWQ4NTg1YjY1OTFlMmRmNWIxYzhiYjAzNjYzYzA3ZDE1Y2I2ZWRlYWUzZGYzZmZjNGE4YzU5MDc1NzU5ZGIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_dd633c32a54342599cee19c2859fcab4",
+      "statement": "Import history keeps the API order and groups rows by the YYYY-MM of period_end. A statement that spans months belongs to the month it ends. Null periods form a last group labelled No period. The filename stays on ImportRecord and is not rendered.",
+      "evidence": [
+        {
+          "resource": "repo://apps/web/src/app/imports/import-history.tsx#L8-L54",
+          "version": "repo-lines-v1:sha256:1cce9400e615b2687f1579e2b7c9358cdad2473c521d8d7dcc656da6e8111326:eyJzZWxlY3RlZExpbmVDb3VudCI6NDcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijc3ZjNhZDcyZDJhZDA4NjQ0ODkwNTZjMmJkNTRlNzYzMmE5NDg2ZGE5ZDM2MDI0YzMxYmViZTlmMmM3YWIyY2IiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAwNjQzMWY0M2M4YTJmNTQ4YmM1YzRhZGI5Mjg1NTFmY2JhZjAzNGI1YmZhNDcwNGY0M2E1ODRlYTA1NmVhYTUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjI5MGIxZGRiM2MyZTJkMTQ5ZjcwOWNlN2EzNDY3YzI1ZGZkZDZhOTgzZWJiM2RkODkwOGMxOTU0NzUxZjJmNDMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImI2ZWJmMmY5OWQ2NjcyY2YwMGU0YjNhYzM5NGJkODU0M2UwZjgxZGQwZGEyZTY2MGZlMzkzNmQ0MzhjNDZmYzMifQ"
+        },
+        {
+          "resource": "repo://apps/web/src/lib/import-history.test.ts#L7-L23",
+          "version": "repo-lines-v1:sha256:df7f38317fe7b37487dc2b70dd2f2fcd305ec06f9bb779f701b795a281f1332e:eyJzZWxlY3RlZExpbmVDb3VudCI6MTcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjJkOGZjMGNhNzM2NjRiYmU4M2NkYTk4ZDJkYjNkZjZkZWI2NjM4NTQ2ZjE1MjgwYTljZTViODVhOTRhYjAwYjYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjNhM2U0NmY5NDI3NmI2ZjZmNGVkMWYwMmFmNzhiZWY2YTJlZTFjNDM5ZGQ1NTg0Yjk3Mzk0ODMxMzIxNGQyYjciLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjM4MzlhMWU3NDFiNjdlN2QyNjk1ODg2NGJlZTVmNDkyYjZhNDYxMjQ2ZDljYzI4NTdjMTI5NzMzZjIyNWU0MjUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjAzNzFkNGRkMzdhMjEyNmFhMjUyZTZiNWE5OGM2NmFiOTEwMTBmM2I0MGZhZDA2N2U3ZDMxNmU4YTc3NzljZjkifQ"
+        },
+        {
+          "resource": "repo://apps/web/src/lib/import-history.ts#L1-L19",
+          "version": "repo-lines-v1:sha256:4748d0b533a294829ea8e30da7c0ddd743712500538ab3ba3f11bbeadf461e62:eyJzZWxlY3RlZExpbmVDb3VudCI6MTksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImY3ODBlNmY4YjJhNzM1NTQ3YTUxZTQ4ZDdjZGMwZjBlNTM5NTcwNGQ1NTI0ODQ2MjczNjc0ZjBhZGYyODc3ZDAiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjhjYzQwNWFjMWRkNWI5OTQyODExNzI1NzdhYzRlMGFmYTIyYmI0OWIzMjQ0ZGYwMmFjOTdkYzEwMTg0YjQwMGYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjowLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        }
+      ]
     }
   ],
   "verification": {
     "by": "openwiki/0.7.2",
-    "at": "2026-10-17T19:58:49.962Z"
+    "at": "2026-10-17T21:01:31.912Z"
   }
 }
