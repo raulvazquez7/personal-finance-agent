@@ -25,7 +25,9 @@ export function WhereMoneyWent({ views, total, change, versus, subtitle }: Props
     .filter((item) => Number(item.amount) > 0)
     .map((item) => ({ name: item.name, value: Number(item.amount), fill: item.color ?? OTHER_COLOR }));
   return (
-    <Card>
+    // overflow-clip, not the card's overflow-hidden: a hidden overflow makes the card a scroll
+    // container, and the sticky donut below would stick to the card instead of the page.
+    <Card className="overflow-clip">
       {/* Below sm the switch goes under the title: beside it, the title wrapped to four lines. */}
       <CardHeader className="max-sm:has-data-[slot=card-action]:grid-cols-1">
         <CardTitle>Where your money went</CardTitle>
@@ -45,13 +47,17 @@ export function WhereMoneyWent({ views, total, change, versus, subtitle }: Props
         </CardAction>
       </CardHeader>
       <CardContent className="grid items-center gap-6 md:grid-cols-[13rem_minmax(0,1fr)]">
-        <BreakdownDonut
-          slices={slices}
-          total={total}
-          change={change}
-          versus={versus}
-          title={`Spending by ${HEADERS[dimension].toLowerCase()}`}
-        />
+        {/* From md the donut sits at the top and follows the scroll: centred beside an opened
+            "Other" of a hundred rows, it would sit thousands of pixels down the page. */}
+        <div className="md:sticky md:top-6 md:self-start">
+          <BreakdownDonut
+            slices={slices}
+            total={total}
+            change={change}
+            versus={versus}
+            title={`Spending by ${HEADERS[dimension].toLowerCase()}`}
+          />
+        </div>
         <BreakdownTable items={items} nameHeader={HEADERS[dimension]} versus={versus} />
       </CardContent>
     </Card>

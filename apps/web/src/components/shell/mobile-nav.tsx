@@ -41,7 +41,8 @@ export function MobileNav({ pending }: { pending: number | null }) {
                 aria-label={item.href === "/review" && pending ? `${item.label}, ${pending} to review` : undefined}
                 onClick={() => setOpen(false)}
                 className={cn(
-                  "rounded-full px-3 py-1.5 text-muted-foreground hover:text-foreground",
+                  // 44 px tall: a comfortable target for a finger.
+                  "flex min-h-11 items-center rounded-full px-3 text-muted-foreground hover:text-foreground",
                   active && "bg-foreground font-medium text-background hover:text-background",
                 )}
               >

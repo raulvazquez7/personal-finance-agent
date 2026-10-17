@@ -61,7 +61,7 @@ export default async function SubscriptionsPage() {
             </p>
             <Card>
               <CardContent>
-                <SubscriptionTable items={ended} />
+                <SubscriptionTable items={ended} ended />
               </CardContent>
             </Card>
           </div>

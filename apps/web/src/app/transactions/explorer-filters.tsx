@@ -1,13 +1,12 @@
 "use client";
 
 import { Search, SlidersHorizontal } from "lucide-react";
-import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useRef, useState, type FormEvent } from "react";
 
 import { CategoryFilter } from "@/components/pickers/category-filter";
 import { MerchantPicker } from "@/components/pickers/merchant-picker";
-import { Button, buttonVariants } from "@/components/ui/button";
+import { Button } from "@/components/ui/button";
 import { Field, FieldGroup, FieldLabel } from "@/components/ui/field";
 import { InputGroup, InputGroupAddon, InputGroupInput } from "@/components/ui/input-group";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
@@ -16,7 +15,7 @@ import { Switch } from "@/components/ui/switch";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import type { Schemas } from "@/lib/api";
 import { sourceLabel } from "@/lib/labels";
-import { clearedExplorer, replaceParams, SOURCES, type ExplorerFilters as Explorer } from "@/lib/params";
+import { clearedExplorer, EXPLORER_KEYS, replaceParams, SOURCES, type ExplorerFilters as Explorer } from "@/lib/params";
 
 type Props = { search: string; explorer: Explorer; categories: Schemas["CategoryOut"][]; merchants: Schemas["MerchantOut"][] };
 
@@ -109,6 +108,15 @@ export function ExplorerFilters({ search, explorer, categories, merchants }: Pro
     writeSearch(q);
   }
 
+  // Clearing composes on the address bar like any filter, and drops a search still waiting to be
+  // written: otherwise the timer would bring the old text back after the clear.
+  function clearFilters() {
+    clearTimeout(searchTimer.current);
+    setQ("");
+    setSent("");
+    commitQuery(Object.fromEntries(EXPLORER_KEYS.map((key) => [key, undefined])), "push");
+  }
+
   // An emptied box is no search: Escape, Chrome's × and deleting the text all clear it from the URL
   // at once, including when a non-empty replace was sent and has not landed. Anything else waits 300 ms.
   function onType(next: string) {
@@ -166,7 +174,7 @@ export function ExplorerFilters({ search, explorer, categories, merchants }: Pro
           category={explorer.category}
           onChange={(level1, category) => go({ level1, category })}
         />
-        <div className="w-full sm:w-56">
+        <div className="relative w-full sm:w-56">
           <MerchantPicker
             merchants={merchants}
             value={merchant ? { id: merchant.id, name: merchant.name } : null}
@@ -237,11 +245,6 @@ export function ExplorerFilters({ search, explorer, categories, merchants }: Pro
             </FieldGroup>
           </PopoverContent>
         </Popover>
-        {cleared !== search && (
-          <Link href={`${pathname}?${cleared}`} className={buttonVariants({ variant: "ghost", size: "sm" })}>
-            Clear filters
-          </Link>
-        )}
       </div>
       <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
         <span id="saved-filters">Saved filters</span>
@@ -255,6 +258,12 @@ export function ExplorerFilters({ search, explorer, categories, merchants }: Pro
           <ToggleGroupItem value="unpaired_own">Own-account transfers without a pair</ToggleGroupItem>
           <ToggleGroupItem value="refunds">Refunds</ToggleGroupItem>
         </ToggleGroup>
+        {/* On the saved filters' line, so showing it never moves the filters above or the list below. */}
+        {(cleared !== search || q.trim() !== "") && (
+          <Button type="button" variant="ghost" size="sm" className="ml-auto" onClick={clearFilters}>
+            Clear filters
+          </Button>
+        )}
       </div>
     </div>
   );

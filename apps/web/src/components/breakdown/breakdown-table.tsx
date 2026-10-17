@@ -6,6 +6,7 @@ import { DeltaText } from "@/components/money/delta-text";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import type { BreakdownItem } from "@/lib/breakdown";
 import { money, percent } from "@/lib/format";
+import { cn } from "@/lib/utils";
 
 type Props = { items: BreakdownItem[]; nameHeader: string; versus: string; showShare?: boolean };
 
@@ -13,18 +14,30 @@ type RowProps = {
   item: BreakdownItem;
   showShare: boolean;
   compared: boolean;
-  /** Indents a child of the folded row. Padding on the tr itself does not move a table cell. */
+  /** Indents a child of the folded row under a guide line. Padding on the tr itself does not move
+   * a table cell. */
   indent?: boolean;
-  extra?: ReactNode;
+  /** Replaces the name, link or text: the folded row's name is its open/close button. */
+  name?: ReactNode;
 };
 
+/** Where a folded row's children sit: the guide line runs under the folded row's chevron, which
+ * follows the colour dot when the table has dots. */
+export function treeIndent(hasDot: boolean) {
+  return hasDot ? { cell: "relative pl-9", guide: "left-[2rem]" } : { cell: "relative pl-7", guide: "left-3" };
+}
+
 /** One row of the breakdown table. The folded row and its children share this, so the cells stay one copy. */
-export function BreakdownTableRow({ item, showShare, compared, indent = false, extra }: RowProps) {
+export function BreakdownTableRow({ item, showShare, compared, indent = false, name }: RowProps) {
+  const tree = treeIndent(Boolean(item.color));
   return (
-    <TableRow className={indent ? "pl-6 [&>td:first-child]:pl-6" : undefined}>
+    <TableRow>
       {/* wrap-anywhere, not break-words: a long name without spaces must also shrink the column's
           minimum width, or the table scrolls inside its card on a phone. */}
-      <TableCell className="max-w-72 whitespace-normal wrap-anywhere">
+      <TableCell className={cn("max-w-72 whitespace-normal wrap-anywhere", indent && tree.cell)}>
+        {/* The guide runs the full height of the cell, so the children read as one block under
+            the folded row's chevron. */}
+        {indent && <span aria-hidden className={cn("absolute inset-y-0 w-px bg-border", tree.guide)} />}
         <div className="flex items-center gap-2.5">
           {item.color && (
             <span
@@ -35,15 +48,14 @@ export function BreakdownTableRow({ item, showShare, compared, indent = false, e
             />
           )}
           <div className="min-w-0">
-            {item.href ? (
+            {name ?? (item.href ? (
               <Link href={item.href} className="font-medium hover:underline">
                 {item.name}
               </Link>
             ) : (
               <span className="font-medium">{item.name}</span>
-            )}
+            ))}
             {item.hint && <p className="line-clamp-1 text-xs text-muted-foreground">{item.hint}</p>}
-            {extra}
           </div>
         </div>
       </TableCell>

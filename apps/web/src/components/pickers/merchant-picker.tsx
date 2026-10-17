@@ -13,10 +13,13 @@ import {
   ComboboxList,
 } from "@/components/ui/combobox";
 import type { Schemas } from "@/lib/api";
+import { merchantListLimit } from "@/lib/pickers";
 
 /** Every merchant is loaded (up to 5000), but only this many options are rendered: typing narrows
  * the list. */
 const SHOWN = 50;
+
+const NO_MERCHANT = "No merchant";
 
 /** An existing merchant (id) or a new name typed by the user (id null). */
 export type MerchantChoice = { id: string | null; name: string };
@@ -65,7 +68,7 @@ export function MerchantPicker({
   const describedBy = [ariaDescribedBy, showHint ? hintId : undefined].filter(Boolean).join(" ") || undefined;
   const exists = merchants.some((m) => m.name.toLowerCase() === typed.toLowerCase());
   const items: MerchantChoice[] = [
-    ...(allowNone ? [{ id: "none", name: "No merchant" }] : []),
+    ...(allowNone ? [{ id: "none", name: NO_MERCHANT }] : []),
     ...merchants.map((m) => ({ id: m.id, name: m.name })),
     ...(allowCreate && typed && !exists ? [{ id: null, name: typed }] : []),
   ];
@@ -73,7 +76,7 @@ export function MerchantPicker({
   return (
     <Combobox
       items={items}
-      limit={SHOWN}
+      limit={merchantListLimit(SHOWN, allowNone ? NO_MERCHANT : null, typed, contains)}
       filter={contains}
       value={value}
       // Base UI still reports the change it canceled below (Escape on a label): skip it.
@@ -103,8 +106,10 @@ export function MerchantPicker({
         showClear={showClear}
         className="w-full"
       />
+      {/* From sm the hint hangs under the field without taking room in the filter row, so the field
+          stays level with the other filters. The filter's wrapper is `relative`. */}
       {showHint ? (
-        <p id={hintId} className="pt-1 text-xs text-muted-foreground">
+        <p id={hintId} className="pt-1 text-xs whitespace-nowrap text-muted-foreground sm:absolute sm:top-full sm:left-0 sm:pt-0.5">
           {`Showing ${SHOWN} of ${matchCount} · type to search`}
         </p>
       ) : null}

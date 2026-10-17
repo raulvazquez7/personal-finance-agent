@@ -2,7 +2,15 @@ import { describe, expect, it } from "vitest";
 
 import type { Schemas } from "./api";
 import type { TxType } from "./params";
-import { directionOf, filterGroups, fitsDirection, pickerGroups, selectedFilter, startingCategory } from "./pickers";
+import {
+  directionOf,
+  filterGroups,
+  fitsDirection,
+  merchantListLimit,
+  pickerGroups,
+  selectedFilter,
+  startingCategory,
+} from "./pickers";
 
 const categories: Schemas["CategoryOut"][] = [
   { slug: "groceries", tx_type: "expense", level1: "shopping" },
@@ -150,5 +158,20 @@ describe("selectedFilter", () => {
     expect(selectedFilter(filterGroups(categories), "uncategorized", "uncategorized")?.kind).toBe("group");
     // A hand-edited category never shows as "All of <group>", which would not be the filter applied.
     expect(selectedFilter(expense, "shopping", "zztest_unknown")).toBeNull();
+  });
+});
+
+describe("merchantListLimit", () => {
+  const contains = (item: string, query: string) => item.toLowerCase().includes(query.toLowerCase());
+
+  it("shows 50 merchants plus No merchant, so the hint's count of merchants holds", () => {
+    expect(merchantListLimit(50, "No merchant", "", contains)).toBe(51);
+    expect(merchantListLimit(50, "No merchant", "no", contains)).toBe(51);
+  });
+
+  it("keeps 50 when No merchant is not offered or the typed text hides it", () => {
+    expect(merchantListLimit(50, null, "", contains)).toBe(50);
+    expect(merchantListLimit(50, "No merchant", "mer", contains)).toBe(51);
+    expect(merchantListLimit(50, "No merchant", "zara", contains)).toBe(50);
   });
 });
