@@ -64,7 +64,16 @@ export function UploadForm() {
         className={cn(
           "relative flex items-center gap-4 rounded-xl border-[1.5px] border-dashed border-input bg-background p-4 transition-colors has-[:focus-visible]:ring-3 has-[:focus-visible]:ring-ring/50",
           over && "border-primary bg-accent",
+          busy && "cursor-progress",
         )}
+        // While busy the input is disabled, so a drop would reach the browser and open the PDF in this
+        // tab. Idle, the input takes the drop natively, so nothing is cancelled then.
+        onDragOver={(event) => {
+          if (busy) event.preventDefault();
+        }}
+        onDrop={(event) => {
+          if (busy) event.preventDefault();
+        }}
       >
         {busy ? (
           <Spinner className="size-5 shrink-0 text-muted-foreground" />
@@ -88,7 +97,7 @@ export function UploadForm() {
           disabled={busy}
           aria-label="Statement PDFs"
           aria-describedby="statements-help"
-          className="absolute inset-0 cursor-pointer opacity-0 disabled:cursor-progress"
+          className="absolute inset-0 cursor-pointer opacity-0 disabled:pointer-events-none"
           onChange={onChange}
           onDragEnter={() => setOver(true)}
           onDragLeave={() => setOver(false)}
