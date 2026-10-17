@@ -7,6 +7,7 @@ from fastapi.testclient import TestClient
 
 from finance.api.deps import db
 from finance.api.main import app
+from finance.dashboard.breakdowns import group_slots
 from tests.money_month import IBAN, money_month
 
 pytestmark = pytest.mark.integration
@@ -240,3 +241,8 @@ def test_patch_cadence_sets_and_clears(client, db_conn):
     assert response.status_code == 404
     response = client.patch(f"/merchants/{merchant}/cadence", json={"cadence": "weekly"})
     assert response.status_code == 422
+
+
+def test_group_slots_route_returns_group_slots(client, db_conn, make_tx):
+    money_month(db_conn, make_tx)
+    assert client.get("/dashboard/group-slots").json() == group_slots(db_conn)

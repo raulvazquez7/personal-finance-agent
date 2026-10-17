@@ -167,3 +167,8 @@ def test_a_request_for_another_host_is_refused():
     assert response.status_code == 400
     assert client.get("/health").status_code == 200
     assert client.get("/health", headers={"host": "localhost:8000"}).status_code == 200
+
+
+def test_the_import_list_has_no_cap():
+    # A handful of rows cannot prove a cap is gone, and the coverage board needs every import.
+    assert "limit" not in imports.LIST_IMPORTS_SQL.lower()
