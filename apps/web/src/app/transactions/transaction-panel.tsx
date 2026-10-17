@@ -120,7 +120,9 @@ export function TransactionPanel({ tx, categories, merchants, onClose, onSaved }
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Keep editing</AlertDialogCancel>
-            <AlertDialogAction onClick={discard}>Discard</AlertDialogAction>
+            <AlertDialogAction variant="destructive" onClick={discard}>
+              Discard
+            </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>

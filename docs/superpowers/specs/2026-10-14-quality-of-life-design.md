@@ -150,9 +150,12 @@ period total. The `_other` row stays the subtotal, with the delta the server alr
 computes, which includes keys that disappeared. Those keys are not listed. The donut keeps
 drawing the top-level slices only.
 
-The folded row has a button "Show N merchants" or "Show N categories", `aria-expanded`. A
-second click hides them. Children render under it, indented, and link the way a visible row
-links. The open state is component state. A reload folds again. It is not in the URL.
+The folded row is a tree row: its name ("Other categories", "Other N merchants") is the
+button, with a chevron and `aria-expanded`, and its hint keeps the count. A second click hides
+the rows. Children render under it, indented along a guide line, and link the way a visible row
+links. An open list of 10 or more rows also ends with "Show less", which folds it and returns
+focus to the name. The open state is component state. A reload folds again. It is not in the URL.
+(Changed 2026-10-17 from a separate "Show N merchants" link, after the plan 1 review.)
 
 A merchant row whose key is `category:{slug}` links to Transactions for that category with
 `merchant_id=none`, keeping the period, the accounts and the type. The merchant filter on

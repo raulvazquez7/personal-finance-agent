@@ -31,13 +31,12 @@ export default async function TransactionsPage({ searchParams }: PageProps<"/tra
         <h1 className="text-xl font-semibold tracking-tight">Transactions</h1>
         {/* nowrap: a narrow screen may break between "+" and "€", splitting the sign from its amount.
             "out" already gives money out its direction, so it takes no sign. */}
-        <div className="flex flex-wrap items-center gap-x-1 text-sm text-muted-foreground">
-          <p>
-            {rangeLabel(page.period)} · {plural(page.count, "transaction", "transactions")} ·{" "}
-            <span className="whitespace-nowrap text-income">{signedMoney(page.money_in)}</span> in ·{" "}
-            <span className="whitespace-nowrap">{money(page.money_out)}</span> out
-            {Number(page.transfers) > 0 ? ` · incl. ${money(page.transfers)} transfers` : null}
-          </p>
+        <p className="text-sm text-muted-foreground">
+          {rangeLabel(page.period)} · {plural(page.count, "transaction", "transactions")} ·{" "}
+          <span className="whitespace-nowrap text-income">{signedMoney(page.money_in)}</span> in ·{" "}
+          <span className="whitespace-nowrap">{money(page.money_out)}</span> out
+          {Number(page.transfers) > 0 ? ` · incl. ${money(page.transfers)} transfers` : null}{" "}
+          {/* Inside the sentence, so a narrow screen does not leave the button alone on a line. */}
           <Popover>
             <PopoverTrigger
               render={<Button variant="ghost" size="icon-xs" aria-label="What these totals include" />}
@@ -50,7 +49,7 @@ export default async function TransactionsPage({ searchParams }: PageProps<"/tra
               spending of its category.
             </PopoverContent>
           </Popover>
-        </div>
+        </p>
       </header>
       <ExplorerFilters search={search} explorer={explorer} categories={categories} merchants={merchants} />
       <TransactionList key={search} initial={page} search={search} categories={categories} merchants={merchants} />

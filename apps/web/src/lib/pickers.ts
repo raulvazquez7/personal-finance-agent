@@ -94,3 +94,15 @@ export function selectedFilter(groups: FilterGroup[], level1?: string, category?
   if (category !== undefined && category !== "uncategorized") return null;
   return options.find((option) => option.kind === "group" && option.value === level1) ?? null;
 }
+
+/** How many options the merchant list renders: `shown` merchants, plus "No merchant" when it is
+ * offered and matches the typed text. The hint "Showing 50 of N" counts merchants, so that option
+ * must not take one of the 50 places. */
+export function merchantListLimit(
+  shown: number,
+  noneOption: string | null,
+  typed: string,
+  contains: (item: string, query: string) => boolean,
+): number {
+  return noneOption !== null && (!typed || contains(noneOption, typed)) ? shown + 1 : shown;
+}

@@ -37,7 +37,8 @@ export function CadenceSelect({
 }) {
   const router = useRouter();
   const triggerRef = useRef<HTMLButtonElement>(null);
-  // Set only on a failed save. The trigger is disabled until pending clears, and a disabled button ignores focus().
+  // Disabling the trigger while the request runs drops its focus, after a success as after a failure. Set
+  // for every save and applied once pending clears: a disabled button ignores focus().
   const restoreFocus = useRef(false);
   // Auto while detection is in charge, or when nothing is detected yet. A user choice shows that value.
   const fromServer: Choice = source === "auto" || cadence === null ? "auto" : cadence;
@@ -64,13 +65,13 @@ export function CadenceSelect({
     if (next === null || next === value || pending) return;
     const previous = value;
     setValue(next);
+    restoreFocus.current = true;
     setPending(true);
     try {
       await apiPatch(`/merchants/${merchantId}/cadence`, { cadence: next === "auto" ? null : next });
     } catch (error) {
       setValue(previous);
       toast.error(error instanceof ApiError && error.detail ? error.detail : "Could not update the cadence.");
-      restoreFocus.current = true;
       return;
     } finally {
       setPending(false);
@@ -80,7 +81,9 @@ export function CadenceSelect({
 
   return (
     <Select items={items} value={value} onValueChange={onValueChange}>
-      <SelectTrigger ref={triggerRef} disabled={pending} aria-label={`Cadence for ${merchantName}`}>
+      {/* One width for every row, sized for the longest label ("Auto · Every 3 months"), so the
+          column does not zigzag. */}
+      <SelectTrigger ref={triggerRef} disabled={pending} aria-label={`Cadence for ${merchantName}`} className="w-48">
         <SelectValue />
       </SelectTrigger>
       <SelectContent>
