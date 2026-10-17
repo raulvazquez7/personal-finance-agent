@@ -134,6 +134,16 @@ def test_categories_and_merchant_autocomplete(client, db_conn):
     assert names == ["ZZTEST ACME"]
 
 
+def test_categories_carry_their_names_or_the_readable_slug(client, db_conn):
+    def software():
+        return next(c for c in client.get("/categories").json() if c["slug"] == "software_ai")
+
+    assert (software()["name"], software()["group_name"]) == ("Software & AI", "Technology")
+    db_conn.execute("update categories set name = null where slug = 'software_ai'")
+    db_conn.execute("delete from category_groups where level1 = 'technology'")
+    assert (software()["name"], software()["group_name"]) == ("Software ai", "Technology")
+
+
 def test_label_rejects_an_income_category_for_money_out(client, make_tx):
     tx = make_tx("-3.00", "ZZTEST SHOP", booked_at=SYNTHETIC_DAY)
     body = {"category_slug": "salary", "is_subscription": False}

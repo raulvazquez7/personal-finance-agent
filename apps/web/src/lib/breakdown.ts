@@ -48,7 +48,7 @@ function hrefOf(row: Row, dimension: Dimension, { filters, type }: BreakdownCont
 export function breakdownItems(rows: Row[], dimension: Dimension, context: BreakdownContext): BreakdownItem[] {
   return rows.map((row) => ({
     key: row.key,
-    name: rowName(row, dimension),
+    name: rowName(row, dimension, context.categories),
     hint: rowHint(row, dimension, context.categories),
     href: hrefOf(row, dimension, context),
     color: context.slots

@@ -12,7 +12,6 @@ import {
   ComboboxList,
 } from "@/components/ui/combobox";
 import type { Schemas } from "@/lib/api";
-import { label } from "@/lib/labels";
 import { pickerGroups, type Direction, type PickerGroup } from "@/lib/pickers";
 
 type Category = Schemas["CategoryOut"];
@@ -56,7 +55,7 @@ export function CategoryPicker({
           details.allowPropagation();
         }
       }}
-      itemToStringLabel={(category: Category) => label(category.slug)}
+      itemToStringLabel={(category: Category) => category.name}
     >
       {/* Selecting the text on focus lets typing replace the current category instead of adding to it. */}
       <ComboboxInput
@@ -76,7 +75,7 @@ export function CategoryPicker({
               <ComboboxCollection>
                 {(category: Category) => (
                   <ComboboxItem key={`${group.value}-${category.slug}`} value={category}>
-                    {label(category.slug)}
+                    {category.name}
                   </ComboboxItem>
                 )}
               </ComboboxCollection>

@@ -97,3 +97,15 @@ def test_the_fingerprint_follows_the_order_jev_sees_the_categories_in():
 
     assert of(categories) == of(list(categories))
     assert of(categories) != of(categories[1:] + categories[:1])
+
+
+def test_the_fingerprint_leaves_the_display_names_out():
+    """jev never sees a display name, so renaming one is not a taxonomy change."""
+    categories = read_categories_yaml(SEED_DIR / "categories.yaml")
+    rules = read_rules_yaml(SEED_DIR / "rules.yaml")
+    unnamed = [c.model_copy(update={"name": None, "group_name": None}) for c in categories]
+
+    def of(ordered):
+        return fingerprint(CategorizationContext(Taxonomy(ordered), rules, Settings()))
+
+    assert of(categories) == of(unnamed)

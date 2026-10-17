@@ -8,8 +8,8 @@ type Row = Schemas["BreakdownRow"];
 const M = "33333333-3333-4333-8333-333333333333";
 const A = "11111111-1111-4111-8111-111111111111";
 const categories: Schemas["CategoryOut"][] = [
-  { slug: "groceries", tx_type: "expense", level1: "shopping" },
-  { slug: "salary", tx_type: "income", level1: "income" },
+  { slug: "groceries", tx_type: "expense", level1: "shopping", name: "Groceries", group_name: "Shopping" },
+  { slug: "salary", tx_type: "income", level1: "income", name: "Salary", group_name: "Income" },
 ];
 const august = { period: "month" as const, month: "2026-08", accounts: [] };
 const augustAccount = { period: "month" as const, month: "2026-08", accounts: [A] };

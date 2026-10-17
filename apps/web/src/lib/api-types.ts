@@ -501,6 +501,10 @@ export interface components {
             tx_type: string;
             /** Level1 */
             level1: string;
+            /** Name */
+            name: string;
+            /** Group Name */
+            group_name: string;
         };
         /** CategoryScore */
         CategoryScore: {

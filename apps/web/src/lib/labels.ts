@@ -1,5 +1,6 @@
-/** Names shown for slugs, breakdown rows, sources and account selections. Categories are data
- * (supabase/seed/categories.yaml), so their names come from their slugs. */
+/** Names shown for categories, groups, breakdown rows, sources and account selections. Categories
+ * are data (supabase/seed/categories.yaml): their names come from GET /categories (spec 8.1), and
+ * a slug without one reads as itself (label). */
 
 import type { Schemas } from "./api";
 import type { Source, TxType } from "./params";
@@ -16,28 +17,39 @@ export function label(slug: string | null | undefined): string {
   return slug ? capitalize(slug.replaceAll("_", " ")) : "Uncategorized";
 }
 
+/** The stored name of a category (spec 8.1), or its readable slug. */
+export function categoryName(slug: string | null | undefined, categories: Category[]): string {
+  return categories.find((c) => c.slug === slug)?.name ?? label(slug);
+}
+
+/** The stored name of a group, read from any of its categories, or its readable slug. */
+export function groupName(level1: string | null | undefined, categories: Category[]): string {
+  return categories.find((c) => c.level1 === level1)?.group_name ?? label(level1);
+}
+
 export const plural = (count: number, one: string, many: string) => `${count} ${count === 1 ? one : many}`;
 
-/** The line under a group's name: its first categories (mockup: "Rent, utilities, internet"). */
+/** The line under a group's name: its first categories, by name ("Rent, Mortgage, Utilities…"). */
 export function groupHint(level1: string, categories: Category[]): string {
   if (level1 === "credit_card") return "Not itemized: card statements are not imported";
   if (level1 === "uncategorized") return "Not categorized yet"; // these rows never reach /review
-  const names = categories.filter((c) => c.level1 === level1).map((c) => c.slug.replaceAll("_", " "));
+  const names = categories.filter((c) => c.level1 === level1).map((c) => c.name);
   if (names.length === 0) return "";
-  const text = capitalize(names.slice(0, 3).join(", "));
+  const text = names.slice(0, 3).join(", ");
   return names.length > 3 ? `${text}…` : text;
 }
 
 /** The API's folded row names its dimension ("Other groups", "Other categories", "Other 12
  * merchants"), so it never reads like the expense group "other" ("Other"). The overview's Groups
  * view has no folded row; any dimension may still send one. */
-export function rowName(row: Row, dimension: Dimension): string {
+export function rowName(row: Row, dimension: Dimension, categories: Category[]): string {
   if (row.key === "_other") {
     if (dimension === "merchant") return `Other ${plural(row.folded ?? 0, "merchant", "merchants")}`;
     return dimension === "group" ? "Other groups" : "Other categories";
   }
   // A merchant row without a merchant is keyed "category:<slug>"; its hint names the category.
-  return dimension === "merchant" ? (row.label ?? "No merchant") : label(row.key);
+  if (dimension === "merchant") return row.label ?? "No merchant";
+  return dimension === "group" ? groupName(row.key, categories) : categoryName(row.key, categories);
 }
 
 export function rowHint(row: Row, dimension: Dimension, categories: Category[]): string {
@@ -49,16 +61,15 @@ export function rowHint(row: Row, dimension: Dimension, categories: Category[]):
   if (dimension === "group") {
     // The row's own top categories, in that order. The taxonomy line is only the fallback.
     if (row.top_categories.length > 0) {
-      const names = row.top_categories.map((slug) => slug.replaceAll("_", " "));
-      return capitalize(names.join(", "));
+      return row.top_categories.map((slug) => categoryName(slug, categories)).join(", ");
     }
     return groupHint(row.key, categories);
   }
-  if (dimension === "category") return label(row.level1);
+  if (dimension === "category") return groupName(row.level1, categories);
   if (row.category_count > 1) {
     return `${plural(row.category_count, "category", "categories")} · ${plural(row.count, "transaction", "transactions")}`;
   }
-  return `${label(row.category_slug)} · ${plural(row.count, "transaction", "transactions")}`;
+  return `${categoryName(row.category_slug, categories)} · ${plural(row.count, "transaction", "transactions")}`;
 }
 
 // Keyed by params.ts's SOURCES, the one list of sources: a source without a name fails the build.

@@ -2,7 +2,7 @@
  * purchase's expense category (spec 2.2), so money in must still offer the expense categories. */
 
 import type { Schemas } from "./api";
-import { label } from "./labels";
+import { groupName, label } from "./labels";
 import type { TxType } from "./params";
 
 type Category = Schemas["CategoryOut"];
@@ -35,7 +35,7 @@ export function startingCategory(
 export function byLevel1(categories: Category[]): PickerGroup[] {
   const groups = new Map<string, Category[]>();
   for (const category of categories) groups.set(category.level1, [...(groups.get(category.level1) ?? []), category]);
-  return [...groups].map(([value, items]) => ({ value, label: label(value), items }));
+  return [...groups].map(([value, items]) => ({ value, label: groupName(value, items), items }));
 }
 
 /** Money out: expense groups, then transfers. Money in: income first, then the expense categories
@@ -71,7 +71,7 @@ export function filterGroups(categories: Category[], txType?: TxType): FilterGro
     label: group.label,
     items: [
       { kind: "group", value: group.value, label: `All of ${group.label}` },
-      ...group.items.map((category): FilterOption => ({ kind: "category", value: category.slug, label: label(category.slug) })),
+      ...group.items.map((category): FilterOption => ({ kind: "category", value: category.slug, label: category.name })),
     ],
   }));
   const uncategorized = label("uncategorized");

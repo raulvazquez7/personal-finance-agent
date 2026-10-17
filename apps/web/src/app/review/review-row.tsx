@@ -11,7 +11,7 @@ import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import type { Schemas } from "@/lib/api";
 import { dayLong, signedMoney } from "@/lib/format";
-import { label } from "@/lib/labels";
+import { groupName } from "@/lib/labels";
 import { directionOf, startingCategory } from "@/lib/pickers";
 import { cn } from "@/lib/utils";
 
@@ -102,7 +102,7 @@ export function ReviewRow({ item, categories, merchants, onConfirm, onLabelOne, 
               </span>
             )}
           </div>
-          <span className="truncate text-sm text-muted-foreground">{level1 ? label(level1) : <NoData />}</span>
+          <span className="truncate text-sm text-muted-foreground">{level1 ? groupName(level1, categories) : <NoData />}</span>
           <label className="flex items-center gap-2 text-sm text-muted-foreground">
             <Switch
               checked={subscription}

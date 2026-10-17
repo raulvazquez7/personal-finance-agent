@@ -13,7 +13,7 @@ import { Field, FieldContent, FieldDescription, FieldGroup, FieldLabel, FieldTit
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import { ApiError, apiDelete, apiPatch, apiPost, type Schemas } from "@/lib/api";
-import { label, plural } from "@/lib/labels";
+import { plural } from "@/lib/labels";
 import type { Direction } from "@/lib/pickers";
 
 type Props = {
@@ -130,7 +130,7 @@ export function MerchantControls({ profile, categories, merchants, direction }: 
         <FieldGroup>
           <Field>
             <FieldLabel htmlFor="merchant-category">Default category</FieldLabel>
-            <p className="text-sm font-medium">{current ? `${label(current.level1)} › ${label(current.slug)}` : "No default"}</p>
+            <p className="text-sm font-medium">{current ? `${current.group_name} › ${current.name}` : "No default"}</p>
             <CategoryPicker
               id="merchant-category"
               categories={categories}

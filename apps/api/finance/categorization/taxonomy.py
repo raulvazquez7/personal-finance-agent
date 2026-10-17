@@ -19,6 +19,9 @@ class Category(BaseModel):
     level1: str
     what: str
     not_for: str | None = None
+    # Display names (spec 8.1). jev never sees them: it gets `what` and `not_for` only.
+    name: str | None = None
+    group_name: str | None = None
 
 
 def direction_of(amount: Decimal) -> Direction:
@@ -53,17 +56,31 @@ class Taxonomy:
 
 
 def read_categories_yaml(path: Path) -> list[Category]:
+    """A key starting with `_` is group metadata (`_name`), never a category."""
     tree = yaml.safe_load(path.read_text(encoding="utf-8"))
-    return [
-        Category(slug=slug, tx_type=tx_type, level1=level1, **criterion)
-        for tx_type, groups in tree.items()
-        for level1, leaves in groups.items()
-        for slug, criterion in leaves.items()
-    ]
+    categories = []
+    for tx_type, groups in tree.items():
+        for level1, leaves in groups.items():
+            group_name = leaves.get("_name")
+            for slug, criterion in leaves.items():
+                if slug.startswith("_"):
+                    continue
+                categories.append(
+                    Category(
+                        slug=slug,
+                        tx_type=tx_type,
+                        level1=level1,
+                        group_name=group_name,
+                        **criterion,
+                    )
+                )
+    return categories
 
 
 def load_taxonomy(conn: Connection) -> Taxonomy:
     rows = conn.execute(
-        "select slug, tx_type, level1, what, not_for from categories order by position"
+        "select c.slug, c.tx_type, c.level1, c.what, c.not_for, c.name, g.name as group_name"
+        " from categories c left join category_groups g on g.level1 = c.level1"
+        " order by c.position"
     ).fetchall()
     return Taxonomy([Category.model_validate(row) for row in rows])

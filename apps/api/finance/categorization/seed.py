@@ -15,11 +15,17 @@ def seed(conn: Connection) -> tuple[int, int]:
     with conn.transaction():
         for position, c in enumerate(categories):
             conn.execute(
-                "insert into categories (slug, tx_type, level1, what, not_for, position)"
-                " values (%s, %s, %s, %s, %s, %s) on conflict (slug) do update set"
-                " tx_type = excluded.tx_type, level1 = excluded.level1,"
-                " what = excluded.what, not_for = excluded.not_for, position = excluded.position",
-                (c.slug, c.tx_type, c.level1, c.what, c.not_for, position),
+                "insert into categories (slug, tx_type, level1, what, not_for, name, position)"
+                " values (%s, %s, %s, %s, %s, %s, %s) on conflict (slug) do update set"
+                " tx_type = excluded.tx_type, level1 = excluded.level1, what = excluded.what,"
+                " not_for = excluded.not_for, name = excluded.name, position = excluded.position",
+                (c.slug, c.tx_type, c.level1, c.what, c.not_for, c.name, position),
+            )
+        for level1, name in {c.level1: c.group_name for c in categories if c.group_name}.items():
+            conn.execute(
+                "insert into category_groups (level1, name) values (%s, %s)"
+                " on conflict (level1) do update set name = excluded.name",
+                (level1, name),
             )
         for r in rules:
             conn.execute(

@@ -24,7 +24,7 @@ import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 import { ApiError, apiDelete, apiPatch, apiPost, type Schemas } from "@/lib/api";
 import { dayLong, signedMoney } from "@/lib/format";
-import { label } from "@/lib/labels";
+import { categoryName } from "@/lib/labels";
 import type { Direction } from "@/lib/pickers";
 import type { LabelChange } from "@/lib/transactions";
 import { cn } from "@/lib/utils";
@@ -173,7 +173,7 @@ function PanelForm({
   const categorySentence =
     direction === "out" ? "What this money went on." : "Income, or the category of the purchase this money refunds.";
   const categoryDescription = category
-    ? `${label(category.level1)} › ${label(category.slug)}. ${categorySentence}`
+    ? `${category.group_name} › ${category.name}. ${categorySentence}`
     : categorySentence;
 
   function onSave() {
@@ -221,7 +221,7 @@ function PanelForm({
         change.defaultFor = merchant.id;
       }
       // Not "every transaction": rows you or a rule labelled keep theirs, as the dialog says.
-      toast.success(toMerchant && merchant ? `${merchant.name} now uses ${label(categorySlug)}` : "Saved");
+      toast.success(toMerchant && merchant ? `${merchant.name} now uses ${categoryName(categorySlug, categories)}` : "Saved");
     } catch (error) {
       if (step === "label" || !labelChanged) {
         // Nothing was saved: the panel stays open to try again.
@@ -373,7 +373,7 @@ function PanelForm({
           <AlertDialogHeader>
             <AlertDialogTitle>Apply to all transactions of this merchant?</AlertDialogTitle>
             <AlertDialogDescription>
-              {merchant?.name} then uses {label(categorySlug)} for its other transactions and for new imports. Transactions
+              {merchant?.name} then uses {categoryName(categorySlug, categories)} for its other transactions and for new imports. Transactions
               that you or a rule labelled keep their category.
               {category?.tx_type === "income" && " Money going out keeps its category too: it is never income."}
             </AlertDialogDescription>
