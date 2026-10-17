@@ -12,6 +12,7 @@ from finance.categorization.labels import (
     get_or_create_merchant,
     label_transaction,
     merge_merchants,
+    rename_merchant,
     set_note,
 )
 
@@ -186,6 +187,27 @@ def test_renaming_to_an_existing_merchant_merges(db_conn, make_tx):
     holder = confirm_merchant(db_conn, source, "groceries", False, name="zztest acme")
 
     assert holder == target and _row(db_conn, tx)["merchant_id"] == target
+
+
+def test_renaming_onto_an_existing_key_merges_without_a_user_label(db_conn, make_tx):
+    source = _merchant(db_conn, "ZZTEST SOURCE", cadence="monthly")
+    survivor = _merchant(db_conn, "ZZTEST SURVIVOR", cadence="yearly")
+    tx = make_tx("-5.00", "ZZTEST SOURCE", booked_at=date(1999, 5, 1))
+    db_conn.execute("update transactions set merchant_id = %s where id = %s", (source, tx))
+    rename_merchant(db_conn, source, name="ZZTEST SURVIVOR")
+    assert db_conn.execute("select id from merchants where id = %s", (source,)).fetchone() is None
+    kept = db_conn.execute("select cadence from merchants where id = %s", (survivor,)).fetchone()[
+        "cadence"
+    ]
+    assert kept == "yearly"
+    moved = db_conn.execute("select merchant_id from transactions where id = %s", (tx,)).fetchone()
+    assert moved["merchant_id"] == survivor
+    labels = db_conn.execute(
+        "select count(*) as n from transaction_labels"
+        " where transaction_id = %s and source = 'user'",
+        (tx,),
+    ).fetchone()["n"]
+    assert labels == 0
 
 
 def test_dismiss_merge_confirms_the_merchant(db_conn):

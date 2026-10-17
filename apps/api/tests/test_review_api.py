@@ -169,3 +169,54 @@ def test_a_confirm_without_a_subscription_answer_keeps_the_flag(client, db_conn)
     assert kept.status_code == 204
     row = db_conn.execute("select * from merchants where id = %s", (acme,)).fetchone()
     assert (row["category_slug"], row["is_subscription"]) == ("fashion", True)
+
+
+def test_the_merchant_profile(client, db_conn, make_tx):
+    acme = _merchant(db_conn, "ZZTEST ACME", category_slug="groceries")
+    db_conn.execute("update merchants set is_subscription = true where id = %s", (acme,))
+    for source in ("jev", "none", "user", "rule"):
+        tx = make_tx("-9.90", f"PAGO | ZZTEST ACME {source}", booked_at=SYNTHETIC_DAY)
+        db_conn.execute(
+            "update transactions set merchant_id = %s, category_source = %s,"
+            " is_subscription = %s where id = %s",
+            (acme, source, source == "jev", tx),
+        )
+    assert client.get(f"/merchants/{acme}").json() == {
+        "id": str(acme),
+        "name": "ZZTEST ACME",
+        "category_slug": "groceries",
+        "is_subscription": True,
+        "cadence": None,
+        # One flagged charge is monthly in v_subscriptions.
+        "cadence_effective": "monthly",
+        "cadence_source": "auto",
+        "rows_a_default_would_change": 2,
+    }
+    bare = _merchant(db_conn, "ZZTEST BARE")
+    db_conn.execute("update merchants set cadence = 'yearly' where id = %s", (bare,))
+    profile = client.get(f"/merchants/{bare}").json()
+    assert (profile["cadence"], profile["cadence_effective"], profile["cadence_source"]) == (
+        "yearly",
+        None,
+        None,
+    )
+    assert profile["rows_a_default_would_change"] == 0
+    assert client.get(f"/merchants/{MISSING}").status_code == 404
+
+
+def test_rename_or_merge_a_merchant(client, db_conn):
+    acme = _merchant(db_conn, "ZZTEST ACME")
+    other = _merchant(db_conn, "ZZTEST OTHER")
+    both = {"name": "ZZTEST NEW", "merge_into_id": str(other)}
+    for body in (both, {}, {"name": "!!!"}):
+        assert client.patch(f"/merchants/{acme}", json=body).status_code == 422
+    for body in ({"name": "ZZTEST NEW"}, {"merge_into_id": str(other)}):
+        assert client.patch(f"/merchants/{MISSING}", json=body).status_code == 404
+
+    renamed = client.patch(f"/merchants/{acme}", json={"name": "ZZTEST ACME RENAMED"})
+    assert (renamed.status_code, renamed.json()) == (200, {"id": str(acme)})
+    name = db_conn.execute("select name from merchants where id = %s", (acme,)).fetchone()["name"]
+    assert name == "ZZTEST ACME RENAMED"
+
+    merged = client.patch(f"/merchants/{acme}", json={"merge_into_id": str(other)})
+    assert (merged.status_code, merged.json()) == (200, {"id": str(other)})
