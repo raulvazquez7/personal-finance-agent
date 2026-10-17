@@ -56,6 +56,7 @@ const stamp = new Intl.DateTimeFormat(LOCALE, { dateStyle: "medium", timeStyle: 
 
 export const monthLabel = (month: string) => monthYear.format(utc(`${month}-01`)); // August 2026
 export const monthShort = (month: string) => monthAbbr.format(utc(`${month}-01`)); // Aug
+export const monthName = (month: string) => monthLong.format(utc(`${month}-01`)); // August
 export const dayHeader = (day: string) => weekdayDay.format(utc(day)); // Sat, 1 Aug
 export const dayShort = (day: string) => dayMonth.format(utc(day)); // 1 Aug
 export const dayLong = (day: string) => dayMonthYear.format(utc(day)); // 1 Aug 2026
