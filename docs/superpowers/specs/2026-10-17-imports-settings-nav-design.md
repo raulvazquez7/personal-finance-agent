@@ -30,7 +30,7 @@ slice's dogfood pass.
 |---|---|
 | Main navigation | Overview, Transactions, Subscriptions, Chat, Review (with its count). Unchanged order |
 | Secondary menu | A round icon button at the far right of the top bar opens a dropdown with Imports and Settings |
-| Phones | The existing sheet lists the main pages, a separator, then Imports and Settings. The icon button is hidden below `sm` |
+| Below `lg` | The existing sheet (today below `sm`) now takes over below `lg` (1024 px). It lists the main pages, a separator, then Imports and Settings. The row and the icon button show from `lg` up. Measured on 2026-10-17 with the filters shown: the five main links and the button need about 860 px, so tablets would still scroll the row |
 | Sidebar | Rejected. It would restructure the whole shell |
 | What a filled month means | A statement for that account covers the month. Not "there was a transaction that day" |
 | Board shape | One row per account, twelve month columns, arrows for the year. Not a day calendar, and no new dependency |
@@ -63,7 +63,7 @@ A new `components/shell/more-menu.tsx` holds the menu:
 
 - The trigger is a `Button` `variant="secondary"` `size="icon-sm"` `rounded-full`,
   with the lucide `Settings` icon and the accessible name "Imports and settings".
-  It is hidden below `sm`.
+  It is hidden below `lg`.
 - When the current path starts with `/imports` or `/settings`, the trigger takes the
   active pill style (`bg-foreground text-background`), as an active nav link does.
 - The content is the shadcn `dropdown-menu` (Base UI `Menu`), added with
@@ -78,7 +78,8 @@ The button is the last thing in the top bar. On a filtered page it sits right af
 period pill. On other pages it is pushed to the right on its own.
 
 `mobile-nav.tsx` renders `MAIN_ITEMS`, a `Separator`, then `MORE_ITEMS`, with the same
-link style as today.
+link style as today. Its trigger shows below `lg` (`lg:hidden`), and the desktop row from
+`lg` up, instead of `sm`.
 
 ## 4. Imports page
 
@@ -284,8 +285,8 @@ same database.
 Web, with agent-browser on the real pages after `/preview-ux` is gone:
 
 - The menu button opens, Imports and Settings navigate, and the button shows active on
-  both pages. At 820 px nothing in the top bar is cut off. On a phone, the sheet lists
-  both pages after the separator.
+  both pages. At 1024 px the five links, the filters and the button fit without scrolling.
+  At 820 px and on a phone, the sheet lists both pages after the separator.
 - January's square sits under January. The August popover lists each account's state.
   The October header is not a gap. The year arrows move and stop at the ends.
 - Dropping a PDF imports it and the counts appear. Run this on a scratch database,
