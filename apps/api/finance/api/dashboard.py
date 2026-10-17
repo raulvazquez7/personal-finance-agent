@@ -64,6 +64,13 @@ def overview(conn: Db, query: PeriodQuery) -> Overview:
     )
 
 
+@router.get("/group-slots")
+def slots(conn: Db) -> dict[str, int]:
+    """Every expense group's colour slot (spec 8.2), for pages that colour groups without the
+    overview. The overview calls the same function, so the two cannot drift."""
+    return group_slots(conn)
+
+
 @router.get("/subscriptions")
 def subscriptions(conn: Db) -> Subscriptions:
     return active_subscriptions(conn)

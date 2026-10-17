@@ -12,6 +12,7 @@ import {
   money,
   moneyWhole,
   monthLabel,
+  monthName,
   monthShort,
   percent,
   periodLabel,
@@ -172,5 +173,12 @@ describe("period labels", () => {
     expect(previousLabel({ ...august, latest_day: "2026-09-20" })).toBe("vs Jul");
     expect(previousLabel({ ...august, latest_day: "2026-07-20" })).toBe("vs Jul");
     expect(previousLabel({ ...august, latest_day: null })).toBe("vs Jul");
+  });
+});
+
+describe("monthName", () => {
+  it("names the month alone, west of UTC too", () => {
+    expect(monthName("2026-08")).toBe("August");
+    expect(monthName("2026-01")).toBe("January");
   });
 });

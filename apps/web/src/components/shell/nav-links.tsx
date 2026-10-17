@@ -1,5 +1,6 @@
 "use client";
 
+import { type LucideIcon, SlidersHorizontal, Upload } from "lucide-react";
 import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
 import { useEffect, useRef } from "react";
@@ -11,7 +12,8 @@ import { MobileNav } from "./mobile-nav";
 
 type Item = { href: string; label: string; keepsFilters: boolean; active: (path: string) => boolean };
 
-export const ITEMS: Item[] = [
+/** The pages used every day: the row from `lg`, the top of the sheet below it. */
+export const MAIN_ITEMS: Item[] = [
   {
     href: "/",
     label: "Overview",
@@ -23,13 +25,31 @@ export const ITEMS: Item[] = [
   { href: "/subscriptions", label: "Subscriptions", keepsFilters: false, active: (path) => path.startsWith("/subscriptions") },
   { href: "/chat", label: "Chat", keepsFilters: false, active: (path) => path.startsWith("/chat") },
   { href: "/review", label: "Review", keepsFilters: false, active: (path) => path.startsWith("/review") },
-  { href: "/imports", label: "Imports", keepsFilters: false, active: (path) => path.startsWith("/imports") },
-  { href: "/settings", label: "Settings", keepsFilters: false, active: (path) => path.startsWith("/settings") },
+];
+
+/** Behind the menu button from `lg` (more-menu.tsx), after a separator in the sheet below it. */
+export const MORE_ITEMS: (Item & { icon: LucideIcon; hint: string })[] = [
+  {
+    href: "/imports",
+    label: "Imports",
+    keepsFilters: false,
+    active: (path) => path.startsWith("/imports"),
+    icon: Upload,
+    hint: "Upload statements, see coverage",
+  },
+  {
+    href: "/settings",
+    label: "Settings",
+    keepsFilters: false,
+    active: (path) => path.startsWith("/settings"),
+    icon: SlidersHorizontal,
+    hint: "Account names, categories",
+  },
 ];
 
 /** The top navigation with a pill for the active item (spec 7.2). The pages that the period and
- * account filters scope keep them in their links. Below `sm` a menu lists the same links. From
- * `sm` the row scrolls sideways; its padding (cancelled by the negative margin) keeps the scroll
+ * account filters scope keep them in their links. Below `lg` a menu lists the same links. From
+ * `lg` the row scrolls sideways; its padding (cancelled by the negative margin) keeps the scroll
  * box from clipping a link's focus ring. */
 export function NavLinks({ pending }: { pending: number | null }) {
   const pathname = usePathname();
@@ -52,9 +72,9 @@ export function NavLinks({ pending }: { pending: number | null }) {
       <MobileNav pending={pending} />
       <nav
         aria-label="Main"
-        className="order-last -m-1 hidden w-full items-center gap-1 overflow-x-auto p-1 text-sm sm:order-none sm:flex sm:w-auto sm:flex-1"
+        className="order-last -m-1 hidden w-full items-center gap-1 overflow-x-auto p-1 text-sm lg:order-none lg:flex lg:w-auto lg:flex-1"
       >
-        {ITEMS.map((item) => {
+        {MAIN_ITEMS.map((item) => {
           const active = item.active(pathname);
           return (
             <Link
