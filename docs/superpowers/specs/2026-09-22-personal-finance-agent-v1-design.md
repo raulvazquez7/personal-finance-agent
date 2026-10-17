@@ -326,9 +326,10 @@ suffix) with the chosen name.
 **Step 4.** Only with a non-empty shortlist (about 3 percent of rows in the
 spike): `known_merchant` Choice over the shortlist names plus `none`, with
 `candidate_name` in the state and `not_for: "a different business that only
-shares the town, the street or the kind of shop"`. Never merge on doubt:
-a wrong merge corrupts analytics silently, a duplicate is one click in
-`/review`.
+shares the town, the street or the kind of shop"`. A wrong merge corrupts
+analytics silently and a duplicate is one click in `/review`, so the merge
+threshold (section 5.2) is set by the benchmark's wrong joins, not by
+caution alone.
 
 **Step 5.** jev picks level 2; level 1 is the parent slug in `categories`,
 and its confidence is the sum of its leaves' probabilities
@@ -351,7 +352,7 @@ Thresholds are settings, per decision because consequences differ:
 |---|---|---|
 | Category (level 2) | confidence >= 0.95 | `needs_review`; level 1 is still shown when its summed confidence is >= 0.95 |
 | Merchant name (new) | brand confidence >= 0.5 | merchant left empty, `needs_review` |
-| Merge into a known merchant | confidence >= 0.8 | new merchant; 0.5 to 0.8 appears in `/review` as a merge suggestion |
+| Merge into a known merchant | confidence >= 0.5 | new merchant; 0.3 to 0.5 appears in `/review` as a merge suggestion |
 | Subscription (expenses only) | noul > 0.7 | not flagged; never sends a row to `/review` on its own, but rows already in `/review` show a subscription toggle |
 
 The category threshold comes from 412 labelled transactions (spike round 6).
@@ -613,7 +614,7 @@ merchant (payments to people, opaque codes) appear one by one.
   all N", so it is never mistaken for the first line's button.
 - Expanding a merchant row lists its transactions for one-off labels, which
   do not touch the merchant default; each line's button reads "Only this one".
-- A merge suggestion (0.5 to 0.8) is an inline line with Merge and No. Merge
+- A merge suggestion (0.3 to 0.5) is an inline line with Merge and No. Merge
   picks the suggested merchant in the merchant field and the row stays, so
   the category is still decided; confirming merges and labels in one request.
   No marks the merchant `confirmed` so it is not suggested again.
@@ -674,7 +675,7 @@ version against the user's own labels, with the production code.
 | Command | `uv run finance eval-categorization [--limit N] [--note "..."]` runs the production categorizer as a dry run (pairing, system rules, jev, thresholds) over the labelled transactions; it writes nothing to the database |
 | Per run | `eval-output/<timestamp>/` (git-ignored): `rows.csv` (id, golden, predicted, confidences), `summary.json` (date, jev version, hash of taxonomy and rules, metrics) and `report.md` (readable tables) |
 | History | one line appended to `docs/evals/HISTORY.md` (tracked; metrics only, no bank data) so the evolution is visible |
-| Metrics | level-2 and level-1 accuracy; accuracy per confidence bucket; accepted rows, errors and review load at 0.80 / 0.85 / 0.90 / 0.95; subscription precision and recall; merchant accuracy by `match_key` |
+| Metrics | level-2 and level-1 accuracy; accuracy per confidence bucket; accepted rows, errors and review load at 0.80 / 0.85 / 0.90 / 0.95; subscription precision and recall; merchant accuracy by `match_key`; merchant duplicates (extra predicted names per golden merchant) and wrong joins (extra golden merchants per predicted name) |
 
 The dry run ignores merchant defaults and builds its merchant roster within the
 run: defaults come from the same user labels, so using them would score the
@@ -845,3 +846,27 @@ Designed in [2026-09-25-slice-3-design.md](2026-09-25-slice-3-design.md): refund
 purchase's category, loans and unitemized card spending, category-driven row types, notes,
 the views and the dashboard API.
 That document lists the v1 sections it changes (its section 13).
+
+### Merchant merge thresholds (2026-10-17)
+
+Issue #42. The same business kept coming back as several merchants: a branch,
+station or town after the name, a name cut off by the bank. The
+same-merchant question (section 5.1, step 4) usually picked the right known
+merchant but scored it between 0.4 and 0.8, so at 0.8 a new merchant was
+created and the pair waited in `/review`.
+
+- Section 5.2: merge at >= 0.5 (was 0.8); 0.3 to 0.5 is a merge suggestion
+  (was 0.5 to 0.8). Over 824 golden rows the benchmark counted 38 and 40
+  duplicate merchants at 0.8, and 21 to 26 in five runs at 0.5, with the same
+  2 wrong joins in every run (one bank text shared by two merchants the user
+  keeps apart, and one generic shop word). Category accuracy did not move.
+- Tried and not kept, each within run-to-run noise: three rewordings of the
+  same-merchant instructions (on 34 hand-picked pairs, none raised the
+  confidence), a shortlist that also finds names written together or cut
+  off, and skipping a card processor prefix (`SUMUP *`, `NYX*`) in the
+  fragments.
+- Section 13.1: the report and `docs/evals/HISTORY.md` count merchant
+  duplicates and wrong joins.
+- Most of the remaining duplicates cannot come from the bank text alone: a
+  text that never names the business, or a product sold under another brand.
+  Remembering the user's decision per bank text is issue #41.

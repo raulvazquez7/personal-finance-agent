@@ -136,7 +136,7 @@ def test_a_merge_suggestion_is_saved_on_the_new_merchant(db_conn, make_tx):
     )
     jev = FakeJev(
         first={"ZZTEST ACME": ACME, "ZZTEST ACME ZZSHOP": shop},
-        same={"ZZTEST ACME ZZSHOP": jev_result(known={"ZZTEST ACME": 0.6, "none": 0.4})},
+        same={"ZZTEST ACME ZZSHOP": jev_result(known={"ZZTEST ACME": 0.4, "none": 0.2})},
     )
     asyncio.run(categorize_pending(db_conn, Settings(), jev=jev))
     row = db_conn.execute(
@@ -144,7 +144,7 @@ def test_a_merge_suggestion_is_saved_on_the_new_merchant(db_conn, make_tx):
         " join merchants c on c.id = m.merge_candidate_id where m.match_key = 'ZZTESTACMEZZSHOP'"
     ).fetchone()
     assert row["candidate"] == "ZZTEST ACME"
-    assert row["merge_confidence"] == pytest.approx(0.6)
+    assert row["merge_confidence"] == pytest.approx(0.4)
 
 
 @pytest.mark.integration
