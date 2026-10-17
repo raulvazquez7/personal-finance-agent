@@ -9,11 +9,11 @@
     Rank groups by spending and compute each share with a window function over the grouped sums.
   sql:
     - |
-      SELECT category_group, SUM(spend) AS spend,
+      SELECT category_group, group_name, SUM(spend) AS spend,
              ROUND(100 * SUM(spend) / NULLIF(SUM(SUM(spend)) OVER (), 0), 1) AS share_pct
       FROM transactions
       WHERE booked_at >= '2026-07-01' AND booked_at < '2026-10-01' AND tx_type = 'expense'
-      GROUP BY category_group
+      GROUP BY category_group, group_name
       ORDER BY spend DESC
 - question: How much did I save each month this year, and at what rate?
   teaches: >
@@ -60,7 +60,7 @@
       ORDER BY last_day DESC, note
       LIMIT 50
     - |
-      SELECT booked_at, merchant, category, spend, note, SUM(spend) OVER () AS total
+      SELECT booked_at, merchant, category, category_name, spend, note, SUM(spend) OVER () AS total
       FROM transactions
       WHERE note IN ('Rome trip', 'hotel Rome')
       ORDER BY booked_at
@@ -72,16 +72,16 @@
   sql:
     - |
       WITH by_period AS (
-        SELECT category_group,
+        SELECT category_group, group_name,
                COALESCE(SUM(spend) FILTER (WHERE booked_at >= '2026-10-01'), 0) AS this_month,
                COALESCE(SUM(spend) FILTER (WHERE booked_at < '2026-10-01'), 0) AS last_month
         FROM transactions
         WHERE tx_type = 'expense'
           AND ((booked_at >= '2026-10-01' AND booked_at < '2026-10-13')
             OR (booked_at >= '2026-09-01' AND booked_at < '2026-09-13'))
-        GROUP BY category_group
+        GROUP BY category_group, group_name
       )
-      SELECT category_group, this_month, last_month, this_month - last_month AS change,
+      SELECT category_group, group_name, this_month, last_month, this_month - last_month AS change,
              ROUND(100 * (this_month - last_month) / NULLIF(last_month, 0), 1) AS change_pct
       FROM by_period
       ORDER BY change DESC
