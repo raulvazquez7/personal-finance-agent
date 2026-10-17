@@ -95,9 +95,13 @@ export function CoverageBoard({ accounts, imports, today }: Props) {
             ))}
             {board.accounts.map((account) => (
               <div key={account.id} className="col-span-full grid grid-cols-subgrid items-center">
-                <span className="truncate pr-2 text-sm" title={account.name}>
+                <span
+                  className="truncate pr-2 text-sm"
+                  title={account.digits ? `${account.name} ${account.digits}` : account.name}
+                >
                   {account.name}
-                  {account.digits && <span className="text-muted-foreground"> {account.digits}</span>}
+                  {/* One string: Chrome drops a lone space between server-rendered text parts from the name. */}
+                  {account.digits && <span className="text-muted-foreground">{` ${account.digits}`}</span>}
                 </span>
                 {account.states.map((state, index) => (
                   <span
