@@ -4,6 +4,7 @@ import { filterContext, reviewCount } from "@/lib/api";
 
 import { FilterBar } from "./filter-bar";
 import { Logo, LogoLink } from "./logo-link";
+import { MoreMenu } from "./more-menu";
 import { NavLinks } from "./nav-links";
 
 /** Logo, navigation and filters (spec 7.2; mockup 02). */
@@ -20,9 +21,13 @@ export async function TopBar() {
         <Suspense fallback={null}>
           <NavLinks pending={pending} />
         </Suspense>
-        <Suspense fallback={null}>
-          <FilterBar accounts={accounts} latestDay={latestDay} />
-        </Suspense>
+        {/* Filters (only on the pages they scope), then the menu, always last. */}
+        <div className="ml-auto flex items-center gap-2">
+          <Suspense fallback={null}>
+            <FilterBar accounts={accounts} latestDay={latestDay} />
+          </Suspense>
+          <MoreMenu />
+        </div>
       </div>
     </header>
   );

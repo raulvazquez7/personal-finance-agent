@@ -160,6 +160,27 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/dashboard/group-slots": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Slots
+         * @description Every expense group's colour slot (spec 8.2), for pages that colour groups without the
+         *     overview. The overview calls the same function, so the two cannot drift.
+         */
+        get: operations["slots_dashboard_group_slots_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/dashboard/subscriptions": {
         parameters: {
             query?: never;
@@ -1476,6 +1497,28 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    slots_dashboard_group_slots_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: number;
+                    };
                 };
             };
         };

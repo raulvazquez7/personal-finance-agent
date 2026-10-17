@@ -1,27 +1,20 @@
 import type { Metadata } from "next";
 
-import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { FieldGroup } from "@/components/ui/field";
 import { apiGet, type Schemas } from "@/lib/api";
-import { byLevel1 } from "@/lib/pickers";
 
 import { AccountNameForm } from "./account-name-form";
+import { CategoryBrowser } from "./category-browser";
 
 export const dynamic = "force-dynamic";
 export const metadata: Metadata = { title: "Settings" };
 
-const TYPES = [
-  { type: "expense", title: "Expenses" },
-  { type: "income", title: "Income" },
-  { type: "transfer", title: "Transfers (out of every total)" },
-] as const;
-
-/** Rename accounts; the categories are read-only in slice 3 (spec 7.1). */
+/** Rename accounts; the categories are read-only (spec 2026-10-17, section 6). */
 export default async function SettingsPage() {
-  const [accounts, categories] = await Promise.all([
+  const [accounts, categories, slots] = await Promise.all([
     apiGet<Schemas["Account"][]>("/accounts"),
     apiGet<Schemas["CategoryOut"][]>("/categories"),
+    apiGet<Record<string, number>>("/dashboard/group-slots"),
   ]);
   return (
     <>
@@ -29,57 +22,21 @@ export default async function SettingsPage() {
       <Card>
         <CardHeader>
           <CardTitle>Accounts</CardTitle>
-          <CardDescription>Give each account a name you recognize.</CardDescription>
+          <CardDescription>The name shown in lists and in the account filter, for example “Joint account”.</CardDescription>
         </CardHeader>
         <CardContent>
           {accounts.length === 0 ? (
             <p className="text-sm text-muted-foreground">No accounts yet: import a statement first.</p>
           ) : (
-            <FieldGroup>
+            <div className="flex flex-col">
               {accounts.map((account) => (
                 <AccountNameForm key={account.id} account={account} />
               ))}
-            </FieldGroup>
+            </div>
           )}
         </CardContent>
       </Card>
-      <Card>
-        <CardHeader>
-          <CardTitle>Categories</CardTitle>
-          <CardDescription>
-            Read-only in this version. A refund takes the category of its purchase; transfers never count as income or
-            spending.
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="flex flex-col gap-6">
-          {TYPES.map(({ type, title }) => {
-            const groups = byLevel1(categories.filter((category) => category.tx_type === type));
-            return (
-              <section key={type} className="flex flex-col gap-3">
-                <h3 className="text-sm font-medium">{title}</h3>
-                {groups.length === 0 ? (
-                  <p className="text-sm text-muted-foreground">No categories of this type yet.</p>
-                ) : (
-                  <dl className="grid gap-4 sm:grid-cols-2">
-                    {groups.map((group) => (
-                      <div key={group.value} className="flex flex-col gap-1.5">
-                        <dt className="text-xs tracking-wide text-muted-foreground uppercase">{group.label}</dt>
-                        <dd className="flex flex-wrap gap-1">
-                          {group.items.map((category) => (
-                            <Badge key={category.slug} variant="outline">
-                              {category.name}
-                            </Badge>
-                          ))}
-                        </dd>
-                      </div>
-                    ))}
-                  </dl>
-                )}
-              </section>
-            );
-          })}
-        </CardContent>
-      </Card>
+      <CategoryBrowser categories={categories} slots={slots} />
     </>
   );
 }

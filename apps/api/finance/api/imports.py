@@ -40,10 +40,15 @@ def create_import(file: UploadFile, conn: Db, background: BackgroundTasks) -> Im
     return summary
 
 
+# Every import, newest statement first (spec 2026-10-17, section 7). No cap: the coverage board
+# on /imports reads the whole list.
+LIST_IMPORTS_SQL = (
+    "select i.*, a.name as account_name from imports i join accounts a on a.id = i.account_id"
+    " order by i.period_end desc nulls last, a.name, i.imported_at desc"
+)
+
+
 @router.get("")
 def list_imports(conn: Db) -> list[ImportRecord]:
-    rows = conn.execute(
-        "select i.*, a.name as account_name from imports i join accounts a on a.id = i.account_id"
-        " order by i.imported_at desc limit 100"
-    ).fetchall()
+    rows = conn.execute(LIST_IMPORTS_SQL).fetchall()
     return [ImportRecord.model_validate(row) for row in rows]
