@@ -5,9 +5,9 @@
 export const OTHER_COLOR = "var(--chart-other)";
 
 /** The folded "Other" row is no group: its slice is hatched (the pattern lives in BreakdownDonut),
- * and its tooltip key, which cannot paint a pattern, takes the hatch's ground. */
+ * and its tooltip key, which cannot paint a pattern, takes the hatch's stripe grey. */
 export const FOLDED_FILL = "url(#folded-hatch)";
-export const FOLDED_COLOR = "var(--chart-folded)";
+export const FOLDED_COLOR = "var(--chart-folded-stripe)";
 
 export function groupColor(level1: string | null | undefined, slots: Record<string, number>): string {
   const slot = level1 ? slots[level1] : undefined;

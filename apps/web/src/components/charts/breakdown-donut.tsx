@@ -31,7 +31,7 @@ export function BreakdownDonut({ slices, total, change, versus, title }: Props) 
           <defs>
             <pattern id="folded-hatch" patternUnits="userSpaceOnUse" width="6" height="6" patternTransform="rotate(45)">
               <rect width="6" height="6" fill="var(--chart-folded)" />
-              <line x1="0" y1="0" x2="0" y2="6" stroke="#9a9aa6" strokeWidth="2" />
+              <line x1="0" y1="0" x2="0" y2="6" stroke="var(--chart-folded-stripe)" strokeWidth="2" />
             </pattern>
           </defs>
           <ChartTooltip content={<ChartTooltipContent hideLabel formatter={moneyRow({})} />} />
