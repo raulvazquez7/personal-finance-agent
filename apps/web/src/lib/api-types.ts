@@ -212,6 +212,24 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/merchants/{merchant_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Merchant Profile */
+        get: operations["merchant_profile_merchants__merchant_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Rename */
+        patch: operations["rename_merchants__merchant_id__patch"];
+        trace?: never;
+    };
     "/merchants/{merchant_id}/review": {
         parameters: {
             query?: never;
@@ -653,6 +671,43 @@ export interface components {
             id: string;
             /** Name */
             name: string;
+        };
+        /** MerchantProfile */
+        MerchantProfile: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Name */
+            name: string;
+            /** Category Slug */
+            category_slug: string | null;
+            /** Is Subscription */
+            is_subscription: boolean | null;
+            /** Cadence */
+            cadence: ("monthly" | "quarterly" | "yearly") | null;
+            /** Cadence Effective */
+            cadence_effective: ("monthly" | "quarterly" | "yearly") | null;
+            /** Cadence Source */
+            cadence_source: ("auto" | "user") | null;
+            /** Rows A Default Would Change */
+            rows_a_default_would_change: number;
+        };
+        /** MerchantRef */
+        MerchantRef: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+        };
+        /** MerchantRename */
+        MerchantRename: {
+            /** Name */
+            name?: string | null;
+            /** Merge Into Id */
+            merge_into_id?: string | null;
         };
         /** MergeSuggestion */
         MergeSuggestion: {
@@ -1509,6 +1564,72 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["MerchantOut"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    merchant_profile_merchants__merchant_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                merchant_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MerchantProfile"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    rename_merchants__merchant_id__patch: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                merchant_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["MerchantRename"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MerchantRef"];
                 };
             };
             /** @description Validation Error */
